@@ -1,0 +1,1 @@
+const s={},t=()=>({}),c=()=>({}),a=()=>({}),o=async()=>({data:()=>({count:0})}),e=()=>({}),n=async()=>({docs:[],empty:!0}),r=async()=>({exists:()=>!1,data:()=>null}),d=()=>({}),l=async()=>{},y=async()=>{},u=async()=>{},i=()=>new Date().toISOString();export{n as a,r as b,t as c,s as d,u as e,d as f,o as g,l as h,e as l,c as q,i as s,y as u,a as w};
