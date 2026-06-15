@@ -1,0 +1,922 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<style is:global>
+@keyframes ac_float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+@keyframes ac_pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+.wi_fadeUp {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.wi_fadeUp.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#wimain {
+  opacity: 1 !important;
+}
+
+.ac_wrap {
+  width: 100%;
+  overflow-x: hidden;
+  background: color-mix(in srgb, var(--mco) 3%, var(--bg));
+  color: var(--tx);
+  font-family: var(--ff_P);
+}
+
+/* ── HERO ── */
+.ac_hero {
+  position: relative;
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10vh 5vw;
+  overflow: hidden;
+}
+
+.ac_hero_orb {
+  position: absolute;
+  filter: blur(80px);
+  z-index: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ac_orb1 { width: 40vw; height: 40vw; background: rgba(14, 190, 255, 0.15); top: -10vh; right: -5vw; animation: ac_float 20s infinite linear; }
+.ac_orb2 { width: 35vw; height: 35vw; background: rgba(255, 92, 105, 0.12); bottom: -10vh; left: -5vw; animation: ac_float 25s infinite linear reverse; }
+.ac_orb3 { width: 25vw; height: 25vw; background: rgba(112, 0, 255, 0.1); top: 30%; left: 40%; animation: ac_pulse 15s infinite ease-in-out; }
+
+.ac_hero_body {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 800px;
+}
+
+.ac_hero_logo {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 3vh;
+  border-radius: 2.5vh;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  background: #fff;
+  border: 1px solid var(--brd);
+}
+.ac_hero_logo img { width: 100%; height: 100%; object-fit: cover; }
+
+.ac_hero_badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 1vh;
+  padding: 0.8vh 2vh;
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 4vh;
+  font-size: var(--fz_s2);
+  font-weight: 600;
+  color: var(--tx3);
+  margin-bottom: 3vh;
+}
+.ac_hero_badge i { color: var(--Cielo); }
+
+.ac_hero_tit {
+  font-size: clamp(3rem, 10vw, 5.5rem);
+  font-weight: 900;
+  line-height: 0.9;
+  margin-bottom: 3vh;
+  background: linear-gradient(135deg, var(--tx), var(--tx3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -2px;
+}
+
+.ac_hero_sub {
+  font-size: var(--fz_m3);
+  color: var(--tx2);
+  line-height: 1.6;
+  margin-bottom: 5vh;
+}
+.ac_hero_sub strong { color: var(--tx); }
+
+.ac_hero_stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 3vh;
+  margin-bottom: 6vh;
+}
+
+.ac_stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5vh;
+  min-width: 120px;
+}
+.ac_stat i { font-size: var(--fz_m4); margin-bottom: 0.5vh; }
+.ac_stat strong { font-size: var(--fz_l1); font-family: var(--ff_O); font-weight: 800; color: var(--tx); }
+.ac_stat span { font-size: var(--fz_s2); color: var(--tx3); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+.ac_hero_btns {
+  display: flex;
+  justify-content: center;
+  gap: 2vh;
+}
+
+.ac_btn_p, .ac_btn_s {
+  padding: 1.8vh 4vh;
+  border-radius: 1.5vh;
+  font-size: var(--fz_m1);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 1.5vh;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.ac_btn_p { background: var(--mco); color: #fff; border: none; }
+.ac_btn_p:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+
+.ac_btn_s { background: var(--wb); color: var(--tx); border: 1px solid var(--brd); }
+.ac_btn_s:hover { background: var(--bg5); border-color: var(--tx3); }
+
+.ac_hero_scroll {
+  margin-top: 8vh;
+  font-size: var(--fz_m2);
+  color: var(--tx3);
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+/* ── COUNTER BAND ── */
+.ac_counter_band {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 5vh 5vw;
+  background: var(--wb);
+  border-top: 1px solid var(--brd);
+  border-bottom: 1px solid var(--brd);
+  flex-wrap: wrap;
+  gap: 4vh;
+}
+
+.ac_counter_item {
+  text-align: center;
+}
+.ac_counter_num, .ac_counter_item span {
+  font-size: var(--fz_l2);
+  font-weight: 800;
+  font-family: var(--ff_O);
+  color: var(--tx);
+}
+.ac_counter_item p {
+  font-size: var(--fz_s1);
+  color: var(--tx3);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: 0.5vh;
+}
+
+.ac_counter_sep {
+  width: 1px;
+  height: 4vh;
+  background: var(--brd);
+}
+
+@media (max-width: 768px) {
+  .ac_counter_sep { display: none; }
+  .ac_counter_item { width: 40%; }
+}
+
+/* ── SECTIONS ── */
+.ac_sec {
+  padding: 12vh 10vw;
+}
+.ac_sec_alt { background: var(--bg5); }
+
+.ac_sec_head {
+  text-align: center;
+  margin-bottom: 8vh;
+}
+
+.ac_sec_badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 1vh;
+  color: var(--tx3);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: var(--fz_s2);
+  margin-bottom: 2vh;
+}
+
+.ac_sec_tit {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: var(--tx);
+  letter-spacing: -1px;
+}
+
+.ac_grad {
+  background: linear-gradient(135deg, #0EBEFF, #7000FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.ac_sec_sub {
+  font-size: var(--fz_m2);
+  color: var(--tx3);
+  margin-top: 1vh;
+}
+
+/* ── HISTORIA ── */
+.ac_historia {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.ac_historia p {
+  font-size: var(--fz_m2);
+  line-height: 1.8;
+  color: var(--tx2);
+  margin-bottom: 3vh;
+}
+.ac_historia strong { color: var(--tx); }
+.ac_firma {
+  margin-top: 6vh;
+  display: flex;
+  flex-direction: column;
+}
+.ac_firma strong { font-size: var(--fz_m3); color: var(--tx); }
+.ac_firma span { font-size: var(--fz_s2); color: var(--tx3); }
+
+/* ── BENEFICIOS GRID ── */
+.ac_feat_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 3vh;
+}
+
+.ac_feat_card {
+  padding: 5vh 4vh;
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 2vh;
+  transition: all 0.3s ease;
+}
+.ac_feat_card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+  border-color: var(--sc, var(--tx3));
+}
+
+.ac_feat_ico {
+  width: 6vh;
+  height: 6vh;
+  background: var(--bg);
+  border-radius: 1.5vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fz_m4);
+  margin-bottom: 3vh;
+  color: var(--sc);
+}
+
+.ac_feat_card h3 {
+  font-size: var(--fz_m3);
+  font-weight: 700;
+  margin-bottom: 2vh;
+  color: var(--tx);
+}
+.ac_feat_card p {
+  font-size: var(--fz_m1);
+  color: var(--tx2);
+  line-height: 1.6;
+}
+
+.ac_color_cielo { --sc: #0EBEFF; }
+.ac_color_dulce { --sc: #FF5C69; }
+.ac_color_paz { --sc: #29C72E; }
+.ac_color_mora { --sc: #7000FF; }
+
+/* ── PASOS ── */
+.ac_pasos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3vh;
+  flex-wrap: wrap;
+}
+
+.ac_paso {
+  flex: 1;
+  min-width: 250px;
+  text-align: center;
+  padding: 4vh;
+  position: relative;
+}
+
+.ac_paso_num {
+  position: absolute;
+  top: 0;
+  right: 10%;
+  font-size: 8rem;
+  font-weight: 900;
+  color: var(--bg5);
+  z-index: 0;
+  line-height: 1;
+}
+
+.ac_paso_ico {
+  width: 8vh;
+  height: 8vh;
+  background: var(--mco);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fz_m4);
+  margin: 0 auto 3vh;
+  position: relative;
+  z-index: 1;
+}
+
+.ac_paso h3 { font-size: var(--fz_m3); font-weight: 700; margin-bottom: 1.5vh; position: relative; z-index: 1; }
+.ac_paso p { font-size: var(--fz_m1); color: var(--tx3); line-height: 1.5; position: relative; z-index: 1; }
+
+.ac_paso_sep { font-size: var(--fz_m4); color: var(--brd); }
+
+@media (max-width: 900px) {
+  .ac_paso_sep { display: none; }
+}
+
+/* ── TESTIMONIOS ── */
+.ac_test_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 3vh;
+}
+
+.ac_test_card {
+  padding: 4vh;
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 2vh;
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+}
+
+.ac_test_stars { color: #FFB800; font-size: var(--fz_s2); }
+.ac_test_txt { font-style: italic; font-size: var(--fz_m1); color: var(--tx2); line-height: 1.6; }
+
+.ac_test_autor {
+  display: flex;
+  align-items: center;
+  gap: 1.5vh;
+  margin-top: auto;
+}
+.ac_test_avatar {
+  width: 5vh;
+  height: 5vh;
+  background: var(--bg5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fz_m3);
+}
+.ac_test_autor strong { display: block; font-size: var(--fz_m1); color: var(--tx); }
+.ac_test_autor span { font-size: var(--fz_s2); color: var(--tx3); }
+
+/* ── MODULOS ── */
+.ac_modulos_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 3vh;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.ac_modulo_card {
+  padding: 3vh;
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 1.5vh;
+  display: flex;
+  align-items: center;
+  gap: 2vh;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.ac_modulo_card:hover {
+  background: var(--bg5);
+  transform: translateX(10px);
+  border-color: var(--mc);
+}
+
+.ac_modulo_ico {
+  width: 5vh;
+  height: 5vh;
+  border-radius: 1vh;
+  background: color-mix(in srgb, var(--mc) 10%, transparent);
+  color: var(--mc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fz_m2);
+}
+
+.ac_modulo_info { flex: 1; display: flex; flex-direction: column; }
+.ac_modulo_info strong { font-size: var(--fz_m1); color: var(--tx); }
+.ac_modulo_info span { font-size: var(--fz_s2); color: var(--tx3); }
+.ac_modulo_arr { color: var(--brd); transition: color 0.3s; }
+.ac_modulo_card:hover .ac_modulo_arr { color: var(--mc); }
+
+/* ── CTA SECTION ── */
+.ac_cta_sec { padding: 10vh 5vw; }
+
+.ac_cta_wrap {
+  position: relative;
+  background: var(--bg);
+  color: var(--tx);
+  border: 1px solid var(--brd);
+  border-radius: 4vh;
+  padding: 10vh 5vw;
+  text-align: center;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+}
+
+.ac_cta_glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(14, 190, 255, 0.4) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+.ac_cta_inner { position: relative; z-index: 2; }
+.ac_cta_emoji { font-size: 5rem; display: block; margin-bottom: 2vh; }
+.ac_cta_inner h2 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 800; line-height: 1.1; margin-bottom: 2vh; }
+.ac_cta_inner p { font-size: var(--fz_m2); opacity: 0.8; margin-bottom: 5vh; }
+
+.ac_cta_chips {
+  display: flex;
+  justify-content: center;
+  gap: 2vh;
+  flex-wrap: wrap;
+  margin-bottom: 6vh;
+}
+
+.ac_chip {
+  padding: 1vh 2.5vh;
+  border-radius: 3vh;
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  color: var(--tx2);
+  font-size: var(--fz_s2);
+  font-weight: 600;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+  transition: all 0.3s;
+}
+.ac_chip:hover { background: var(--bg5); color: var(--tx); transform: translateY(-3px); }
+
+.ac_btn_lg { padding: 2.2vh 5vh; font-size: var(--fz_m2); }
+
+.ac_footer_txt {
+  margin-top: 8vh;
+  font-size: var(--fz_s2);
+  opacity: 0.5;
+}
+.ac_footer_txt a { color: inherit; text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .ac_hero_btns, .ac_cta_btns { flex-direction: column; }
+  .ac_btn_p, .ac_btn_s { justify-content: center; }
+  .ac_sec { padding: 8vh 6vw; }
+}
+</style>
+
+<Layout title="Acerca" description="Acerca de WiiHope - Un rincón de paz en tu mundo digital">
+<div class="ac_wrap">
+
+  <!-- ══ HERO ══ -->
+  <section class="ac_hero">
+    <div class="ac_hero_orb ac_orb1"></div>
+    <div class="ac_hero_orb ac_orb2"></div>
+    <div class="ac_hero_orb ac_orb3"></div>
+    <div class="ac_hero_body">
+      <div class="ac_hero_logo">
+        <img src="/perfil.webp" alt="WiiHope" loading="lazy">
+      </div>
+      <div class="ac_hero_badge"><i class="fas fa-dove"></i> Un rincón de paz en tu mundo digital</div>
+      <h1 class="ac_hero_tit">WiiHope</h1>
+      <p class="ac_hero_sub">
+        Encuentra inspiración, sabiduría bíblica y un espacio de oración diseñado 
+        para fortalecer tu espíritu cada día. <strong>Respira, Vibra, Ama.</strong>
+      </p>
+      <div class="ac_hero_stats">
+        
+          <div class="ac_stat" style="--sc:#0EBEFF">
+            <i class="fas fa-infinity" style="color:#0EBEFF"></i>
+            <strong>∞</strong>
+            <span>Fe y Esperanza</span>
+          </div>
+          <div class="ac_stat" style="--sc:#FF5C69">
+            <i class="fas fa-heart" style="color:#FF5C69"></i>
+            <strong>100%</strong>
+            <span>Completamente gratis</span>
+          </div>
+          <div class="ac_stat" style="--sc:#29C72E">
+            <i class="fas fa-clock" style="color:#29C72E"></i>
+            <strong>24/7</strong>
+            <span>Acompañamiento</span>
+          </div>
+          <div class="ac_stat" style="--sc:#7000FF">
+            <i class="fas fa-hands-praying" style="color:#7000FF"></i>
+            <strong>1M+</strong>
+            <span>Vidas inspiradas</span>
+          </div>
+      </div>
+      <div class="ac_hero_btns">
+        <a href="/biblia" class="ac_btn_p"><i class="fas fa-book-bible"></i> Leer la Biblia</a>
+        <button class="ac_btn_s" id="ac_compartir"><i class="fas fa-share-nodes"></i> Compartir App</button>
+      </div>
+      <div class="ac_hero_scroll"><i class="fas fa-chevron-down"></i></div>
+    </div>
+  </section>
+
+  <!-- ══ COUNTER BAND ══ -->
+  <div class="ac_counter_band">
+    <div class="ac_counter_item">
+      <span class="ac_counter_num" data-target="100">100</span><span>%</span>
+      <p>Gratis para siempre</p>
+    </div>
+    <div class="ac_counter_sep"></div>
+    <div class="ac_counter_item">
+      <span class="ac_counter_num" data-target="99">99</span><span>%</span>
+      <p>Velocidad de Carga</p>
+    </div>
+    <div class="ac_counter_sep"></div>
+    <div class="ac_counter_item">
+      <span>∞</span>
+      <p>Amor y Fe</p>
+    </div>
+    <div class="ac_counter_sep"></div>
+    <div class="ac_counter_item">
+      <span class="ac_counter_num" data-target="2024">2024</span>
+      <p>Siempre actualizado</p>
+    </div>
+  </div>
+
+  <!-- ══ NUESTRA HISTORIA ══ -->
+  <section class="ac_sec">
+    <div class="ac_sec_head">
+      <div class="ac_sec_badge"><i class="fas fa-heart"></i> Acerca de nosotros</div>
+      <h2 class="ac_sec_tit">El propósito de <span class="ac_grad">WiiHope</span></h2>
+    </div>
+    <div class="ac_historia wi_fadeUp">
+      <p><strong>Wiihope</strong> es una aplicación diseñada para compartir y aprender más sobre la palabra de Dios. Su propósito es fortalecer la fe y ser una herramienta de protección, prosperidad y bendición.</p>
+      
+      <p>En esta app encontrarás el Padre Nuestro, o como mi madre solía llamarlo, <em>"el teléfono de Dios"</em>. Ella me decía que esta oración es la clave para comunicarnos con Él, ya que fue la que Jesús nos enseñó para mostrar cómo orar correctamente.</p>
+      
+      <p>Además, hemos reunido las mejores frases de protección, salvación y seguridad en Dios para inspirarte en tu día a día. También podrás disfrutar de audios dramatizados del Nuevo Testamento en quechua, ideales para entender y transmitir el mensaje de una manera más cercana y enriquecedora. Agradecemos profundamente a <strong>Faith Comes By Hearing</strong>, la creadora de este contenido maravilloso, por permitirnos incluirlo en Wiihope.</p>
+
+      <p>Esta app fue desarrollada por mí, con el objetivo de digitalizar estos recursos y hacerlos accesibles para más personas en todo momento y lugar.</p>
+      
+      <p>Si llegaste hasta aquí, ¡Dios te bendiga! Y si no, también, porque su amor y cuidado están contigo siempre. ¡Recuerda avanzar con fe y confianza!</p>
+
+      <div class="ac_firma">
+        <strong>Con amor, Wilder Taype</strong>
+        <span>Creador de Wiihope</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ BENEFICIOS ══ -->
+  <section class="ac_sec ac_sec_alt">
+    <div class="ac_sec_head">
+      <div class="ac_sec_badge"><i class="fas fa-star"></i> ¿Por qué WiiHope?</div>
+      <h2 class="ac_sec_tit">Beneficios que traen <span class="ac_grad">paz interior</span></h2>
+      <p class="ac_sec_sub">Desarrollado pensando en tu tranquilidad y comodidad espiritual</p>
+    </div>
+    <div class="ac_feat_grid">
+      
+        <div class="ac_feat_card wi_fadeUp ac_color_cielo">
+          <div class="ac_feat_ico"><i class="fas fa-book-bible"></i></div>
+          <h3>Sabiduría en tu idioma</h3>
+          <p>Escucha y lee la Biblia en Quechua y otros idiomas de forma fácil e intuitiva, en un reproductor súper rápido.</p>
+        </div>
+        <div class="ac_feat_card wi_fadeUp ac_color_dulce">
+          <div class="ac_feat_ico"><i class="fas fa-quote-left"></i></div>
+          <h3>Citas que Inspiran</h3>
+          <p>Encuentra y comparte miles de frases y pasajes bíblicos agrupados por categorías, con un buscador inteligente.</p>
+        </div>
+        <div class="ac_feat_card wi_fadeUp ac_color_paz">
+          <div class="ac_feat_ico"><i class="fas fa-hand-holding-heart"></i></div>
+          <h3>Asistencia de Oración</h3>
+          <p>No estás solo. Escribe tus peticiones y recibe acompañamiento, esperanza y empatía al instante con nuestro chat de oración.</p>
+        </div>
+        <div class="ac_feat_card wi_fadeUp ac_color_mora">
+          <div class="ac_feat_ico"><i class="fas fa-seedling"></i></div>
+          <h3>Blog Edificante</h3>
+          <p>Lee artículos, testimonios y reflexiones diseñados para nutrir tu alma, mejorar tu salud emocional y fortalecer tu fe.</p>
+        </div>
+        <div class="ac_feat_card wi_fadeUp ac_color_cielo">
+          <div class="ac_feat_ico"><i class="fas fa-face-smile"></i></div>
+          <h3>Diseño Inmersivo</h3>
+          <p>Cada detalle visual y animación ha sido creado para brindarte paz, sin distracciones molestas y con alta velocidad.</p>
+        </div>
+        <div class="ac_feat_card wi_fadeUp ac_color_dulce">
+          <div class="ac_feat_ico"><i class="fas fa-mobile-screen"></i></div>
+          <h3>100% Accesible</h3>
+          <p>Lleva la esperanza a todas partes. WiiHope está optimizado para funcionar perfecto y ultrarrápido en cualquier celular.</p>
+        </div>
+    </div>
+  </section>
+
+  <!-- ══ CÓMO FUNCIONA ══ -->
+  <section class="ac_sec">
+    <div class="ac_sec_head">
+      <div class="ac_sec_badge"><i class="fas fa-route"></i> Empieza ahora</div>
+      <h2 class="ac_sec_tit">3 pasos para <span class="ac_grad">conectar</span></h2>
+      <p class="ac_sec_sub">Es muy fácil dejarte acompañar por el amor y la fe</p>
+    </div>
+    <div class="ac_pasos">
+      
+        <div class="ac_paso wi_fadeUp">
+          <div class="ac_paso_num">1</div>
+          <div class="ac_paso_ico"><i class="fas fa-eye"></i></div>
+          <h3>Descubre</h3>
+          <p>Explora nuestra amplia colección de citas y versículos.</p>
+        </div>
+        <div class="ac_paso_sep"><i class="fas fa-chevron-right"></i></div>
+        <div class="ac_paso wi_fadeUp">
+          <div class="ac_paso_num">2</div>
+          <div class="ac_paso_ico"><i class="fas fa-headphones"></i></div>
+          <h3>Medita</h3>
+          <p>Relájate escuchando los capítulos bíblicos en formato audio de alta calidad.</p>
+        </div>
+        <div class="ac_paso_sep"><i class="fas fa-chevron-right"></i></div>
+        <div class="ac_paso wi_fadeUp">
+          <div class="ac_paso_num">3</div>
+          <div class="ac_paso_ico"><i class="fas fa-hand-holding-heart"></i></div>
+          <h3>Comparte</h3>
+          <p>Envía un artículo de nuestro blog o una frase a alguien que necesite luz hoy.</p>
+        </div>
+        
+    </div>
+  </section>
+
+  <!-- ══ TESTIMONIOS ══ -->
+  <section class="ac_sec ac_sec_alt">
+    <div class="ac_sec_head">
+      <div class="ac_sec_badge"><i class="fas fa-comments"></i> Comunidad</div>
+      <h2 class="ac_sec_tit">Personas que usan <span class="ac_grad">WiiHope</span></h2>
+      <p class="ac_sec_sub">Descubre cómo nuestra plataforma está tocando vidas</p>
+    </div>
+    <div class="ac_test_grid">
+      
+        <div class="ac_test_card wi_fadeUp">
+          <div class="ac_test_stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="ac_test_txt">"El chat de oración llegó en el momento que más lo necesitaba. Sentí un verdadero alivio y paz al leer sus palabras. Gracias por esta plataforma."</p>
+          <div class="ac_test_autor">
+            <span class="ac_test_avatar">👩</span>
+            <div><strong>María C.</strong><span>Lectora Frecuente</span></div>
+          </div>
+        </div>
+        <div class="ac_test_card wi_fadeUp">
+          <div class="ac_test_stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="ac_test_txt">"Escuchar la Biblia en quechua mientras voy al trabajo me llena de energía y paz. La aplicación es rapidísima y muy fácil de usar."</p>
+          <div class="ac_test_autor">
+            <span class="ac_test_avatar">👨</span>
+            <div><strong>Juan Pérez</strong><span>Usuario Diario</span></div>
+          </div>
+        </div>
+        <div class="ac_test_card wi_fadeUp">
+          <div class="ac_test_stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="ac_test_txt">"Los artículos del blog siempre tienen la reflexión exacta para mi día. La interfaz es tan hermosa y relajante que da gusto entrar."</p>
+          <div class="ac_test_autor">
+            <span class="ac_test_avatar">👵</span>
+            <div><strong>Rosa M.</strong><span>Comunidad</span></div>
+          </div>
+        </div>
+        <div class="ac_test_card wi_fadeUp">
+          <div class="ac_test_stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="ac_test_txt">"Wiihope ha sido una verdadera bendición en mi vida. Encontrar el Padre Nuestro y tantas frases de protección me motiva a avanzar con más fe cada día."</p>
+          <div class="ac_test_autor">
+            <span class="ac_test_avatar">🙏</span>
+            <div><strong>Carlos G.</strong><span>Comunidad</span></div>
+          </div>
+        </div>
+        <div class="ac_test_card wi_fadeUp">
+          <div class="ac_test_stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="ac_test_txt">"La rapidez de la app es increíble. Poder leer la Biblia y escuchar los audios en quechua sin esperas es justo lo que buscaba para mis momentos de oración."</p>
+          <div class="ac_test_autor">
+            <span class="ac_test_avatar">✨</span>
+            <div><strong>Elena R.</strong><span>Usuario Premium</span></div>
+          </div>
+        </div>
+        <div class="ac_test_card wi_fadeUp">
+          <div class="ac_test_stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="ac_test_txt">"WiiHope se ha convertido en mi refugio diario. Las frases de protección me dan la fuerza que necesito para enfrentar cualquier reto con fe."</p>
+          <div class="ac_test_autor">
+            <span class="ac_test_avatar">👨‍👩‍👧</span>
+            <div><strong>Pedro S.</strong><span>Comunidad</span></div>
+          </div>
+        </div>
+    </div>
+  </section>
+
+  <!-- ══ MÓDULOS ══ -->
+  <section class="ac_sec">
+    <div class="ac_sec_head">
+      <div class="ac_sec_badge"><i class="fas fa-layer-group"></i> Funciones</div>
+      <h2 class="ac_sec_tit">Herramientas para <span class="ac_grad">fortalecer tu fe</span></h2>
+      <p class="ac_sec_sub">Diseñadas para acompañarte en tus momentos de oración y meditación</p>
+    </div>
+    <div class="ac_modulos_grid">
+      
+        <a href="/biblia" class="ac_modulo_card wi_fadeUp" style="--mc:#0EBEFF">
+          <div class="ac_modulo_ico"><i class="fas fa-book-bible"></i></div>
+          <div class="ac_modulo_info">
+            <strong>Audio Biblia</strong>
+            <span>Escucha la Palabra</span>
+          </div>
+          <div class="ac_modulo_arr"><i class="fas fa-arrow-right"></i></div>
+        </a>
+        <a href="/citas" class="ac_modulo_card wi_fadeUp" style="--mc:#FF5C69">
+          <div class="ac_modulo_ico"><i class="fas fa-quote-left"></i></div>
+          <div class="ac_modulo_info">
+            <strong>Citas</strong>
+            <span>Frases de esperanza</span>
+          </div>
+          <div class="ac_modulo_arr"><i class="fas fa-arrow-right"></i></div>
+        </a>
+        <a href="/chatwil" class="ac_modulo_card wi_fadeUp" style="--mc:#29C72E">
+          <div class="ac_modulo_ico"><i class="fas fa-hands-praying"></i></div>
+          <div class="ac_modulo_info">
+            <strong>Ora por mi</strong>
+            <span>Pide oración aquí</span>
+          </div>
+          <div class="ac_modulo_arr"><i class="fas fa-arrow-right"></i></div>
+        </a>
+    </div>
+  </section>
+
+  <!-- ══ CTA ══ -->
+  <section class="ac_cta_sec">
+    <div class="ac_cta_wrap wi_fadeUp">
+      <div class="ac_hero_orb ac_orb1"></div>
+      <div class="ac_hero_orb ac_orb2"></div>
+      <div class="ac_cta_glow"></div>
+      <div class="ac_cta_particles">
+        <span class="ac_particle"></span><span class="ac_particle"></span><span class="ac_particle"></span><span class="ac_particle"></span><span class="ac_particle"></span><span class="ac_particle"></span>
+      </div>
+      <div class="ac_cta_inner">
+        <span class="ac_cta_emoji">🕊️</span>
+        <h2>¿Listo para encontrar<br>inspiración?</h2>
+        <p>Entra a nuestra comunidad de amor y paz, es completamente gratis.</p>
+        <div class="ac_cta_chips">
+          
+            <a href="/biblia" class="ac_chip" style="--cc:#0EBEFF" data-witip="Escucha la Palabra" data-wtipo="top" data-wtiempo="1800">
+              <i class="fas fa-book-bible"></i> Audio Biblia
+            </a>
+            <a href="/citas" class="ac_chip" style="--cc:#FF5C69" data-witip="Frases de esperanza" data-wtipo="top" data-wtiempo="1800">
+              <i class="fas fa-quote-left"></i> Citas
+            </a>
+            <a href="/chatwil" class="ac_chip" style="--cc:#29C72E" data-witip="Pide oración aquí" data-wtipo="top" data-wtiempo="1800">
+              <i class="fas fa-hands-praying"></i> Ora por mi
+            </a>
+        </div>
+        <div class="ac_cta_btns">
+          <a href="/citas" class="ac_btn_p ac_btn_lg"><i class="fas fa-quote-left"></i> Leer Frases</a>
+          <a href="/blog" class="ac_btn_s ac_btn_lg"><i class="fas fa-seedling"></i> Ir al Blog</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</Layout>
+
+<script is:inline>
+  // ============================================================
+  // 🔢 COUNTER ANIMATION
+  // ============================================================
+  const animateCounters = () => {
+    document.querySelectorAll('.ac_counter_num').forEach(el => {
+      const targetVal = el.dataset.target;
+      if (!targetVal) return;
+      
+      const target = parseInt(targetVal);
+      const duration = 2000;
+      let start = null;
+      
+      const step = ts => {
+        if (!start) start = ts;
+        const progress = Math.min((ts - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 4);
+        const current = Math.floor(ease * target);
+        el.textContent = current.toLocaleString();
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+  };
+
+  // ============================================================
+  // ⚡ INIT
+  // ============================================================
+  const initAcerca = () => {
+    // Animación de entrada para los elementos wi_fadeUp
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.wi_fadeUp').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Contadores al entrar en vista
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounters();
+          counterObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.5 });
+
+    const band = document.querySelector('.ac_counter_band');
+    if (band) counterObserver.observe(band);
+
+    // Compartir
+    const shareBtn = document.getElementById('ac_compartir');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', function () {
+        const url = window.location.origin;
+        if (navigator.share) {
+          navigator.share({ 
+            title: 'WiiHope', 
+            text: '✨ Encuentra paz y esperanza en WiiHope.', 
+            url 
+          }).catch(() => {});
+        } else {
+          navigator.clipboard.writeText(url);
+          this.textContent = '¡Link copiado!';
+          setTimeout(() => {
+            this.innerHTML = '<i class="fas fa-share-nodes"></i> Compartir App';
+          }, 2000);
+        }
+      });
+    }
+
+    console.log('🕊️ WiiHope Acerca actualizado');
+    window.__WIREADY__ = true;
+  };
+
+  // Ejecutar cuando el DOM esté listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAcerca);
+  } else {
+    initAcerca();
+  }
+</script>

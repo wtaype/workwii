@@ -1,0 +1,490 @@
+---
+// src/pages/mensajes.astro
+import Layout from '../layouts/Layout.astro';
+import { app } from '../wii.js';
+---
+
+<!-- Guardia de Renderizado Inicial: Redirigir de inmediato si no hay token local para evitar parpadeos -->
+<script is:inline>if (!localStorage.getItem('wiSmile')) window.location.replace('/');</script>
+
+<style is:global>
+  /* ==================== CONTAINER ==================== */
+  .wm_container { max-width: 700px; margin: 0 auto; height: 85vh; display: flex; flex-direction: column; background: var(--bg); border-radius: 1.5vh; overflow: hidden; box-shadow: 0 1vh 3vh rgba(0,0,0,.1) }
+
+  /* ==================== HEADER ==================== */
+  .wm_header { display: flex; justify-content: space-between; align-items: center; padding: 2vh 2.5vh; background: var(--mco); color: var(--txa); box-shadow: 0 .3vh 1vh rgba(0,0,0,.15); z-index: 10 }
+  .wm_info { display: flex; align-items: center; gap: 1.5vh }
+  .wm_avatar { width: 5vh; height: 5vh; border-radius: 50%; border: 2px solid var(--txa); object-fit: cover }
+  .wm_text h1 { font-size: var(--fz_m4); font-weight: 700; color: var(--txa); margin: 0 }
+  .wm_text p { font-size: var(--fz_m1); color: rgba(255,255,255,.85); margin: 0 }
+  .wm_status { display: flex; align-items: center; gap: .8vh; background: rgba(255,255,255,.15); padding: .8vh 1.5vh; border-radius: 50px }
+  .wm_dot { width: 1vh; height: 1vh; border-radius: 50%; background: #94a3b8; animation: wmPulse 2s infinite }
+  .wm_dot.active { background: var(--success, #4ade80); box-shadow: 0 0 6px var(--success, #4ade80); animation: none }
+  .wm_dot.error { background: #ef4444; animation: none }
+  @keyframes wmPulse { 0%,100% { opacity: 1; transform: scale(1) } 50% { opacity: .5; transform: scale(.9) } }
+  .wm_dotxt { font-size: var(--fz_s4); color: var(--txa); font-weight: 600 }
+
+  /* ==================== CHAT ==================== */
+  .wm_chat { flex: 1; overflow-y: auto; padding: 2vh; background: var(--wb); scrollbar-width: thin; scrollbar-color: var(--mco) var(--bg4); display: flex; flex-direction: column }
+  .wm_chat::-webkit-scrollbar { width: .6vh }
+  .wm_chat::-webkit-scrollbar-thumb { background: var(--mco); border-radius: 1vh }
+
+  /* DATE SEPARATOR */
+  .wm_sep { display: flex; align-items: center; justify-content: center; padding: 1.5vh 0; position: sticky; top: 0; z-index: 5 }
+  .wm_sep span { background: var(--bg1); color: var(--tx2); font-size: var(--fz_s4); font-weight: 600; padding: .5vh 1.5vh; border-radius: 50px; box-shadow: 0 .2vh .6vh rgba(0,0,0,.08); border: 1px solid var(--brd) }
+
+  /* EMPTY */
+  .wm_loading, .wm_empty { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 2vh; color: var(--tx2); text-align: center }
+  .wm_loading i { font-size: 5vh; color: var(--mco) }
+  .wm_empty i { font-size: 8vh; color: var(--tx3); opacity: .3; margin-bottom: 1vh }
+  .wm_empty p { font-size: var(--fz_m4); font-weight: 600; color: var(--tx); margin: 0 0 1vh }
+  .wm_empty span { font-size: var(--fz_m2); color: var(--tx2) }
+
+  /* MESSAGE ITEM */
+  .wm_item { display: flex; align-items: flex-end; gap: 1vh; margin-bottom: 1vh; animation: wmSlide .3s ease-out; cursor: pointer; position: relative; transition: all .3s }
+  @keyframes wmSlide { from { opacity: 0; transform: translateY(1vh) } to { opacity: 1; transform: translateY(0) } }
+  .wm_item:hover { transform: translateX(.5vh) }
+  .wm_bubble { flex: 1; background: var(--mco); padding: 1.5vh 2vh; border-radius: 1.2vh 1.2vh .3vh 1.2vh; box-shadow: 0 .3vh 1vh rgba(0,0,0,.1); transition: all .3s; position: relative; overflow: hidden; max-width: calc(100% - 5vh); }
+  .wm_item:hover .wm_bubble { box-shadow: 0 .5vh 1.5vh rgba(0,0,0,.15); transform: translateY(-.2vh) }
+  .wm_bubble::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: .3vh; background: rgba(255,255,255,.3) }
+  .wm_txt { font-size: var(--fz_m2); color: var(--txa); line-height: 1.5; word-wrap: break-word; white-space: pre-wrap; margin: 0 0 .8vh }
+  .wm_foot { display: flex; justify-content: flex-end; align-items: center; gap: .6vh }
+  .wm_time { font-size: var(--fz_s3); color: rgba(255,255,255,.7); font-weight: 500 }
+  .wm_check { font-size: var(--fz_s4); color: rgba(255,255,255,.8) }
+  .wm_item.copied .wm_check { color: #4ade80; animation: wmBounce .5s ease-out }
+  @keyframes wmBounce { 0%,100% { transform: scale(1) } 50% { transform: scale(1.3) } }
+
+  /* DELETE BUTTON */
+  .wm_del { width: 4vh; height: 4vh; background: rgba(239,68,68,.1); border: none; border-radius: 50%; color: #ef4444; font-size: var(--fz_m2); cursor: pointer; transition: all .3s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; opacity: 0 }
+  .wm_item:hover .wm_del { opacity: 1 }
+  .wm_del:hover { background: #ef4444; color: white; transform: scale(1.15) }
+  .wm_item.deleting { animation: wmDelete .3s ease-out forwards }
+  @keyframes wmDelete { to { opacity: 0; transform: translateX(100%); height: 0; margin: 0 } }
+
+  /* ==================== INPUT ==================== */
+  .wm_input { display: flex; gap: 1.5vh; padding: 2vh; align-items: center; background: var(--bg3); border-top: 1px solid var(--brd) }
+  .wm_wrap { flex: 1; position: relative; background: var(--wb); border: 2px solid var(--brd); border-radius: 1.5vh; transition: all .3s }
+  .wm_wrap:focus-within { border-color: var(--mco); box-shadow: 0 0 0 3px rgba(0,0,0,.05) }
+  #wmNuevo { width: 100%; padding: 1.5vh 2vh 3vh; background: transparent; border: none; color: var(--tx); font-size: var(--fz_m2); font-family: inherit; outline: none; resize: none; line-height: 1.5; min-height: 5vh; max-height: 150px }
+  #wmNuevo::placeholder { color: var(--tx3) }
+  .wm_count { position: absolute; bottom: .8vh; right: 1.5vh; font-size: var(--fz_s3); color: var(--tx3); pointer-events: none; background: var(--wb); padding: .2vh .5vh; border-radius: .5vh }
+  #wmEnviar { width: 6vh; height: 6vh; background: var(--mco); border: none; border-radius: 50%; color: var(--txa); font-size: var(--fz_m3); cursor: pointer; transition: all .3s; display: flex; align-items: center; justify-content: center; flex-shrink: 0 }
+  #wmEnviar:hover:not(:disabled) { transform: scale(1.1); box-shadow: 0 .5vh 1.5vh rgba(0,0,0,.2) }
+  #wmEnviar:disabled { opacity: .5; cursor: not-allowed }
+
+  /* ==================== MODAL ==================== */
+  .wm_modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.6); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity .3s }
+  .wm_modal.show { display: flex; opacity: 1 }
+  .wm_modal_body { background: var(--wb); padding: 4vh 3vh; border-radius: 2vh; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 2vh 5vh rgba(0,0,0,.3); animation: wmModalIn .3s ease-out }
+  @keyframes wmModalIn { from { opacity: 0; transform: scale(.95) translateY(-2vh) } to { opacity: 1; transform: scale(1) translateY(0) } }
+  .wm_modal_body > i { font-size: 6vh; color: #ef4444; margin-bottom: 2vh; display: block }
+  .wm_modal_body h3 { font-size: var(--fz_l1); color: var(--tx); margin-bottom: 1vh }
+  .wm_modal_body p { font-size: var(--fz_m2); color: var(--tx2); margin-bottom: 3vh }
+  .wm_modal_acts { display: flex; gap: 1.5vh }
+  .wm_cancel, .wm_confirm { flex: 1; padding: 1.5vh; border: none; border-radius: 1vh; font-size: var(--fz_m2); font-weight: 600; cursor: pointer; transition: all .3s }
+  .wm_cancel { background: var(--bg1); color: var(--tx) }
+  .wm_cancel:hover { background: var(--bg4) }
+  .wm_confirm { background: #ef4444; color: white }
+  .wm_confirm:hover { background: #dc2626; transform: translateY(-.2vh); box-shadow: 0 .5vh 1.5vh rgba(239,68,68,.3) }
+
+  /* ==================== RESPONSIVE ==================== */
+  @media (max-width: 768px) {
+    .wm_container { height: 88vh; max-width: 100% }
+    .wm_header { padding: 1.5vh 2vh }
+    .wm_avatar { width: 4.5vh; height: 4.5vh }
+    .wm_text h1 { font-size: var(--fz_m3) }
+    .wm_text p { font-size: var(--fz_s4) }
+    .wm_status { padding: .6vh 1.2vh }
+    .wm_dotxt { font-size: var(--fz_s3) }
+    .wm_chat { padding: 1.5vh }
+    .wm_item { margin-bottom: .8vh }
+    .wm_bubble { padding: 1.2vh 1.8vh }
+    .wm_txt { font-size: var(--fz_m1) }
+    .wm_input { padding: 1.5vh }
+    #wmNuevo { padding: 1.2vh 1.8vh 3vh; font-size: var(--fz_m1) }
+    #wmEnviar { width: 5.5vh; height: 5.5vh }
+  }
+  @media (max-width: 480px) {
+    .wm_text h1 { font-size: var(--fz_m2) }
+    .wm_status { display: none }
+    .wm_modal_body { padding: 3vh 2vh }
+    .wm_modal_acts { flex-direction: column }
+  }
+</style>
+
+<Layout title="Mis Mensajes" name={app} robots="noindex, nofollow">
+  <div class="wm_container">
+    <div class="wm_header">
+      <div class="wm_info">
+        <img src="/smile.avif" alt="WiiHope" class="wm_avatar" />
+        <div class="wm_text">
+          <h1>Mis Mensajes</h1>
+          <p id="wmHeaderWelcome">Cargando...</p>
+        </div>
+      </div>
+      <div class="wm_status">
+        <span class="wm_dot"></span>
+        <span class="wm_dotxt">Conectando...</span>
+      </div>
+    </div>
+
+    <div class="wm_chat" id="wmChat">
+      <div class="wm_loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Cargando mensajes...</p>
+      </div>
+    </div>
+
+    <div class="wm_input">
+      <div class="wm_wrap">
+        <textarea id="wmNuevo" placeholder="Escribe un mensaje..." rows="1" maxlength="500"></textarea>
+        <span class="wm_count" id="wmCount">0/500</span>
+      </div>
+      <button id="wmEnviar" disabled><i class="fas fa-paper-plane"></i></button>
+    </div>
+
+    <div class="wm_modal" id="wmEliminar">
+      <div class="wm_modal_body">
+        <i class="fas fa-trash-alt"></i>
+        <h3>¿Eliminar mensaje?</h3>
+        <p>Esta acción no se puede deshacer</p>
+        <div class="wm_modal_acts">
+          <button class="wm_cancel" id="wmCancel">Cancelar</button>
+          <button class="wm_confirm" id="wmConfirm">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { db } from '../lib/firebase.js';
+  import { collection, setDoc, doc, query, where, getDocs, deleteDoc, serverTimestamp, limit } from 'firebase/firestore';
+  import { protegerRuta } from '../lib/auth.js';
+  import { Notificacion, wicopy, getls, Saludar } from '../lib/widev.js';
+
+  let msgs: any[] = [];
+  let pendiente: string | null = null;
+  let enviando = false;
+  let refreshTimer: any = null;
+  let _onVis: any = null;
+
+  const CACHE = 'wi_mensajes_cache';
+  const LIMIT = 50;
+
+  const _save = (d: any) => {
+    try {
+      localStorage.setItem(CACHE, JSON.stringify(d));
+    } catch (_) {}
+  };
+
+  const _cache = (): any[] => {
+    try {
+      return JSON.parse(localStorage.getItem(CACHE) || '[]');
+    } catch (_) {
+      return [];
+    }
+  };
+
+  const _scroll = () => {
+    const el = document.getElementById('wmChat');
+    if (el) {
+      requestAnimationFrame(() => el.scrollTop = el.scrollHeight);
+    }
+  };
+
+  const _status = (ok: boolean) => {
+    const dot = document.querySelector('.wm_dot');
+    const dotxt = document.querySelector('.wm_dotxt');
+    if (dot && dotxt) {
+      dot.classList.remove('active', 'error');
+      dot.classList.add(ok ? 'active' : 'error');
+      dotxt.textContent = ok ? 'Online' : 'Offline';
+    }
+  };
+
+  const _dateLabel = (ts: any) => {
+    if (!ts) return 'Hoy';
+    const d = ts.toDate?.() || new Date((ts.seconds || 0) * 1000);
+    const hoy = new Date(), ayer = new Date(hoy);
+    hoy.setHours(0, 0, 0, 0);
+    ayer.setDate(ayer.getDate() - 1);
+    ayer.setHours(0, 0, 0, 0);
+    return d >= hoy ? 'Hoy' : d >= ayer ? 'Ayer' : d.toLocaleDateString('es', { day: 'numeric', month: 'long' });
+  };
+
+  const _hora = (ts: any) => {
+    if (!ts) return 'Ahora';
+    const d = ts.toDate?.() || new Date((ts.seconds || 0) * 1000);
+    return d.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const _esc = (t: string) => String(t || '').replace(/[&<>"']/g, c => { const map: Record<string, string> = { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }; return map[c] || c; });
+  const _empty = (ico: string, txt: string, sub: string) => `<div class="wm_empty"><i class="fas ${ico}"></i><p>${txt}</p><span>${sub}</span></div>`;
+
+  const _htmlList = (list: any[]): string => {
+    if (!list?.length) return _empty('fa-comment-dots', 'Sin mensajes aún', 'Escribe tu primer mensaje 👇');
+    let lastLabel = '';
+    return list.map((m: any) => {
+      const label = _dateLabel(m.fecha);
+      const sep = label !== lastLabel ? `<div class="wm_sep"><span>${label}</span></div>` : '';
+      lastLabel = label;
+      return `${sep}<div class="wm_item" data-id="${m.id}" data-witip="Click para copiar">
+        <div class="wm_bubble">
+          <p class="wm_txt">${_esc(m.mensaje).replace(/\n/g, '<br>')}</p>
+          <div class="wm_foot">
+            <span class="wm_time">${_hora(m.fecha)}</span>
+            <i class="fas fa-check-double wm_check"></i>
+          </div>
+        </div>
+        <button class="wm_del" data-id="${m.id}" data-witip="Eliminar"><i class="fas fa-trash"></i></button>
+      </div>`;
+    }).join('');
+  };
+
+  const _cargar = async (email: string, silent = false) => {
+    try {
+      const q = query(collection(db, 'wiMensajes'), where('email', '==', email), limit(LIMIT));
+      const snap = await getDocs(q);
+      msgs = snap.docs.map((d: any) => ({ id: d.id, ...d.data() })).sort((a: any, b: any) => (a.fecha?.seconds || 0) - (b.fecha?.seconds || 0));
+      _save(msgs);
+      const chat = document.getElementById('wmChat');
+      if (chat) chat.innerHTML = _htmlList(msgs);
+      _status(true);
+      _scroll();
+    } catch (e) {
+      console.error('❌ Mensajes:', e);
+      _status(false);
+      if (!silent) {
+        const cache = _cache();
+        const chat = document.getElementById('wmChat');
+        if (chat) {
+          if (cache.length) {
+            msgs = cache;
+            chat.innerHTML = _htmlList(msgs);
+            Notificacion('Caché local 📦', 'warning', 2000);
+          } else {
+            chat.innerHTML = _empty('fa-wifi-slash', 'Sin conexión', 'Verifica tu internet');
+          }
+        }
+      }
+    }
+  };
+
+  const _enviar = (email: string) => {
+    if (enviando) return;
+    const ta = document.getElementById('wmNuevo') as HTMLTextAreaElement;
+    const nota = ta?.value.trim();
+    if (!nota) return;
+    enviando = true;
+
+    const wiUser = getls('wiSmile') || {};
+    const { usuario = '', nombre = '' } = wiUser;
+    const id = `m${Date.now()}`;
+
+    // UI instantánea (Optimista)
+    const fake = { id, mensaje: nota, email, usuario: nombre || usuario || email, fecha: { seconds: Date.now() / 1000 } };
+    msgs.push(fake);
+    _save(msgs);
+
+    const chat = document.getElementById('wmChat');
+    if (chat) chat.innerHTML = _htmlList(msgs);
+    _scroll();
+
+    if (ta) {
+      ta.value = '';
+      ta.style.height = 'auto';
+      ta.focus();
+    }
+    const count = document.getElementById('wmCount');
+    if (count) count.textContent = '0/500';
+
+    const btn = document.getElementById('wmEnviar') as HTMLButtonElement;
+    if (btn) btn.disabled = true;
+
+    // Sincronizar en Firestore
+    setDoc(doc(db, 'wiMensajes', id), { id, mensaje: nota, email, usuario: nombre || usuario || email, fecha: serverTimestamp() })
+      .then(() => {
+        _status(true);
+      })
+      .catch(e => {
+        console.error('❌ Enviar:', e);
+        msgs = msgs.filter(m => m.id !== id);
+        _save(msgs);
+        if (chat) chat.innerHTML = _htmlList(msgs);
+        Notificacion('Error al guardar', 'error');
+      })
+      .finally(() => {
+        enviando = false;
+      });
+  };
+
+  const _eliminar = () => {
+    if (!pendiente) return;
+    const id = pendiente;
+    pendiente = null;
+    document.getElementById('wmEliminar')?.classList.remove('show');
+
+    // UI instantánea (Optimista)
+    const backup = [...msgs];
+    msgs = msgs.filter(m => m.id !== id);
+    _save(msgs);
+
+    const card = document.querySelector(`.wm_item[data-id="${id}"]`);
+    if (card) card.classList.add('deleting');
+
+    setTimeout(() => {
+      const chat = document.getElementById('wmChat');
+      if (chat) chat.innerHTML = _htmlList(msgs);
+    }, 250);
+
+    // Borrar de Firestore
+    deleteDoc(doc(db, 'wiMensajes', id))
+      .then(() => Notificacion('Eliminado 🗑️', 'success', 1200))
+      .catch(e => {
+        console.error('❌ Eliminar:', e);
+        msgs = backup;
+        _save(msgs);
+        const chat = document.getElementById('wmChat');
+        if (chat) chat.innerHTML = _htmlList(msgs);
+        Notificacion('Error al eliminar', 'error');
+      });
+  };
+
+  let eventListeners: { target: EventTarget; type: string; handler: EventListener }[] = [];
+  const listen = (target: EventTarget, type: string, handler: EventListener) => {
+    target.addEventListener(type, handler);
+    eventListeners.push({ target, type, handler });
+  };
+
+  const cleanup = () => {
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+    if (_onVis) {
+      document.removeEventListener('visibilitychange', _onVis);
+      _onVis = null;
+    }
+    eventListeners.forEach(({ target, type, handler }) => {
+      target.removeEventListener(type, handler);
+    });
+    eventListeners = [];
+    msgs = [];
+    pendiente = null;
+    enviando = false;
+  };
+
+  const setupEvents = (userEmail: string) => {
+    const tx = document.getElementById('wmNuevo') as HTMLTextAreaElement;
+    const count = document.getElementById('wmCount');
+    const btn = document.getElementById('wmEnviar') as HTMLButtonElement;
+
+    if (tx && count && btn) {
+      listen(tx, 'input', () => {
+        count.textContent = `${tx.value.length}/500`;
+        btn.disabled = !tx.value.trim();
+        tx.style.height = 'auto';
+        tx.style.height = `${Math.min(tx.scrollHeight, 150)}px`;
+      });
+
+      listen(tx, 'keydown', (e: Event) => {
+        const keyEvent = e as KeyboardEvent;
+        if (keyEvent.key === 'Enter' && !keyEvent.shiftKey) {
+          keyEvent.preventDefault();
+          _enviar(userEmail);
+        }
+      });
+    }
+
+    if (btn) {
+      listen(btn, 'click', () => _enviar(userEmail));
+    }
+
+    const chatEl = document.getElementById('wmChat');
+    if (chatEl) {
+      listen(chatEl, 'click', (e: Event) => {
+        const target = e.target as HTMLElement;
+        const item = target.closest('.wm_item') as HTMLElement;
+        if (!item) return;
+
+        // Si dio clic en borrar
+        if (target.closest('.wm_del')) {
+          e.stopPropagation();
+          pendiente = (target.closest('.wm_del') as HTMLElement).dataset.id || null;
+          document.getElementById('wmEliminar')?.classList.add('show');
+          return;
+        }
+
+        // Clic en el globo de chat para copiar texto
+        const id = item.dataset.id;
+        const msg = msgs.find(m => m.id === id);
+        if (!msg) return;
+        wicopy(msg.mensaje, item as any, '¡Copiado! <i class="fas fa-check-circle"></i>');
+        item.classList.add('copied');
+        setTimeout(() => item.classList.remove('copied'), 800);
+      });
+    }
+
+    const btnCancel = document.getElementById('wmCancel');
+    if (btnCancel) {
+      listen(btnCancel, 'click', () => {
+        document.getElementById('wmEliminar')?.classList.remove('show');
+        pendiente = null;
+      });
+    }
+
+    const modal = document.getElementById('wmEliminar');
+    if (modal) {
+      listen(modal, 'click', (e: Event) => {
+        if (e.target === modal) {
+          modal.classList.remove('show');
+          pendiente = null;
+        }
+      });
+    }
+
+    const btnConfirm = document.getElementById('wmConfirm');
+    if (btnConfirm) {
+      listen(btnConfirm, 'click', _eliminar);
+    }
+  };
+
+  const initMensajes = async () => {
+    cleanup();
+
+    // 1. Proteger ruta usando el guard centralizado de Firebase + localStorage
+    const u = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
+    if (!u) return;
+
+    const userEmail = u.email;
+    const display = u.nombre || u.usuario || u.email || '';
+
+    // Actualizar nombre
+    const welcome = document.getElementById('wmHeaderWelcome');
+    if (welcome) welcome.innerHTML = `${Saludar()} <strong>${display}</strong>`;
+
+    setupEvents(userEmail);
+
+    // Cargar caché inicial y sincronizar
+    const initialCache = _cache();
+    const chat = document.getElementById('wmChat');
+    if (chat) {
+      chat.innerHTML = _htmlList(initialCache);
+    }
+    _scroll();
+
+    _cargar(userEmail, true);
+
+    // Refresco cada 30 segundos si la pestaña está visible
+    refreshTimer = setInterval(() => {
+      if (!document.hidden) _cargar(userEmail, true);
+    }, 30000);
+
+    _onVis = () => {
+      if (!document.hidden) _cargar(userEmail, true);
+    };
+    document.addEventListener('visibilitychange', _onVis);
+  };
+
+  document.addEventListener('astro:page-load', initMensajes);
+  document.addEventListener('astro:before-preparation', cleanup);
+</script>

@@ -1,0 +1,1001 @@
+---
+// src/pages/notas.astro
+import Layout from '../layouts/Layout.astro';
+import { app } from '../wii.js';
+---
+
+<!-- Guardia de Renderizado Inicial: Redirigir de inmediato si no hay token local para evitar parpadeos -->
+<script is:inline>if (!localStorage.getItem('wiSmile')) window.location.replace('/');</script>
+
+<style is:global>
+  /* ═══════════════════════════════════════════════════════════
+     📝 Notas Pro - Diseño Moderno Premium
+     ═══════════════════════════════════════════════════════════ */
+
+  /* Container - sin fondo */
+  .wn_container { 
+    width: 100%; 
+    min-height: 90vh; 
+    padding: 1.5rem; 
+    box-sizing: border-box;
+  }
+
+  /* Header */
+  .wn_header {
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    flex-wrap: wrap; 
+    gap: 1rem;
+    margin-bottom: 1.75rem; 
+    padding: 1.1rem 1.5rem;
+    background: var(--wb);
+    border-radius: 1rem; 
+    border: 1px solid var(--brd);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .wn_info { display: flex; align-items: center; gap: 0.9rem; }
+  .wn_avatar { 
+    width: 46px; 
+    height: 46px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    border: 2px solid var(--mco);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.25s ease;
+  }
+  .wn_avatar:hover { transform: scale(1.08); }
+  .wn_text h1 { 
+    font-size: var(--fz_m5); 
+    font-weight: 700; 
+    margin: 0; 
+    color: var(--tx); 
+    display: flex; 
+    align-items: center; 
+    gap: 0.5rem;
+  }
+  .wn_text h1 i { color: var(--mco); }
+  .wn_text p { font-size: var(--fz_m1); margin: 0.25rem 0 0; color: var(--tx2); }
+  .wn_text strong { color: var(--mco); font-weight: 600; }
+  .wn_actions { display: flex; align-items: center; gap: 0.75rem; }
+
+  /* Botón Nueva */
+  .wn_btn_new {
+    display: inline-flex; 
+    align-items: center; 
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem; 
+    border: none; 
+    border-radius: 0.75rem;
+    background: var(--mco);
+    color: var(--txa);
+    font-size: var(--fz_m2); 
+    font-weight: 600; 
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+  .wn_btn_new:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 5px 16px rgba(0,0,0,0.18);
+    filter: brightness(1.08);
+  }
+  .wn_btn_new:active { transform: translateY(0) scale(0.98); }
+  .wn_btn_new i { font-size: 0.95em; }
+
+  /* Status + Sync */
+  .wn_status_wrap { display: flex; align-items: center; gap: 0.5rem; }
+  .wn_status {
+    display: flex; 
+    align-items: center; 
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem; 
+    border-radius: 2rem;
+    background: var(--bg4); 
+    font-size: var(--fz_s4); 
+    color: var(--tx2);
+  }
+  .wn_dot { 
+    width: 8px; 
+    height: 8px; 
+    border-radius: 50%; 
+    background: var(--tx3);
+    transition: all 0.25s ease;
+  }
+  .wn_dot.active { 
+    background: var(--success); 
+    box-shadow: 0 0 6px var(--success);
+  }
+  .wn_dot.error { background: var(--error); }
+
+  .wn_btn_sync {
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    width: 34px; 
+    height: 34px; 
+    border: none; 
+    border-radius: 50%;
+    background: var(--bg4); 
+    color: var(--tx2); 
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .wn_btn_sync:hover { 
+    background: var(--mco); 
+    color: var(--txa); 
+  }
+  .wn_btn_sync.spinning i { animation: spin 0.6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Grid */
+  .wn_grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+    gap: 1rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    background: var(--wb);
+    padding: 3vh 2vh;
+    border-radius: 1vh;
+  }
+  @media (min-width: 1400px) { .wn_grid { grid-template-columns: repeat(5, 1fr); } }
+  @media (min-width: 1200px) and (max-width: 1399px) { .wn_grid { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 600px) { .wn_grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; } }
+
+  /* Card */
+  .wn_card {
+    position: relative; 
+    border-radius: 1rem; 
+    overflow: hidden;
+    background: var(--c-bg, var(--wb)); 
+    color: var(--c-tx, var(--tx));
+    border: 1px solid var(--brd); 
+    cursor: pointer;
+    transition: all 0.25s ease; 
+    min-height: 130px;
+    animation: cardIn 0.3s ease;
+  }
+  @keyframes cardIn { 
+    from { opacity: 0; transform: translateY(12px); } 
+    to { opacity: 1; transform: translateY(0); } 
+  }
+
+  .wn_card:hover { 
+    transform: translateY(-4px); 
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    border-color: var(--c-accent, var(--mco)); 
+  }
+  .wn_card.pinned { 
+    border-color: var(--c-accent, var(--mco)); 
+    border-width: 2px;
+  }
+  .wn_card.editing { 
+    box-shadow: 0 0 0 2px var(--c-accent, var(--mco));
+    transform: none; 
+  }
+  .wn_card.saving { opacity: 0.7; }
+  .wn_card.deleting { animation: delOut 0.25s forwards; }
+  @keyframes delOut { to { opacity: 0; transform: scale(0.9); } }
+
+  .wn_card_inner { 
+    padding: 1rem; 
+    display: flex; 
+    flex-direction: column; 
+    min-height: inherit; 
+    position: relative; 
+  }
+
+  /* Pin badge */
+  .wn_pin_badge {
+    position: absolute; 
+    top: 8px; 
+    right: 8px;
+    width: 22px; 
+    height: 22px; 
+    border-radius: 50%;
+    background: var(--c-accent, var(--mco));
+    color: var(--txa);
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 9px;
+    transform: rotate(45deg);
+  }
+
+  /* Título */
+  .wn_titulo {
+    font-size: var(--fz_m3); 
+    font-weight: 700; 
+    color: var(--c-tx, var(--tx));
+    min-height: 1.2em; 
+    outline: none; 
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid transparent; 
+    line-height: 1.4;
+  }
+  .wn_titulo:empty::before { 
+    content: attr(data-placeholder); 
+    color: var(--tx3); 
+    opacity: 0.6;
+  }
+  .wn_card.editing .wn_titulo { 
+    border-bottom-color: var(--c-accent, var(--mco)); 
+  }
+
+  /* Contenido */
+  .wn_contenido {
+    font-size: var(--fz_m1); 
+    color: var(--c-tx, var(--tx2)); 
+    opacity: 0.85;
+    line-height: 1.6; 
+    min-height: 2.5em; 
+    max-height: 5em;
+    overflow: hidden; 
+    outline: none; 
+    flex: 1;
+  }
+  .wn_contenido:empty::before { 
+    content: attr(data-placeholder); 
+    color: var(--tx3); 
+    opacity: 0.5;
+  }
+  .wn_card.editing .wn_contenido { 
+    max-height: 12em; 
+    overflow: auto;
+  }
+
+  /* Footer */
+  .wn_footer {
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    margin-top: 0.75rem; 
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--brd);
+  }
+  .wn_fecha { 
+    font-size: var(--fz_s3); 
+    color: var(--tx3);
+  }
+  .wn_saved { 
+    opacity: 0; 
+    font-size: var(--fz_s4); 
+    color: var(--success); 
+    transition: opacity 0.3s;
+  }
+  .wn_card.saved .wn_saved { opacity: 1; }
+
+  /* Toolbar */
+  .wn_toolbar {
+    position: absolute; 
+    top: 6px; 
+    right: 6px;
+    display: flex; 
+    gap: 4px; 
+    opacity: 0; 
+    transition: opacity 0.2s;
+  }
+  .wn_card:hover .wn_toolbar, .wn_card.editing .wn_toolbar { opacity: 1; }
+
+  .wn_toolbar button {
+    width: 26px; 
+    height: 26px; 
+    border: none; 
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--tx2);
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 11px; 
+    cursor: pointer; 
+    transition: all 0.15s ease;
+  }
+  .wn_toolbar button:hover { 
+    background: var(--c-accent, var(--mco)); 
+    color: var(--txa);
+  }
+  .wn_toolbar .wn_pin.active { 
+    color: var(--c-accent, var(--mco));
+    background: var(--bg5);
+  }
+  .wn_toolbar .wn_del:hover { background: var(--error); }
+
+  /* Colors picker */
+  .wn_colors {
+    position: absolute; 
+    top: 36px; 
+    right: 6px;
+    display: flex; 
+    gap: 5px; 
+    padding: 6px 8px;
+    background: var(--wb); 
+    border: 1px solid var(--brd); 
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12); 
+    opacity: 0; 
+    visibility: hidden;
+    transform: translateY(-4px); 
+    transition: all 0.2s ease; 
+    z-index: 10;
+  }
+  .wn_colors.show { 
+    opacity: 1; 
+    visibility: visible; 
+    transform: translateY(0); 
+  }
+
+  .wn_color_opt {
+    width: 20px; 
+    height: 20px; 
+    border-radius: 50%;
+    background: var(--cc); 
+    cursor: pointer; 
+    transition: transform 0.15s ease;
+    border: 2px solid transparent;
+  }
+  .wn_color_opt:hover { transform: scale(1.15); }
+  .wn_color_opt.active { border-color: var(--tx); }
+
+  /* Saving bar */
+  .wn_card.saving::after {
+    content: ''; 
+    position: absolute; 
+    bottom: 0; 
+    left: 0;
+    width: 100%; 
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--c-accent, var(--mco)), transparent);
+    animation: saveBar 0.8s infinite;
+  }
+  @keyframes saveBar { 
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); } 
+  }
+
+  /* Empty */
+  .wn_empty {
+    grid-column: 1 / -1; 
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+    padding: 4rem 2rem; 
+    text-align: center;
+    background: var(--bg4);
+    border-radius: 1rem; 
+    border: 2px dashed var(--brd);
+  }
+  .wn_empty i { 
+    font-size: 3.5rem; 
+    color: var(--mco); 
+    opacity: 0.4; 
+    margin-bottom: 1rem;
+  }
+  .wn_empty p { 
+    font-size: var(--fz_m5); 
+    font-weight: 600; 
+    color: var(--tx); 
+    margin: 0;
+  }
+  .wn_empty span { 
+    font-size: var(--fz_m1); 
+    color: var(--tx3); 
+    margin-top: 0.3rem;
+  }
+
+  /* Modal */
+  .wn_modal {
+    position: fixed; 
+    inset: 0; 
+    z-index: 999;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    background: rgba(0,0,0,0.55); 
+    backdrop-filter: blur(6px);
+    opacity: 0; 
+    visibility: hidden; 
+    transition: all 0.25s;
+  }
+  .wn_modal.show { opacity: 1; visibility: visible; }
+
+  .wn_modal_body {
+    background: var(--wb); 
+    border-radius: 1.25rem; 
+    padding: 2rem;
+    text-align: center; 
+    max-width: 320px; 
+    width: 90%;
+    border: 1px solid var(--brd); 
+    box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+    transform: scale(0.9); 
+    transition: transform 0.25s;
+  }
+  .wn_modal.show .wn_modal_body { transform: scale(1); }
+  .wn_modal_body i { 
+    font-size: 2.5rem; 
+    color: var(--error); 
+    margin-bottom: 1rem; 
+    display: block; 
+  }
+  .wn_modal_body h3 { 
+    margin: 0 0 0.5rem; 
+    font-size: var(--fz_m5); 
+    font-weight: 700;
+    color: var(--tx); 
+  }
+  .wn_modal_body p { 
+    margin: 0 0 1.5rem; 
+    font-size: var(--fz_m1); 
+    color: var(--tx2); 
+  }
+
+  .wn_modal_acts { display: flex; gap: 0.75rem; justify-content: center; }
+  .wn_modal_acts button {
+    padding: 0.7rem 1.5rem; 
+    border: none; 
+    border-radius: 0.75rem;
+    font-size: var(--fz_m2); 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: all 0.2s ease;
+  }
+  .wn_cancel { 
+    background: var(--bg4); 
+    color: var(--tx); 
+  }
+  .wn_cancel:hover { 
+    background: var(--bg5);
+    transform: translateY(-1px);
+  }
+  .wn_confirm { 
+    background: var(--error); 
+    color: white;
+    box-shadow: 0 2px 8px rgba(239,68,68,0.3);
+  }
+  .wn_confirm:hover { 
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .wn_container { padding: 1rem; }
+    .wn_header { 
+      flex-direction: column; 
+      gap: 1rem; 
+      padding: 1rem; 
+    }
+    .wn_actions { width: 100%; justify-content: space-between; }
+    .wn_btn_new { flex: 1; justify-content: center; }
+    .wn_toolbar { opacity: 1; }
+  }
+  @media (max-width: 480px) {
+    .wn_btn_new span { display: none; }
+    .wn_btn_new { 
+      padding: 0.75rem; 
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      justify-content: center;
+    }
+    .wn_card { min-height: 110px; }
+    .wn_card_inner { padding: 0.85rem; }
+  }
+</style>
+
+<Layout title="Mis Notas" name={app} robots="noindex, nofollow">
+  <div class="wn_container">
+    <div class="wn_header">
+      <div class="wn_info">
+        <img src="/smile.avif" alt="WiiHope" class="wn_avatar" />
+        <div class="wn_text">
+          <h1><i class="fas fa-sticky-note"></i> Mis Notas</h1>
+          <p id="wnHeaderWelcome">Cargando...</p>
+        </div>
+      </div>
+      <div class="wn_actions">
+        <button class="wn_btn_new" id="wnNueva">
+          <i class="fas fa-plus"></i> <span>Nueva</span>
+        </button>
+        <div class="wn_status_wrap">
+          <div class="wn_status">
+            <span class="wn_dot"></span>
+            <span class="wn_dotxt">Cargando...</span>
+          </div>
+          <button class="wn_btn_sync" id="wnSync">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wn_grid" id="wnGrid">
+      <div class="wn_empty">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Cargando tus notas...</p>
+      </div>
+    </div>
+
+    <div class="wn_modal" id="wnEliminar">
+      <div class="wn_modal_body">
+        <i class="fas fa-trash-alt"></i>
+        <h3>¿Eliminar nota?</h3>
+        <p>Esta acción no se puede deshacer</p>
+        <div class="wn_modal_acts">
+          <button class="wn_cancel" id="wnCancel">Cancelar</button>
+          <button class="wn_confirm" id="wnConfirm">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { db } from '../lib/firebase.js';
+  import { collection, setDoc, doc, query, where, getDocs, deleteDoc, serverTimestamp, limit } from 'firebase/firestore';
+  import { protegerRuta } from '../lib/auth.js';
+  import { Notificacion, getls, Saludar } from '../lib/widev.js';
+
+  let notas: any[] = [];
+  let editando: string | null = null;
+  let saveTimer: any = null;
+  let _onVis: any = null;
+
+  const CACHE_KEY = 'wi_notas_cache';
+  const CACHE_TIME_KEY = 'wi_notas_cache_time';
+  const LIMIT = 100;
+  const DEBOUNCE = 1200;
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+  const COLORES = [
+    { id: 'Cielo',  hex: '#0EBEFF', bg: 'rgba(14,190,255,.12)', tx: 'var(--tx)', rgb: '14,190,255' },
+    { id: 'Dulce',  hex: '#FF5C93', bg: 'rgba(255,92,147,.12)', tx: 'var(--tx)', rgb: '255,92,147' },
+    { id: 'Paz',    hex: '#10B981', bg: 'rgba(16,185,129,.12)', tx: 'var(--tx)', rgb: '16,185,129' },
+    { id: 'Mora',   hex: '#8B5CF6', bg: 'rgba(139,92,246,.12)', tx: 'var(--tx)', rgb: '139,92,246' },
+    { id: 'Sol',    hex: '#F59E0B', bg: 'rgba(245,158,11,.12)', tx: 'var(--tx)', rgb: '245,158,11' },
+  ];
+
+  const _saveCache = (d: any) => { 
+    try { 
+      localStorage.setItem(CACHE_KEY, JSON.stringify(d)); 
+      localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
+    } catch (_) {} 
+  };
+
+  const _getCache = (): any[] => { 
+    try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '[]'); } catch (_) { return []; } 
+  };
+
+  const _isCacheValid = (): boolean => {
+    const time = parseInt(localStorage.getItem(CACHE_TIME_KEY) || '0');
+    return Date.now() - time < CACHE_DURATION;
+  };
+
+  const _clearCache = () => {
+    localStorage.removeItem(CACHE_KEY);
+    localStorage.removeItem(CACHE_TIME_KEY);
+  };
+
+  const _status = (ok: boolean, txt?: string) => {
+    const dot = document.querySelector('.wn_dot');
+    const dotxt = document.querySelector('.wn_dotxt');
+    if (dot && dotxt) {
+      dot.classList.remove('active', 'error');
+      dot.classList.add(ok ? 'active' : 'error');
+      dotxt.textContent = txt || (ok ? 'Online' : 'Offline');
+    }
+  };
+
+  const _getColor = (id: string) => COLORES.find(c => c.id === id) || COLORES[0];
+
+  const _fecha = (ts: any) => {
+    if (!ts) return 'Ahora';
+    const d = ts.toDate?.() || new Date((ts.seconds || 0) * 1000);
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const ayer = new Date(hoy); ayer.setDate(ayer.getDate() - 1);
+    if (d >= hoy) return d.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+    if (d >= ayer) return 'Ayer';
+    return d.toLocaleDateString('es', { day: 'numeric', month: 'short' });
+  };
+
+  const _esc = (t: string) => String(t||'').replace(/[&<>"']/g, c => { const map: Record<string, string> = { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }; return map[c] || c; });
+  const _empty = (ico: string, txt: string, sub: string) => `<div class="wn_empty"><i class="fas ${ico}"></i><p>${txt}</p><span>${sub}</span></div>`;
+
+  const _htmlGrid = (list: any[]): string => {
+    if (!list?.length) return _empty('fa-sticky-note', 'Sin notas aún', 'Crea tu primera nota 👆');
+    return list.map((n: any) => {
+      const c = _getColor(n.color);
+      return `
+      <div class="wn_card${n.pin ? ' pinned' : ''}" data-id="${n.id}" style="--c-bg:${c.bg};--c-tx:${c.tx};--c-accent:${c.hex}">
+        <div class="wn_card_inner">
+          ${n.pin ? '<span class="wn_pin_badge"><i class="fas fa-thumbtack"></i></span>' : ''}
+          <div class="wn_titulo" contenteditable="true" data-placeholder="Título" spellcheck="false">${_esc(n.titulo)}</div>
+          <div class="wn_contenido" contenteditable="true" data-placeholder="Escribe aquí..." spellcheck="false">${_esc(n.contenido).replace(/\n/g,'<br>')}</div>
+          <div class="wn_footer">
+            <span class="wn_fecha">${_fecha(n.fecha)}</span>
+            <span class="wn_saved"><i class="fas fa-check"></i></span>
+          </div>
+          <div class="wn_toolbar">
+            <button class="wn_pin${n.pin?' active':''}" data-witip="Fijar"><i class="fas fa-thumbtack"></i></button>
+            <button class="wn_color" data-witip="Color"><i class="fas fa-palette"></i></button>
+            <button class="wn_del" data-witip="Eliminar"><i class="fas fa-trash"></i></button>
+          </div>
+          <div class="wn_colors">${COLORES.map(x=>`<span class="wn_color_opt${x.id===n.color?' active':''}" data-color="${x.id}" style="--cc:${x.hex}"></span>`).join('')}</div>
+        </div>
+      </div>`;
+    }).join('');
+  };
+
+  const _sortNotas = () => {
+    notas.sort((a, b) => {
+      if (a.pin !== b.pin) return b.pin ? 1 : -1;
+      return (b.fecha?.seconds || 0) - (a.fecha?.seconds || 0);
+    });
+  };
+
+  const _cargarDesdeFirestore = async (email: string, silent = false) => {
+    try {
+      _status(false, 'Cargando...');
+      const q = query(collection(db, 'wiNotas'), where('email', '==', email), limit(LIMIT));
+      const snap = await getDocs(q);
+      notas = snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+      _sortNotas();
+      _saveCache(notas);
+      const grid = document.getElementById('wnGrid');
+      if (grid) grid.innerHTML = _htmlGrid(notas);
+      _status(true);
+    } catch (e) {
+      console.error('❌ Notas:', e);
+      _status(false, 'Offline');
+      if (!silent) {
+        const cache = _getCache();
+        const grid = document.getElementById('wnGrid');
+        if (grid) {
+          if (cache.length) {
+            notas = cache;
+            grid.innerHTML = _htmlGrid(notas);
+            Notificacion('Usando caché local 📦', 'warning', 2000);
+          } else {
+            grid.innerHTML = _empty('fa-wifi-slash', 'Sin conexión', 'Verifica tu internet');
+          }
+        }
+      }
+    }
+  };
+
+  const _smartLoad = (email: string) => {
+    const cache = _getCache();
+    if (cache.length && _isCacheValid()) {
+      notas = cache;
+      _sortNotas();
+      const grid = document.getElementById('wnGrid');
+      if (grid) grid.innerHTML = _htmlGrid(notas);
+      _status(true, 'Cache');
+    } else {
+      _cargarDesdeFirestore(email, false);
+    }
+  };
+
+  const _syncNotas = async (email: string) => {
+    const syncBtn = document.getElementById('wnSync');
+    if (syncBtn) syncBtn.classList.add('spinning');
+    _clearCache();
+    await _cargarDesdeFirestore(email, false);
+    if (syncBtn) syncBtn.classList.remove('spinning');
+    Notificacion('Sincronizado ✓', 'success', 1500);
+  };
+
+  const _crearNota = async (email: string) => {
+    const id = `nota_${Date.now()}`;
+    const wiUser = getls('wiSmile') || {};
+    const { usuario = '', nombre = '' } = wiUser;
+
+    const nueva = {
+      id, titulo: '', contenido: '', color: 'Cielo', pin: false,
+      email, usuario: nombre || usuario || email,
+      fecha: { seconds: Date.now() / 1000 }
+    };
+
+    notas.unshift(nueva);
+    _saveCache(notas);
+    const grid = document.getElementById('wnGrid');
+    if (grid) grid.innerHTML = _htmlGrid(notas);
+
+    setTimeout(() => {
+      const card = document.querySelector(`.wn_card[data-id="${id}"]`);
+      if (card) {
+        card.classList.add('editing');
+        (card.querySelector('.wn_titulo') as HTMLElement)?.focus();
+      }
+    }, 50);
+
+    try {
+      await setDoc(doc(db, 'wiNotas', id), { ...nueva, fecha: serverTimestamp() });
+      _status(true);
+      Notificacion('Nueva nota ✨', 'success', 1200);
+    } catch (e) {
+      console.error('❌ Crear nota:', e);
+      notas = notas.filter(n => n.id !== id);
+      _saveCache(notas);
+      if (grid) grid.innerHTML = _htmlGrid(notas);
+      Notificacion('Error al crear', 'error');
+    }
+  };
+
+  const _toggleEditar = (id: string) => {
+    const card = document.querySelector(`.wn_card[data-id="${id}"]`);
+    if (!card) return;
+
+    const currentlyEditing = document.querySelector('.wn_card.editing');
+    if (currentlyEditing && currentlyEditing !== card) {
+      currentlyEditing.classList.remove('editing');
+    }
+
+    card.classList.toggle('editing');
+    if (card.classList.contains('editing')) {
+      (card.querySelector('.wn_titulo') as HTMLElement)?.focus();
+    }
+  };
+
+  const _guardarNota = async (id: string, email: string) => {
+    const card = document.querySelector(`.wn_card[data-id="${id}"]`);
+    if (!card) return;
+
+    const titulo = (card.querySelector('.wn_titulo') as HTMLElement)?.innerText.trim() || '';
+    const contenido = (card.querySelector('.wn_contenido') as HTMLElement)?.innerText.trim() || '';
+
+    const nota = notas.find(n => n.id === id);
+    if (!nota) return;
+
+    if (nota.titulo === titulo && nota.contenido === contenido) return;
+
+    nota.titulo = titulo;
+    nota.contenido = contenido;
+    _saveCache(notas);
+    card.classList.add('saving');
+
+    try {
+      await setDoc(doc(db, 'wiNotas', id), {
+        id, titulo, contenido, color: nota.color, pin: nota.pin,
+        email, usuario: nota.usuario, fecha: serverTimestamp()
+      });
+      _status(true);
+      card.classList.remove('saving');
+      card.classList.add('saved');
+      setTimeout(() => card.classList.remove('saved'), 800);
+    } catch (e) {
+      console.error('❌ Guardar nota:', e);
+      card.classList.remove('saving');
+      Notificacion('Error al guardar', 'error');
+    }
+  };
+
+  const _debounceGuardar = (id: string, email: string) => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => _guardarNota(id, email), DEBOUNCE);
+  };
+
+  const _togglePin = async (id: string, email: string) => {
+    const nota = notas.find(n => n.id === id);
+    if (!nota) return;
+
+    nota.pin = !nota.pin;
+    _sortNotas();
+    _saveCache(notas);
+    const grid = document.getElementById('wnGrid');
+    if (grid) grid.innerHTML = _htmlGrid(notas);
+
+    try {
+      await setDoc(doc(db, 'wiNotas', id), { ...nota, fecha: serverTimestamp() });
+      _status(true);
+      Notificacion(nota.pin ? 'Fijada 📌' : 'Desanclada', 'success', 1000);
+    } catch (e) {
+      console.error('❌ Pin:', e);
+      nota.pin = !nota.pin;
+      _sortNotas();
+      _saveCache(notas);
+      if (grid) grid.innerHTML = _htmlGrid(notas);
+    }
+  };
+
+  const _cambiarColor = async (id: string, colorId: string, email: string) => {
+    const nota = notas.find(n => n.id === id);
+    if (!nota || nota.color === colorId) return;
+
+    const old = nota.color;
+    nota.color = colorId;
+    _saveCache(notas);
+    const grid = document.getElementById('wnGrid');
+    if (grid) grid.innerHTML = _htmlGrid(notas);
+
+    try {
+      await setDoc(doc(db, 'wiNotas', id), { ...nota, fecha: serverTimestamp() });
+      _status(true);
+    } catch (e) {
+      console.error('❌ Color:', e);
+      nota.color = old;
+      _saveCache(notas);
+      if (grid) grid.innerHTML = _htmlGrid(notas);
+    }
+  };
+
+  const _eliminar = async (email: string) => {
+    if (!editando) return;
+    const id = editando;
+    editando = null;
+    document.getElementById('wnEliminar')?.classList.remove('show');
+
+    const backup = [...notas];
+    notas = notas.filter(n => n.id !== id);
+    _saveCache(notas);
+
+    const card = document.querySelector(`.wn_card[data-id="${id}"]`);
+    if (card) card.classList.add('deleting');
+
+    setTimeout(() => {
+      const grid = document.getElementById('wnGrid');
+      if (grid) grid.innerHTML = _htmlGrid(notas);
+    }, 250);
+
+    try {
+      await deleteDoc(doc(db, 'wiNotas', id));
+      Notificacion('Eliminada 🗑️', 'success', 1000);
+    } catch (e) {
+      console.error('❌ Eliminar nota:', e);
+      notas = backup;
+      _saveCache(notas);
+      const grid = document.getElementById('wnGrid');
+      if (grid) grid.innerHTML = _htmlGrid(notas);
+      Notificacion('Error al eliminar', 'error');
+    }
+  };
+
+  let eventListeners: { target: EventTarget; type: string; handler: EventListener }[] = [];
+  const listen = (target: EventTarget, type: string, handler: EventListener) => {
+    target.addEventListener(type, handler);
+    eventListeners.push({ target, type, handler });
+  };
+
+  const cleanup = () => {
+    clearTimeout(saveTimer);
+    saveTimer = null;
+    if (_onVis) {
+      document.removeEventListener('visibilitychange', _onVis);
+      _onVis = null;
+    }
+    eventListeners.forEach(({ target, type, handler }) => {
+      target.removeEventListener(type, handler);
+    });
+    eventListeners = [];
+    notas = [];
+    editando = null;
+  };
+
+  const setupEvents = (userEmail: string) => {
+    const btnNueva = document.getElementById('wnNueva');
+    if (btnNueva) {
+      listen(btnNueva, 'click', () => _crearNota(userEmail));
+    }
+
+    const btnSync = document.getElementById('wnSync');
+    if (btnSync) {
+      listen(btnSync, 'click', () => _syncNotas(userEmail));
+    }
+
+    const gridEl = document.getElementById('wnGrid');
+    if (gridEl) {
+      listen(gridEl, 'click', (e: Event) => {
+        const target = e.target as HTMLElement;
+        const card = target.closest('.wn_card') as HTMLElement;
+        if (!card) return;
+
+        const id = card.dataset.id || '';
+
+        // Si es botón de la barra de herramientas
+        if (target.closest('.wn_toolbar, .wn_colors')) {
+          // Si es Pin
+          if (target.closest('.wn_pin')) {
+            e.stopPropagation();
+            _togglePin(id, userEmail);
+            return;
+          }
+          // Si es Color
+          if (target.closest('.wn_color')) {
+            e.stopPropagation();
+            card.querySelector('.wn_colors')?.classList.toggle('show');
+            return;
+          }
+          // Si es Borrar
+          if (target.closest('.wn_del')) {
+            e.stopPropagation();
+            editando = id;
+            document.getElementById('wnEliminar')?.classList.add('show');
+            return;
+          }
+          // Si es opción de color
+          if (target.closest('.wn_color_opt')) {
+            e.stopPropagation();
+            const opt = target.closest('.wn_color_opt') as HTMLElement;
+            _cambiarColor(id, opt.dataset.color || '', userEmail);
+            card.querySelector('.wn_colors')?.classList.remove('show');
+            return;
+          }
+          return;
+        }
+
+        // Clic general en la tarjeta para editar
+        _toggleEditar(id);
+      });
+
+      listen(gridEl, 'input', (e: Event) => {
+        const target = e.target as HTMLElement;
+        if (target.classList.contains('wn_titulo') || target.classList.contains('wn_contenido')) {
+          const card = target.closest('.wn_card') as HTMLElement;
+          if (card) {
+            _debounceGuardar(card.dataset.id || '', userEmail);
+          }
+        }
+      });
+    }
+
+    const btnCancel = document.getElementById('wnCancel');
+    if (btnCancel) {
+      listen(btnCancel, 'click', () => {
+        document.getElementById('wnEliminar')?.classList.remove('show');
+        editando = null;
+      });
+    }
+
+    const modal = document.getElementById('wnEliminar');
+    if (modal) {
+      listen(modal, 'click', (e: Event) => {
+        if (e.target === modal) {
+          modal.classList.remove('show');
+          editando = null;
+        }
+      });
+    }
+
+    const btnConfirm = document.getElementById('wnConfirm');
+    if (btnConfirm) {
+      listen(btnConfirm, 'click', () => _eliminar(userEmail));
+    }
+
+    listen(document, 'click', (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.wn_colors, .wn_color')) {
+        document.querySelectorAll('.wn_colors').forEach(el => el.classList.remove('show'));
+      }
+    });
+  };
+
+  const initNotas = async () => {
+    cleanup();
+
+    // 1. Proteger ruta usando el guard centralizado de Firebase + localStorage
+    const u = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
+    if (!u) return;
+
+    const userEmail = u.email;
+    const display = u.nombre || u.usuario || u.email || '';
+
+    // Saludo
+    const welcome = document.getElementById('wnHeaderWelcome');
+    if (welcome) welcome.innerHTML = `${Saludar()} <strong>${display}</strong>`;
+
+    setupEvents(userEmail);
+    _smartLoad(userEmail);
+
+    _onVis = () => {
+      if (!document.hidden && !_isCacheValid()) {
+        _cargarDesdeFirestore(userEmail, true);
+      }
+    };
+    document.addEventListener('visibilitychange', _onVis);
+  };
+
+  document.addEventListener('astro:page-load', initNotas);
+  document.addEventListener('astro:before-preparation', cleanup);
+</script>

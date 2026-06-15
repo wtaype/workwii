@@ -1,0 +1,757 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const FB_PROJECT = import.meta.env.PUBLIC_FIREBASE_PROJECT_ID ?? '';
+const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
+---
+
+<style is:global>
+/* =========================================================================
+   VERIFICAR.CSS — Pantalla de Bloqueo de Bóveda y Configuración 2FA
+   ========================================================================= */
+
+/* Habilitar ocultamiento del header, footer y temas en esta vista */
+body:has(.vf_screen) .wiheader,
+body:has(.vf_screen) .foo,
+body:has(.vf_screen) #wiTema {
+  display: none !important;
+}
+
+/* Forzar alto completo y quitar scroll */
+body:has(.vf_screen) {
+  overflow: hidden !important;
+}
+
+.vf_screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  padding: 2vh;
+  background: radial-gradient(circle at center, var(--bg3) 0%, var(--bg) 100%);
+}
+
+.vf_vault_card {
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 440px;
+  padding: 4.5vh 3.5vw;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 3vh;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  animation: smw_entry 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.vf_vault_glow {
+  position: absolute;
+  top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--mco) 8%, transparent) 0%, transparent 60%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.vf_card_content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5vh;
+  align-items: center;
+}
+
+.vault_svg_logo {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto;
+  animation: rotate_dial 30s infinite linear;
+}
+
+@keyframes rotate_dial {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.vf_title {
+  font-size: var(--fz_l1);
+  font-weight: 800;
+  color: var(--tx1);
+  letter-spacing: -0.5px;
+}
+
+.vf_desc {
+  font-size: var(--fz_s3);
+  color: var(--tx2);
+  line-height: 1.6;
+}
+
+/* QR Code and Secret Styling */
+.vf_qr_wrapper {
+  background: #ffffff;
+  border: 1px solid var(--brd);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vf_secret_box {
+  background: var(--bg);
+  border: 1px solid var(--brd);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  font-family: 'Outfit', monospace;
+  font-size: var(--fz_s3);
+  font-weight: 700;
+  color: var(--tx1);
+  letter-spacing: 0.05em;
+  width: 100%;
+  user-select: text !important;
+}
+
+/* TOTP Input Single spaced */
+.vf_code_field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2vh;
+}
+
+.vf_code_input {
+  width: 100%;
+  max-width: 250px;
+  background: var(--bg);
+  border: 2px solid var(--brd);
+  border-radius: 12px;
+  padding: 0.8rem 0;
+  font-size: var(--fz_l2);
+  font-weight: 800;
+  font-family: 'Rubik', monospace;
+  text-align: center;
+  letter-spacing: 0.5rem;
+  color: var(--tx1);
+  outline: none;
+  transition: all 0.3s;
+}
+
+.vf_code_input:focus {
+  border-color: var(--mco);
+  background: var(--wb);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--mco) 15%, transparent);
+}
+
+.vf_btn_submit {
+  width: 100%;
+  background: var(--mco);
+  color: var(--txa);
+  border: none;
+  border-radius: 12px;
+  padding: 0.85rem;
+  font-size: var(--fz_m1);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 15px color-mix(in srgb, var(--mco) 20%, transparent);
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.vf_btn_submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--mco) 30%, transparent);
+}
+
+.vf_btn_submit:active {
+  transform: translateY(0);
+}
+
+/* Timer text */
+.vf_timer_box {
+  font-size: var(--fz_s3);
+  font-weight: 700;
+  color: var(--tx2);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.vf_timer_box i {
+  color: var(--error);
+}
+
+.dpn { display: none !important; }
+</style>
+
+<!-- Blindaje del DOM contra desactivación de CSS -->
+<script is:inline>
+  // Destruir físicamente elementos de navegación/layout del DOM (blindaje contra desactivación de CSS)
+  (function() {
+    const elementsToPurge = ['.wiheader', '.foo', '#wiTema', '.movil_overlay', '.movil_drawer'];
+    
+    const purgeLayout = () => {
+      elementsToPurge.forEach(selector => {
+        const els = document.querySelectorAll(selector);
+        els.forEach(el => el.remove());
+      });
+    };
+
+    // Ejecutar de inmediato al procesar este tag
+    purgeLayout();
+
+    // Utilizar MutationObserver para eliminar los elementos tan pronto como sean agregados al árbol DOM
+    const observer = new MutationObserver((mutations) => {
+      purgeLayout();
+    });
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+
+    // Enlazar a todos los eventos posibles del ciclo de vida del DOM y del enrutamiento de Astro
+    window.addEventListener('DOMContentLoaded', purgeLayout);
+    window.addEventListener('load', purgeLayout);
+    document.addEventListener('astro:page-load', purgeLayout);
+    document.addEventListener('astro:after-swap', purgeLayout);
+  })();
+</script>
+
+<Layout title="Verificación de Bóveda (2FA)" robots="noindex, nofollow">
+  <div class="vf_screen">
+    
+    <!-- Loader inicial de Firestore -->
+    <div id="vf_loader" style="text-align: center; display: flex; flex-direction: column; gap: 1rem; align-items: center; margin: 8vh auto;">
+      <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--mco);"></i>
+      <h3 style="color: var(--tx3); font-weight: 600;">Verificando Estado de Bóveda 2FA...</h3>
+    </div>
+
+    <!-- Tarjeta Principal de la Bóveda -->
+    <div class="vf_vault_card" id="vf_card" style="display: none;">
+      <div class="vf_vault_glow"></div>
+      
+      <!-- Temporizador superior -->
+      <div class="vf_timer_band" style="display:flex; justify-content:center; align-items:center; gap:0.4rem; font-size:var(--fz_s3); font-weight:700; color:var(--tx2); border-bottom:1px solid var(--brd); padding-bottom:1.5vh; margin-bottom:1vh;">
+        <i class="fas fa-clock fa-spin" style="color:var(--error);"></i> Cierre de seguridad en <strong id="timer_sec">60s</strong>
+      </div>
+
+      <!-- SVG Google Authenticator animado -->
+      <div class="vf_logo_wrapper" style="margin-bottom:1vh;">
+        <svg viewBox="0 0 100 100" class="vault_svg_logo" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g_glow" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#4285F4"/>
+              <stop offset="33%" stop-color="#EA4335"/>
+              <stop offset="66%" stop-color="#FBBC05"/>
+              <stop offset="100%" stop-color="#34A853"/>
+            </linearGradient>
+          </defs>
+          <circle cx="50" cy="50" r="46" fill="none" stroke="url(#g_glow)" stroke-width="3" opacity="0.3"/>
+          <circle cx="50" cy="50" r="38" fill="var(--wb)" style="filter: drop-shadow(0px 8px 16px rgba(0,0,0,0.12))"/>
+          <path d="M 50,18 A 32,32 0 0,1 82,50 L 50,50 Z" fill="#4285F4"/>
+          <path d="M 82,50 A 32,32 0 0,1 50,82 L 50,50 Z" fill="#EA4335"/>
+          <path d="M 50,82 A 32,32 0 0,1 18,50 L 50,50 Z" fill="#FBBC05"/>
+          <path d="M 18,50 A 32,32 0 0,1 50,18 L 50,50 Z" fill="#34A853"/>
+          <circle cx="50" cy="50" r="16" fill="var(--wb)"/>
+          <circle cx="50" cy="46" r="4.5" fill="#1e293b"/>
+          <path d="M 47.5,46 L 52.5,46 L 54,58 L 46,58 Z" fill="#1e293b"/>
+        </svg>
+      </div>
+      
+      <!-- ══ PANEL DE CONFIGURACIÓN INICIAL (SETUP) ══ -->
+      <div class="vf_card_content dpn" id="panel_setup">
+        <h1 class="vf_title" style="font-size:var(--fz_m4); font-weight:800; margin-bottom:0.5vh;">Configura tu Bóveda</h1>
+        <p class="vf_desc" style="font-size:var(--fz_s3); margin-bottom:1vh;">
+          Escanea este código QR con <strong>Google Authenticator</strong> para proteger el panel de administración.
+        </p>
+
+        <!-- QR Code Canvas -->
+        <div class="vf_qr_wrapper" style="margin-bottom:0.5vh;">
+          <canvas id="setup_qr_canvas" style="width:160px; height:160px;"></canvas>
+        </div>
+        <p class="vf_desc" style="font-size:0.72rem; color:var(--tx3);"><i class="fas fa-info-circle"></i> Abre Authenticator → Añadir → Escanear QR</p>
+
+        <!-- Clave Secreta Escrita -->
+        <div class="vf_field" style="width:100%; margin-top:1vh;">
+          <span class="us_modal_label" style="margin-bottom:0.5vh; display:block; font-size:0.75rem;">Clave Secreta (Manual)</span>
+          <div class="vf_secret_box" id="setup_secret" style="font-size:var(--fz_s3);">Cargando...</div>
+        </div>
+
+        <!-- Entrada del Código -->
+        <div class="vf_code_field" style="margin-top:1.5vh;">
+          <span class="us_modal_label" style="font-size:0.75rem;">Ingresa el código de confirmación</span>
+          <input 
+            type="text" 
+            id="setup_code" 
+            class="vf_code_input" 
+            maxlength="6" 
+            placeholder="000000" 
+            inputmode="numeric" 
+            pattern="[0-9]*" 
+            autocomplete="off"
+            style="font-size:var(--fz_m4); padding:0.6rem 0; max-width:200px;"
+          />
+          <button class="vf_btn_submit" id="btn_setup_save" style="margin-top:1vh;" disabled>
+            <i class="fas fa-lock"></i> Confirmar y Cerrar Puerta
+          </button>
+        </div>
+      </div>
+
+      <!-- ══ PANEL DE DESBLOQUEO DIARIO (UNLOCK) ══ -->
+      <div class="vf_card_content dpn" id="panel_unlock">
+        <h1 class="vf_title" style="font-size:var(--fz_m4); font-weight:800; margin-bottom:0.5vh;">Verificar que eres tú</h1>
+        <p class="vf_desc" style="font-size:var(--fz_s3); margin-bottom:1.5vh;">
+          Abre <strong>Google Authenticator</strong> en tu celular e ingresa el código de 6 dígitos.
+        </p>
+
+        <!-- Entrada del Código -->
+        <div class="vf_code_field" style="margin-top:1vh;">
+          <input 
+            type="text" 
+            id="unlock_code" 
+            class="vf_code_input" 
+            maxlength="6" 
+            placeholder="000000" 
+            inputmode="numeric" 
+            pattern="[0-9]*" 
+            autocomplete="off"
+            autofocus
+            style="font-size:var(--fz_m5); padding:0.8rem 0; max-width:220px;"
+          />
+          <button class="vf_btn_submit" id="btn_unlock" style="margin-top:1.5vh;">
+            <i class="fas fa-unlock"></i> Verificar y Entrar
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer y Salida -->
+      <div class="vf_card_content" style="border-top: 1px solid var(--brd); padding-top: 2vh; margin-top: 1.5vh; display:flex; justify-content:center; width:100%;">
+        <button class="us_btn_secondary" id="btn_cancel_auth" style="padding:0.6rem 1.5rem; font-size:var(--fz_s3); border-radius:10px; width:100%;">
+          <i class="fas fa-arrow-left"></i> Volver al inicio
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</Layout>
+
+<!-- Inyectar vars de Firebase al cliente -->
+<script is:inline define:vars={{ FB_PROJECT, FB_KEY }}>
+  window.__fbProject = FB_PROJECT;
+  window.__fbKey = FB_KEY;
+</script>
+
+<script>
+  import { db } from '../lib/firebase.js';
+  import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+  import { protegerRuta } from '../lib/auth.js';
+  import { Notificacion } from '../lib/widev.js';
+  import { salir } from '../lib/login.js';
+
+  let u: any = null;
+  let setupSecret: string = '';
+  let countdownInterval: any = null;
+  const TIEMPO_LIMITE = 60; // 60 segundos de inactividad / autocierre
+  const B32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+
+  // ── TOTP NATIVO (WEB CRYPTO API) ──────────────────────────────────
+  
+  // Decodificador de base32 a Uint8Array
+  // ✅ Retorna Uint8Array respaldado por ArrayBuffer real (compatible con crypto.subtle.importKey)
+  function b32decode(str: string): Uint8Array<ArrayBuffer> {
+    let bits = 0, val = 0;
+    const out: number[] = [];
+    for (const c of str.replace(/=+$/, '').toUpperCase()) {
+      const idx = B32.indexOf(c);
+      if (idx === -1) continue;
+      val = (val << 5) | idx;
+      bits += 5;
+      if (bits >= 8) {
+        out.push((val >>> (bits - 8)) & 0xff);
+        bits -= 8;
+      }
+    }
+    const buf = new ArrayBuffer(out.length);
+    new Uint8Array(buf).set(out);
+    return new Uint8Array(buf) as Uint8Array<ArrayBuffer>;
+  }
+
+  // Generador de clave aleatoria Base32
+  function generateSecret(): string {
+    const bytes = crypto.getRandomValues(new Uint8Array(20));
+    return Array.from(bytes, b => B32[b & 31]).join('');
+  }
+
+  // Generador de Token TOTP con Crypto API
+  async function totpToken(secret: string, offset = 0): Promise<string> {
+    const epoch = Math.floor(Date.now() / 30000) + offset;
+    const cnt   = new ArrayBuffer(8);
+    new DataView(cnt).setUint32(4, epoch, false); // Big endian
+
+    const key = await crypto.subtle.importKey(
+      'raw',
+      b32decode(secret),
+      { name: 'HMAC', hash: 'SHA-1' },
+      false,
+      ['sign']
+    );
+
+    const sig  = new Uint8Array(await crypto.subtle.sign('HMAC', key, cnt));
+    const off  = sig[19] & 0xf;
+    const code = ((sig[off] & 0x7f) << 24 | sig[off+1] << 16 | sig[off+2] << 8 | sig[off+3]) % 1000000;
+    return code.toString().padStart(6, '0');
+  }
+
+  // Verificador con clock drift
+  async function verifyTOTP(token: string, secret: string): Promise<boolean> {
+    for (const d of [-1, 0, 1]) {
+      if (await totpToken(secret, d) === token) return true;
+    }
+    return false;
+  }
+
+  // ── TEMPORIZADOR DE INACTIVIDAD F5-RESISTENTE ───────────────────────────────
+  
+  const startTimer = () => {
+    if (countdownInterval) clearInterval(countdownInterval);
+
+    let expire = localStorage.getItem('vault_expire');
+    if (!expire) {
+      expire = String(Date.now() + (TIEMPO_LIMITE * 1000));
+      localStorage.setItem('vault_expire', expire);
+    }
+
+    const tick = async () => {
+      const segundos = Math.max(0, Math.ceil((parseInt(expire!) - Date.now()) / 1000));
+      const timerSpan = document.getElementById('timer_sec');
+      if (timerSpan) timerSpan.textContent = `${segundos}s`;
+
+      if (segundos <= 0) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+        localStorage.removeItem('vault_expire');
+        Notificacion('Cierre de seguridad por inactividad', 'error');
+        await logoutUser();
+      }
+    };
+
+    tick();
+    countdownInterval = setInterval(tick, 1000);
+  };
+
+  const resetInactivityTimer = () => {
+    const expire = String(Date.now() + (TIEMPO_LIMITE * 1000));
+    localStorage.setItem('vault_expire', expire);
+    const timerSpan = document.getElementById('timer_sec');
+    if (timerSpan) timerSpan.textContent = `${TIEMPO_LIMITE}s`;
+  };
+
+  const logoutUser = async () => {
+    localStorage.removeItem('vault_expire');
+    if (countdownInterval) clearInterval(countdownInterval);
+    await salir();
+    window.location.replace('/');
+  };
+
+  // ── BLINDAJE PROGRAMÁTICO DE SEGURIDAD ──────────────────────────────────────
+  
+  const purgeLayout = () => {
+    const targets = ['.wiheader', '.foo', '#wiTema', '.movil_overlay', '.movil_drawer'];
+    targets.forEach(selector => {
+      document.querySelectorAll(selector).forEach(el => el.remove());
+    });
+  };
+
+  const applyHardening = () => {
+    purgeLayout();
+    // A. Interceptar clics en enlaces y menús del header
+    document.addEventListener('click', e => {
+      if (sessionStorage.getItem('vault_unlocked') !== 'true') {
+        const target = e.target as HTMLElement;
+        const link = target.closest('a, button.nv_item');
+        if (link) {
+          const isBackBtn = link.id === 'btn_cancel_auth' || link.closest('#btn_cancel_auth');
+          if (!isBackBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            Notificacion('Identidad no verificada. Completa el 2FA primero.', 'warning');
+          }
+        }
+      }
+    }, true);
+
+    // B. Bloquear Clic Derecho
+    document.addEventListener('contextmenu', e => {
+      if (sessionStorage.getItem('vault_unlocked') !== 'true') {
+        e.preventDefault();
+        Notificacion('Clic derecho inhabilitado por seguridad.', 'warning');
+      }
+    });
+
+    // C. Bloquear Copiar, Cortar y Pegar
+    const blockCopyPaste = (e: Event) => {
+      if (sessionStorage.getItem('vault_unlocked') !== 'true') {
+        e.preventDefault();
+        Notificacion('Copiar y pegar inhabilitado en esta bóveda.', 'warning');
+      }
+    };
+    document.addEventListener('copy', blockCopyPaste);
+    document.addEventListener('cut', blockCopyPaste);
+    document.addEventListener('paste', blockCopyPaste);
+
+    // D. Bloquear F12, Ctrl+U, Ctrl+S, Ctrl+P, y Ctrl+Shift+I/J/C
+    document.addEventListener('keydown', e => {
+      if (sessionStorage.getItem('vault_unlocked') === 'true') return;
+
+      // F12
+      if (e.key === 'F12') {
+        e.preventDefault();
+        Notificacion('DevTools bloqueado por seguridad.', 'error');
+        return;
+      }
+
+      // Combinaciones con Ctrl o Cmd (Mac)
+      if (e.ctrlKey || e.metaKey) {
+        const key = e.key.toLowerCase();
+        
+        // Ctrl+U, Ctrl+S, Ctrl+P o Ctrl+Shift+I/J/C
+        if (key === 'u' || key === 's' || key === 'p' || (e.shiftKey && (key === 'i' || key === 'j' || key === 'c'))) {
+          e.preventDefault();
+          Notificacion('Combinación de teclas restringida en esta zona.', 'error');
+        }
+      }
+    });
+  };
+
+  // ── ACCIONES DE SETUP Y DESBLOQUEO ──────────────────────────────────────────
+  
+  const handleSetupSave = async () => {
+    const inputCode = document.getElementById('setup_code') as HTMLInputElement;
+    const code = inputCode ? inputCode.value.trim() : '';
+
+    if (code.length !== 6 || isNaN(Number(code))) {
+      Notificacion('Ingresa el código de 6 dígitos', 'warning');
+      return;
+    }
+
+    const valido = await verifyTOTP(code, setupSecret);
+    if (!valido) {
+      Notificacion('Código incorrecto, intenta de nuevo', 'error');
+      if (inputCode) { inputCode.value = ''; inputCode.focus(); }
+      return;
+    }
+
+    const btn = document.getElementById('btn_setup_save') as HTMLButtonElement;
+    if (btn) {
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+      btn.disabled = true;
+    }
+
+    try {
+      // Guardar el secreto en configwii/{usuario}
+      await setDoc(doc(db, 'configwii', u.usuario), {
+        configurado: true,
+        secret:      setupSecret,
+        email:       u.email || '',
+        creado:      serverTimestamp(),
+        actualizado: serverTimestamp(),
+      });
+
+      Notificacion('¡Bóveda configurada! Bienvenido al panel.', 'success');
+      desbloquear();
+    } catch(e) {
+      console.error('[verificar] setup save:', e);
+      Notificacion('Error al guardar la configuración', 'error');
+      if (btn) {
+        btn.innerHTML = '<i class="fas fa-lock"></i> Confirmar y Cerrar Puerta';
+        btn.disabled = false;
+      }
+    }
+  };
+
+  const handleUnlock = async () => {
+    const inputCode = document.getElementById('unlock_code') as HTMLInputElement;
+    const code = inputCode ? inputCode.value.trim() : '';
+
+    if (code.length !== 6 || isNaN(Number(code))) {
+      return Notificacion('Ingresa los 6 dígitos', 'warning');
+    }
+
+    const btn = document.getElementById('btn_unlock') as HTMLButtonElement;
+    if (btn) {
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+      btn.disabled = true;
+    }
+
+    try {
+      const snap = await getDoc(doc(db, 'configwii', u.usuario));
+      if (!snap.exists()) {
+        Notificacion('Configuración de seguridad no encontrada', 'error');
+        if (btn) { btn.innerHTML = '<i class="fas fa-unlock"></i> Verificar y Entrar'; btn.disabled = false; }
+        return;
+      }
+
+      const secret = snap.data().secret;
+      const valido = await verifyTOTP(code, secret);
+
+      if (valido) {
+        Notificacion('¡Bóveda desbloqueada!', 'success');
+        desbloquear();
+      } else {
+        Notificacion('Código incorrecto o expirado', 'error');
+        if (inputCode) { inputCode.value = ''; inputCode.focus(); }
+        if (btn) {
+          btn.innerHTML = '<i class="fas fa-unlock"></i> Verificar y Entrar';
+          btn.disabled = false;
+        }
+      }
+    } catch(err) {
+      console.error('[verificar] unlock:', err);
+      Notificacion('Error al realizar la verificación', 'error');
+      if (btn) {
+        btn.innerHTML = '<i class="fas fa-unlock"></i> Verificar y Entrar';
+        btn.disabled = false;
+      }
+    }
+  };
+
+  const desbloquear = () => {
+    if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+    localStorage.removeItem('vault_expire');
+    document.body.classList.remove('is-vault-locked');
+    sessionStorage.setItem('vault_unlocked', 'true');
+    window.location.href = '/admin';
+  };
+
+  // ── INICIALIZACIÓN ──────────────────────────────────────────────────────────
+  
+  const init = async () => {
+    purgeLayout();
+    // 1. Activar el bloqueo en el body y arrancar el temporizador de inmediato
+    document.body.classList.add('is-vault-locked');
+
+    u = await protegerRuta(['admin']);
+    if (!u) return;
+
+    // Si ya está desbloqueado, redirigir a /admin
+    if (sessionStorage.getItem('vault_unlocked') === 'true') {
+      desbloquear();
+      return;
+    }
+
+    const loader = document.getElementById('vf_loader');
+    const card = document.getElementById('vf_card');
+
+    try {
+      const snap = await getDoc(doc(db, 'configwii', u.usuario));
+      const cfg = snap.exists() ? snap.data() : null;
+
+      if (cfg?.configurado && cfg?.secret) {
+        // ── MODO UNLOCK ──
+        setupSecret = cfg.secret;
+        const panelUnlock = document.getElementById('panel_unlock');
+        if (panelUnlock) panelUnlock.classList.remove('dpn');
+      } else {
+        // ── MODO SETUP ──
+        setupSecret = generateSecret();
+        const panelSetup = document.getElementById('panel_setup');
+        const setupSecretEl = document.getElementById('setup_secret');
+        const setupQrCanvas = document.getElementById('setup_qr_canvas') as HTMLCanvasElement;
+
+        const label = `WiiHope:${u.usuario}`;
+        const issuer = 'WiiHope';
+        const otpauth = `otpauth://totp/${issuer}:${encodeURIComponent(u.usuario)}?secret=${setupSecret}&issuer=${issuer}&algorithm=SHA1&digits=6&period=30`;
+
+        if (setupSecretEl) setupSecretEl.textContent = setupSecret;
+
+        // Renderizar QR en canvas importando qrcode dinámicamente
+        // @ts-ignore — qrcode no incluye tipos; funciona correctamente en runtime
+        const QRCode = await import('qrcode');
+        await QRCode.toCanvas(setupQrCanvas, otpauth, {
+          width: 160,
+          margin: 1,
+          color: { dark: '#0a0e1a', light: '#ffffff' }
+        });
+
+        if (panelSetup) panelSetup.classList.remove('dpn');
+      }
+
+      if (loader) loader.style.display = 'none';
+      if (card) card.style.display = 'flex';
+
+      startTimer();
+      applyHardening();
+
+      // Resetear timer en actividad
+      document.addEventListener('keypress', resetInactivityTimer);
+      document.addEventListener('click', resetInactivityTimer);
+
+      // Vincular eventos
+      const inputSetup = document.getElementById('setup_code') as HTMLInputElement;
+      if (inputSetup) {
+        inputSetup.addEventListener('input', function() {
+          this.value = this.value.replace(/[^0-9]/g, '');
+          const btn = document.getElementById('btn_setup_save') as HTMLButtonElement;
+          if (btn) btn.disabled = this.value.length !== 6;
+        });
+      }
+
+      const inputUnlock = document.getElementById('unlock_code') as HTMLInputElement;
+      if (inputUnlock) {
+        inputUnlock.addEventListener('input', function() {
+          this.value = this.value.replace(/[^0-9]/g, '');
+          if (this.value.length === 6) {
+            handleUnlock();
+          }
+        });
+      }
+
+      const btnSetupSave = document.getElementById('btn_setup_save');
+      const btnUnlock = document.getElementById('btn_unlock');
+      const btnCancelAuth = document.getElementById('btn_cancel_auth');
+
+      if (btnSetupSave) btnSetupSave.addEventListener('click', handleSetupSave);
+      if (btnUnlock) btnUnlock.addEventListener('click', handleUnlock);
+      if (btnCancelAuth) btnCancelAuth.addEventListener('click', logoutUser);
+
+      // Auto-enfoque
+      setTimeout(() => {
+        if (inputSetup && !inputSetup.closest('.dpn')) inputSetup.focus();
+        if (inputUnlock && !inputUnlock.closest('.dpn')) inputUnlock.focus();
+      }, 200);
+
+    } catch (e) {
+      console.error(e);
+      if (loader) loader.style.display = 'none';
+      Notificacion('Error al cargar la bóveda', 'error');
+    }
+  };
+
+  document.addEventListener('astro:page-load', init);
+</script>
+
+<!--
+erores: 
+No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'Uint8Array<ArrayBufferLike>' is not assignable to parameter of type 'BufferSource'.
+      Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.
+        Types of property 'buffer' are incompatible.
+          Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+            Type 'SharedArrayBuffer' is missing the following properties from type 'ArrayBuffer': resizable, resize, detached, transfer, transferToFixedLength
+   
+Could not find a declaration file for module 'qrcode'. 'C:/mipro/wiihope/wiihope-web/node_modules/.pnpm/qrcode@1.5.4/node_modules/qrcode/lib/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/qrcode` if it exists or add a new declaration (.d.ts) file containing `declare module 'qrcode';`
+-->

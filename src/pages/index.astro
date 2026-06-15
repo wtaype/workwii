@@ -1,0 +1,465 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Saludar } from '../lib/widev.js';
+import { app } from '../wii.js';
+import { seoPages } from '../lib/seo.js';
+
+const ROLES = ['Protección Diaria 🛡️', 'Paz Interior 🕊️', 'Bendiciones 🙏', 'Amor Infinito ❤️', 'Esperanza ✨'];
+
+const VERSICULOS = [
+  ['Jehová es mi pastor; nada me faltará', 'Salmo 23:1', 'fa-book-bible', '#0EBEFF'],
+  ['La sangre de Cristo tiene poder para salvar', 'Hebreos 9:14', 'fa-droplet', '#FF5C69'],
+  ['Todo lo puedo en Cristo que me fortalece', 'Filipenses 4:13', 'fa-dumbbell', '#29C72E'],
+  ['Por la sangre de Jesús soy más que vencedor', 'Apocalipsis 12:11', 'fa-crown', '#FFB800'],
+];
+
+const FEATS = [
+  ['fa-headphones', 'Audios en Quechua', 'Disfruta del Nuevo Testamento dramatizado en quechua, ideal para entender el mensaje de una manera cercana y enriquecedora.'],
+  ['fa-heart-pulse', 'Motivación Diaria', 'Encuentra las mejores frases de protección, salvación y seguridad en Dios para inspirar tu día a día.'],
+  ['fa-blog', 'Artículos y Blogs', 'Reflexiones y enseñanzas diseñadas para fortalecer tu fe y guiarte en tu caminar espiritual.'],
+  ['fa-video', 'Videos Edificantes', 'Contenido audiovisual cuidadosamente seleccionado para bendecir tu vida y la de tu familia.'],
+];
+
+const FB_PROJECT = import.meta.env.PUBLIC_FIREBASE_PROJECT_ID ?? '';
+const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
+---
+
+<style is:global>
+.inicio { max-width: 1400px; margin: 0 auto; padding: 0 2vw }
+
+.font_o { font-family: var(--ff_O) !important; }
+
+/* ══════════════════ HERO ══════════════════ */
+.hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4vw; align-items: center; min-height: 85vh; padding: 6vh 0 }
+.hero_txt { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+.hero_saludo { display: inline-flex; align-items: center; gap: 1vh; font-size: var(--fz_m4); font-weight: 600; color: var(--tx); margin-bottom: 2vh; animation: slideIn .8s ease }
+.hero_wave { display: inline-block; font-size: var(--fz_l1); transform-origin: 70% 70%; animation: wave 1.8s ease-in-out infinite; }
+
+.mainh { font-size: var(--fz_x3); font-weight: 900; color: var(--tx); line-height: 1.15; margin-bottom: 0.5vh; animation: slideIn .8s ease .2s backwards }
+.hero_sub_tit { font-size: var(--fz_l1); font-weight: 700; display: block; margin-bottom: 2vh; animation: slideIn .8s ease .3s backwards }
+.gradiente { background: linear-gradient(135deg, var(--mco), var(--hva)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text }
+.hero_roles { height: 4vh; margin-bottom: 3vh; position: relative; overflow: hidden; display: flex; justify-content: flex-start; width: 100%; animation: slideIn .8s ease .4s backwards }
+.role { position: absolute; font-size: var(--fz_l1); font-weight: 600; color: var(--mco); opacity: 0; transform: translateY(100%); transition: all .5s cubic-bezier(.4, 0, .2, 1) }
+.role.active { opacity: 1; transform: translateY(0) }
+.hero_oracion { font-size: clamp(1.2rem, 2.2vw, 1.45rem); color: var(--tx1); line-height: 1.8; margin: 0 0 3vh 0; max-width: 95%; font-weight: 500; text-align: left; animation: slideIn .8s ease .6s backwards }
+.hero_oracion p { margin-bottom: 0.3vh; }
+.hero_oracion .amen { font-weight: 800; color: var(--tx); margin-top: 2vh; font-size: var(--fz_m4); }
+.hero_visual { position: relative; display: flex; justify-content: center; align-items: center; animation: fadeIn 1s ease .5s backwards }
+.hero_visual img { max-width: 85%; border-radius: 2vh; box-shadow: 0 2vh 4vh rgba(0,0,0,.15); animation: float 3s ease-in-out infinite }
+
+/* Botones flotantes */
+.hero_badge_float { position: absolute; background: var(--wb); border: 2px solid var(--brd); border-radius: 50px; padding: 1.2vh 2.5vh; display: flex; justify-content: center; align-items: center; gap: 1vh; font-size: var(--fz_m2); font-weight: 600; color: var(--tx); box-shadow: 0 1vh 3vh rgba(0,0,0,.1); animation: slideInRight .7s cubic-bezier(.4,0,.2,1) backwards, float 3.5s ease-in-out var(--fd, 1s) infinite; animation-delay: var(--d, 0s), calc(var(--d, 0s) + .7s); transition: box-shadow 0.3s, transform 0.3s; z-index: 2; white-space: nowrap; font-family: var(--ff_O); }
+.hero_badge_float i { color: var(--mco); font-size: var(--fz_m3); }
+.hero_badge_float:hover { box-shadow: 0 1.5vh 4vh rgba(0,0,0,.15); transform: scale(1.05); }
+.hb_1 { top: 12%; right: -5%; --fd:0s; }
+.hb_2 { bottom: 35%; left: -8%; --fd:.5s; }
+.hb_3 { bottom: 8%; right: 2%; --fd:1s; }
+
+.hero_deco { position: absolute; inset: 0; pointer-events: none; overflow: hidden }
+.hero_deco i { position: absolute; color: var(--mco); opacity: .12; animation: spin 20s linear infinite }
+.hero_deco i:nth-child(1) { top: 10%; left: 15%; font-size: 3vh }
+.hero_deco i:nth-child(2) { top: 60%; right: 20%; font-size: 5vh; animation-delay: -5s }
+.hero_deco i:nth-child(3) { bottom: 20%; left: 30%; font-size: 3.5vh; animation-delay: -10s }
+
+@keyframes slideIn { from { opacity: 0; transform: translateX(-30px) } to { opacity: 1; transform: translateX(0) } }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(30px) } to { opacity: 1; transform: translateX(0) } }
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-2vh) } }
+@keyframes spin { to { transform: rotate(360deg) } }
+@keyframes pulse { 0%, 100% { transform: scale(1) } 50% { transform: scale(1.05) } }
+@keyframes wave { 0%, 100% { transform: rotate(0deg); } 10%, 30% { transform: rotate(14deg); } 20% { transform: rotate(-8deg); } 40% { transform: rotate(-4deg); } 50% { transform: rotate(10deg); } }
+
+/* ══════════════════ SECCIONES (base) ══════════════════ */
+.inicio section { padding: 8vh 0 }
+.mainh1 { font-size: var(--fz_x1); font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 1vh; color:var(--tx) }
+.sec_head { text-align: center; margin-bottom: 2vh }
+.sec_head h2 { font-size: var(--fz_x1); font-weight: 800; color: var(--tx); display: flex; align-items: center; justify-content: center; gap: 1vh }
+.sec_head h2 i { color: var(--mco) }
+.sec_line { width: 80px; height: 4px; background: linear-gradient(90deg, var(--mco), var(--hva)); margin: 1vh auto 0; border-radius: 2px }
+.sec_desc { text-align: center; font-size: var(--fz_m3); color: var(--tx2); margin-bottom: 4vh }
+
+.btn_sec { display: inline-flex; align-items: center; gap: 1vh; padding: 1.5vh 3vh; border-radius: 1vh; font-size: var(--fz_m3); font-weight: 700; text-decoration: none; transition: all .3s; cursor: pointer; background: transparent; color: var(--tx); border: 2px solid var(--brd) }
+.btn_sec:hover { border-color: var(--mco); background: rgba(255,255,255,0.1); transform: translateY(-.3vh) }
+
+/* ══════════════════ FRASES / VERSICULOS ══════════════════ */
+.ej_grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 3vh }
+.ej_item { display: block; background: var(--wb); padding: 3vh; border-radius: 1.5vh; border: 2px solid transparent; transition: all .5s; color: inherit }
+.ej_item:hover { transform: translateY(-.8vh); border-color: var(--x); box-shadow: 0 1vh 3vh rgba(0,0,0,.12) }
+.ej_top { display: flex; align-items: center; gap: 1vh; margin-bottom: 1.5vh }
+.ej_top > span:first-child { font-size: var(--fz_l2); color: var(--x); }
+.ej_tag { font-size: var(--fz_s4); font-weight: 600; color: var(--x); background: color-mix(in srgb, var(--x) 12%, transparent); padding: .4vh 1.2vh; border-radius: 50px }
+.ej_item p { font-size: var(--fz_m3); font-weight: 500; color: var(--tx); line-height: 1.6; font-style: italic; margin-bottom: 1.5vh }
+.ej_meta { display: flex; gap: 2vh; font-size: var(--fz_m1); font-weight: 700; color: var(--tx2); margin-bottom: 0 }
+.ej_meta i { color: var(--x); opacity: 0.7; }
+
+/* ══════════════════ FEATURES ══════════════════ */
+.feat_grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 3vh; margin-top: 4vh }
+.feat_card { background: var(--wb); padding: 4vh 3vh; border-radius: 1.5vh; text-align: center; border: 2px solid transparent; transition: all .3s; }
+.feat_card:hover { transform: translateY(-.8vh); border-color: var(--mco); box-shadow: 0 1vh 3vh rgba(0,0,0,.1) }
+.feat_ico { width: 8vh; height: 8vh; background: color-mix(in srgb, var(--mco) 10%, transparent); color: var(--mco); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: var(--fz_l2); margin: 0 auto 2vh; transition: all .3s }
+.feat_card:hover .feat_ico { background: var(--mco); color: #fff; transform: scale(1.1) rotate(5deg) }
+.feat_card h3 { font-size: var(--fz_m4); font-weight: 700; color: var(--tx); margin-bottom: 1.5vh }
+.feat_card p { font-size: var(--fz_m1); color: var(--tx2); line-height: 1.6 }
+
+/* ══════════════════ ACERCA DE NOSOTROS ══════════════════ */
+.sec_test { padding: 0 }
+.test_bg { background: linear-gradient(135deg, var(--mco), var(--hva)); border-radius: 2vh; padding: 8vh 4vh; position: relative; overflow: hidden; box-shadow: 0 2vh 4vh rgba(0,0,0,.1) }
+.test_bg::before { content: ''; position: absolute; inset: 0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="1.5" fill="white" opacity=".08"/></svg>') repeat; pointer-events: none }
+.test_inner_single { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; text-align: center; }
+.test_left h2 { font-size: var(--fz_l2); font-weight: 800; color: var(--txa); margin-bottom: 4vh; display: flex; align-items: center; justify-content: center; gap: 1vh }
+.test_left h2 i { font-size: var(--fz_l1) }
+.about_text { background: rgba(255,255,255,.1); backdrop-filter: blur(10px); padding: 5vh; border-radius: 2vh; border: 1px solid rgba(255,255,255,.2); font-size: var(--fz_m2); color: var(--txa); line-height: 1.8; text-align: left; }
+.about_text p { margin-bottom: 2.5vh; }
+.about_text p:last-of-type { margin-bottom: 0; }
+.about_text strong { font-weight: 700; color: #fff; }
+
+/* ══════════════════ RESPONSIVE ══════════════════ */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; text-align: center; padding: 3vh 0 }
+  .hero_visual { order: -1 }
+  .hero_oracion { max-width: 100%; margin: 0 auto 3vh; }
+  .hero_roles { display: flex; justify-content: center }
+  section { padding: 5vh 0 }
+  .test_bg { padding: 5vh 3vh; border-radius: 0 }
+  .about_text { padding: 3vh; }
+}
+@media (max-width: 480px) {
+  .mainh { font-size: var(--fz_x1) }
+  .sec_head h2 { font-size: var(--fz_l2) }
+  .hero_oracion { font-size: var(--fz_m2); }
+  .about_text { font-size: var(--fz_m1); }
+}
+
+/* ══════════════════ INICIO BLOG ══════════════════ */
+.ib_grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5vh;
+  margin-top: 2vh;
+}
+
+.ib_card {
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 1.5vh;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .3s, box-shadow .3s, border-color .3s;
+  display: flex;
+  flex-direction: column;
+}
+.ib_card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(0,0,0,.1);
+  border-color: var(--mco);
+}
+
+.ib_img {
+  aspect-ratio: 16/9;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--bg4);
+  position: relative;
+  flex-shrink: 0;
+}
+.ib_cat {
+  position: absolute;
+  top: 1.2vh;
+  left: 1.2vh;
+  font-size: var(--fz_s2);
+  font-weight: 700;
+  padding: .4vh 1.2vh;
+  border-radius: 5vh;
+  backdrop-filter: blur(4px);
+}
+
+.ib_body {
+  padding: 2vh 2.2vh;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: .8vh;
+}
+.ib_tit {
+  font-size: var(--fz_m2);
+  font-weight: 700;
+  color: var(--tx);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ib_resumen {
+  font-size: var(--fz_s4);
+  color: var(--tx3);
+  line-height: 1.5;
+  flex: 1;
+}
+.ib_meta {
+  display: flex;
+  gap: 2vh;
+  font-size: var(--fz_s2);
+  color: var(--tx3);
+  margin-top: auto;
+  padding-top: .8vh;
+  border-top: 1px solid var(--brd);
+}
+.ib_meta i { color: var(--mco); margin-right: .3vh; }
+
+.ib_footer { text-align: center; margin-top: 4vh; }
+.ib_ver_mas { background: var(--mco) !important; color: #fff !important; border-color: var(--mco) !important; padding: 1.6vh 4vh !important; font-size: var(--fz_m2) !important; }
+.ib_ver_mas:hover { opacity: .88; transform: translateY(-.3vh) !important; }
+
+.ib_empty { text-align: center; color: var(--tx3); padding: 6vh; font-size: var(--fz_m2); grid-column: 1/-1; }
+.ib_empty i { display: block; font-size: var(--fz_l2); margin-bottom: 1.5vh; opacity: .4; }
+
+/* Skeleton */
+.ib_sk { background: var(--wb); border: 1px solid var(--brd); border-radius: 1.5vh; overflow: hidden; }
+.ib_sk_img { aspect-ratio: 16/9; }
+.ib_sk_body { padding: 2vh; display: flex; flex-direction: column; gap: 1.2vh; }
+.ib_sk_cat  { height: 2.2vh; width: 35%; border-radius: 5vh; }
+.ib_sk_tit  { height: 1.8vh; width: 90%; border-radius: .6vh; }
+.ib_sk_t2   { width: 65%; }
+
+/* Shimmer */
+@keyframes shimmer { 0% { background-position: -200% 0 } 100% { background-position: 200% 0 } }
+.shimmer { background: linear-gradient(90deg, var(--bg4) 25%, var(--bg5) 50%, var(--bg4) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+
+@media (max-width: 1100px) { .ib_grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 750px)  { .ib_grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px)  { .ib_grid { grid-template-columns: 1fr; } }
+
+</style>
+
+<Layout {...seoPages.inicio}>
+  <div class="inicio">
+    <section class="hero">
+      <div class="hero_txt">
+        <div class="hero_saludo">
+          <span>{Saludar()} Hij@</span><span class="hero_wave">👋</span>
+        </div>
+        <h2 class="font_o mainh">Padre Nuestro</h2>
+        <span class="gradiente hero_sub_tit font_o">(Teléfono de Dios)</span>
+        <div class="hero_roles">
+          {ROLES.map((r, i) => (
+            <span class={`role${i === 0 ? ' active' : ''}`}>{r}</span>
+          ))}
+        </div>
+        <div class="hero_oracion font_o">
+          <p>Padre nuestro, que estás en el cielo,</p>
+          <p>santificado sea tu Nombre;</p>
+          <p>venga a nosotros tu reino;</p>
+          <p>hágase tu voluntad</p>
+          <p>en la tierra como en el cielo.</p>
+          <p>Danos hoy nuestro pan de cada día;</p>
+          <p>perdona nuestras ofensas,</p>
+          <p>como también nosotros perdonamos</p>
+          <p>a los que nos ofenden;</p>
+          <p>no nos dejes caer en la tentación,</p>
+          <p>y líbranos del mal.</p>
+          <p class="amen">Amén.</p>
+        </div>
+      </div>
+      <div class="hero_visual">
+        <div class="hero_badge_float hb_1" style="--d:.5s" data-witip="Dios es amor"><i class="fas fa-heart"></i></div>
+        <div class="hero_badge_float hb_2" style="--d:.7s" data-witip="Dios es bueno"><i class="fas fa-star"></i></div>
+        <div class="hero_badge_float hb_3" style="--d:.9s" data-witip="Fe y esperanza"><i class="fas fa-dove"></i></div>
+        <img fetchpriority="high" decoding="sync" width="600" height="400" alt="Dios es bueno" src="/jesus.webp" loading="lazy">
+        <div class="hero_deco"><i class="fas fa-dove"></i><i class="fas fa-star"></i><i class="fas fa-cross"></i></div>
+      </div>
+    </section>
+
+    <section class="sec_ib" id="sec_blog">
+      <h1 class="mainh1"><i class="fas fa-seedling"></i> Encuentra paz, fe y esperanza en Dios</h1>
+      <p class="sec_desc">Reflexiones y artículos edificantes directo desde el blog de {app}</p>
+      <div class="ib_grid" id="ib_grid" data-herowi="100">
+        <!-- Skeleton fallback that renders server-side -->
+        {Array(12).fill(0).map(() => (
+          <div class="ib_sk">
+            <div class="ib_sk_img shimmer"></div>
+            <div class="ib_sk_body">
+              <div class="ib_sk_cat shimmer"></div>
+              <div class="ib_sk_tit shimmer"></div>
+              <div class="ib_sk_tit ib_sk_t2 shimmer"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="ib_footer">
+        <a class="btn_sec ib_ver_mas font_o" href="/blog">
+          <i class="fas fa-arrow-right"></i><span>Ver todos los artículos</span>
+        </a>
+      </div>
+    </section>
+
+    <div class="wi_ad_container" style="text-align:center; margin: 4vh auto; max-width: 90vw; min-height: 100px;">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1362457560630815" data-ad-slot="8397551727" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+
+    <section class="sec_ej" id="frases">
+      <div class="sec_head"><h2><i class="fas fa-quote-left"></i> Promesas de Dios para ti</h2><div class="sec_line"></div></div>
+      <p class="sec_desc">Palabras de fe, protección y victoria para tu vida diaria</p>
+      <div class="ej_grid" data-herowi="100">
+        {VERSICULOS.map(v => (
+          <div class="ej_item" style={`--x:${v[3]}`}>
+            <div class="ej_top"><span><i class={`fas ${v[2]}`}></i></span><span class="ej_tag font_o">Versículo</span></div>
+            <p class="font_o">"{v[0]}"</p>
+            <div class="ej_meta"><span><i class="fas fa-book-open"></i> {v[1]}</span></div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <div class="wi_ad_container" style="text-align:center; margin: 4vh auto; max-width: 90vw; min-height: 100px;">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1362457560630815" data-ad-slot="8397551727" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+
+    <section class="sec_feat">
+      <div class="sec_head"><h2><i class="fas fa-cross"></i> Más bendiciones</h2><div class="sec_line"></div></div>
+      <div class="feat_grid" data-herowi="150">
+        {FEATS.map(([ico, t, d]) => (
+          <div class="feat_card">
+            <div class="feat_ico"><i class={`fas ${ico}`}></i></div>
+            <h3 class="font_o">{t}</h3>
+            <p>{d}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="sec_test" style="margin-top: 4vh; margin-bottom: 8vh;">
+      <div class="test_bg">
+        <div class="test_inner_single">
+          <div class="test_left" style="text-align: center;">
+            <h2 class="font_o"><i class="fas fa-heart"></i> Acerca de nosotros</h2>
+            <div class="about_text">
+              <p><strong>Wiihope</strong> es una aplicación diseñada para compartir y aprender más sobre la palabra de Dios. Su propósito es fortalecer la fe y ser una herramienta de protección, prosperidad y bendición.</p>
+              <p>Aquí encontrarás las mejores frases, audios dramatizados del Nuevo Testamento en quechua y recursos para inspirarte en tu día a día. ¡Recuerda avanzar con fe y confianza!</p>
+              <div class="sec_cta" style="margin-top: 3vh; text-align: left;">
+                <a href="/acerca" class="btn_sec font_o" style="color: white; border-color: rgba(255,255,255,0.3);"><i class="fas fa-arrow-right"></i><span>Leer nuestra historia</span></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<script>
+  import { herowi } from '../lib/widev.js';
+
+  /** @type {ReturnType<typeof setInterval>|null} */
+  let roleInterval: any = null;
+
+  const catColor = (c: string) => ({ Animales:'#0EBEFF', Naturaleza:'#25b62a', Amor:'#ff3849', Inspiración:'#ffa726', Vida:'#6a00f5' }[c] ?? 'var(--mco)');
+
+  /** @param {Record<string,any>} p */
+  const blogCard = (p: any) => {
+    const c = catColor(p.categoria);
+    return `
+      <a href="/${p.slug || p.id || ''}" class="ib_card">
+        <div class="ib_img" style="background-image:url('${p.imagen || p.portada || '/poster.webp'}')">
+          <span class="ib_cat" style="background:color-mix(in srgb,${c} 20%,transparent);color:${c}">${p.categoria || 'Blog'}</span>
+        </div>
+        <div class="ib_body">
+          <h3 class="ib_tit">${p.titulo || 'Sin título'}</h3>
+          <p class="ib_resumen">${(p.resumen || p.descripcion || '').slice(0, 90)}...</p>
+          <div class="ib_meta">
+            <span><i class="fas fa-calendar-alt"></i> ${p.creado ? new Date(p.creado).toLocaleDateString('es-PE', { day:'numeric', month:'short', year:'numeric' }) : ''}</span>
+            <span><i class="fas fa-eye"></i> ${p.vistas || 0}</span>
+            <span><i class="fas fa-heart" style="color:#fe0149"></i> ${p.likes || 0}</span>
+          </div>
+        </div>
+      </a>`;
+  };
+
+  const cleanup = () => { if (roleInterval) { clearInterval(roleInterval); roleInterval = null; } };
+
+  /** @param {boolean} hasCache */
+  const cargarBlog = async (hasCache: boolean) => {
+    try {
+      const proj = import.meta.env.PUBLIC_FIREBASE_PROJECT_ID;
+      const key = import.meta.env.PUBLIC_FIREBASE_API_KEY;
+      if (!proj || !key) return;
+
+      const res = await fetch(`https://firestore.googleapis.com/v1/projects/${proj}/databases/(default)/documents/blog?orderBy=creado%20desc&pageSize=16&key=${key}`);
+      if (!res.ok) throw 1;
+
+      const posts = (await res.json()).documents?.map((d: any) => {
+        const f = d.fields || {}, v = (k: string) => f[k]?.stringValue ?? f[k]?.integerValue ?? f[k]?.timestampValue ?? '';
+        return {
+          id: d.name.split('/').pop(),
+          titulo: v('titulo'),
+          resumen: v('resumen'),
+          categoria: v('categoria'),
+          creado: v('creado'),
+          imagen: v('imagen') || v('portada'),
+          vistas: v('vistas') || 0,
+          likes: v('likes') || 0
+        };
+      }) || [];
+
+      if (!posts.length) {
+        if (!hasCache) {
+          const grid = document.getElementById('ib_grid');
+          if (grid && !grid.querySelector('.ib_card')) {
+            grid.innerHTML = '<p class="ib_empty"><i class="fas fa-dove"></i> Próximamente nuevos artículos</p>';
+          }
+        }
+        return;
+      }
+
+      try { localStorage.setItem('wi_blogs', JSON.stringify({ value: posts, expiry: Date.now() + 10800000 })); } catch(_){}
+
+      const grid = document.getElementById('ib_grid');
+      if (grid) grid.innerHTML = posts.map(blogCard).join('');
+      herowi();
+    } catch(e) {
+      if (!hasCache) {
+        const grid = document.getElementById('ib_grid');
+        if (grid && !grid.querySelector('.ib_card')) {
+          grid.innerHTML = '<p class="ib_empty"><i class="fas fa-dove"></i> Error al cargar artículos...</p>';
+        }
+      }
+    }
+  };
+
+  const init = () => {
+    cleanup();
+
+    let idx = 0;
+    const roles = document.querySelectorAll('.hero_roles .role');
+    if (roles.length) {
+      roleInterval = setInterval(() => {
+        roles[idx].classList.remove('active');
+        idx = (idx + 1) % roles.length;
+        roles[idx].classList.add('active');
+      }, 2500);
+    }
+
+    herowi();
+
+    let cached: any = null;
+    try {
+      const raw = localStorage.getItem('wi_blogs');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && Date.now() < parsed.expiry) cached = parsed;
+        else localStorage.removeItem('wi_blogs');
+      }
+    } catch(_) {}
+
+    const hasCache = !!(cached && cached.value && cached.value.length);
+    if (hasCache) {
+      const grid = document.getElementById('ib_grid');
+      if (grid) grid.innerHTML = cached.value.map(blogCard).join('');
+      herowi();
+    }
+    cargarBlog(hasCache);
+  };
+
+  document.addEventListener('astro:page-load', init);
+  document.addEventListener('astro:before-preparation', cleanup);
+</script>

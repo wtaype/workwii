@@ -1,0 +1,506 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const FB_PROJECT = import.meta.env.PUBLIC_FIREBASE_PROJECT_ID ?? '';
+const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
+---
+
+<style is:global>
+/* =========================================================================
+   ADMIN.CSS — Panel de Control Administrativo Premium
+   ========================================================================= */
+
+.admin_container {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5vh;
+  width: 100%;
+  min-height: calc(100vh - 80px);
+  padding: 2vh 0 6vh;
+  animation: smw_entry 0.6s ease-out;
+}
+
+.admin_header_section {
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 20px;
+  padding: 4vh 4vw;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.01);
+}
+
+.admin_header_glow {
+  position: absolute;
+  top: -20%; right: -10%; width: 45%; height: 140%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--mco) 12%, transparent) 0%, transparent 70%);
+  filter: blur(60px); z-index: 0;
+}
+
+.admin_title_box {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.admin_badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: color-mix(in srgb, var(--mco) 10%, transparent);
+  color: var(--mco);
+  padding: 0.4rem 0.8rem;
+  border-radius: 99px;
+  font-size: var(--fz_s2);
+  font-weight: 700;
+  border: 1px solid color-mix(in srgb, var(--mco) 15%, transparent);
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin_title {
+  font-size: var(--fz_l1);
+  font-weight: 800;
+  color: var(--tx1);
+  margin-bottom: 0.4rem;
+  letter-spacing: -1px;
+}
+
+.admin_subtitle {
+  font-size: var(--fz_m2);
+  color: var(--tx3);
+  line-height: 1.5;
+}
+
+.admin_sync_btn {
+  background: var(--mco);
+  color: var(--txa);
+  border: none;
+  border-radius: 12px;
+  padding: 0.8rem 1.6rem;
+  font-size: var(--fz_m1);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 15px color-mix(in srgb, var(--mco) 20%, transparent);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin_sync_btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--mco) 30%, transparent);
+}
+
+.admin_sync_btn:active {
+  transform: translateY(0);
+}
+
+/* KPIs grid */
+.admin_stats_grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5vh;
+}
+
+@media (max-width: 1024px) {
+  .admin_stats_grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 576px) {
+  .admin_stats_grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin_stat_card {
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 18px;
+  padding: 3vh 2.5vw;
+  display: flex;
+  align-items: center;
+  gap: 2.5vh;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
+  transition: all 0.3s ease;
+}
+
+.admin_stat_card:hover {
+  transform: translateY(-2px);
+  border-color: var(--brd2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02);
+}
+
+.admin_stat_icon {
+  width: 7vh;
+  height: 7vh;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fz_m5);
+}
+
+.admin_stat_icon.users {
+  background: color-mix(in srgb, var(--info) 10%, transparent);
+  color: var(--info);
+}
+.admin_stat_icon.staff {
+  background: color-mix(in srgb, var(--mco) 10%, transparent);
+  color: var(--mco);
+}
+.admin_stat_icon.posts {
+  background: color-mix(in srgb, var(--success) 10%, transparent);
+  color: var(--success);
+}
+.admin_stat_icon.pending {
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
+  color: var(--warning);
+}
+
+.admin_stat_info {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin_stat_label {
+  font-size: var(--fz_s2);
+  font-weight: 700;
+  color: var(--tx3);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.admin_stat_val {
+  font-size: var(--fz_l2);
+  font-weight: 800;
+  color: var(--tx1);
+  margin-top: 0.2vh;
+}
+
+/* Navigation Grid */
+.admin_nav_grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3.5vh;
+}
+
+@media (max-width: 768px) {
+  .admin_nav_grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin_nav_card {
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 20px;
+  padding: 4.5vh 4vw;
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin_nav_card::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 4px; height: 100%;
+  background: var(--mco);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.admin_nav_card:hover {
+  transform: translateY(-4px);
+  border-color: var(--mco);
+  box-shadow: 0 15px 35px color-mix(in srgb, var(--mco) 8%, transparent);
+}
+
+.admin_nav_card:hover::after {
+  opacity: 1;
+}
+
+.admin_nav_header {
+  display: flex;
+  align-items: center;
+  gap: 2vh;
+}
+
+.admin_nav_icon {
+  width: 8vh;
+  height: 8vh;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--mco) 10%, transparent);
+  color: var(--mco);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fz_l1);
+}
+
+.admin_nav_title_box {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin_nav_title {
+  font-size: var(--fz_m4);
+  font-weight: 800;
+  color: var(--tx1);
+  letter-spacing: -0.5px;
+}
+
+.admin_nav_subtitle {
+  font-size: var(--fz_s3);
+  color: var(--tx3);
+  font-weight: 500;
+}
+
+.admin_nav_desc {
+  font-size: var(--fz_m1);
+  color: var(--tx2);
+  line-height: 1.6;
+}
+
+.admin_nav_arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--fz_s3);
+  font-weight: 700;
+  color: var(--mco);
+  margin-top: 1vh;
+  transition: gap 0.25s;
+}
+
+.admin_nav_card:hover .admin_nav_arrow {
+  gap: 0.8rem;
+}
+</style>
+
+<!-- Guardia de Renderizado Inicial: Redirigir de inmediato si no hay token local para evitar parpadeos -->
+<script is:inline>
+  if (!localStorage.getItem('wiSmile')) {
+    window.location.replace('/');
+  }
+</script>
+
+<Layout title="Consola de Administración" robots="noindex, nofollow">
+  <div class="admin_container">
+
+    <!-- Loader inicial de Firestore -->
+    <div id="admin_loader" style="text-align: center; display: flex; flex-direction: column; gap: 1rem; align-items: center; margin: 8vh auto;">
+      <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--mco);"></i>
+      <h3 style="color: var(--tx3); font-weight: 600;">Cargando Métricas Administrativas...</h3>
+    </div>
+
+    <div id="admin_content" style="display: none; flex-direction: column; gap: 3.5vh;">
+      
+      <!-- ══ ENCABEZADO ══ -->
+      <header class="admin_header_section">
+        <div class="admin_header_glow"></div>
+        <div class="admin_title_box">
+          <div>
+            <div class="admin_badge">
+              <i class="fas fa-cog"></i> Panel Maestro
+            </div>
+            <h1 class="admin_title">Consola de Control Global</h1>
+            <p class="admin_subtitle">
+              Hola, <strong id="admin_name">Administrador</strong>. Supervisa las métricas técnicas del sitio, gestiona cuentas y configura el sistema.
+            </p>
+          </div>
+          <button class="admin_sync_btn" id="btn_sync">
+            <i class="fas fa-rotate" id="sync_icon"></i> Sincronizar Data
+          </button>
+        </div>
+      </header>
+
+      <!-- ══ METRICAS KPIs ══ -->
+      <section class="admin_stats_grid">
+        <div class="admin_stat_card">
+          <div class="admin_stat_icon users"><i class="fas fa-users"></i></div>
+          <div class="admin_stat_info">
+            <span class="admin_stat_label">Usuarios</span>
+            <span class="admin_stat_val" id="kpi_users">...</span>
+          </div>
+        </div>
+        <div class="admin_stat_card">
+          <div class="admin_stat_icon staff"><i class="fas fa-user-shield"></i></div>
+          <div class="admin_stat_info">
+            <span class="admin_stat_label">Editores / Staff</span>
+            <span class="admin_stat_val" id="kpi_staff">...</span>
+          </div>
+        </div>
+        <div class="admin_stat_card">
+          <div class="admin_stat_icon posts"><i class="fas fa-newspaper"></i></div>
+          <div class="admin_stat_info">
+            <span class="admin_stat_label">Artículos</span>
+            <span class="admin_stat_val" id="kpi_posts">...</span>
+          </div>
+        </div>
+        <div class="admin_stat_card">
+          <div class="admin_stat_icon pending"><i class="fas fa-envelope-open-text"></i></div>
+          <div class="admin_stat_info">
+            <span class="admin_stat_label">Solicitudes</span>
+            <span class="admin_stat_val" id="kpi_pending">...</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ NAVEGACION MAESTRA ══ -->
+      <nav class="admin_nav_grid">
+        
+        <!-- Tarjeta Usuarios -->
+        <a href="/usuarios" class="admin_nav_card">
+          <div class="admin_nav_header">
+            <div class="admin_nav_icon"><i class="fas fa-users-gear"></i></div>
+            <div class="admin_nav_title_box">
+              <h2 class="admin_nav_title">Gestión de Cuentas</h2>
+              <span class="admin_nav_subtitle">Verificar, modificar roles y moderación</span>
+            </div>
+          </div>
+          <p class="admin_nav_desc">
+            Revisa el listado completo de la comunidad. Permite cambiar roles de usuarios (Editor, Gestor, Admin), bloquear o suspender cuentas operativas y eliminar perfiles.
+          </p>
+        </a>
+
+      </nav>
+
+    </div>
+
+  </div>
+</Layout>
+
+<!-- Inyectar vars de Firebase al cliente -->
+<script is:inline define:vars={{ FB_PROJECT, FB_KEY }}>
+  window.__fbProject = FB_PROJECT;
+  window.__fbKey = FB_KEY;
+</script>
+
+<script>
+  import { db } from '../lib/firebase.js';
+  import { collection, query, where, getCountFromServer } from 'firebase/firestore';
+  import { protegerRuta } from '../lib/auth.js';
+  import { getNombre, Notificacion } from '../lib/widev.js';
+
+  let syncBusy = false;
+
+  const loadKPIsCache = () => {
+    try {
+      const cache = localStorage.getItem('admin_kpis');
+      if (cache) {
+        const data = JSON.parse(cache);
+        setKPIsUI(data.users, data.staff, data.posts, data.pending);
+      }
+    } catch (e) {
+      console.error('Error cargando caché de KPIs:', e);
+    }
+  };
+
+  const setKPIsUI = (users: any, staff: any, posts: any, pending: any) => {
+    const kUsers = document.getElementById('kpi_users');
+    const kStaff = document.getElementById('kpi_staff');
+    const kPosts = document.getElementById('kpi_posts');
+    const kPending = document.getElementById('kpi_pending');
+
+    if (kUsers) kUsers.textContent = String(users);
+    if (kStaff) kStaff.textContent = String(staff);
+    if (kPosts) kPosts.textContent = String(posts);
+    if (kPending) kPending.textContent = String(pending);
+  };
+
+  const fetchKPIs = async (silent = false) => {
+    if (syncBusy) return;
+    syncBusy = true;
+
+    const btn = document.getElementById('btn_sync') as HTMLButtonElement;
+    const icon = document.getElementById('sync_icon');
+    if (btn && icon && !silent) {
+      btn.disabled = true;
+      icon.classList.add('fa-spin');
+    }
+
+    try {
+      // 1. Obtener conteos directos de Firestore
+      const smilesCol = collection(db, 'smiles');
+      const blogCol = collection(db, 'blog');
+      const solCol = collection(db, 'wiSolicitudes');
+
+      const [usersSnap, staffSnap, postsSnap, pendingSnap] = await Promise.all([
+        getCountFromServer(smilesCol),
+        getCountFromServer(query(smilesCol, where('rol', 'in', ['editor', 'gestor', 'admin']))),
+        getCountFromServer(blogCol),
+        getCountFromServer(query(solCol, where('estado', '==', 'pendiente')))
+      ]);
+
+      const counts = {
+        users: usersSnap.data().count,
+        staff: staffSnap.data().count,
+        posts: postsSnap.data().count,
+        pending: pendingSnap.data().count
+      };
+
+      setKPIsUI(counts.users, counts.staff, counts.posts, counts.pending);
+      localStorage.setItem('admin_kpis', JSON.stringify(counts));
+
+      if (!silent) {
+        Notificacion('Métricas sincronizadas con éxito', 'success');
+      }
+    } catch (err) {
+      console.error(err);
+      if (!silent) {
+        Notificacion('Error al obtener métricas del servidor', 'error');
+      }
+    } finally {
+      syncBusy = false;
+      if (btn && icon) {
+        btn.disabled = false;
+        icon.classList.remove('fa-spin');
+      }
+    }
+  };
+
+  const init = async () => {
+    // 2FA Vault Lock Check (incorporado para la Fase 3)
+    if (sessionStorage.getItem('vault_unlocked') !== 'true') {
+      window.location.replace('/verificar');
+      return;
+    }
+
+    const u = await protegerRuta(['admin']);
+    if (!u) return;
+
+    const adminName = document.getElementById('admin_name');
+    if (adminName) {
+      adminName.textContent = getNombre(u.nombre || u.usuario || 'Admin');
+    }
+
+    const loader = document.getElementById('admin_loader');
+    const content = document.getElementById('admin_content');
+
+    if (loader) loader.style.display = 'none';
+    if (content) content.style.display = 'flex';
+
+    loadKPIsCache();
+    await fetchKPIs(true); // Carga en segundo plano silenciosa
+
+    // Configurar evento de sincronización manual
+    const btnSync = document.getElementById('btn_sync');
+    if (btnSync) {
+      btnSync.addEventListener('click', () => fetchKPIs(false));
+    }
+  };
+
+  document.addEventListener('astro:page-load', init);
+</script>
