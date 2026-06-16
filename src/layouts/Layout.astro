@@ -84,7 +84,7 @@ const seoSchema = {
     <meta name="description" content={description} />
     <meta name="keywords" content={keywordContent} />
     <meta name="robots" content={robots} />
-    <meta name="generator" content={Astro.generator} />
+
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content={type === 'article' ? 'article' : 'website'} />
     <meta property="og:site_name" content={name} />
@@ -101,18 +101,16 @@ const seoSchema = {
     <script type="application/ld+json" set:html={JSON.stringify(seoSchema)} />
     <title>{title}</title>
 
-    <!-- Placeholder de persistencia para fuentes cargadas dinámicamente por wiSmart -->
-    <link id="google-fonts" data-astro-transition-persist="google-fonts" />
 
-    <!-- Precarga de alta prioridad para los estilos de iconos de FontAwesome -->
+    <!-- Carga asíncrona de estilos de iconos de FontAwesome (No bloqueante) -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'" />
 
     <!-- Habilitamos ClientRouter para navegación instantánea sin F5 -->
     <ClientRouter />
 
     <!-- Aplicación del tema síncrona inmediata para evitar parpadeo blanco (flash) -->
-    <script is:inline>(() => { const a = () => { try { const [n, c] = (localStorage.wiTema || 'Oro|#FFC107').split('|'); document.documentElement.dataset.theme = n; (document.querySelector('meta[name="theme-color"]') || document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'theme-color' }))).content = c; } catch (e) {} }; a(); document.addEventListener('astro:after-swap', a); })();</script>
+    <script is:inline>(() => { const a = () => { try { let t = localStorage.wiTema; try { const u = JSON.parse(localStorage.getItem('wiSmile') || '{}').value; if (u?.tema) t = u.tema; } catch (_) {} const [n, c] = (t || 'Oro|#FFC107').split('|'); document.documentElement.dataset.theme = n; (document.querySelector('meta[name="theme-color"]') || document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'theme-color' }))).content = c; } catch (e) {} }; a(); document.addEventListener('astro:after-swap', a); })();</script>
 
     <!-- Guardia Unificada de Rutas (Seguridad y Rendimiento) -->
     <script is:inline define:vars={{ ROUTE_ROLES }}>(() => { const c = (p) => { const a = p.replace(/\/$/, '') || '/'; const r = ROUTE_ROLES.roles[a]; if (!r) return 1; try { const u = JSON.parse(localStorage.getItem('wiSmile') || '{}').value; if (u && r.includes(u.rol)) { return ROUTE_ROLES.require2FA.includes(a) && sessionStorage.getItem('vault_unlocked') !== 'true' ? '/verificar' : 1; } } catch (e) {} return 0; }; const h = (p, e) => { const r = c(p); if (r !== 1) { if (e) e.preventDefault(); window.location.replace(r || '/'); } }; h(window.location.pathname); document.addEventListener('astro:before-preparation', (e) => h(e.to.pathname, e)); })();</script>
@@ -328,9 +326,10 @@ const seoSchema = {
     *::after {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      scroll-behavior: smooth
+      box-sizing: border-box
     }
+
+    html { scroll-behavior: smooth }
 
     * {
       font-family: var(--ff_P);
@@ -343,7 +342,7 @@ const seoSchema = {
     }
 
     body {
-      background: url('/wpuntos.svg'), var(--bg);
+      background-color: var(--bg);
     }
 
     .ad_empty {
@@ -1361,49 +1360,42 @@ const seoSchema = {
 
     <!-- Script Interactivo de Selección de Temas (Optimizado al final del Body) -->
     <script>
-      import { wiSmart } from '../lib/widev.js';
+      import { wiSmart, wiImgs } from '../lib/widev.js';
 
-      // Carga diferida de Google Fonts (Outfit y Poppins) en la primera interacción
-      wiSmart({
-        css: [
-          'https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap'
-        ]
-      });
+      wiSmart({ css: ['https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=optional'] });
+      wiImgs([{ selector: 'body', url: '/wpuntos.svg' }]);
+
+      const getTheme = () => {
+        try {
+          const u = JSON.parse(localStorage.getItem('wiSmile') || '{}').value;
+          return u?.tema || localStorage.wiTema || 'Oro|#FFC107';
+        } catch { return localStorage.wiTema || 'Oro|#FFC107'; }
+      };
 
       const applyTheme = (ths: string) => {
         if (!ths) return;
         const [name, color] = ths.split('|');
         document.documentElement.dataset.theme = name;
-        const meta = document.querySelector('meta[name="theme-color"]') || document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'theme-color' }));
-        meta.setAttribute('content', color);
+        (document.querySelector('meta[name="theme-color"]') as HTMLMetaElement ||
+          document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'theme-color' })) as HTMLMetaElement
+        ).content = color;
         localStorage.wiTema = ths;
-        document.querySelectorAll('.tema').forEach(x => x.classList.toggle('mtha', x.getAttribute('data-ths') === ths));
+        document.querySelectorAll<HTMLElement>('.tema').forEach(x => x.classList.toggle('mtha', x.dataset.ths === ths));
       };
 
       document.addEventListener('click', e => {
-        const el = (e.target as HTMLElement).closest('.tema');
-        if (el) {
-          const ths = el.getAttribute('data-ths') || '';
-          applyTheme(ths);
-          
-          // Si el usuario está logueado, actualizar de fondo su tema en Supabase de forma no bloqueante
-          try {
-            const userSession = JSON.parse(localStorage.getItem('wiSmile') || '{}').value;
-            if (userSession?.id) {
-              import('../lib/supabase.js').then(({ supabase }) => {
-                supabase.from('smiles').update({
-                  tema: ths,
-                  actualizado: new Date().toISOString()
-                }).eq('id', userSession.id)
-              });
-            }
-          } catch (err) {}
-        }
+        const el = (e.target as HTMLElement).closest<HTMLElement>('.tema');
+        if (!el) return;
+        applyTheme(el.dataset.ths || '');
+        try {
+          const u = JSON.parse(localStorage.getItem('wiSmile') || '{}').value;
+          if (u?.id) import('../lib/supabase.js').then(({ supabase }) =>
+            supabase.from('smiles').update({ tema: el.dataset.ths, actualizado: new Date().toISOString() }).eq('id', u.id)
+          );
+        } catch {}
       });
 
-      document.addEventListener('astro:page-load', () => {
-        applyTheme(localStorage.wiTema || 'Oro|#FFC107');
-      });
+      document.addEventListener('astro:page-load', () => applyTheme(getTheme()));
     </script>
   </body>
 </html>

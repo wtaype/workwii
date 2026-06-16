@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { Saludar } from '../lib/widev.js';
 import { app } from '../wii.js';
 import { seoPages } from '../lib/seo.js';
+import { supabase } from '../lib/supabase.js';
 
 const PREGUNTAS = [
   '¿Cansado de enviar decenas de currículums y solo recibir el silencio como respuesta?',
@@ -22,6 +23,32 @@ const PASOS = [
   ['2', 'Optimiza con IA', 'Nuestra IA analiza tu perfil frente a la vacante sugerida para garantizar la máxima compatibilidad.'],
   ['3', 'Conquista tu Puesto', 'Entrena en el simulador y postula con la seguridad de que tu perfil pasará cualquier filtro.'],
 ];
+
+let posts = [];
+try {
+  const { data: rawPosts, error } = await supabase
+    .from('blog')
+    .select('id, slug, titulo, descripcion, categoria, creado, imagen, vistas, likes')
+    .eq('activo', true)
+    .order('creado', { ascending: false })
+    .limit(16);
+
+  if (!error && rawPosts) {
+    posts = rawPosts.map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      titulo: p.titulo,
+      resumen: p.descripcion || '',
+      categoria: p.categoria,
+      creado: p.creado,
+      imagen: p.imagen || '/poster.webp',
+      vistas: p.vistas || 0,
+      likes: p.likes || 0
+    }));
+  }
+} catch (e) {
+  console.error('Error fetching blog posts server-side:', e);
+}
 ---
 
 <style is:global>
@@ -611,17 +638,31 @@ const PASOS = [
       <h1 class="mainh1"><i class="fas fa-graduation-cap"></i> Consejos y Estrategias Profesionales</h1>
       <p class="sec_desc">Aprende a destacar tu perfil, redactar tu trayectoria y triunfar en entrevistas</p>
       <div class="ib_grid" id="ib_grid" data-herowi="100">
-        <!-- Skeleton fallback that renders server-side -->
-        {Array(12).fill(0).map(() => (
-          <div class="ib_sk">
-            <div class="ib_sk_img shimmer"></div>
-            <div class="ib_sk_body">
-              <div class="ib_sk_cat shimmer"></div>
-              <div class="ib_sk_tit shimmer"></div>
-              <div class="ib_sk_tit ib_sk_t2 shimmer"></div>
-            </div>
-          </div>
-        ))}
+        {posts.length > 0 ? (
+          posts.map((p) => {
+            const catColors = { Animales:'#0EBEFF', Naturaleza:'#25b62a', Amor:'#ff3849', Inspiración:'#ffa726', Vida:'#6a00f5' };
+            const c = catColors[p.categoria as keyof typeof catColors] ?? 'var(--mco)';
+            const formattedDate = p.creado ? new Date(p.creado).toLocaleDateString('es-PE', { day:'numeric', month:'short', year:'numeric' }) : '';
+            return (
+              <a href={`/${p.slug || p.id || ''}`} class="ib_card">
+                <div class="ib_img" style={`background-image:url('${p.imagen || '/poster.webp'}')`}>
+                  <span class="ib_cat" style={`background:color-mix(in srgb,${c} 20%,transparent);color:${c}`}>{p.categoria || 'Blog'}</span>
+                </div>
+                <div class="ib_body">
+                  <h3 class="ib_tit">{p.titulo || 'Sin título'}</h3>
+                  <p class="ib_resumen">{(p.resumen || '').slice(0, 90)}...</p>
+                  <div class="ib_meta">
+                    <span><i class="fas fa-calendar-alt"></i> {formattedDate}</span>
+                    <span><i class="fas fa-eye"></i> {p.vistas || 0}</span>
+                    <span><i class="fas fa-heart" style="color:#fe0149"></i> {p.likes || 0}</span>
+                  </div>
+                </div>
+              </a>
+            );
+          })
+        ) : (
+          <p class="ib_empty"><i class="fas fa-dove"></i> Próximamente nuevos artículos</p>
+        )}
       </div>
       <div class="ib_footer">
         <a class="btn_sec ib_ver_mas font_o" href="/blog">
@@ -651,82 +692,11 @@ const PASOS = [
 
 <script>
   import { herowi } from '../lib/widev.js';
-  import { supabase } from '../lib/supabase.js';
 
   /** @type {ReturnType<typeof setInterval>|null} */
   let roleInterval: any = null;
 
-  const catColor = (c: string) => ({ Animales:'#0EBEFF', Naturaleza:'#25b62a', Amor:'#ff3849', Inspiración:'#ffa726', Vida:'#6a00f5' }[c] ?? 'var(--mco)');
-
-  /** @param {Record<string,any>} p */
-  const blogCard = (p: any) => {
-    const c = catColor(p.categoria);
-    return `
-      <a href="/${p.slug || p.id || ''}" class="ib_card">
-        <div class="ib_img" style="background-image:url('${p.imagen || p.portada || '/poster.webp'}')">
-          <span class="ib_cat" style="background:color-mix(in srgb,${c} 20%,transparent);color:${c}">${p.categoria || 'Blog'}</span>
-        </div>
-        <div class="ib_body">
-          <h3 class="ib_tit">${p.titulo || 'Sin título'}</h3>
-          <p class="ib_resumen">${(p.resumen || p.descripcion || '').slice(0, 90)}...</p>
-          <div class="ib_meta">
-            <span><i class="fas fa-calendar-alt"></i> ${p.creado ? new Date(p.creado).toLocaleDateString('es-PE', { day:'numeric', month:'short', year:'numeric' }) : ''}</span>
-            <span><i class="fas fa-eye"></i> ${p.vistas || 0}</span>
-            <span><i class="fas fa-heart" style="color:#fe0149"></i> ${p.likes || 0}</span>
-          </div>
-        </div>
-      </a>`;
-  };
-
   const cleanup = () => { if (roleInterval) { clearInterval(roleInterval); roleInterval = null; } };
-
-  const cargarBlog = async (hasCache: boolean) => {
-    try {
-      const { data: rawPosts, error } = await supabase
-        .from('blog')
-        .select('id, slug, titulo, descripcion, categoria, creado, imagen, vistas, likes')
-        .eq('activo', true)
-        .order('creado', { ascending: false })
-        .limit(16);
-
-      if (error) throw error;
-
-      const posts = rawPosts?.map((p: any) => ({
-        id: p.id,
-        slug: p.slug,
-        titulo: p.titulo,
-        resumen: p.descripcion || '',
-        categoria: p.categoria,
-        creado: p.creado,
-        imagen: p.imagen || '/poster.webp',
-        vistas: p.vistas || 0,
-        likes: p.likes || 0
-      })) || [];
-
-      if (!posts.length) {
-        if (!hasCache) {
-          const grid = document.getElementById('ib_grid');
-          if (grid && !grid.querySelector('.ib_card')) {
-            grid.innerHTML = '<p class="ib_empty"><i class="fas fa-dove"></i> Próximamente nuevos artículos</p>';
-          }
-        }
-        return;
-      }
-
-      try { localStorage.setItem('wi_blogs', JSON.stringify({ value: posts, expiry: Date.now() + 10800000 })); } catch(_){}
-
-      const grid = document.getElementById('ib_grid');
-      if (grid) grid.innerHTML = posts.map(blogCard).join('');
-      herowi();
-    } catch(e) {
-      if (!hasCache) {
-        const grid = document.getElementById('ib_grid');
-        if (grid && !grid.querySelector('.ib_card')) {
-          grid.innerHTML = '<p class="ib_empty"><i class="fas fa-dove"></i> Error al cargar artículos...</p>';
-        }
-      }
-    }
-  };
 
   const checkSession = () => {
     const wi = localStorage.getItem('wiSmile');
@@ -771,24 +741,6 @@ const PASOS = [
     }
 
     herowi();
-
-    let cached: any = null;
-    try {
-      const raw = localStorage.getItem('wi_blogs');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed && Date.now() < parsed.expiry) cached = parsed;
-        else localStorage.removeItem('wi_blogs');
-      }
-    } catch(_) {}
-
-    const hasCache = !!(cached && cached.value && cached.value.length);
-    if (hasCache) {
-      const grid = document.getElementById('ib_grid');
-      if (grid) grid.innerHTML = cached.value.map(blogCard).join('');
-      herowi();
-    }
-    cargarBlog(hasCache);
   };
 
   document.addEventListener('astro:page-load', init);

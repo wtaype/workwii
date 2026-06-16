@@ -264,6 +264,25 @@ export const wiSmart = (() => {
 })();
 
 
+// CARGA DIFERIDA DE IMÁGENES v1_________________________________
+export const wiImgs = (() => {
+  let done = false;
+  return (imgs) => {
+    if (done || !imgs?.length) return;
+    const apply = () => {
+      if (done) return;
+      done = true;
+      imgs.forEach(({ selector, url }) => {
+        const el = typeof selector === 'string' ? document.querySelector(selector) : selector;
+        if (el) el.style.backgroundImage = `url('${url}'), none`;
+      });
+    };
+    if (document.readyState === 'complete') {
+      ['scroll', 'click', 'mousemove', 'touchstart'].forEach(ev => document.addEventListener(ev, apply, { once: true }));
+    }
+  };
+})();
+
 // SALUDO V10.1_________________________________
 export const Saludar = () => {
   const hrs = new Date().getHours();
