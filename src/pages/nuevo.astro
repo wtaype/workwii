@@ -493,6 +493,22 @@ import { app } from '../wii.js';
   .nu_cats_grid { grid-template-columns: 1fr 1fr 1fr; }
   .nu_code { min-height: 28vh; }
 }
+.nu_counter_box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--fz_s3);
+  color: var(--tx3);
+  margin-top: 0.6vh;
+}
+.nu_status_msg {
+  font-weight: 600;
+  font-size: var(--fz_s3);
+  transition: color var(--tr_f);
+}
+.nu_status_msg.warning { color: var(--warning); }
+.nu_status_msg.success { color: var(--success); }
+.nu_status_msg.error { color: var(--error); }
 </style>
 
 <Layout title="Nueva historia" name={app} robots="noindex, nofollow">
@@ -514,25 +530,39 @@ import { app } from '../wii.js';
           
           <div class="nu_card">
             <div class="nu_card_title"><i class="fas fa-heading"></i> Título</div>
-            <input id="nu_titulo" type="text" class="nu_titulo_inp" placeholder="Guías y consejos profesionales que inspiren y aporten mucho valor" maxlength="100" required/>
-            <div class="nu_slug_box">
+            <input id="nu_titulo" type="text" class="nu_titulo_inp" placeholder="Escribe un título impactante... (Mínimo: 35, Máximo: 47)" maxlength="47" required/>
+            <div class="nu_counter_box">
+              <span id="nu_titulo_msg" class="nu_status_msg"></span>
+              <span><span id="nu_titulo_cnt">0</span>/47</span>
+            </div>
+            <div class="nu_slug_box" style="margin-top: 1.5vh;">
               <span class="nu_slug_label"><i class="fas fa-link"></i> <span id="nu_domain_lbl">workwii.vercel.app/</span></span>
-              <input id="nu_slug_inp" type="text" placeholder="mi_historia" maxlength="50" spellcheck="false"/>
+              <input id="nu_slug_inp" type="text" placeholder="mi-historia" maxlength="32" spellcheck="false"/>
               <button type="button" id="nu_slug_reset" class="nu_slug_btn" title="Regenerar"><i class="fas fa-rotate"></i></button>
             </div>
-            <div id="nu_slug_status" class="nu_slug_status"></div>
+            <div class="nu_counter_box">
+              <span id="nu_slug_msg" class="nu_status_msg"></span>
+              <span><span id="nu_slug_cnt">0</span>/32</span>
+            </div>
+            <div id="nu_slug_status" class="nu_slug_status" style="margin-top: 0.5vh;"></div>
           </div>
           
           <div class="nu_grid_seo">
             <div class="nu_card">
               <div class="nu_card_title"><i class="fas fa-align-left"></i> Resumen (Meta Description)</div>
-              <textarea id="nu_resumen" rows="3" maxlength="160" placeholder="Describe en pocas palabras..."></textarea>
-              <div class="nu_counter"><span id="nu_resumen_cnt">0</span>/160</div>
+              <textarea id="nu_resumen" rows="3" maxlength="150" placeholder="Describe en pocas palabras... (Mínimo: 100, Máximo: 150)"></textarea>
+              <div class="nu_counter_box">
+                <span id="nu_resumen_msg" class="nu_status_msg"></span>
+                <span><span id="nu_resumen_cnt">0</span>/150</span>
+              </div>
             </div>
             <div class="nu_card">
               <div class="nu_card_title"><i class="fas fa-search"></i> Palabras Clave (Meta Keywords)</div>
-              <textarea id="nu_keywords" rows="3" placeholder="curriculum, cv, ats, entrevista, empleo, workwii..."></textarea>
-              <div class="nu_hint">Separa las palabras con comas. Solo para SEO.</div>
+              <textarea id="nu_keywords" rows="3" maxlength="100" placeholder="curriculum, cv, ats, entrevista, empleo, workwii..."></textarea>
+              <div class="nu_counter_box">
+                <span id="nu_keywords_msg" class="nu_status_msg"></span>
+                <span><span id="nu_keywords_cnt">0</span>/5 palabras clave</span>
+              </div>
             </div>
           </div>
 
@@ -909,6 +939,101 @@ import { app } from '../wii.js';
   const setupEvents = (u: any) => {
     const form = document.getElementById('nu_form');
     const slugInp = document.getElementById('nu_slug_inp') as HTMLInputElement;
+    const titleInp = document.getElementById('nu_titulo') as HTMLInputElement;
+    const resumenInp = document.getElementById('nu_resumen') as HTMLTextAreaElement;
+    const keywordsInp = document.getElementById('nu_keywords') as HTMLTextAreaElement;
+
+    const updateTituloCounter = () => {
+      const cnt = document.getElementById('nu_titulo_cnt');
+      const msg = document.getElementById('nu_titulo_msg');
+      if (titleInp && cnt && msg) {
+        const len = titleInp.value.length;
+        cnt.textContent = String(len);
+        if (len === 0) {
+          msg.textContent = '';
+          msg.className = 'nu_status_msg';
+        } else if (len < 35) {
+          msg.textContent = `Te faltan ${35 - len} para tener un título ideal (Mínimo: 35)`;
+          msg.className = 'nu_status_msg warning';
+        } else {
+          msg.textContent = `Excelente título de ${len}/47`;
+          msg.className = 'nu_status_msg success';
+        }
+      }
+    };
+
+    const updateSlugCounter = () => {
+      const cnt = document.getElementById('nu_slug_cnt');
+      const msg = document.getElementById('nu_slug_msg');
+      if (slugInp && cnt && msg) {
+        const len = slugInp.value.length;
+        cnt.textContent = String(len);
+        if (len === 0) {
+          msg.textContent = '';
+          msg.className = 'nu_status_msg';
+        } else if (len < 11) {
+          msg.textContent = `Te faltan ${11 - len} para tener un enlace ideal (Mínimo: 11)`;
+          msg.className = 'nu_status_msg warning';
+        } else if (len <= 32) {
+          msg.textContent = `Excelente enlace de ${len}/32`;
+          msg.className = 'nu_status_msg success';
+        } else {
+          msg.textContent = `Te pasaste por ${len - 32}. Máximo: 32`;
+          msg.className = 'nu_status_msg error';
+        }
+      }
+    };
+
+    const updateResumenCounter = () => {
+      const cnt = document.getElementById('nu_resumen_cnt');
+      const msg = document.getElementById('nu_resumen_msg');
+      if (resumenInp && cnt && msg) {
+        const len = resumenInp.value.length;
+        cnt.textContent = String(len);
+        if (len === 0) {
+          msg.textContent = '';
+          msg.className = 'nu_status_msg';
+        } else if (len < 100) {
+          msg.textContent = `Te faltan ${100 - len} para tener una descripción ideal (Mínimo: 100)`;
+          msg.className = 'nu_status_msg warning';
+        } else if (len <= 150) {
+          msg.textContent = `Excelente descripción de ${len}/150`;
+          msg.className = 'nu_status_msg success';
+        } else {
+          msg.textContent = `Te pasaste por ${len - 150}. Máximo: 150`;
+          msg.className = 'nu_status_msg error';
+        }
+      }
+    };
+
+    const updateKeywordsCounter = () => {
+      const cnt = document.getElementById('nu_keywords_cnt');
+      const msg = document.getElementById('nu_keywords_msg');
+      if (keywordsInp && cnt && msg) {
+        const val = keywordsInp.value.trim();
+        const kwArr = val ? val.split(',').map(k => k.trim()).filter(Boolean) : [];
+        const count = kwArr.length;
+        cnt.textContent = String(count);
+        if (count === 0) {
+          msg.textContent = '';
+          msg.className = 'nu_status_msg';
+        } else if (count < 3) {
+          msg.textContent = `Te faltan ${3 - count} para tener una densidad ideal (Mínimo: 3)`;
+          msg.className = 'nu_status_msg warning';
+        } else if (count <= 5) {
+          msg.textContent = `Excelente densidad de ${count}/5`;
+          msg.className = 'nu_status_msg success';
+        } else {
+          msg.textContent = `Te pasaste por ${count - 5}. Máximo: 5`;
+          msg.className = 'nu_status_msg error';
+        }
+      }
+    };
+
+    if (titleInp) listen(titleInp, 'input', updateTituloCounter);
+    if (slugInp) listen(slugInp, 'input', updateSlugCounter);
+    if (resumenInp) listen(resumenInp, 'input', updateResumenCounter);
+    if (keywordsInp) listen(keywordsInp, 'input', updateKeywordsCounter);
 
     if (form) {
       listen(form, 'input', triggerDraftSave);
@@ -1023,7 +1148,6 @@ import { app } from '../wii.js';
     }
 
     // Slug generation on keypress/change
-    const titleInp = document.getElementById('nu_titulo');
     if (titleInp && !isEdit) {
       listen(titleInp, 'input', () => {
         if (slugInp) {
@@ -1080,14 +1204,7 @@ import { app } from '../wii.js';
       }
     }
 
-    // Character counter for resumen
-    const resumenArea = document.getElementById('nu_resumen');
-    if (resumenArea) {
-      listen(resumenArea, 'input', () => {
-        const count = document.getElementById('nu_resumen_cnt');
-        if (count) count.textContent = String((resumenArea as HTMLTextAreaElement).value.length);
-      });
-    }
+    // Character counter for resumen is handled automatically in setupEvents
 
     // Content area change
     const contentArea = document.getElementById('nu_contenido');
@@ -1325,8 +1442,7 @@ import { app } from '../wii.js';
             if (imgTopEl && prevTopEl) { imgTopEl.src = p.imagenTop; prevTopEl.classList.remove('dpn'); }
           }
 
-          const resCountEl = document.getElementById('nu_resumen_cnt');
-          if (resCountEl) resCountEl.textContent = String((p.resumen || '').length);
+          // Counters will be triggered at the end of initDashboard
           updCount();
         }
       } catch (err) {
@@ -1364,12 +1480,16 @@ import { app } from '../wii.js';
 
           if (d.tags) { tags = d.tags; renderTags(); }
           
-          const resCountEl = document.getElementById('nu_resumen_cnt');
-          if (resCountEl) resCountEl.textContent = String((d.resumen || '').length);
           updCount();
         }
       } catch (_) {}
     }
+
+    // Trigger initial counter updates after populating values
+    ['nu_titulo', 'nu_slug_inp', 'nu_resumen', 'nu_keywords'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.dispatchEvent(new Event('input'));
+    });
   };
 
   document.addEventListener('astro:page-load', initDashboard);
