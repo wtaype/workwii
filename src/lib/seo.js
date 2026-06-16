@@ -1,23 +1,23 @@
 export const seoPages = {
   inicio: {
-    title: 'WiiHope Fe, Oracion, Biblia y Paz Interior Guia',
-    description: 'Encuentra versiculos biblicos, oraciones y ayuda para ansiedad, tristeza y fe. Descubre paz, esperanza y guia espiritual diaria en WiiHope gratis hoy!',
+    title: 'Optimizar CV con IA y superar filtros - Workwii',
+    description: 'Crea tu currículum profesional con IA, optimízalo para superar filtros ATS y simula entrevistas reales. Aumenta tus opciones de encontrar trabajo ahora.',
     path: '/',
     keywords: [
-      'paz interior',
-      'oracion diaria',
-      'versiculos biblicos',
-      'ayuda para ansiedad',
-      'esperanza en Dios'
+      'crear cv',
+      'optimizar curriculum',
+      'filtros ats',
+      'entrevistas de trabajo',
+      'ia empleo'
     ],
     audience: [
-      'personas con ansiedad',
-      'personas tristes',
-      'personas buscando fe',
-      'cristianos jovenes',
-      'familias'
+      'candidatos',
+      'profesionales',
+      'desempleados',
+      'reclutadores',
+      'estudiantes'
     ],
-    intent: 'encontrar paz, fe y ayuda espiritual'
+    intent: 'optimizar curriculum y buscar trabajo con IA'
   },
   citas: {
     title: 'Citas Biblicas de Fe, Amor, Paz y Esperanza Hoy',

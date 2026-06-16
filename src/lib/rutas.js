@@ -12,7 +12,12 @@ export const NAV_CONFIG = {
     ]
   },
   usuario: {
-    left: [{ href: '/smile', ico: 'fa-house', txt: 'Dashboard' }, ...COMUN],
+    left: [
+      { href: '/smile', ico: 'fa-house', txt: 'Dashboard' },
+      { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
+      { href: '/analisar', ico: 'fa-robot', txt: 'Analizar CV' },
+      ...COMUN
+    ],
     right: [
       { href: '/plan', ico: 'fa-rocket', txt: 'Planificar' },
       { href: '/notas', ico: 'fa-note-sticky', txt: 'Notas' },
@@ -21,7 +26,12 @@ export const NAV_CONFIG = {
     ]
   },
   editor: {
-    left: [{ href: '/editor', ico: 'fa-house', txt: 'Dashboard' }, ...COMUN],
+    left: [
+      { href: '/editor', ico: 'fa-house', txt: 'Dashboard' },
+      { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
+      { href: '/analisar', ico: 'fa-robot', txt: 'Analizar CV' },
+      ...COMUN
+    ],
     right: [
       { href: '/nuevo', ico: 'fa-plus', txt: 'Nuevo Post' },
       { href: '/notas', ico: 'fa-note-sticky', txt: 'Notas' },
@@ -30,7 +40,12 @@ export const NAV_CONFIG = {
     ]
   },
   gestor: {
-    left: [{ href: '/gestor', ico: 'fa-house', txt: 'Dashboard' }, ...COMUN],
+    left: [
+      { href: '/gestor', ico: 'fa-house', txt: 'Dashboard' },
+      { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
+      { href: '/analisar', ico: 'fa-robot', txt: 'Analizar CV' },
+      ...COMUN
+    ],
     right: [
       { href: '/nuevo', ico: 'fa-plus', txt: 'Nuevo Post' },
       { href: '/notas', ico: 'fa-note-sticky', txt: 'Notas' },
@@ -42,6 +57,8 @@ export const NAV_CONFIG = {
     left: [
       { href: '/admin', ico: 'fa-globe', txt: 'Plataforma' },
       { href: '/usuarios', ico: 'fa-users', txt: 'Usuarios' },
+      { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
+      { href: '/analisar', ico: 'fa-robot', txt: 'Analizar CV' }
     ],
     right: [
       { href: '/mensajes', ico: 'fa-comments', txt: 'Mensajes' },
@@ -85,8 +102,8 @@ export function rutaRoles() {
   roles['/mensajes'] = allRoles;
   roles['/perfil'] = allRoles;
   roles['/ser-editor'] = allRoles;
-  roles['/crear-cv-ats'] = allRoles;
-  roles['/analisar-cv-ats'] = allRoles;
+  roles['/crear'] = allRoles;
+  roles['/analisar'] = allRoles;
 
   return { roles, require2FA };
 }

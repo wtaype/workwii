@@ -5,7 +5,7 @@ import { app } from '../wii.js';
 ---
 
 <!-- Guardia de Renderizado Inicial: Redirigir de inmediato si no hay token local para evitar parpadeos -->
-<script is:inline>if (!localStorage.getItem('wiSmile')) window.location.replace('/');</script>
+<script is:inline>localStorage.wiSmile||location.replace('/')</script>
 
 <style is:global>
   /* =====================================================

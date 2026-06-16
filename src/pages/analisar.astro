@@ -1,0 +1,932 @@
+---
+// src/pages/analisar.astro
+import Layout from '../layouts/Layout.astro';
+import { app } from '../wii.js';
+---
+
+<!-- Guardia de Renderizado Inicial: Redirigir de inmediato si no hay token local para evitar parpadeos -->
+<script is:inline>localStorage.wiSmile||location.replace('/')</script>
+
+<Layout title="Optimiza tu CV para Filtros ATS — Workwii" name={app}>
+  <style is:global>
+    /* ==================== CONTENEDOR PRINCIPAL ==================== */
+    .anal_ats {
+      width: 100%;
+      margin: 0 auto;
+      padding: 3vh 1.5vh 6vh;
+      display: flex;
+      flex-direction: column;
+      gap: 3.5vh;
+      font-family: var(--ff_P);
+    }
+
+    /* ==================== CABECERA HÉROE (DISEÑO PREMIUM) ==================== */
+    .ats_header {
+      text-align: center;
+      background: var(--wb);
+      border: 1px solid var(--brd);
+      border-radius: 2.2vh;
+      padding: 4.5vh 3vh;
+      box-shadow: var(--bs_l);
+      position: relative;
+      overflow: hidden;
+    }
+    .ats_header_glow {
+      position: absolute;
+      top: -50%;
+      left: -20%;
+      width: 140%;
+      height: 200%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--mco) 8%, transparent) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .ats_header_content {
+      position: relative;
+      z-index: 1;
+    }
+    .ats_header h1 {
+      font-size: var(--fz_l2);
+      font-weight: 850;
+      color: var(--tx1);
+      margin-bottom: 1.2vh;
+      letter-spacing: -0.8px;
+    }
+    .ats_header h1 span {
+      background: linear-gradient(135deg, var(--mco), var(--hva));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .ats_header p {
+      font-size: var(--fz_m2);
+      color: var(--tx3);
+      max-width: 750px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    /* ==================== GRID DE TRABAJO ==================== */
+    .ats_grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 3.5vh;
+      align-items: start;
+    }
+    
+    .ats_card {
+      background: var(--wb);
+      border: 1px solid var(--brd);
+      border-radius: 2.2vh;
+      padding: 4vh;
+      box-shadow: var(--bs_l);
+      display: flex;
+      flex-direction: column;
+      gap: 2.5vh;
+      transition: border-color var(--tr_m), box-shadow var(--tr_m);
+    }
+
+    .ats_card_tit {
+      font-size: var(--fz_m3);
+      font-weight: 800;
+      color: var(--tx1);
+      display: flex;
+      align-items: center;
+      gap: 1.2vh;
+      border-bottom: 2px solid var(--bg4);
+      padding-bottom: 1.8vh;
+      margin-bottom: 0.5vh;
+      letter-spacing: -0.3px;
+    }
+    .ats_card_tit i {
+      color: var(--mco);
+    }
+
+    /* ==================== SELECTOR DE PESTAÑAS (PILLS) ==================== */
+    .ats_tabs {
+      display: flex;
+      gap: 0.8vh;
+      background: var(--bg);
+      padding: 0.6vh;
+      border-radius: 1.2vh;
+      border: 1px solid var(--brd);
+    }
+    .ats_tab {
+      flex: 1;
+      padding: 1.4vh;
+      text-align: center;
+      border-radius: 1vh;
+      font-size: var(--fz_m1);
+      font-weight: 700;
+      color: var(--tx3);
+      cursor: pointer;
+      transition: all var(--tr_f) ease;
+      background: none;
+      border: none;
+    }
+    .ats_tab.active {
+      background: var(--mco);
+      color: var(--txa);
+      box-shadow: 0 4px 10px color-mix(in srgb, var(--mco) 20%, transparent);
+    }
+    .ats_tab:hover:not(.active) {
+      color: var(--tx1);
+      background: var(--bg4);
+    }
+
+    /* ==================== ZONA DE ARRASTRE (DROPZONE) ==================== */
+    .ats_dropzone {
+      border: 2px dashed var(--brd);
+      border-radius: 1.8vh;
+      padding: 6vh 4vh;
+      text-align: center;
+      background: var(--bg);
+      cursor: pointer;
+      transition: all var(--tr_m) ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.8vh;
+    }
+    .ats_dropzone.dragover {
+      border-color: var(--mco);
+      background: var(--bg4);
+      box-shadow: 0 0 20px color-mix(in srgb, var(--mco) 15%, transparent);
+      transform: scale(1.02);
+    }
+    .ats_dropzone i {
+      font-size: 6vh;
+      color: var(--mco);
+      opacity: 0.9;
+      transition: transform var(--tr_m);
+    }
+    .ats_dropzone:hover i {
+      transform: translateY(-0.8vh) scale(1.05);
+    }
+    .ats_dz_tit {
+      font-size: var(--fz_m2);
+      font-weight: 800;
+      color: var(--tx1);
+    }
+    .ats_dz_sub {
+      font-size: var(--fz_s3);
+      color: var(--tx3);
+      font-weight: 500;
+    }
+
+    /* Previsualización del archivo */
+    .file_preview {
+      display: flex;
+      align-items: center;
+      gap: 2vh;
+      background: var(--bg);
+      border: 1px solid var(--brd);
+      border-radius: 1.5vh;
+      padding: 2vh 2.5vh;
+      margin-top: 0.5vh;
+    }
+    .file_preview i.file_icon {
+      font-size: 4vh;
+      color: var(--mco);
+    }
+    .file_info {
+      flex: 1;
+      min-width: 0;
+    }
+    .file_name {
+      font-size: var(--fz_m1);
+      font-weight: 700;
+      color: var(--tx1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file_size {
+      font-size: var(--fz_s2);
+      color: var(--tx3);
+      font-weight: 600;
+      margin-top: 0.3vh;
+    }
+    .file_remove {
+      background: var(--bg5);
+      color: var(--error);
+      border: none;
+      border-radius: 50%;
+      width: 4vh;
+      height: 4vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: var(--fz_m2);
+      transition: all var(--tr_f);
+    }
+    .file_remove:hover {
+      background: var(--error);
+      color: var(--white);
+      transform: scale(1.1);
+    }
+
+    /* Formularios */
+    .ats_card label {
+      font-size: var(--fz_m1);
+      color: var(--tx1);
+      font-weight: 700;
+      margin-bottom: 0.2vh;
+    }
+    .ats_textarea {
+      width: 100%;
+      min-height: 28vh;
+      background: var(--bg);
+      border: 2px solid var(--bg4);
+      border-radius: 1.5vh;
+      padding: 2.2vh;
+      color: var(--tx);
+      font-size: var(--fz_m1);
+      line-height: 1.7;
+      transition: all var(--tr_m) ease;
+    }
+    .ats_textarea:focus {
+      border-color: var(--mco);
+      background: var(--wb);
+      box-shadow: 0 0 10px var(--bg4);
+    }
+
+    .char_counter {
+      align-self: flex-end;
+      font-size: var(--fz_s2);
+      color: var(--tx3);
+      margin-top: -1vh;
+      font-weight: 600;
+    }
+
+    /* Botón de Acción */
+    .ats_btn {
+      padding: 2.2vh;
+      background: var(--mco);
+      color: var(--txa);
+      border: none;
+      border-radius: 1.5vh;
+      font-size: var(--fz_m2);
+      font-weight: 800;
+      cursor: pointer;
+      transition: all var(--tr_m) ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.2vh;
+      box-shadow: 0 6px 20px color-mix(in srgb, var(--mco) 25%, transparent);
+    }
+    .ats_btn:hover:not(:disabled) {
+      transform: translateY(-0.4vh);
+      filter: brightness(1.08);
+      box-shadow: 0 10px 25px color-mix(in srgb, var(--mco) 40%, transparent);
+    }
+    .ats_btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ==================== PANTALLA DE CARGA ==================== */
+    .ats_loader {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3vh;
+      padding: 10vh 4vh;
+      text-align: center;
+    }
+    .ats_loader_spinner {
+      width: 9vh;
+      height: 9vh;
+      border: 7px solid var(--bg5);
+      border-top: 7px solid var(--mco);
+      border-radius: 50%;
+      animation: loader_spin 1s cubic-bezier(0.55, 0.085, 0.68, 0.53) infinite;
+    }
+    .ats_loader_msg {
+      font-size: var(--fz_m5);
+      font-weight: 850;
+      color: var(--tx1);
+      min-height: 4.5vh;
+      letter-spacing: -0.5px;
+    }
+    .ats_loader_sub {
+      font-size: var(--fz_m1);
+      color: var(--tx3);
+      max-width: 500px;
+      line-height: 1.5;
+    }
+
+    /* ==================== PANEL DE RESULTADOS (ATS DASHBOARD) ==================== */
+    .ats_results {
+      display: none;
+      flex-direction: column;
+      gap: 4vh;
+    }
+
+    .ats_res_summary_row {
+      display: grid;
+      grid-template-columns: 1fr 1.8fr;
+      gap: 3.5vh;
+    }
+
+    /* Tarjeta de Score circular */
+    .ats_gauge_card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5vh;
+    }
+    .ats_gauge_wrap {
+      position: relative;
+      width: 190px;
+      height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2.5vh;
+    }
+    .ats_gauge {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+    .ats_gauge_bg {
+      fill: none;
+      stroke: var(--bg4);
+      stroke-width: 8;
+    }
+    .ats_gauge_fill {
+      fill: none;
+      stroke: var(--mco);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 283;
+      stroke-dashoffset: 283;
+      transition: stroke-dashoffset 2s cubic-bezier(0.25, 0.46, 0.45, 0.94), stroke 0.6s ease;
+    }
+    .ats_gauge_text {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--ff_O);
+    }
+    .ats_gauge_num {
+      font-size: var(--fz_l2);
+      font-weight: 900;
+      color: var(--tx1);
+      letter-spacing: -1px;
+    }
+    .ats_gauge_lbl {
+      font-size: var(--fz_s2);
+      color: var(--tx3);
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      margin-top: -0.3vh;
+    }
+
+    /* Badge de estado */
+    .ats_status_badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8vh;
+      padding: 0.8vh 2vh;
+      border-radius: 5vh;
+      font-size: var(--fz_s3);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .ats_status_critico { background: rgba(255, 56, 73, 0.12); color: var(--error); border: 1px solid rgba(255, 56, 73, 0.25); }
+    .ats_status_aceptable { background: rgba(255, 167, 38, 0.12); color: var(--warning); border: 1px solid rgba(255, 167, 38, 0.25); }
+    .ats_status_excelente { background: rgba(60, 215, 65, 0.12); color: var(--success); border: 1px solid rgba(60, 215, 65, 0.25); }
+
+    /* Diagnóstico de feedback */
+    .ats_feedback_card {
+      justify-content: center;
+    }
+    .ats_feedback_title {
+      font-size: var(--fz_m4);
+      font-weight: 850;
+      color: var(--tx1);
+      margin-bottom: 2vh;
+      letter-spacing: -0.4px;
+    }
+    .ats_feedback_text {
+      font-size: var(--fz_m2);
+      color: var(--tx2);
+      line-height: 1.8;
+    }
+
+    /* Keywords Grid */
+    .ats_keyword_grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5vh;
+    }
+    .ats_kw_group {
+      background: var(--bg);
+      border: 1px solid var(--brd);
+      border-radius: 1.8vh;
+      padding: 3vh 3.5vh;
+    }
+    .ats_kw_group h4 {
+      font-size: var(--fz_m1);
+      font-weight: 800;
+      color: var(--tx1);
+      margin-bottom: 2.5vh;
+      display: flex;
+      align-items: center;
+      gap: 1vh;
+    }
+    .ats_kw_group.matched h4 i { color: var(--success); }
+    .ats_kw_group.missing h4 i { color: var(--warning); }
+    
+    .ats_badge_container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1vh;
+    }
+    .ats_badge {
+      padding: 0.8vh 1.6vh;
+      border-radius: 1vh;
+      font-size: var(--fz_s3);
+      font-weight: 700;
+      transition: all var(--tr_f) ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6vh;
+    }
+    .ats_badge.matched {
+      background: var(--wb);
+      color: var(--success);
+      border: 1px solid color-mix(in srgb, var(--success) 20%, var(--brd));
+    }
+    .ats_badge.missing {
+      background: var(--wb);
+      color: var(--warning);
+      border: 1px solid color-mix(in srgb, var(--warning) 20%, var(--brd));
+    }
+    .ats_badge:hover {
+      transform: translateY(-0.3vh) scale(1.02);
+      box-shadow: var(--bs_l);
+    }
+    .kw_empty {
+      font-size: var(--fz_m1);
+      color: var(--tx3);
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    /* Plan de acción (Recomendaciones) */
+    .ats_rec_list {
+      display: flex;
+      flex-direction: column;
+      gap: 2vh;
+    }
+    .rec_card {
+      background: var(--wb);
+      border: 1px solid var(--brd);
+      border-radius: 1.8vh;
+      padding: 2.5vh 3vh;
+      display: flex;
+      align-items: start;
+      gap: 2.5vh;
+      transition: all var(--tr_m) ease;
+    }
+    .rec_card:hover {
+      transform: translateX(6px);
+      box-shadow: var(--bs_l);
+      border-color: var(--mco);
+    }
+    .rec_card.pri_Alta { border-left: 6px solid var(--error); }
+    .rec_card.pri_Media { border-left: 6px solid var(--warning); }
+    .rec_card.pri_Baja { border-left: 6px solid var(--info); }
+    
+    .rec_pri_badge {
+      padding: 0.5vh 1.5vh;
+      border-radius: 5vh;
+      font-size: var(--fz_s4);
+      font-weight: 800;
+      margin-bottom: 1vh;
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .rec_pri_badge.Alta { background: rgba(255, 56, 73, 0.1); color: var(--error); }
+    .rec_pri_badge.Media { background: rgba(255, 167, 38, 0.1); color: var(--warning); }
+    .rec_pri_badge.Baja { background: rgba(0, 168, 230, 0.1); color: var(--info); }
+
+    .rec_content {
+      flex: 1;
+    }
+    .rec_section {
+      font-size: var(--fz_s1);
+      font-weight: 800;
+      color: var(--tx3);
+      text-transform: uppercase;
+      margin-bottom: 0.5vh;
+      letter-spacing: 0.8px;
+    }
+    .rec_advice {
+      font-size: var(--fz_m2);
+      color: var(--tx1);
+      line-height: 1.7;
+      font-weight: 600;
+    }
+
+    /* Advertencias ATS */
+    .ats_warning_box {
+      background: rgba(255, 167, 38, 0.06);
+      border: 1px solid rgba(255, 167, 38, 0.2);
+      border-left: 6px solid var(--warning);
+      border-radius: 1.8vh;
+      padding: 3.5vh;
+      display: flex;
+      flex-direction: column;
+      gap: 2vh;
+    }
+    .ats_warn_title {
+      font-size: var(--fz_m2);
+      font-weight: 800;
+      color: var(--warning);
+      display: flex;
+      align-items: center;
+      gap: 1vh;
+    }
+    .ats_warn_item {
+      font-size: var(--fz_m1);
+      color: var(--tx1);
+      display: flex;
+      align-items: start;
+      gap: 1.2vh;
+      font-weight: 500;
+    }
+    .ats_warn_item i {
+      color: var(--warning);
+      margin-top: 0.4vh;
+    }
+
+    /* Botones del Dashboard */
+    .ats_res_actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2.5vh;
+      border-top: 2px solid var(--bg4);
+      padding-top: 4vh;
+    }
+    .ats_btn_sec {
+      padding: 1.8vh 3.5vh;
+      background: none;
+      color: var(--tx1);
+      border: 2px solid var(--brd);
+      border-radius: 1.5vh;
+      font-size: var(--fz_m2);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--tr_m);
+      display: inline-flex;
+      align-items: center;
+      gap: 1vh;
+    }
+    .ats_btn_sec:hover {
+      border-color: var(--tx1);
+      background: var(--bg4);
+      transform: translateY(-0.3vh);
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 950px) {
+      .ats_grid {
+        grid-template-columns: 1fr;
+      }
+      .ats_res_summary_row {
+        grid-template-columns: 1fr;
+      }
+      .ats_keyword_grid {
+        grid-template-columns: 1fr;
+      }
+      .ats_res_actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+      }
+      .ats_btn_sec {
+        justify-content: center;
+      }
+    }
+
+    /* Barra de progreso de subida */
+    .upload_progress_container {
+      display: none;
+      width: 100%;
+      background: var(--bg4);
+      border: 1px solid var(--brd);
+      border-radius: 1.5vh;
+      padding: 2.2vh;
+      transition: all var(--tr_m) ease;
+    }
+    .upload_progress_header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: var(--fz_m1);
+      font-weight: 700;
+      color: var(--tx1);
+      margin-bottom: 1.5vh;
+    }
+    .upload_progress_label {
+      display: flex;
+      align-items: center;
+      gap: 1vh;
+    }
+    .upload_progress_label i {
+      color: var(--mco);
+      animation: pulse 1.5s infinite;
+    }
+    .upload_progress_percent {
+      font-family: var(--ff_O);
+      color: var(--mco);
+    }
+    .upload_progress_bar_bg {
+      width: 100%;
+      height: 1.2vh;
+      background: var(--bg);
+      border-radius: 5vh;
+      overflow: hidden;
+      border: 1px solid var(--brd);
+    }
+    .upload_progress_bar_fill {
+      width: 0%;
+      height: 100%;
+      background: var(--mco);
+      border-radius: 5vh;
+      transition: width 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+  </style>
+
+  <div class="anal_ats">
+    
+    <!-- CABECERA HÉROE -->
+    <header class="ats_header">
+      <div class="ats_header_glow"></div>
+      <div class="ats_header_content">
+        <h1>Optimiza tu CV para <span>Filtros ATS</span></h1>
+        <p>Sube tu currículum (PDF o Word) o copia el texto directamente. Te diremos el nivel de compatibilidad con tu puesto de interés y cómo mejorar paso a paso para pasar la selección.</p>
+      </div>
+    </header>
+
+    <!-- FORMULARIO DE ENTRADA -->
+    <main class="ats_grid" id="atsWorkspace">
+      
+      <!-- COLUMNA IZQUIERDA: CURRICULUM -->
+      <div class="ats_card">
+        <h2 class="ats_card_tit"><i class="fas fa-file-invoice"></i> Tu Currículum Vitae</h2>
+        
+        <!-- Tabs de selector -->
+        <div class="ats_tabs">
+          <button class="ats_tab active" id="tabUpload">Subir Archivo</button>
+          <button class="ats_tab" id="tabText">Pegar Texto</button>
+        </div>
+
+        <!-- panel A: Dropzone de archivos -->
+        <div id="panelUpload" style="display: flex; flex-direction: column; gap: 2vh;">
+          <div class="ats_dropzone" id="atsDropzone">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span class="ats_dz_tit">Arrastra tu archivo aquí</span>
+            <span class="ats_dz_sub">Formatos soportados: PDF y Word (.docx) — Hasta 4MB</span>
+            <input type="file" id="fileInput" accept=".pdf,.docx" style="display: none;">
+          </div>
+          
+          <!-- Contenedor de progreso de subida -->
+          <div id="uploadProgressContainer" class="upload_progress_container">
+            <div class="upload_progress_header">
+              <span class="upload_progress_label">
+                <i class="fas fa-spinner fa-spin"></i> Subiendo archivo...
+              </span>
+              <span id="uploadProgressPercent" class="upload_progress_percent">0%</span>
+            </div>
+            <div class="upload_progress_bar_bg">
+              <div id="uploadProgressBar" class="upload_progress_bar_fill"></div>
+            </div>
+          </div>
+
+          <div id="filePreviewContainer" style="display: none;"></div>
+        </div>
+
+        <!-- panel B: Entrada de texto manual -->
+        <div id="panelText" style="display: none; flex-direction: column; gap: 2vh;">
+          <label for="cvTextarea">Contenido de tu Currículum</label>
+          <textarea id="cvTextarea" class="ats_textarea" placeholder="Pega aquí toda la información de tu currículum (Experiencia, Educación, Datos de contacto, etc.)..."></textarea>
+          <span class="char_counter" id="cvCounter">0 / 25,000 caracteres</span>
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA: OFERTA LABORAL -->
+      <div class="ats_card">
+        <h2 class="ats_card_tit"><i class="fas fa-briefcase"></i> Requisitos del Puesto</h2>
+        
+        <label for="jobTextarea">Descripción de la Vacante</label>
+        <textarea id="jobTextarea" class="ats_textarea" placeholder="Pega los requisitos, habilidades clave, responsabilidades y descripción del puesto laboral a postular..."></textarea>
+        <span class="char_counter" id="jobCounter">0 / 15,000 caracteres</span>
+
+        <button id="btnAnalyze" class="ats_btn" disabled>
+          <i class="fas fa-magic"></i> Analizar Compatibilidad con IA
+        </button>
+      </div>
+
+    </main>
+
+    <!-- PANTALLA DE CARGA -->
+    <section class="ats_card ats_loader" id="atsLoader">
+      <div class="ats_loader_spinner"></div>
+      <h3 class="ats_loader_msg" id="loaderMsg">Leyendo archivo...</h3>
+      <p class="ats_loader_sub">Nuestra Inteligencia Artificial está procesando tu archivo, buscando palabras clave y evaluando el formato. Esto puede tomar unos segundos.</p>
+    </section>
+
+    <!-- RESULTADOS DETALLADOS -->
+    <section class="ats_results" id="atsResults">
+      
+      <!-- Score y Resumen Ejecutivo -->
+      <div class="ats_res_summary_row">
+        
+        <!-- Círculo de puntuación circular -->
+        <div class="ats_card ats_gauge_card">
+          <h3 class="ats_card_tit" style="margin-bottom: 2vh; border-bottom: none; padding-bottom: 0;"><i class="fas fa-chart-line"></i> Coincidencia</h3>
+          <div class="ats_gauge_wrap">
+            <svg class="ats_gauge" viewBox="0 0 100 100">
+              <circle class="ats_gauge_bg" cx="50" cy="50" r="45"></circle>
+              <circle class="ats_gauge_fill" cx="50" cy="50" r="45" id="gaugeCircle"></circle>
+            </svg>
+            <div class="ats_gauge_text">
+              <span class="ats_gauge_num" id="gaugeNum">0%</span>
+              <span class="ats_gauge_lbl">ATS Match</span>
+            </div>
+          </div>
+          <span class="ats_status_badge" id="gaugeStatus">Excelente</span>
+        </div>
+
+        <!-- Resumen del informe -->
+        <div class="ats_card ats_feedback_card">
+          <h3 class="ats_feedback_title">Análisis de Compatibilidad</h3>
+          <p class="ats_feedback_text" id="resultSummary">Evaluando tu currículum con Inteligencia Artificial...</p>
+        </div>
+
+      </div>
+
+      <!-- Palabras clave (Matched vs Missing) -->
+      <div class="ats_card">
+        <h3 class="ats_card_tit"><i class="fas fa-tags"></i> Análisis de Palabras Clave (Keywords)</h3>
+        <p style="margin-bottom: 2.5vh; color: var(--tx3); font-size: var(--fz_m1); font-weight: 500;">Los algoritmos de filtrado ATS buscan coincidencia de términos exactos en tu currículum. Añade las palabras clave faltantes para que tu currículum logre calificar con mayor relevancia.</p>
+        
+        <div class="ats_keyword_grid">
+          <div class="ats_kw_group matched">
+            <h4><i class="fas fa-check-circle"></i> Palabras clave detectadas</h4>
+            <div class="ats_badge_container" id="matchedKeywordsContainer"></div>
+          </div>
+          <div class="ats_kw_group missing">
+            <h4><i class="fas fa-exclamation-triangle"></i> Palabras clave que debes agregar</h4>
+            <div class="ats_badge_container" id="missingKeywordsContainer"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guía y Plan de Acción -->
+      <div class="ats_card">
+        <h3 class="ats_card_tit"><i class="fas fa-list-check"></i> Plan de Acción y Cambios Sugeridos</h3>
+        <p style="margin-bottom: 2.5vh; color: var(--tx3); font-size: var(--fz_m1); font-weight: 500;">A continuación se detalla la lista de cambios prioritarios que debes realizar en tu CV para superar con éxito la prueba del robot.</p>
+        
+        <div class="ats_rec_list" id="recommendationsContainer"></div>
+      </div>
+
+      <!-- Warnings de Formato ATS -->
+      <div class="ats_warning_box" id="warningBox" style="display: none;">
+        <h3 class="ats_warn_title"><i class="fas fa-exclamation-circle"></i> Advertencias de Legibilidad del Formato</h3>
+        <div id="warningList" style="display: flex; flex-direction: column; gap: 1.5vh;"></div>
+      </div>
+
+      <!-- Botones Acciones -->
+      <div class="ats_res_actions">
+        <button class="ats_btn_sec" id="btnBack">
+          <i class="fas fa-arrow-left"></i> Nuevo Análisis
+        </button>
+        <button class="ats_btn" id="btnCopyReport">
+          <i class="fas fa-copy"></i> Copiar Guía de Mejoras
+        </button>
+      </div>
+
+    </section>
+
+  </div>
+</Layout>
+
+<script>
+  import { protegerRuta } from '../lib/auth.js';
+  import { wiRateLimit, Notificacion } from '../lib/widev.js';
+  import { initEntrada, getCvData, getJobDescription, resetEntrada } from '../lib/analisar/entrada.js';
+  import { analizarCvConGemini } from '../lib/analisar/analisis.js';
+  import { initResultado, displayResults, copyActionPlan, resetResults } from '../lib/analisar/resultado.js';
+
+  // DOM Elements para control general
+  let atsWorkspace: HTMLElement | null;
+  let atsLoader: HTMLElement | null;
+  let loaderMsg: HTMLElement | null;
+  let btnAnalyze: HTMLButtonElement | null;
+
+  const init = async () => {
+    // 1. Guardia de seguridad
+    const uLocal = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
+    if (!uLocal) return;
+
+    // Obtener referencias de elementos generales
+    atsWorkspace = document.getElementById('atsWorkspace');
+    atsLoader = document.getElementById('atsLoader');
+    loaderMsg = document.getElementById('loaderMsg');
+    btnAnalyze = document.getElementById('btnAnalyze') as HTMLButtonElement;
+
+    // 2. Inicializar Módulos de Entrada y Resultados
+    initEntrada(validateForm);
+    initResultado();
+
+    // 3. Registrar eventos para botones de acción principales
+    btnAnalyze?.addEventListener('click', startAnalysis);
+    document.getElementById('btnBack')?.addEventListener('click', resetWorkspace);
+    document.getElementById('btnCopyReport')?.addEventListener('click', copyActionPlan);
+  };
+
+  const validateForm = (isValid: boolean) => {
+    if (btnAnalyze) btnAnalyze.disabled = !isValid;
+  };
+
+  const startAnalysis = async () => {
+    // Validar límite diario (Anti-Abuso)
+    const rate = wiRateLimit('ats_cv_analysis', 5, 'dia');
+    if (!rate.ok) {
+      Notificacion(`Límite diario alcanzado (5 análisis). Intenta nuevamente en ${rate.min} minutos.`, 'warning', 5000);
+      return;
+    }
+
+    if (atsWorkspace) atsWorkspace.style.display = 'none';
+    if (atsLoader) atsLoader.style.display = 'flex';
+
+    // Mensajes animados de carga
+    const messages = [
+      'Leyendo currículum...',
+      'Buscando palabras clave en el puesto...',
+      'Comparando términos técnicos...',
+      'Analizando la estructura y legibilidad...',
+      'Evaluando si el diseño confunde a los robots ATS...',
+      'Redactando tu plan de mejoras personalizado...'
+    ];
+    let msgIndex = 0;
+    const msgTimer = setInterval(() => {
+      if (loaderMsg) {
+        loaderMsg.textContent = messages[msgIndex];
+        msgIndex = (msgIndex + 1) % messages.length;
+      }
+    }, 2500);
+
+    try {
+      const cvInfo = getCvData();
+      const jobDesc = getJobDescription();
+
+      // Llamar al servicio aislado de Gemini
+      const report = await analizarCvConGemini(cvInfo.data, jobDesc, cvInfo.type);
+
+      rate.fail(); // Registrar consumo exitoso en el navegador
+
+      clearInterval(msgTimer);
+      displayResults(report);
+
+    } catch (err) {
+      console.error(err);
+      clearInterval(msgTimer);
+      Notificacion('No se pudo completar el análisis con la IA. Verifica tu conexión e intenta de nuevo.', 'error');
+      resetWorkspace();
+    }
+  };
+
+  const resetWorkspace = () => {
+    resetResults();
+    resetEntrada();
+    if (btnAnalyze) btnAnalyze.disabled = true;
+  };
+
+  // Inicializar hooks de Astro
+  document.addEventListener('astro:page-load', init);
+</script>

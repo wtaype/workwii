@@ -1,0 +1,1042 @@
+---
+// src/pages/crear.astro
+// Creador de CV ATS interactivo con Optimización de IA (Gemini) y soporte de Supabase
+import Layout from '../layouts/Layout.astro';
+import { app } from '../wii.js';
+---
+
+<!-- Guardia de Renderizado Inicial: Redirigir de inmediato si no hay token local -->
+<script is:inline>localStorage.wiSmile||location.replace('/')</script>
+
+<Layout title="Crea tu CV ATS con IA — Workwii" name={app}>
+  <style is:global>
+    /* =========================================================================
+       CREAR.CSS — Estilos Premium del Creador de CV ATS
+       ========================================================================= */
+    .cr_wrap {
+      width: 100%;
+      margin: 0 auto;
+      padding: 3vh 1.5vh 6vh;
+      font-family: var(--ff_P);
+      color: var(--tx);
+    }
+    .cr_header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 3vh;
+      margin-bottom: 4vh;
+      border-bottom: 1px solid var(--brd);
+      padding-bottom: 3vh;
+    }
+    .cr_header_left h1 {
+      font-size: var(--fz_l1);
+      font-weight: 800;
+      color: var(--tx1);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 1.5vh;
+      margin: 0;
+    }
+    .cr_header_left h1 span {
+      background: linear-gradient(135deg, var(--mco), var(--hva));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .cr_header_left p {
+      font-size: var(--fz_m1);
+      color: var(--tx3);
+      margin-top: 0.8vh;
+      margin-bottom: 0;
+    }
+    .cr_progress_bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      margin-bottom: 5vh;
+      padding: 0 4vw;
+    }
+    .cr_progress_line {
+      position: absolute;
+      top: 50%;
+      left: 8vw;
+      right: 8vw;
+      height: 3px;
+      background: var(--brd);
+      transform: translateY(-50%);
+      z-index: 0;
+    }
+    .cr_progress_fill {
+      height: 100%;
+      width: 0%;
+      background: var(--mco);
+      transition: width 0.4s ease;
+    }
+    .cr_step_node {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1vh;
+      cursor: pointer;
+    }
+    .cr_step_circle {
+      width: 5vh;
+      height: 5vh;
+      border-radius: 50%;
+      background: var(--wb);
+      border: 2px solid var(--brd);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--tx3);
+      transition: all 0.3s ease;
+    }
+    .cr_step_label {
+      font-size: var(--fz_s3);
+      font-weight: 600;
+      color: var(--tx3);
+      transition: all 0.3s ease;
+    }
+    .cr_step_node.active .cr_step_circle {
+      border-color: var(--mco);
+      background: var(--mco);
+      color: #fff;
+      box-shadow: 0 0 12px color-mix(in srgb, var(--mco) 40%, transparent);
+    }
+    .cr_step_node.active .cr_step_label {
+      color: var(--mco);
+      font-weight: 700;
+    }
+    .cr_step_node.completed .cr_step_circle {
+      border-color: var(--mco);
+      background: color-mix(in srgb, var(--mco) 10%, var(--wb));
+      color: var(--mco);
+    }
+    .cr_step_node.completed .cr_step_label {
+      color: var(--tx1);
+    }
+    .cr_main_grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 4vw;
+      align-items: start;
+    }
+    .cr_editor_panel {
+      background: var(--wb);
+      border: 1px solid var(--brd);
+      border-radius: 2.2vh;
+      padding: 4vh;
+      box-shadow: var(--bs_l);
+    }
+    .cr_form_step {
+      display: none;
+      animation: cr_fadeIn 0.4s ease both;
+    }
+    .cr_form_step.active {
+      display: block;
+    }
+    @keyframes cr_fadeIn {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .cr_step_title {
+      font-size: var(--fz_l1);
+      font-weight: 800;
+      color: var(--tx1);
+      margin-top: 0;
+      margin-bottom: 3vh;
+      display: flex;
+      align-items: center;
+      gap: 1.2vh;
+      letter-spacing: -0.3px;
+    }
+    .cr_step_title i {
+      color: var(--mco);
+    }
+    .cr_step_subtitle {
+      font-size: var(--fz_m4);
+      font-weight: 700;
+      color: var(--tx1);
+      margin: 0;
+    }
+    .cr_step_header_action {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3vh;
+    }
+    .cr_form_group_grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5vh 2vw;
+    }
+    .cr_form_group {
+      display: flex;
+      flex-direction: column;
+      gap: 1vh;
+    }
+    .cr_form_group.full_width {
+      grid-column: span 2;
+    }
+    .cr_form_group label {
+      font-size: var(--fz_s2);
+      font-weight: 700;
+      color: var(--tx2);
+    }
+    .cr_form_group input,
+    .cr_form_group textarea,
+    .cr_form_group select {
+      width: 100%;
+      padding: 1.5vh 2vh;
+      border-radius: 1.2vh;
+      border: 1px solid var(--brd);
+      background: var(--bg);
+      color: var(--tx);
+      font-family: inherit;
+      font-size: var(--fz_m1);
+      transition: all 0.3s ease;
+    }
+    .cr_form_group input:focus,
+    .cr_form_group textarea:focus,
+    .cr_form_group select:focus {
+      border-color: var(--mco);
+      background: var(--wb);
+      outline: none;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--mco) 10%, transparent);
+    }
+    .cr_help_text {
+      font-size: var(--fz_s3);
+      color: var(--tx3);
+      line-height: 1.35;
+    }
+    .cr_btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1vh;
+      padding: 1.5vh 3vh;
+      border-radius: 1.4vh;
+      font-weight: 700;
+      font-size: var(--fz_m1);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+    .cr_btn.primary {
+      background: var(--mco);
+      color: #fff;
+    }
+    .cr_btn.primary:hover {
+      background: var(--hva);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px color-mix(in srgb, var(--mco) 30%, transparent);
+    }
+    .cr_btn.secondary {
+      background: var(--bg);
+      border-color: var(--brd);
+      color: var(--tx1);
+    }
+    .cr_btn.secondary:hover {
+      background: var(--wb);
+      border-color: var(--mco);
+      color: var(--mco);
+    }
+    .cr_btn.outline {
+      background: transparent;
+      border-color: var(--brd);
+      color: var(--tx2);
+    }
+    .cr_btn.outline:hover {
+      background: var(--bg);
+      color: var(--tx1);
+    }
+    .cr_btn.small {
+      padding: 1vh 2vh;
+      font-size: var(--fz_s2);
+      border-radius: 1vh;
+    }
+    .cr_btn.large {
+      padding: 2vh 4vh;
+      font-size: var(--fz_m3);
+      border-radius: 1.8vh;
+    }
+    .cr_btn.danger {
+      background: color-mix(in srgb, var(--warning) 10%, var(--wb));
+      color: var(--warning);
+      border-color: color-mix(in srgb, var(--warning) 20%, transparent);
+    }
+    .cr_btn.danger:hover {
+      background: var(--warning);
+      color: #fff;
+    }
+    .cr_btn.disabled,
+    .cr_btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    .cr_dynamic_list {
+      display: flex;
+      flex-direction: column;
+      gap: 3vh;
+    }
+    .cr_list_item_card {
+      border: 1px solid var(--brd);
+      border-radius: 1.6vh;
+      padding: 3vh;
+      background: var(--bg5);
+      position: relative;
+      animation: cr_cardSlide 0.3s ease;
+    }
+    @keyframes cr_cardSlide {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .cr_item_card_header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5vh;
+      border-bottom: 1px dashed var(--brd);
+      padding-bottom: 1.5vh;
+    }
+    .cr_item_card_header h4 {
+      font-size: var(--fz_m2);
+      font-weight: 700;
+      color: var(--tx2);
+      margin: 0;
+    }
+    .cr_ai_opt_trigger_bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1vh;
+    }
+    .cr_btn_opt_ai {
+      background: linear-gradient(135deg, color-mix(in srgb, var(--mco) 8%, var(--wb)), color-mix(in srgb, var(--hva) 8%, var(--wb)));
+      border: 1px dashed var(--mco);
+      color: var(--mco);
+      padding: 0.8vh 1.8vh;
+      border-radius: 1vh;
+      font-size: var(--fz_s2);
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8vh;
+      transition: all 0.25s ease;
+    }
+    .cr_btn_opt_ai:hover {
+      background: var(--mco);
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px color-mix(in srgb, var(--mco) 20%, transparent);
+    }
+    .cr_btn_opt_ai i {
+      animation: cr_sparkle 2s infinite ease-in-out;
+    }
+    @keyframes cr_sparkle {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.2) rotate(15deg); opacity: 1; }
+    }
+    .cr_navigation_actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4vh;
+      border-top: 1px solid var(--brd);
+      padding-top: 3vh;
+    }
+    .cr_preview_panel {
+      background: var(--wb);
+      border: 1px solid var(--brd);
+      border-radius: 2.2vh;
+      padding: 3vh;
+      position: sticky;
+      top: 4vh;
+      box-shadow: var(--bs_l);
+    }
+    .cr_preview_header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--brd);
+      padding-bottom: 2vh;
+      margin-bottom: 3vh;
+      font-size: var(--fz_s2);
+      font-weight: 700;
+      color: var(--tx3);
+    }
+    .cr_preview_header span {
+      display: flex;
+      align-items: center;
+      gap: 1vh;
+    }
+    #cr_btn_toggle_mobile {
+      display: none;
+    }
+    
+    /* Estilos del Documento A4 Estándar ATS */
+    .cr_cv_document {
+      background: #fff;
+      color: #333;
+      padding: 4vh;
+      border: 1px solid #ddd;
+      border-radius: 1vh;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      min-height: 29.7cm;
+      max-width: 100%;
+      margin: 0 auto;
+      font-family: 'Times New Roman', Times, Georgia, serif;
+      font-size: 11pt;
+      line-height: 1.45;
+    }
+    .cr_cv_header {
+      text-align: center;
+      margin-bottom: 3vh;
+    }
+    .cr_cv_name {
+      font-size: 20pt;
+      font-weight: 700;
+      color: #111;
+      margin: 0 0 0.5vh;
+      letter-spacing: -0.5px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .cr_cv_title {
+      font-size: 12pt;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 1.5vh;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .cr_cv_contact {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.5vw;
+      font-size: 9.5pt;
+      color: #555;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .cr_cv_contact span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6vh;
+    }
+    .cr_cv_body {
+      display: flex;
+      flex-direction: column;
+      gap: 3.5vh;
+    }
+    .cr_cv_section {
+      width: 100%;
+    }
+    .cr_cv_section_title {
+      font-size: 12pt;
+      font-weight: 700;
+      color: #111;
+      text-transform: uppercase;
+      margin: 0 0 0.8vh;
+      letter-spacing: 0.8px;
+      font-family: Arial, Helvetica, sans-serif;
+      border-bottom: 1.5px solid #222;
+      padding-bottom: 0.3vh;
+    }
+    .cr_cv_text {
+      font-size: 10.5pt;
+      color: #333;
+      margin: 0;
+      text-align: justify;
+      white-space: pre-wrap;
+    }
+    .cr_cv_list_items {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5vh;
+    }
+    .cr_cv_item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5vh;
+    }
+    .cr_cv_item_row {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      color: #111;
+      font-size: 11pt;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .cr_cv_item_subrow {
+      display: flex;
+      justify-content: space-between;
+      font-style: italic;
+      color: #444;
+      font-size: 10pt;
+    }
+    .cr_cv_item_desc {
+      margin: 0.6vh 0 0;
+      padding-left: 2.5vh;
+      font-size: 10.5pt;
+      color: #333;
+    }
+    .cr_cv_item_desc ul {
+      margin: 0;
+      padding-left: 0;
+      list-style-type: square;
+    }
+    .cr_cv_item_desc li {
+      margin-bottom: 0.4vh;
+      text-align: justify;
+    }
+    .cr_cv_skills_grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1vh;
+      font-size: 10.5pt;
+    }
+    .cr_cv_skills_grid div {
+      display: flex;
+      gap: 1vh;
+    }
+    .cr_cv_skills_grid strong {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #111;
+      min-width: 110px;
+    }
+    .cr_divider {
+      height: 1px;
+      background: var(--brd);
+      margin: 3.5vh 0;
+    }
+    .cr_finish_message {
+      text-align: center;
+      padding: 4vh 2vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2vh;
+    }
+    .cr_success_icon {
+      font-size: 7vh;
+      color: var(--success);
+    }
+    .cr_finish_message h3 {
+      font-size: var(--fz_l3);
+      font-weight: 800;
+      color: var(--tx1);
+      margin: 0;
+    }
+    .cr_finish_message p {
+      font-size: var(--fz_m1);
+      color: var(--tx3);
+      max-width: 500px;
+      line-height: 1.5;
+      margin: 0;
+    }
+    .cr_tip_text {
+      background: var(--bg5);
+      border: 1px solid var(--brd);
+      border-radius: 1.5vh;
+      padding: 2vh;
+      font-size: var(--fz_s2) !important;
+      text-align: left;
+    }
+    
+    /* Estilos del Modal IA */
+    .cr_modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .cr_modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .cr_modal_content {
+      background: var(--wb);
+      border: 1px solid var(--brd);
+      border-radius: 2.2vh;
+      width: 90%;
+      max-width: 900px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+    .cr_modal.active .cr_modal_content {
+      transform: translateY(0);
+    }
+    .cr_modal_header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3vh 4vh;
+      border-bottom: 1px solid var(--brd);
+    }
+    .cr_modal_header h3 {
+      font-size: var(--fz_m4);
+      font-weight: 800;
+      color: var(--tx1);
+      display: flex;
+      align-items: center;
+      gap: 1vh;
+      margin: 0;
+    }
+    .cr_modal_header h3 i {
+      color: var(--mco);
+    }
+    .cr_modal_close {
+      background: transparent;
+      border: none;
+      font-size: 2.5rem;
+      color: var(--tx3);
+      cursor: pointer;
+      line-height: 1;
+    }
+    .cr_modal_body {
+      padding: 4vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2vh;
+    }
+    .cr_ai_diff_grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3vh;
+      margin-top: 2vh;
+    }
+    .cr_ai_diff_card {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5vh;
+    }
+    .cr_ai_diff_card h4 {
+      font-size: var(--fz_s2);
+      font-weight: 700;
+      color: var(--tx3);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin: 0;
+    }
+    .cr_ai_text_box {
+      border: 1px solid var(--brd);
+      border-radius: 1.5vh;
+      padding: 2.5vh;
+      background: var(--bg);
+      min-height: 200px;
+      font-size: var(--fz_m1);
+      line-height: 1.5;
+      color: var(--tx1);
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .cr_ai_text_box.success {
+      border-color: color-mix(in srgb, var(--success) 30%, transparent);
+      background: color-mix(in srgb, var(--success) 4%, var(--wb));
+    }
+    .cr_ai_text_box.success:focus {
+      outline: none;
+      border-color: var(--success);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 15%, transparent);
+    }
+    .cr_modal_footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 2vh;
+      padding: 3vh 4vh;
+      border-top: 1px solid var(--brd);
+      background: var(--bg5);
+    }
+    .cr_ai_loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2vh;
+      min-height: 200px;
+      border: 1px dashed var(--brd);
+      border-radius: 1.5vh;
+      background: var(--bg);
+      color: var(--tx3);
+    }
+    .cr_ai_loading i {
+      font-size: 3rem;
+      color: var(--mco);
+    }
+    .cr_ai_loading p {
+      margin: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .cr_main_grid {
+        grid-template-columns: 1fr;
+      }
+      .cr_preview_panel {
+        position: static;
+        box-shadow: none;
+        display: none;
+      }
+      .cr_preview_panel.active_mobile {
+        display: block;
+      }
+      .cr_editor_panel.hide_mobile {
+        display: none;
+      }
+      #cr_btn_toggle_mobile {
+        display: inline-flex;
+      }
+      .cr_progress_bar {
+        padding: 0;
+      }
+      .cr_progress_line {
+        left: 10vw;
+        right: 10vw;
+      }
+    }
+
+    .dpn {
+      display: none !important;
+    }
+
+    /* Reglas de impresión limpias para PDF sin Header/Footer */
+    @media print {
+      body, html {
+        background: #fff !important;
+        color: #000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      header, footer, nav, .cr_header, .cr_progress_bar, .cr_editor_panel, .cr_preview_header, .cr_navigation_actions, .cr_modal, #cr_btn_toggle_mobile, #cr_btn_print {
+        display: none !important;
+      }
+      .cr_wrap {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+      }
+      .cr_main_grid {
+        display: block !important;
+      }
+      .cr_preview_panel {
+        display: block !important;
+        width: 100% !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+      }
+      .cr_cv_document {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        min-height: auto !important;
+        color: #000 !important;
+        font-family: 'Times New Roman', Times, Georgia, serif !important;
+        font-size: 11pt !important;
+      }
+      .cr_cv_section_title {
+        border-bottom: 1.5px solid #000 !important;
+        color: #000 !important;
+      }
+    }
+  </style>
+
+  <div class="cr_wrap">
+    <!-- Header -->
+    <div class="cr_header">
+      <div class="cr_header_left">
+        <h1><i class="fas fa-file-signature"></i> Creador de CV ATS <span>con IA</span></h1>
+        <p>Diseña tu currículum optimizado paso a paso y supera los sistemas de filtrado de selección ATS.</p>
+      </div>
+      <div class="cr_header_right">
+        <button id="cr_btn_print" class="cr_btn primary"><i class="fas fa-print"></i> Imprimir / PDF</button>
+      </div>
+    </div>
+
+    <!-- Wizard Progress Bar -->
+    <div class="cr_progress_bar">
+      <div class="cr_progress_line"><div id="cr_progress_fill" class="cr_progress_fill"></div></div>
+      <div class="cr_step_node active" data-step="1">
+        <div class="cr_step_circle">1</div>
+        <div class="cr_step_label">Contacto</div>
+      </div>
+      <div class="cr_step_node" data-step="2">
+        <div class="cr_step_circle">2</div>
+        <div class="cr_step_label">Experiencia</div>
+      </div>
+      <div class="cr_step_node" data-step="3">
+        <div class="cr_step_circle">3</div>
+        <div class="cr_step_label">Educación</div>
+      </div>
+      <div class="cr_step_node" data-step="4">
+        <div class="cr_step_circle">4</div>
+        <div class="cr_step_label">Habilidades</div>
+      </div>
+      <div class="cr_step_node" data-step="5">
+        <div class="cr_step_circle">5</div>
+        <div class="cr_step_label">Descarga</div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="cr_main_grid">
+      <!-- Left: Editor Panel -->
+      <div class="cr_editor_panel" id="cr_editor_panel">
+        
+        <!-- Step 1: Datos de Contacto -->
+        <div class="cr_form_step active" id="cr_step_panel_1">
+          <h2 class="cr_step_title"><i class="fas fa-user"></i> Datos de Contacto</h2>
+          <div class="cr_form_group_grid">
+            <div class="cr_form_group">
+              <label for="cr_inp_nombre">Nombre Completo *</label>
+              <input type="text" id="cr_inp_nombre" placeholder="Ej: Juan Pérez Gómez" required>
+            </div>
+            <div class="cr_form_group">
+              <label for="cr_inp_titulo">Título Profesional *</label>
+              <input type="text" id="cr_inp_titulo" placeholder="Ej: Ingeniero de Software / Administrador" required>
+            </div>
+            <div class="cr_form_group">
+              <label for="cr_inp_email">Correo Electrónico *</label>
+              <input type="email" id="cr_inp_email" placeholder="Ej: juan.perez@email.com" required>
+            </div>
+            <div class="cr_form_group">
+              <label for="cr_inp_telefono">Teléfono *</label>
+              <input type="tel" id="cr_inp_telefono" placeholder="Ej: +34 600 000 000" required>
+            </div>
+            <div class="cr_form_group">
+              <label for="cr_inp_ubicacion">Ubicación *</label>
+              <input type="text" id="cr_inp_ubicacion" placeholder="Ej: Madrid, España" required>
+            </div>
+            <div class="cr_form_group">
+              <label for="cr_inp_linkedin">LinkedIn (URL)</label>
+              <input type="text" id="cr_inp_linkedin" placeholder="Ej: linkedin.com/in/juanperez">
+            </div>
+            <div class="cr_form_group full_width">
+              <label for="cr_inp_web">Portafolio o Web (URL)</label>
+              <input type="text" id="cr_inp_web" placeholder="Ej: github.com/juanperez">
+            </div>
+            <div class="cr_form_group full_width">
+              <label for="cr_inp_resumen">Perfil Profesional / Resumen</label>
+              <textarea id="cr_inp_resumen" rows="4" placeholder="Redacta un párrafo breve (3-4 líneas) que resuma tu experiencia, tecnologías y logros principales..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Experiencia Laboral -->
+        <div class="cr_form_step" id="cr_step_panel_2">
+          <div class="cr_step_header_action">
+            <h2 class="cr_step_title"><i class="fas fa-briefcase"></i> Experiencia Laboral</h2>
+            <button id="cr_btn_add_exp" class="cr_btn secondary small"><i class="fas fa-plus"></i> Añadir Experiencia</button>
+          </div>
+          <div id="cr_exp_list" class="cr_dynamic_list">
+            <!-- Dynamic items injected here -->
+          </div>
+        </div>
+
+        <!-- Step 3: Educación -->
+        <div class="cr_form_step" id="cr_step_panel_3">
+          <div class="cr_step_header_action">
+            <h2 class="cr_step_title"><i class="fas fa-graduation-cap"></i> Educación</h2>
+            <button id="cr_btn_add_edu" class="cr_btn secondary small"><i class="fas fa-plus"></i> Añadir Educación</button>
+          </div>
+          <div id="cr_edu_list" class="cr_dynamic_list">
+            <!-- Dynamic items injected here -->
+          </div>
+        </div>
+
+        <!-- Step 4: Habilidades e Idiomas -->
+        <div class="cr_form_step" id="cr_step_panel_4">
+          <h2 class="cr_step_title"><i class="fas fa-tags"></i> Habilidades e Idiomas</h2>
+          <div class="cr_form_group">
+            <label for="cr_inp_skills">Habilidades (Separadas por comas) *</label>
+            <textarea id="cr_inp_skills" rows="4" placeholder="Ej: React.js, Node.js, TypeScript, SQL, Git, Gestión de Equipos, Scrum, Metodologías Ágiles"></textarea>
+            <small class="cr_help_text">Consejo: Revisa la oferta de trabajo a la que postulas e incluye palabras clave exactas que ellos solicitan.</small>
+          </div>
+          <div class="cr_divider"></div>
+          <div class="cr_step_header_action">
+            <h3 class="cr_step_subtitle"><i class="fas fa-language"></i> Idiomas</h3>
+            <button id="cr_btn_add_lang" class="cr_btn secondary small"><i class="fas fa-plus"></i> Añadir Idioma</button>
+          </div>
+          <div id="cr_lang_list" class="cr_dynamic_list">
+            <!-- Dynamic items injected here -->
+          </div>
+        </div>
+
+        <!-- Step 5: Finalizar y Descargar -->
+        <div class="cr_form_step" id="cr_step_panel_5">
+          <h2 class="cr_step_title"><i class="fas fa-circle-check"></i> ¡Currículum Listo!</h2>
+          <div class="cr_finish_message">
+            <i class="fas fa-circle-check cr_success_icon"></i>
+            <h3>Tu CV ATS está formateado</h3>
+            <p>Hemos adaptado tu información bajo los estándares que requieren los algoritmos de escaneo de reclutadores.</p>
+            <p class="cr_tip_text">
+              <strong>💡 Recomendaciones de Impresión:</strong>
+              <br>1. Haz clic en el botón de abajo.
+              <br>2. En el menú de impresión, selecciona como destino <strong>"Guardar como PDF"</strong>.
+              <br>3. Desactiva la casilla <strong>"Cabeceras y pies de página"</strong> para evitar texto innecesario en los bordes.
+              <br>4. Activa <strong>"Gráficos de fondo"</strong> (si aplica).
+            </p>
+            <button id="cr_btn_download_final" class="cr_btn primary large"><i class="fas fa-print"></i> Guardar como PDF / Imprimir</button>
+          </div>
+        </div>
+
+        <!-- Navigation buttons -->
+        <div class="cr_navigation_actions">
+          <button id="cr_btn_back" class="cr_btn outline disabled" disabled><i class="fas fa-arrow-left"></i> Anterior</button>
+          <button id="cr_btn_next" class="cr_btn primary">Siguiente <i class="fas fa-arrow-right"></i></button>
+        </div>
+
+      </div>
+
+      <!-- Right: Live Preview Panel -->
+      <div class="cr_preview_panel" id="cr_preview_panel">
+        <div class="cr_preview_header">
+          <span><i class="fas fa-eye"></i> Vista Previa en Tiempo Real</span>
+          <button id="cr_btn_toggle_mobile" class="cr_btn outline small"><i class="fas fa-eye"></i> Ver Vista Previa</button>
+        </div>
+
+        <!-- CV Document (Times New Roman / Arial ATS Standard Layout) -->
+        <div class="cr_cv_document" id="cr_cv_printable_area">
+          
+          <!-- Contact Block -->
+          <div class="cr_cv_header">
+            <h1 id="cr_preview_name" class="cr_cv_name">Nombre Completo</h1>
+            <div id="cr_preview_title" class="cr_cv_title">Título Profesional</div>
+            <div class="cr_cv_contact" id="cr_preview_contact_info">
+              <!-- Contact items will be updated dynamically -->
+            </div>
+          </div>
+
+          <div class="cr_cv_body">
+            <!-- Perfil / Resumen -->
+            <div class="cr_cv_section" id="cr_preview_section_resumen">
+              <h2 class="cr_cv_section_title">Perfil Profesional</h2>
+              <p id="cr_preview_summary" class="cr_cv_text">Resumen profesional redactado...</p>
+            </div>
+
+            <!-- Experiencia -->
+            <div class="cr_cv_section" id="cr_preview_section_exp">
+              <h2 class="cr_cv_section_title">Experiencia Laboral</h2>
+              <div id="cr_preview_exp_list" class="cr_cv_list_items">
+                <!-- Experiences render here -->
+              </div>
+            </div>
+
+            <!-- Educación -->
+            <div class="cr_cv_section" id="cr_preview_section_edu">
+              <h2 class="cr_cv_section_title">Educación</h2>
+              <div id="cr_preview_edu_list" class="cr_cv_list_items">
+                <!-- Education render here -->
+              </div>
+            </div>
+
+            <!-- Habilidades e Idiomas -->
+            <div class="cr_cv_section" id="cr_preview_section_skills">
+              <h2 class="cr_cv_section_title">Habilidades e Idiomas</h2>
+              <div class="cr_cv_skills_grid">
+                <div id="cr_preview_skills_row">
+                  <strong>Habilidades:</strong>
+                  <span id="cr_preview_skills">Lista de habilidades...</span>
+                </div>
+                <div id="cr_preview_lang_row" class="dpn">
+                  <strong>Idiomas:</strong>
+                  <span id="cr_preview_languages">Lista de idiomas...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for AI suggestion optimization -->
+  <div id="cr_ai_modal" class="cr_modal">
+    <div class="cr_modal_content">
+      <div class="cr_modal_header">
+        <h3><i class="fas fa-wand-magic-sparkles"></i> Optimizar Logro con IA</h3>
+        <button id="cr_btn_close_modal" class="cr_modal_close">&times;</button>
+      </div>
+      <div class="cr_modal_body">
+        <p>La inteligencia artificial de Gemini reescribirá tu experiencia aplicando reglas de impacto ATS (verbos de acción fuertes y enfoque a resultados).</p>
+        <div class="cr_ai_diff_grid">
+          <div class="cr_ai_diff_card">
+            <h4>Tu redacción original:</h4>
+            <div id="cr_ai_original_text" class="cr_ai_text_box"></div>
+          </div>
+          <div class="cr_ai_diff_card">
+            <h4>Sugerencia de Gemini ✨:</h4>
+            <div id="cr_ai_optimized_container">
+              <div id="cr_ai_loading" class="cr_ai_loading dpn">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Optimizando tu redacción, por favor espera...</p>
+              </div>
+              <div id="cr_ai_optimized_text" class="cr_ai_text_box success dpn" contenteditable="true"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cr_modal_footer">
+        <button id="cr_btn_discard_ai" class="cr_btn outline small">Descartar</button>
+        <button id="cr_btn_apply_ai" class="cr_btn primary small" disabled>Aplicar Cambios</button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { protegerRuta } from '../lib/auth.js';
+  import { initIA } from '../lib/crear/creando.js';
+  import { initResultado, updatePreview, updateSteps } from '../lib/crear/resultado.js';
+  import { initEntrada } from '../lib/crear/entrada.js';
+
+  const init = async () => {
+    // 1. Proteger ruta usando el guard centralizado de Supabase + localStorage
+    const uLocal = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
+    if (!uLocal) return;
+
+    // 2. Inicializar Módulos de Entrada
+    initEntrada((cvData: any) => {
+      // Callback cada vez que cambian datos (guardado en caché local)
+      updatePreview(cvData);
+    });
+
+    // 3. Inicializar Módulos de Vista Previa y Pasos
+    initResultado((step: number) => {
+      // Callback opcional si deseamos registrar cambio de vista en el wizard
+    });
+
+    // 4. Inicializar modal y eventos de la Inteligencia Artificial
+    initIA();
+
+    // 5. Iniciar paso de visualización en el primer tab (Datos de Contacto)
+    updateSteps(1);
+  };
+
+  document.addEventListener('astro:page-load', init);
+</script>

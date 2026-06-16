@@ -5,7 +5,7 @@ import { app } from '../wii.js';
 ---
 
 <!-- Guardia de Renderizado Inicial: Redirigir de inmediato si no hay token local para evitar parpadeos -->
-<script is:inline>if (!localStorage.getItem('wiSmile')) window.location.replace('/');</script>
+<script is:inline>localStorage.wiSmile||location.replace('/')</script>
 
 <style is:global>
   /* =========================================================================
@@ -303,7 +303,7 @@ import { app } from '../wii.js';
         <div class="smw_tools_grid">
           
           <!-- Crear CV ATS -->
-          <a href="/crear-cv-ats" class="smw_tool_card">
+          <a href="/crear" class="smw_tool_card">
             <div class="smw_tool_left">
               <div class="smw_tool_ico"><i class="fas fa-file-signature"></i></div>
               <div class="smw_tool_body">
@@ -315,7 +315,7 @@ import { app } from '../wii.js';
           </a>
 
           <!-- Analizar CV con IA -->
-          <a href="/analisar-cv-ats" class="smw_tool_card">
+          <a href="/analisar" class="smw_tool_card">
             <div class="smw_tool_left">
               <div class="smw_tool_ico"><i class="fas fa-robot"></i></div>
               <div class="smw_tool_body">
@@ -376,7 +376,7 @@ import { app } from '../wii.js';
                 <span class="smw_tpl_tag popular">Popular</span>
               </div>
             </div>
-            <a href="/crear-cv-ats?template=clasica" class="smw_tpl_action"><i class="fas fa-plus"></i></a>
+            <a href="/crear?template=clasica" class="smw_tpl_action"><i class="fas fa-plus"></i></a>
           </div>
 
           <div class="smw_tpl_card">
@@ -387,7 +387,7 @@ import { app } from '../wii.js';
                 <span class="smw_tpl_tag rec">Recomendada</span>
               </div>
             </div>
-            <a href="/crear-cv-ats?template=moderna" class="smw_tpl_action"><i class="fas fa-plus"></i></a>
+            <a href="/crear?template=moderna" class="smw_tpl_action"><i class="fas fa-plus"></i></a>
           </div>
 
           <div class="smw_tpl_card">
@@ -398,7 +398,7 @@ import { app } from '../wii.js';
                 <span class="smw_tpl_tag new">Nueva</span>
               </div>
             </div>
-            <a href="/crear-cv-ats?template=minimalista" class="smw_tpl_action"><i class="fas fa-plus"></i></a>
+            <a href="/crear?template=minimalista" class="smw_tpl_action"><i class="fas fa-plus"></i></a>
           </div>
 
         </div>

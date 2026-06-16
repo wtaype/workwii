@@ -3,8 +3,6 @@ import Layout from '../layouts/Layout.astro';
 import { app } from '../wii.js';
 import { seoPages } from '../lib/seo.js';
 
-const FB_PROJECT = import.meta.env.PUBLIC_FIREBASE_PROJECT_ID ?? '';
-const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 ---
 
 <style is:global>
@@ -408,15 +406,8 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
   </div>
 </Layout>
 
-<!-- Inyectar vars de Firebase al cliente (generadas en build-time) -->
-<script is:inline define:vars={{ FB_PROJECT, FB_KEY }}>
-  window.__fbProject = FB_PROJECT;
-  window.__fbKey = FB_KEY;
-</script>
-
 <script>
-  import { db } from '../lib/firebase.js';
-  import { collection, query, orderBy, limit, startAfter, where, getDocs, getDoc, doc } from 'firebase/firestore';
+  import { supabase } from '../lib/supabase.js';
   import { savels, getls, Notificacion } from '../lib/widev.js';
 
   const COL = 'blog';
@@ -435,8 +426,8 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 
   const catInfo = (c: string) => CATS.find(x => x.id === c) || CATS[1];
   
-  const toMs = (v: any) => v?.toDate?.()?.getTime?.() ?? v ?? null;
-  const ser = (d: any, id: string) => ({ ...(id ? {slug: id, id: id} : {}), ...d, creado: toMs(d.creado), actualizado: toMs(d.actualizado) });
+  const toMs = (v: any) => v ? new Date(v).getTime() : null;
+  const ser = (d: any) => ({ ...d, creado: toMs(d.creado), actualizado: toMs(d.actualizado) });
 
   const skCard = () => `<div class="bl_card_sk"><div class="bl_sk_img shimmer"></div><div class="bl_sk_body"><div class="bl_sk_cat shimmer"></div><div class="bl_sk_tit shimmer"></div><div class="bl_sk_tit bl_sk_t2 shimmer"></div><div class="bl_sk_p shimmer"></div><div class="bl_sk_p bl_sk_p2 shimmer"></div><div class="bl_sk_foot shimmer"></div></div></div>`;
 
@@ -506,16 +497,23 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
   };
 
   const prefetchPost = (slug: string) => {
-    if (!db || _prefetched.has(slug) || getls(K_post(slug))) return;
+    if (_prefetched.has(slug) || getls(K_post(slug))) return;
     _prefetched.add(slug);
-    getDoc(doc(db, COL, slug)).then(s => s.exists() && savels(K_post(slug), ser(s.data(), s.id), 12)).catch(() => {});
+    supabase.from('blog').select('*').eq('slug', slug).single().then(({ data }) => {
+      if (data) savels(K_post(slug), ser(data), 12);
+    }).catch(() => {});
   };
 
   const fetchAll = async (force = false) => {
     if (!force && _allCache && Date.now() - _allTime < 60000) return _allCache;
-    if (!db) return [];
-    const snap = await getDocs(query(collection(db, COL), orderBy('creado', 'desc'), limit(50)));
-    _allCache = snap.docs.map(d => ser(d.data(), d.id)).filter((d: any) => d.activo !== false);
+    const { data, error } = await supabase
+      .from('blog')
+      .select('*')
+      .eq('activo', true)
+      .order('creado', { ascending: false })
+      .limit(50);
+    if (error || !data) return [];
+    _allCache = data.map(d => ser(d));
     _allTime = Date.now();
     return _allCache;
   };
@@ -530,30 +528,24 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
       if (Array.isArray(cachedList) && cachedList.length) return { lista: cachedList, fromCache: true, lastSnap: null }; 
     }
 
-    if (!db) return { lista: [], fromCache: false, lastSnap: null };
-
-    const colRef = collection(db, COL);
-    const orderField = o === 'vistas' ? 'vistas' : 'creado';
-    let q;
-
-    if (c === 'todo') {
-      const args: any[] = [colRef, orderBy(orderField, 'desc')];
-      if (lastSnapshot) args.push(startAfter(lastSnapshot));
-      q = query(args[0], ...args.slice(1), limit(PAGE_SIZE));
-    } else {
-      const args: any[] = [colRef, where('categoria', '==', c)];
-      if (lastSnapshot) args.push(startAfter(lastSnapshot));
-      q = query(args[0], ...args.slice(1), limit(PAGE_SIZE));
-    }
-
-    const snap = await getDocs(q);
-    let resultList = snap.docs.map(d => ser(d.data(), d.id)).filter((d: any) => d.activo !== false);
-    const newLastSnap = snap.docs.length > 0 ? snap.docs[snap.docs.length - 1] : null;
-
+    let query = supabase.from('blog').select('*').eq('activo', true);
+    
     if (c !== 'todo') {
-      resultList.sort((a, b) => o === 'vistas' ? ((b.vistas || 0) - (a.vistas || 0)) : ((b.creado || 0) - (a.creado || 0)));
+      query = query.eq('categoria', c);
     }
-
+    
+    const orderField = o === 'vistas' ? 'vistas' : 'creado';
+    query = query.order(orderField, { ascending: false });
+    
+    const offset = lastSnapshot || 0;
+    query = query.range(offset, offset + PAGE_SIZE - 1);
+    
+    const { data: snap, error } = await query;
+    if (error || !snap) return { lista: [], fromCache: false, lastSnap: null };
+    
+    let resultList = snap.map(d => ser(d));
+    const newLastSnap = snap.length > 0 ? offset + snap.length : null;
+    
     if (resultList.length && !lastSnapshot) {
       savels(key, resultList, 3);
     }

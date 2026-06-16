@@ -1,6 +1,6 @@
 ---
 // src/components/Header.astro
-import { NAV_CONFIG } from '../lib/nav.js';
+import { NAV_CONFIG } from '../lib/rutas.js';
 import { app, icon } from '../wii.js';
 const defaultLeft = NAV_CONFIG.todos.left;
 const defaultRight = NAV_CONFIG.todos.right;
@@ -42,7 +42,7 @@ const defaultRight = NAV_CONFIG.todos.right;
 
 <script>
   import { wiAuth, avatar } from '../lib/widev.js';
-  import { NAV_CONFIG } from '../lib/nav.js';
+  import { NAV_CONFIG } from '../lib/rutas.js';
 
   const initHeader = () => {
     const wi = wiAuth.user;

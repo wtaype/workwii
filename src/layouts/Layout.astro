@@ -3,7 +3,7 @@ import { ClientRouter } from 'astro:transitions';
 import { app, titulo, descri, keywii, linkweb, by, linkme}  from '../wii.js';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { rutaRoles } from '../lib/nav.js';
+import { rutaRoles } from '../lib/rutas.js';
 
 const ROUTE_ROLES = rutaRoles();
 
@@ -1397,7 +1397,7 @@ const seoSchema = {
                 supabase.from('smiles').update({
                   tema: ths,
                   actualizado: new Date().toISOString()
-                }).eq('id', userSession.id).catch(console.error);
+                }).eq('id', userSession.id)
               });
             }
           } catch (err) {}

@@ -5,7 +5,7 @@ import { app } from '../wii.js';
 ---
 
 <!-- Guardia de Renderizado Inicial: Redirigir de inmediato si no hay token local para evitar parpadeos -->
-<script is:inline>if (!localStorage.getItem('wiSmile')) window.location.replace('/');</script>
+<script is:inline>localStorage.wiSmile||location.replace('/')</script>
 
 <style is:global>
   /* ==================== WRAP ==================== */
@@ -354,9 +354,7 @@ import { app } from '../wii.js';
 </Layout>
 
 <script>
-  import { auth, db } from '../lib/firebase.js';
-  import { updatePassword } from 'firebase/auth';
-  import { doc, updateDoc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+  import { supabase } from '../lib/supabase.js';
   import { protegerRuta } from '../lib/auth.js';
   import { savels, getls, Mensaje, wiTip, wiDate } from '../lib/widev.js';
 
@@ -392,7 +390,6 @@ import { app } from '../wii.js';
         let nacimientoTS: any = '';
         if (rawNacimiento) {
           const [yyyy, mm, dd] = rawNacimiento.split('-').map(Number);
-          // Usar hora 12:00 local para evitar desfases de un día al renderizar en diferentes zonas horarias
           nacimientoTS = new Date(yyyy, mm - 1, dd, 12, 0, 0);
         }
 
@@ -400,12 +397,8 @@ import { app } from '../wii.js';
           nombre: inputNombre?.value.trim() || '',
           apellidos: inputApellidos?.value.trim() || '',
           avatar: inputAvatar?.value.trim() || '/smile.avif',
-          fechaNacimiento: nacimientoTS,
-          pais: inputPais?.value.trim() || '',
-          genero: selectGenero?.value || '',
-          gustos: inputGustos?.value.trim() || '',
           bio: inputBio?.value.trim() || '',
-          ultActividad: serverTimestamp()
+          actualizado: new Date().toISOString()
         };
 
         if (!updates.nombre) {
@@ -417,17 +410,18 @@ import { app } from '../wii.js';
         btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
         try {
-          await updateDoc(doc(db, 'smiles', u.usuario), updates);
-          
-          // Crear/Actualizar en la colección 'registros' para seguridad
-          await setDoc(doc(db, 'registros', u.usuario), {
-            usuario: u.usuario,
-            email: u.email,
-            uid: u.uid,
-            actualizado: serverTimestamp()
-          }, { merge: true });
+          const { error } = await supabase.from('smiles').update(updates).eq('id', u.id);
+          if (error) throw error;
 
-          savels('wiSmile', { ...u, ...updates, ultActividad: Date.now() }, 24);
+          const localUpdates = {
+            ...updates,
+            fechaNacimiento: nacimientoTS,
+            pais: inputPais?.value.trim() || '',
+            genero: selectGenero?.value || '',
+            gustos: inputGustos?.value.trim() || '',
+          };
+
+          savels('wiSmile', { ...u, ...localUpdates, ultActividad: Date.now() }, 24);
           
           const fullnameEl = document.getElementById('prfHeroFullname');
           if (fullnameEl) fullnameEl.textContent = `${updates.nombre} ${updates.apellidos}`;
@@ -462,26 +456,19 @@ import { app } from '../wii.js';
           wiTip(inputPassConf, 'Las contraseñas no coinciden', 'error');
           return;
         }
-        if (!auth.currentUser) {
-          Mensaje('Sesión expirada. Por favor recarga', 'error');
-          return;
-        }
 
         btnGuardarPass.disabled = true;
         btnGuardarPass.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
 
         try {
-          await updatePassword(auth.currentUser, p1);
+          const { error } = await supabase.auth.updateUser({ password: p1 });
+          if (error) throw error;
           if (inputPass) inputPass.value = '';
           if (inputPassConf) inputPassConf.value = '';
           Mensaje('Contraseña actualizada correctamente ✅', 'success');
         } catch (e: any) {
           console.error(e);
-          if (e.code === 'auth/requires-recent-login') {
-            Mensaje('Por seguridad, cierra sesión y vuelve a ingresar para cambiar la contraseña.', 'error');
-          } else {
-            Mensaje('Error al actualizar contraseña', 'error');
-          }
+          Mensaje('Error al actualizar contraseña', 'error');
         } finally {
           btnGuardarPass.disabled = false;
           btnGuardarPass.innerHTML = '<i class="fas fa-key"></i> Actualizar contraseña';
@@ -492,43 +479,28 @@ import { app } from '../wii.js';
 
   const initPerfil = async () => {
     cleanup();
-    // 1. Proteger ruta usando el guard centralizado de Firebase + localStorage
+    // 1. Proteger ruta usando el guard centralizado de Supabase + localStorage
     const uLocal = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
     if (!uLocal) return;
 
     let u = uLocal;
     try {
-      const uSnap = await getDoc(doc(db, 'smiles', uLocal.usuario));
-      if (uSnap.exists()) {
-        const d = uSnap.data();
+      const { data: d, error } = await supabase.from('smiles').select('*').eq('id', uLocal.id).maybeSingle();
+      if (d) {
         let needsUpdate = false;
         const dbUpdates: any = {};
         if (!d.estado) { dbUpdates.estado = 'activo'; needsUpdate = true; }
-        if (d.activo === undefined) { dbUpdates.activo = true; needsUpdate = true; }
-        if (!d.ultActividad) { dbUpdates.ultActividad = serverTimestamp(); needsUpdate = true; }
         
         if (needsUpdate) {
-          await updateDoc(doc(db, 'smiles', uLocal.usuario), dbUpdates);
+          await supabase.from('smiles').update(dbUpdates).eq('id', uLocal.id);
           u = { ...uLocal, ...d, ...dbUpdates, ultActividad: Date.now() };
         } else {
           u = { ...uLocal, ...d };
         }
         savels('wiSmile', u, 24); // Sincronizar localmente en cada carga
       }
-
-      // Backfill automático de la colección 'registros' si no existe
-      const regRef = doc(db, 'registros', uLocal.usuario);
-      const regSnap = await getDoc(regRef);
-      if (!regSnap.exists()) {
-        await setDoc(regRef, {
-          usuario: uLocal.usuario,
-          email: uLocal.email,
-          uid: uLocal.uid,
-          creado: uLocal.creado || serverTimestamp()
-        });
-      }
     } catch (e) {
-      console.warn('Sync Firestore perfil/registros error:', e);
+      console.warn('Sync Supabase perfil error:', e);
     }
 
     const nombre = u.nombre || '';
@@ -544,9 +516,8 @@ import { app } from '../wii.js';
     let fechaNacimientoStr = '';
     if (fechaNacimiento) {
       try {
-        const dateObj = fechaNacimiento.toDate ? fechaNacimiento.toDate() : new Date(fechaNacimiento);
+        const dateObj = new Date(fechaNacimiento);
         if (!isNaN(dateObj.getTime())) {
-          // Obtener año, mes y día local para que coincida exactamente con la UI
           const yyyy = dateObj.getFullYear();
           const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
           const dd = String(dateObj.getDate()).padStart(2, '0');
@@ -561,7 +532,7 @@ import { app } from '../wii.js';
     const gustos = u.gustos || '';
     const bio = u.bio || '';
     
-    const tsCreacion = u.creacion || u.creado;
+    const tsCreacion = u.creado;
     const creado = tsCreacion ? wiDate(null).get(tsCreacion, 'local') : 'Desconocido';
 
     const tsActividad = u.ultActividad;

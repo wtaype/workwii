@@ -1,55 +1,30 @@
 ---
-// src/pages/[slug].astro
 import Layout from '../layouts/Layout.astro';
 import PostPage from '../components/PostPage.astro';
 import PostSidebar from '../components/PostSidebar.astro';
+import { supabase } from '../lib/supabase.js';
 
 export async function getStaticPaths() {
-  const proj = import.meta.env.PUBLIC_FIREBASE_PROJECT_ID || 'wiihope';
-  const key = import.meta.env.PUBLIC_FIREBASE_API_KEY || '';
-  if (!key) {
-    return [{
-      params: { slug: 'ejemplo-de-articulo-con-mas-de-11-caracteres' },
-      props: { post: {} as any, related: [] as any[], latest: [] as any[], prevPost: null as any, nextPost: null as any }
-    }];
-  }
-
   try {
-    const res = await fetch(`https://firestore.googleapis.com/v1/projects/${proj}/databases/(default)/documents/blog?orderBy=creado%20desc&pageSize=100&key=${key}`);
-    if (!res.ok) throw 1;
+    const { data: posts, error } = await supabase
+      .from('blog')
+      .select('*')
+      .eq('activo', true)
+      .order('creado', { ascending: false });
 
-    const data = await res.json();
-    const docs = data.documents || [];
-
-    const posts = docs.map((d: any) => {
-      const f = d.fields || {};
-      const v = (k: string) => f[k]?.stringValue ?? f[k]?.integerValue ?? f[k]?.timestampValue ?? '';
-      return {
-        id: d.name.split('/').pop(),
-        slug: v('slug') || d.name.split('/').pop(),
-        titulo: v('titulo'),
-        resumen: v('resumen'),
-        categoria: v('categoria'),
-        creado: v('creado'),
-        imagen: v('imagen') || v('portada') || '/poster.webp',
-        imagenTop: v('imagenTop') || v('portadaTop') || v('imagen') || v('portada') || '/poster.webp',
-        imagenAlt: v('imagenAlt') || v('titulo') || 'WiiHope',
-        autor: v('autor') || 'WiiHope',
-        tiempoLectura: v('tiempoLectura') || '3 min',
-        contenido: v('contenido'),
-        keywords: v('keywords') || '',
-        vistas: parseInt(v('vistas')) || 0,
-        likes: parseInt(v('likes')) || 0,
-        pin: f.pin?.booleanValue ?? false,
-        activo: f.activo?.booleanValue ?? true
-      };
-    }).filter((p: any) => p.activo);
+    if (error) throw error;
+    if (!posts || !posts.length) {
+      return [{
+        params: { slug: 'ejemplo-de-articulo-con-mas-de-11-caracteres' },
+        props: { post: {} as any, related: [] as any[], latest: [] as any[], prevPost: null as any, nextPost: null as any }
+      }];
+    }
 
     return posts.map((post: any, index: number) => {
       const related = posts.filter((p: any) => p.categoria === post.categoria && p.slug !== post.slug).slice(0, 3);
       const latest = posts.filter((p: any) => p.slug !== post.slug).slice(0, 5);
-      const prevPost = posts[index + 1] || null; // older post (previous)
-      const nextPost = posts[index - 1] || null; // newer post (next)
+      const prevPost = posts[index + 1] || null;
+      const nextPost = posts[index - 1] || null;
       return {
         params: { slug: post.slug },
         props: { post, related, latest, prevPost, nextPost }
@@ -843,8 +818,7 @@ const { post, related, latest, prevPost, nextPost } = Astro.props;
 </Layout>
 
 <script>
-  import { db } from '../lib/firebase.js';
-  import { doc, updateDoc, increment } from 'firebase/firestore';
+  import { supabase } from '../lib/supabase.js';
   import { wicopy, showi, herowi } from '../lib/widev.js';
 
   let scrollListener: any = null;
@@ -860,7 +834,9 @@ const { post, related, latest, prevPost, nextPost } = Astro.props;
     // 1. Aumentar vistas (solo una vez por sesión del navegador)
     if (!sessionStorage.getItem(`wi_view_${slug}`)) {
       sessionStorage.setItem(`wi_view_${slug}`, '1');
-      updateDoc(doc(db, 'blog', slug), { vistas: increment(1) }).catch(console.error);
+      supabase.rpc('incrementar_vistas_blog', { post_slug: slug }).then(({ error }) => {
+        if (error) console.error('Error al incrementar vistas:', error);
+      });
     }
 
     // 2. Controlar la barra de progreso al hacer scroll
@@ -911,7 +887,9 @@ const { post, related, latest, prevPost, nextPost } = Astro.props;
           el.textContent = String((parseInt(el.textContent || '0') || 0) + 1);
         });
 
-        updateDoc(doc(db, 'blog', slug), { likes: increment(1) }).catch(console.error);
+        supabase.rpc('incrementar_likes_blog', { post_slug: slug }).then(({ error }) => {
+          if (error) console.error('Error al incrementar likes:', error);
+        });
       });
     });
 

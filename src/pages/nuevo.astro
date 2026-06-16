@@ -640,8 +640,7 @@ import { app } from '../wii.js';
 </Layout>
 
 <script>
-  import { db } from '../lib/firebase.js';
-  import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+  import { supabase } from '../lib/supabase.js';
   import { protegerRuta } from '../lib/auth.js';
   import { wiSpin, Notificacion, Mensaje, getls, savels } from '../lib/widev.js';
   import { linkweb } from '../wii.js';
@@ -684,16 +683,27 @@ import { app } from '../wii.js';
     editSlug = null;
   };
 
-  const toMs = (v: any) => v?.toDate?.()?.getTime?.() ?? v ?? null;
-  const ser = (d: any, id: string) => ({ ...(id ? {slug: id, id: id} : {}), ...d, creado: toMs(d.creado), actualizado: toMs(d.actualizado) });
+  const toMs = (v: any) => v ? new Date(v).getTime() : null;
+  const ser = (d: any) => {
+    if (!d) return null;
+    return {
+      ...d,
+      resumen: d.descripcion || '',
+      keywords: d.metaSEO?.keywords || '',
+      contenidoMd: d.contenidoMD || '',
+      tiempoLectura: d.lecturaTM || '',
+      creado: toMs(d.creado),
+      actualizado: toMs(d.actualizado)
+    };
+  };
 
   const getPost = async (slug: string, force = false) => {
     if (!force) { const c = getls(`wi_post_${slug}`); if (c) return { data: c, fromCache: true }; }
-    const snap = await getDoc(doc(db, COL, slug));
-    if (!snap.exists()) return null;
-    const data = ser(snap.data(), snap.id);
-    savels(`wi_post_${slug}`, data, 12);
-    return { data, fromCache: false };
+    const { data, error } = await supabase.from('blog').select('*').eq('slug', slug).maybeSingle();
+    if (error || !data) return null;
+    const mapped = ser(data);
+    savels(`wi_post_${slug}`, mapped, 12);
+    return { data: mapped, fromCache: false };
   };
 
   const clearPostCache = (s: string) => { if (typeof localStorage !== 'undefined') localStorage.removeItem(`wi_post_${s}`); };
@@ -936,37 +946,59 @@ import { app } from '../wii.js';
           const readTime = `${min} min`;
 
           if (isEdit && editSlug) {
-            await updateDoc(doc(db, COL, editSlug), {
+            const { error } = await supabase.from('blog').update({
               activo: (document.getElementById('nu_activo') as HTMLInputElement).checked,
               pin: (document.getElementById('nu_pin') as HTMLInputElement).checked,
-              titulo, resumen, keywords, categoria: catVal, contenido, contenidoMd: contenidoMD,
-              imagen: img, imagenTop: imgTop, imagenAlt: titulo,
-              tags, tiempoLectura: readTime,
-              actualizado: serverTimestamp()
-            });
+              titulo,
+              descripcion: resumen,
+              categoria: catVal,
+              contenido,
+              contenidoMD,
+              imagen: img,
+              imagenTop: imgTop,
+              tags,
+              lecturaTM: readTime,
+              metaSEO: { keywords },
+              actualizado: new Date().toISOString()
+            }).eq('slug', editSlug);
+            
+            if (error) throw error;
+            
             clearPostCache(editSlug);
             clearBlogCache();
             Mensaje('¡Historia actualizada! 🐾✨', 'success');
             setTimeout(() => window.location.href = `/${editSlug}`, 1200);
           } else {
-            const docRef = doc(db, COL, slug);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
+            const { data: existingPost, error: checkError } = await supabase.from('blog').select('slug').eq('slug', slug).maybeSingle();
+            if (existingPost) {
               wiSpin(btnSelector, false);
               Notificacion('Slug existente', 'warning');
               return;
             }
-            await setDoc(docRef, {
-              id: slug, slug,
+            const { error } = await supabase.from('blog').insert([{
+              slug,
               activo: (document.getElementById('nu_activo') as HTMLInputElement).checked,
               pin: (document.getElementById('nu_pin') as HTMLInputElement).checked,
-              usuario: u.usuario, email: u.email,
+              usuario: u.usuario,
+              email: u.email,
+              userId: u.id,
               autor: u.nombre || u.usuario,
-              titulo, resumen, keywords, categoria: catVal, contenido, contenidoMd: contenidoMD,
-              imagen: img, imagenTop: imgTop, imagenAlt: titulo,
-              tags, vistas: 0, likes: 0, tiempoLectura: readTime,
-              creado: serverTimestamp(), actualizado: serverTimestamp()
-            });
+              titulo,
+              descripcion: resumen,
+              contenido,
+              contenidoMD,
+              categoria: catVal,
+              imagen: img,
+              imagenTop: imgTop,
+              tags,
+              vistas: 0,
+              likes: 0,
+              lecturaTM: readTime,
+              metaSEO: { keywords }
+            }]);
+
+            if (error) throw error;
+
             clearBlogCache();
             localStorage.removeItem(getDraftKey());
             Mensaje('¡Historia publicada! 🐾✨', 'success');
@@ -1015,8 +1047,8 @@ import { app } from '../wii.js';
         slugStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         slugStatus.className = 'nu_slug_status';
         try {
-          const snap = await getDoc(doc(db, COL, v));
-          if (snap.exists()) {
+          const { data, error } = await supabase.from('blog').select('slug').eq('slug', v).maybeSingle();
+          if (data) {
             slugStatus.innerHTML = '<i class="fas fa-xmark"></i> Ya existe';
             slugStatus.className = 'nu_slug_status err';
           } else {
