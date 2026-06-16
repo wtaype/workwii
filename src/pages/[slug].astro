@@ -71,6 +71,9 @@ const processedPost = {
   ...post,
   contenido: modifiedContenido
 };
+
+const seoMeta = typeof processedPost.metaSEO === 'string' ? JSON.parse(processedPost.metaSEO) : (processedPost.metaSEO || {});
+const keywords = seoMeta.keywords || '';
 ---
 
 <style is:global>
@@ -286,6 +289,9 @@ const processedPost = {
   margin-bottom: 1.2vh; 
   line-height: 1.7;
 }
+.po_contenido ul li:has(> i) {
+  padding-left: 0;
+}
 .po_contenido ol li { 
   margin-bottom: 1.2vh; 
   line-height: 1.7;
@@ -301,6 +307,12 @@ const processedPost = {
   opacity: 0.8;
   color: var(--mco);
 }
+.po_contenido ul li:has(> i)::before {
+  display: none;
+}
+.po_contenido ul li > i {
+  margin-right: 1vh;
+}
 
 /* Tablas Pro */
 .po_table_wrap {
@@ -308,8 +320,8 @@ const processedPost = {
   overflow-x: auto;
   margin: 3vh 0;
   border-radius: 1.5vh;
-  border: 1px solid var(--brd);
-  box-shadow: 0 6px 16px rgba(0,0,0,.04);
+  border: 1px solid color-mix(in srgb, var(--mco) 25%, var(--brd));
+  box-shadow: 0 8px 30px rgba(0,0,0,.02);
   background: var(--wb);
 }
 .po_table_wrap table {
@@ -318,23 +330,29 @@ const processedPost = {
   min-width: 500px;
 }
 .po_table_wrap th {
-  background: var(--bg4);
+  background: color-mix(in srgb, var(--mco) 8%, var(--wb));
   color: var(--mco);
-  font-weight: 800;
+  font-weight: 700;
   text-align: left;
   padding: 1.8vh 2.5vh;
-  border-bottom: 2px solid var(--brd);
+  border-bottom: 2px solid color-mix(in srgb, var(--mco) 25%, var(--brd));
+  border-right: 1px solid color-mix(in srgb, var(--mco) 15%, var(--brd));
   font-size: var(--fz_m2);
 }
 .po_table_wrap td {
   padding: 1.5vh 2.5vh;
-  border-bottom: 1px solid var(--bg5);
+  border-bottom: 1px solid color-mix(in srgb, var(--mco) 10%, var(--bg5));
+  border-right: 1px solid color-mix(in srgb, var(--mco) 10%, var(--bg5));
   color: var(--tx2);
   font-size: var(--fz_m1);
   transition: background var(--tr_f);
 }
+.po_table_wrap th:last-child,
+.po_table_wrap td:last-child {
+  border-right: none;
+}
 .po_table_wrap tr:last-child td { border-bottom: none; }
-.po_table_wrap tr:hover td { background: var(--bg5); }
+.po_table_wrap tr:hover td { background: color-mix(in srgb, var(--mco) 5%, var(--wb)); }
 
 /* YouTube Button */
 .po_yt_btn {
@@ -829,8 +847,8 @@ const processedPost = {
 
 <Layout
   title={processedPost.titulo}
-  description={processedPost.resumen}
-  keywords={processedPost.keywords}
+  description={processedPost.descripcion}
+  keywords={keywords}
   path={`/${processedPost.slug || processedPost.id || (Astro.params as any).slug}`}
   image={processedPost.imagenTop || processedPost.imagen || '/poster.webp'}
   type="article"
@@ -846,12 +864,14 @@ const processedPost = {
 
   let scrollListener: any = null;
   let handleYtClickRef: any = null;
+  let realtimeChannel: any = null;
 
   const initPost = () => {
     const postEl = document.querySelector('.po_wrap') as HTMLElement;
     if (!postEl) return;
 
     const slug = postEl.dataset.slug;
+    const postId = postEl.dataset.id;
     if (!slug) return;
 
     // 1. Aumentar vistas (solo una vez por sesión del navegador)
@@ -942,6 +962,65 @@ const processedPost = {
     };
     document.addEventListener('click', handleYtClickRef);
 
+    // 7. Conexión diferida y pasiva a Supabase Realtime (WebSockets)
+    if (postId) {
+      const startRealtime = () => {
+        // Consultar valores de la base de datos al montarse para sincronizar con la verdad absoluta
+        supabase
+          .from('blog')
+          .select('likes, vistas')
+          .eq('id', postId)
+          .maybeSingle()
+          .then(({ data }) => {
+            if (data) {
+              if (typeof data.likes === 'number') {
+                document.querySelectorAll('.po_likes_count_text').forEach(el => {
+                  el.textContent = String(data.likes);
+                });
+              }
+              if (typeof data.vistas === 'number') {
+                document.querySelectorAll('.po_vistas_count_text').forEach(el => {
+                  el.textContent = String(data.vistas);
+                });
+              }
+            }
+          });
+
+        // Suscribirse al canal WebSocket filtrando por el ID de este post
+        realtimeChannel = supabase
+          .channel(`stats_realtime_${postId}`)
+          .on(
+            'postgres_changes',
+            {
+              event: 'UPDATE',
+              schema: 'public',
+              table: 'blog',
+              filter: `id=eq.${postId}`,
+            },
+            (payload: any) => {
+              const { likes: nuevosLikes, vistas: nuevasVistas } = payload.new;
+              if (typeof nuevosLikes === 'number') {
+                document.querySelectorAll('.po_likes_count_text').forEach(el => {
+                  el.textContent = String(nuevosLikes);
+                });
+              }
+              if (typeof nuevasVistas === 'number') {
+                document.querySelectorAll('.po_vistas_count_text').forEach(el => {
+                  el.textContent = String(nuevasVistas);
+                });
+              }
+            }
+          )
+          .subscribe();
+      };
+
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => startRealtime());
+      } else {
+        setTimeout(startRealtime, 1500);
+      }
+    }
+
     // 8. Lanzar efectos de entrada
     if (typeof herowi === 'function') herowi();
     if (typeof showi === 'function') showi();
@@ -955,6 +1034,10 @@ const processedPost = {
     if (handleYtClickRef) {
       document.removeEventListener('click', handleYtClickRef);
       handleYtClickRef = null;
+    }
+    if (realtimeChannel) {
+      supabase.removeChannel(realtimeChannel);
+      realtimeChannel = null;
     }
   };
 

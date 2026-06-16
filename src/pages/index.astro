@@ -650,7 +650,7 @@ try {
                 </div>
                 <div class="ib_body">
                   <h3 class="ib_tit">{p.titulo || 'Sin título'}</h3>
-                  <p class="ib_resumen">{(p.resumen || '').slice(0, 90)}...</p>
+                  <p class="ib_resumen">{(p.descripcion || p.resumen || '').slice(0, 90)}...</p>
                   <div class="ib_meta">
                     <span><i class="fas fa-calendar-alt"></i> {formattedDate}</span>
                     <span><i class="fas fa-eye"></i> {p.vistas || 0}</span>

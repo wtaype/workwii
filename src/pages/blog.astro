@@ -358,14 +358,14 @@ import { seoPages } from '../lib/seo.js';
 <Layout {...seoPages.blog}>
   <div class="bl_wrap">
     <div class="bl_hero" data-herowi="100">
-      <h1 class="bl_hero_tit">Historias que <span class="bl_grad">inspiran</span> 🕊️</h1>
-      <p class="bl_hero_sub">Reflexiones, fe y palabras que tocan el corazón</p>
+      <h1 class="bl_hero_tit">Consejos y <span class="bl_grad">Estrategias</span> 💼</h1>
+      <p class="bl_hero_sub">Aprende a destacar tu perfil, optimizar tu CV y triunfar en procesos de selección</p>
     </div>
     
     <div class="bl_search_bar" id="bl_search_bar" style="display:none">
       <div class="bl_search_inner">
         <i class="fas fa-search bl_search_ico"></i>
-        <input id="bl_search_inp" type="text" placeholder="Buscar historias..." autocomplete="off" spellcheck="false"/>
+        <input id="bl_search_inp" type="text" placeholder="Buscar artículos..." autocomplete="off" spellcheck="false"/>
         <button id="bl_search_close" class="bl_search_close"><i class="fas fa-xmark"></i></button>
       </div>
     </div>
@@ -399,8 +399,8 @@ import { seoPages } from '../lib/seo.js';
     </div>
     
     <div class="bl_empty" id="bl_empty" style="display:none; text-align:center; padding:10vh 0;">
-      <i class="fas fa-dove" style="font-size: 8vh; color: var(--mco); opacity: 0.25; margin-bottom: 2vh; display:block;"></i>
-      <h3>Sin historias</h3>
+      <i class="fas fa-folder-open" style="font-size: 8vh; color: var(--mco); opacity: 0.25; margin-bottom: 2vh; display:block;"></i>
+      <h3>Sin artículos</h3>
       <p>Próximamente nuevos artículos</p>
     </div>
   </div>
@@ -410,30 +410,42 @@ import { seoPages } from '../lib/seo.js';
   import { supabase } from '../lib/supabase.js';
   import { savels, getls, Notificacion } from '../lib/widev.js';
 
-  const COL = 'blog';
   const PAG_INI = 16, PAG_MAS = 8;
   
   const CATS = [
-    { id:'todo',        icon:'fa-grip',     label:'Todas',       color:'var(--mco)' },
-    { id:'Amor',        icon:'fa-heart',    label:'Amor',        color:'#ff3849'    },
-    { id:'Esperanza',   icon:'fa-dove',     label:'Esperanza',   color:'#0EBEFF'    },
-    { id:'Fortaleza',   icon:'fa-mountain', label:'Fortaleza',   color:'#6a00f5'    },
-    { id:'Pensamientos',icon:'fa-brain',    label:'Pensamientos',color:'#ffa726'    },
-    { id:'Proposito',   icon:'fa-compass',  label:'Proposito',   color:'#25b62a'    },
-    { id:'Sufrimiento', icon:'fa-droplet',  label:'Sufrimiento', color:'#757575'    },
-    { id:'Tristeza',    icon:'fa-cloud-showers-heavy', label:'Tristeza', color:'#455a64' },
+    { id:'todo',           icon:'fa-grip',         label:'Todas',          color:'var(--mco)' },
+    { id:'Cv',             icon:'fa-address-card', label:'Currículum',     color:'#ff3849'    },
+    { id:'ATS',            icon:'fa-robot',        label:'ATS',            color:'#0EBEFF'    },
+    { id:'Entrevistas',    icon:'fa-comments',     label:'Entrevistas',    color:'#25b62a'    },
+    { id:'Teletrabajo',    icon:'fa-house-laptop', label:'Teletrabajo',    color:'#6a00f5'    },
+    { id:'Marca personal', icon:'fa-award',        label:'Marca Personal', color:'#ffa726'    },
+    { id:'Buscar trabajo', icon:'fa-search',       label:'Buscar Trabajo', color:'#ffa726'    },
+    { id:'Empleo',         icon:'fa-briefcase',    label:'Empleo',         color:'#ffa726'    },
   ];
 
-  const catInfo = (c: string) => CATS.find(x => x.id === c) || CATS[1];
+  const catInfo = (c: string) => CATS.find(x => x.id.toLowerCase() === c.toLowerCase()) || { id: c, icon: 'fa-briefcase', label: c, color: 'var(--mco)' };
   
   const toMs = (v: any) => v ? new Date(v).getTime() : null;
-  const ser = (d: any) => ({ ...d, creado: toMs(d.creado), actualizado: toMs(d.actualizado) });
+  const ser = (d: any) => {
+    if (!d) return null;
+    return {
+      ...d,
+      resumen: d.descripcion || '',
+      creado: toMs(d.creado)
+    };
+  };
 
   const skCard = () => `<div class="bl_card_sk"><div class="bl_sk_img shimmer"></div><div class="bl_sk_body"><div class="bl_sk_cat shimmer"></div><div class="bl_sk_tit shimmer"></div><div class="bl_sk_tit bl_sk_t2 shimmer"></div><div class="bl_sk_p shimmer"></div><div class="bl_sk_p bl_sk_p2 shimmer"></div><div class="bl_sk_foot shimmer"></div></div></div>`;
 
   const srcBadge = (fc: boolean) => fc
     ? `<span class="bl_cache_tag" data-witip="⚡ Veloz"><i class="fas fa-bolt"></i> Veloz</span>`
     : `<span class="bl_fire_tag"  data-witip="☁️ Online"><i class="fas fa-cloud"></i> Online</span>`;
+
+  const formatCardDate = (creadoMs: any) => {
+    if (!creadoMs) return '—';
+    const d = new Date(creadoMs);
+    return d.toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
 
   const tplCard = (p: any) => {
     const c = catInfo(p.categoria);
@@ -451,7 +463,7 @@ import { seoPages } from '../lib/seo.js';
           <p class="bl_card_res">${p.resumen || ''}</p>
           <div class="bl_card_footer">
             <div class="bl_card_meta">
-              <span data-witip="Tiempo"><i class="fas fa-clock"></i> ${p.tiempoLectura || '—'}</span>
+              <span data-witip="Fecha"><i class="fas fa-calendar-alt"></i> ${formatCardDate(p.creado)}</span>
               <span data-witip="Vistas"><i class="fas fa-eye"></i> ${p.vistas || 0}</span>
               <span data-witip="Likes"><i class="fas fa-heart" style="color:#fe0149"></i> ${p.likes || 0}</span>
             </div>
@@ -496,12 +508,13 @@ import { seoPages } from '../lib/seo.js';
     eventListeners.push({ target, type, handler });
   };
 
-  const prefetchPost = (slug: string) => {
+  const prefetchPost = async (slug: string) => {
     if (_prefetched.has(slug) || getls(K_post(slug))) return;
     _prefetched.add(slug);
-    supabase.from('blog').select('*').eq('slug', slug).single().then(({ data }) => {
+    try {
+      const { data } = await supabase.from('blog').select('*').eq('slug', slug).single();
       if (data) savels(K_post(slug), ser(data), 12);
-    }).catch(() => {});
+    } catch (err) {}
   };
 
   const fetchAll = async (force = false) => {

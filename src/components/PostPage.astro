@@ -21,13 +21,13 @@ const formatLongDate = (dateVal: any) => {
 
 <div class="po_progress_bar" id="po_progress"></div>
 
-<div class="po_wrap" data-slug={post.slug || post.id} data-title={post.titulo}>
+<div class="po_wrap" data-id={post.id} data-slug={post.slug || post.id} data-title={post.titulo}>
   <div class="po_layout">
     <div class="po_col_main">
       <div class="po_content">
         <!-- Hero del Post -->
         <div class="po_hero po_fade po_visible" style="--d:0s">
-          <img src={post.imagenTop || post.imagen} alt={post.imagenAlt || post.titulo} class="po_hero_img" loading="eager" />
+          <img src={post.imagenTop || post.imagen} alt={post.metaSEO?.alt || post.titulo} class="po_hero_img" loading="eager" />
           <div class="po_hero_over">
             <a href="/blog" class="po_back" data-witip="Volver"><i class="fas fa-arrow-left"></i> Blog</a>
             <div class="po_hero_badges">
@@ -43,12 +43,12 @@ const formatLongDate = (dateVal: any) => {
         <!-- Cabecera del Artículo -->
         <header class="po_header po_fade po_visible" style="--d:.1s">
           <h1 class="po_titulo">{post.titulo}</h1>
-          <p class="po_resumen">{post.resumen}</p>
+          {post.descripcion && <p class="po_resumen">{post.descripcion}</p>}
           <div class="po_meta">
             <span data-witip="Autor"><i class="fas fa-user-pen"></i> {post.autor}</span>
             <span data-witip="Fecha"><i class="fas fa-calendar"></i> {formatLongDate(post.creado)}</span>
-            <span data-witip="Lectura"><i class="fas fa-clock"></i> {post.tiempoLectura}</span>
-            <span data-witip="Vistas"><i class="fas fa-eye"></i> {post.vistas}</span>
+            <span data-witip="Lectura"><i class="fas fa-clock"></i> {post.lecturaTM}</span>
+            <span data-witip="Vistas" class="po_vistas_sync"><i class="fas fa-eye"></i> <span class="po_vistas_count_text">{post.vistas || 0}</span></span>
             <button class="po_like_btn po_like_sync" data-witip="Me encanta">
               <i class="fas fa-heart"></i> <span class="po_likes_count_text">{post.likes || 0}</span>
             </button>

@@ -1,20 +1,37 @@
 --- [Metadatos SEO para el Post de Regalos Virtuales] titulo = 47 caracteres, slug = 32 caracteres, descripcion = 150 caracteres, keywords = 5 palabras -> no eliminar esta linea. 
-Título: Por qué abandonaron a Jesús al ser crucificado?
-SLUG: por-que-abandonaron-a-jesus-cruz
-Meta Description: Descubre por qué los discípulos abandonaron a Jesús en la cruz y la inquebrantable lealtad de la Virgen María y Juan al pie de este doloroso Calvario.
-Meta Keywords: crucifixion de jesus, abandono de jesus, discipulo amado, virgen maria, fidelidad de juan
-Categoría: historias
-Tags: crucifixion, jesus, maria, juan, fidelidad, calvario, cruz, amor, redencion
+Título: Tipos de currículum: ATS y formatos modernos
+SLUG: tipos-de-curriculum-ats-formatos
+Meta Description: Descubre los tipos de currículum más efectivos, cómo estructurar un formato optimizado para ATS y las claves para destacar en los filtros de empleo.
+Meta Keywords: tipos de curriculum, formato ats, plantilla de cv, curriculum moderno, optimizar cv
+Categoría: CV
+Tags: curriculum, ats, empleo, reclutamiento, plantilla, formato, exitoso, buscar-trabajo
 
-Miniatura (Inicio-Blog) ALT & Búsqueda:
-- Archivo local: "Cruces de Jesus.webp"
-- ALT sugerido: "Cruces de Jesús: Tres cruces de madera sobre la colina del Calvario con un cielo dramático al atardecer"
+Miniatura / ImagenTop (Banner de Portada):
+- Miniatura URL: "https://i.ibb.co/4RthXr8B/b8b3c2cf9a2a.webp"
+- ImagenTop URL: "https://i.ibb.co/Z6wm9bpt/4d289e8f1f7c.webp"
+- ALT sugerido: "Plantilla de currículum optimizado para filtros ATS con un diseño limpio y profesional"
 
-ImagenTop (Post Banner) ALT & Búsqueda:
-- Archivo local: "Juan_consuela_Virgen_María.webp" (o "Juan y maria con jesus bueno.webp")
-- ALT sugerido: "Juan consuela a la Virgen María: El discípulo amado al pie de la cruz de Jesús"
+ImagenCuerpo 1 (Tipos de CV):
+- Enlace: "https://i.ibb.co/Ld0MVyc8/99c518094841.jpg"
+- ALT sugerido: "Comparación visual de los principales formatos de currículum sobre un escritorio"
 
-ImagenCuerpo (Dentro del Post) ALT & Búsqueda:
-- Archivo local: "Jesús_con_túnica_blanca.webp"
-- ALT sugerido: "Jesús con túnica blanca: La gloriosa esperanza de la resurrección y el triunfo del amor divino"
+ImagenCuerpo 2 (Formato ATS):
+- Enlace: "https://i.ibb.co/fYLfqrFb/75104b6bb0cd.jpg"
+- ALT sugerido: "Estructura y diseño de un currículum optimizado para sistemas ATS de reclutamiento"
+
+ImagenCuerpo 3 (Formato Harvard):
+- Enlace: "https://i.ibb.co/Nnb83SRT/1f1b445aab81.jpg"
+- ALT sugerido: "Currículum académico clásico estilo Harvard con secciones estructuradas tradicionalmente"
+
+ImagenCuerpo 4 (Formato Funcional):
+- Enlace: "https://i.ibb.co/7JsbmpsQ/6aed13815283.jpg"
+- ALT sugerido: "Estructura de currículum funcional centrado en habilidades y competencias"
+
+ImagenCuerpo 5 (Errores de Formato):
+- Enlace: "https://i.ibb.co/j9687Pyc/27e9afe47bd4.jpg"
+- ALT sugerido: "Ejemplo de currículum rechazado con elementos gráficos excesivos e ilegibles"
+
+ImagenCuerpo 6 (Motivación y Éxito):
+- Enlace: "https://i.ibb.co/nsJZBZhN/07a5da8e9eee.jpg"
+- ALT sugerido: "Profesional sonriente y motivado celebrando su nuevo empleo en una oficina moderna"
 ---
