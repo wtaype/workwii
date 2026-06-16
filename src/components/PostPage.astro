@@ -1,14 +1,16 @@
 ---
 // src/components/PostPage.astro
 import PostComent from './PostComent.astro';
+import { icon, linkweb } from '../wii.js';
 
 interface Props {
   post: any;
+  headings: { text: string; id: string; depth: number }[];
   prevPost?: any;
   nextPost?: any;
 }
 
-const { post, prevPost, nextPost } = Astro.props;
+const { post, headings, prevPost, nextPost } = Astro.props;
 
 const formatLongDate = (dateVal: any) => {
   if (!dateVal) return '';
@@ -29,7 +31,7 @@ const formatLongDate = (dateVal: any) => {
           <div class="po_hero_over">
             <a href="/blog" class="po_back" data-witip="Volver"><i class="fas fa-arrow-left"></i> Blog</a>
             <div class="po_hero_badges">
-              <span class="po_cat_badge" data-witip={post.categoria}><i class="fas fa-paw"></i> {post.categoria}</span>
+              <span class="po_cat_badge" data-witip={post.categoria}><i class={`fas ${icon}`}></i> {post.categoria}</span>
               {post.pin && <span class="po_dest_badge" data-witip="Destacada"><i class="fas fa-thumbtack"></i> Pin</span>}
               <button class="po_like_btn po_like_sync po_hero_like" data-witip="Me encanta">
                 <i class="fas fa-heart"></i> <span class="po_likes_count_text">{post.likes || 0}</span>
@@ -53,8 +55,19 @@ const formatLongDate = (dateVal: any) => {
           </div>
         </header>
 
-        <!-- Contenedor dinámico de Tabla de Contenidos -->
-        <div id="po_toc_container"></div>
+        <!-- Contenedor de Tabla de Contenidos (Generado en Servidor) -->
+        {headings && headings.length > 0 && (
+          <div class="po_toc_box">
+            <div class="po_toc_title"><i class="fas fa-list"></i> En este artículo</div>
+            <ul class="po_toc">
+              {headings.map(h => (
+                <li style={{ marginLeft: h.depth === 3 ? '1.5vh' : '0' }}>
+                  <a href={`#${h.id}`} class="po_toc_link">{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <!-- Cuerpo del Artículo -->
         <article class="po_contenido po_fade po_visible" style="--d:.2s" set:html={post.contenido}>
@@ -99,13 +112,13 @@ const formatLongDate = (dateVal: any) => {
             <button class="po_like_btn po_like_sync" data-witip="Me encanta">
               <i class="fas fa-heart"></i> <span class="po_likes_count_text">{post.likes || 0}</span>
             </button>
-            <a href={`https://www.facebook.com/sharer/sharer.php?u=https://wiihope.com/${post.slug || post.id}`} target="_blank" rel="noopener" class="po_share_btn" style="--sc:#1877F2" data-witip="Facebook">
+            <a href={`https://www.facebook.com/sharer/sharer.php?u=${linkweb}/${post.slug || post.id}`} target="_blank" rel="noopener" class="po_share_btn" style="--sc:#1877F2" data-witip="Facebook">
               <i class="fab fa-facebook"></i>
             </a>
-            <a href={`https://twitter.com/intent/tweet?url=https://wiihope.com/${post.slug || post.id}&text=${encodeURIComponent(post.titulo)}`} target="_blank" rel="noopener" class="po_share_btn" style="--sc:#1da1f2" data-witip="Twitter">
+            <a href={`https://twitter.com/intent/tweet?url=${linkweb}/${post.slug || post.id}&text=${encodeURIComponent(post.titulo)}`} target="_blank" rel="noopener" class="po_share_btn" style="--sc:#1da1f2" data-witip="Twitter">
               <i class="fab fa-twitter"></i>
             </a>
-            <a href={`https://wa.me/?text=${encodeURIComponent(post.titulo + ' ' + 'https://wiihope.com/' + (post.slug || post.id))}`} target="_blank" rel="noopener" class="po_share_btn" style="--sc:#25D366" data-witip="WhatsApp">
+            <a href={`https://wa.me/?text=${encodeURIComponent(post.titulo + ' ' + linkweb + '/' + (post.slug || post.id))}`} target="_blank" rel="noopener" class="po_share_btn" style="--sc:#25D366" data-witip="WhatsApp">
               <i class="fab fa-whatsapp"></i>
             </a>
             <button class="po_share_btn po_copy" style="--sc:var(--mco)" data-witip="Copiar">

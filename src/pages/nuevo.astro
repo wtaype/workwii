@@ -514,9 +514,9 @@ import { app } from '../wii.js';
           
           <div class="nu_card">
             <div class="nu_card_title"><i class="fas fa-heading"></i> Título</div>
-            <input id="nu_titulo" type="text" class="nu_titulo_inp" placeholder="Historias que inspiren y con mucho valor" maxlength="100" required/>
+            <input id="nu_titulo" type="text" class="nu_titulo_inp" placeholder="Guías y consejos profesionales que inspiren y aporten mucho valor" maxlength="100" required/>
             <div class="nu_slug_box">
-              <span class="nu_slug_label"><i class="fas fa-link"></i> <span id="nu_domain_lbl">wiihope.com/</span></span>
+              <span class="nu_slug_label"><i class="fas fa-link"></i> <span id="nu_domain_lbl">workwii.vercel.app/</span></span>
               <input id="nu_slug_inp" type="text" placeholder="mi_historia" maxlength="50" spellcheck="false"/>
               <button type="button" id="nu_slug_reset" class="nu_slug_btn" title="Regenerar"><i class="fas fa-rotate"></i></button>
             </div>
@@ -531,7 +531,7 @@ import { app } from '../wii.js';
             </div>
             <div class="nu_card">
               <div class="nu_card_title"><i class="fas fa-search"></i> Palabras Clave (Meta Keywords)</div>
-              <textarea id="nu_keywords" rows="3" placeholder="amor, fe, esperanza, wiihope..."></textarea>
+              <textarea id="nu_keywords" rows="3" placeholder="curriculum, cv, ats, entrevista, empleo, workwii..."></textarea>
               <div class="nu_hint">Separa las palabras con comas. Solo para SEO.</div>
             </div>
           </div>
@@ -566,16 +566,17 @@ import { app } from '../wii.js';
                 <button type="button" class="nu_tool" data-tag="[texto](url)" title="Enlace"><i class="fas fa-link"></i></button>
               </div>
               <div class="nu_toolbar_grp" style="display:flex;gap:0.4vh;border-left:1px solid var(--brd);padding-left:0.6vh;margin-left:0.2vh">
-                <button type="button" class="nu_tool" data-tag=":cruz:" title="Cruz de Fe"><i class="fas fa-cross" style="color:var(--mco);"></i></button>
+                <button type="button" class="nu_tool" data-tag=":maletin:" title="Maletín Profesional"><i class="fas fa-briefcase" style="color:var(--mco);"></i></button>
+                <button type="button" class="nu_tool" data-tag=":foco:" title="Idea / Foco"><i class="fas fa-lightbulb" style="color:#FFC107;"></i></button>
+                <button type="button" class="nu_tool" data-tag=":grafico:" title="Gráfico de Crecimiento"><i class="fas fa-chart-line" style="color:#0edeFF;"></i></button>
+                <button type="button" class="nu_tool" data-tag=":usuario:" title="Profesional / Empleo"><i class="fas fa-user-tie" style="color:#e0a910;"></i></button>
                 <button type="button" class="nu_tool" data-tag=":corazon:" title="Corazón"><i class="fas fa-heart" style="color:#fe0149;"></i></button>
-                <button type="button" class="nu_tool" data-tag=":estrella:" title="Estrella Amarilla"><i class="fas fa-star" style="color:#FFB636;"></i></button>
+                <button type="button" class="nu_tool" data-tag=":estrella:" title="Estrella"><i class="fas fa-star" style="color:#FFB636;"></i></button>
                 <button type="button" class="nu_tool" data-tag=":si:" title="Check Verde"><i class="fas fa-circle-check" style="color:#3cd741;"></i></button>
                 <button type="button" class="nu_tool" data-tag=":no:" title="X Roja"><i class="fas fa-circle-xmark" style="color:#ff3849;"></i></button>
-                <button type="button" class="nu_tool" data-tag=":oracion:" title="Oración"><i class="fas fa-hands-praying" style="color:#e0a910;"></i></button>
-                <button type="button" class="nu_tool" data-tag=":paloma:" title="Paloma"><i class="fas fa-dove" style="color:#0edeFF;"></i></button>
               </div>
             </div>
-            <textarea id="nu_contenido" class="nu_code" rows="18" placeholder="Escribe tu historia en Markdown...&#10;&#10;## Un nuevo comienzo&#10;&#10;Había una vez..."></textarea>
+            <textarea id="nu_contenido" class="nu_code" rows="18" placeholder="Escribe tu artículo en Markdown...&#10;&#10;## Optimización de Currículum para Filtros ATS&#10;&#10;Para superar los filtros automáticos..."></textarea>
             <div id="nu_prev_html" class="nu_html_prev dpn po_contenido" style="padding: 1.5vh; border: 1px solid var(--brd); border-radius: 1vh; min-height: 20vh; margin-top: 1vh; background: var(--wb); overflow-wrap: break-word;"></div>
             <div class="nu_content_footer">
               <span id="nu_palabras" class="nu_hint"><i class="fas fa-font"></i> 0 palabras</span>
@@ -597,7 +598,7 @@ import { app } from '../wii.js';
 
           <div class="nu_card">
             <div class="nu_card_title"><i class="fas fa-folder"></i> Categoría</div>
-            <input id="nu_cat_inp" type="text" placeholder="Ej: Esperanza, Salud..." maxlength="30" required/>
+            <input id="nu_cat_inp" type="text" placeholder="Ej: CV, Entrevistas, Teletrabajo..." maxlength="30" required/>
             <div id="nu_cat_sug" class="nu_sug_box"></div>
           </div>
 
@@ -731,6 +732,15 @@ import { app } from '../wii.js';
     'check': '<i class="fas fa-circle-check" style="color:#3cd741;"></i>',
     'no': '<i class="fas fa-circle-xmark" style="color:#ff3849;"></i>',
     'times': '<i class="fas fa-circle-xmark" style="color:#ff3849;"></i>',
+    'maletin': '<i class="fas fa-briefcase" style="color:var(--mco);"></i>',
+    'briefcase': '<i class="fas fa-briefcase" style="color:var(--mco);"></i>',
+    'foco': '<i class="fas fa-lightbulb" style="color:#FFC107;"></i>',
+    'idea': '<i class="fas fa-lightbulb" style="color:#FFC107;"></i>',
+    'lightbulb': '<i class="fas fa-lightbulb" style="color:#FFC107;"></i>',
+    'grafico': '<i class="fas fa-chart-line" style="color:#0edeFF;"></i>',
+    'chart': '<i class="fas fa-chart-line" style="color:#0edeFF;"></i>',
+    'usuario': '<i class="fas fa-user-tie" style="color:#e0a910;"></i>',
+    'user': '<i class="fas fa-user-tie" style="color:#e0a910;"></i>',
     'cruz': '<i class="fas fa-cross" style="color:var(--mco);"></i>',
     'cross': '<i class="fas fa-cross" style="color:var(--mco);"></i>',
     'biblia': '<i class="fas fa-book-bible" style="color:var(--mco);"></i>',
@@ -966,7 +976,7 @@ import { app } from '../wii.js';
             
             clearPostCache(editSlug);
             clearBlogCache();
-            Mensaje('¡Historia actualizada! 🐾✨', 'success');
+            Mensaje('¡Historia actualizada! 💼✨', 'success');
             setTimeout(() => window.location.href = `/${editSlug}`, 1200);
           } else {
             const { data: existingPost, error: checkError } = await supabase.from('blog').select('slug').eq('slug', slug).maybeSingle();
@@ -1001,7 +1011,7 @@ import { app } from '../wii.js';
 
             clearBlogCache();
             localStorage.removeItem(getDraftKey());
-            Mensaje('¡Historia publicada! 🐾✨', 'success');
+            Mensaje('¡Historia publicada! 💼✨', 'success');
             setTimeout(() => window.location.href = `/${slug}`, 1200);
           }
         } catch (err) {

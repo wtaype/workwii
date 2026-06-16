@@ -1,8 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-const FB_PROJECT = import.meta.env.PUBLIC_FIREBASE_PROJECT_ID ?? '';
-const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 ---
 
 <style is:global>
@@ -114,8 +111,8 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 }
 
 .gestor_stat_icon.pending {
-  background: color-mix(in srgb, var(--warning) 10%, transparent);
-  color: var(--warning);
+  background: color-mix(in srgb, var(--info) 10%, transparent);
+  color: var(--info);
 }
 
 .gestor_stat_icon.approved {
@@ -482,6 +479,12 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
   border-color: color-mix(in srgb, var(--error) 15%, transparent);
 }
 
+.gestor_status_tag.pendiente {
+  background: color-mix(in srgb, var(--info) 10%, transparent);
+  color: var(--info);
+  border-color: color-mix(in srgb, var(--info) 15%, transparent);
+}
+
 /* Vista Móvil - Lista de tarjetas */
 .gestor_mobile_only {
   display: none;
@@ -633,16 +636,10 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 }
 </style>
 
-<Layout title="Consola de Aprobaciones" robots="noindex, nofollow">
+<Layout title="Consola de Aprobaciones — Workwii" robots="noindex, nofollow">
   <div class="gestor_container">
-    
-    <!-- Loader inicial de Firestore -->
-    <div id="gestor_loader" style="text-align: center; display: flex; flex-direction: column; gap: 1rem; align-items: center; margin: 8vh auto;">
-      <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--mco);"></i>
-      <h3 style="color: var(--tx3); font-weight: 600;">Cargando base de datos de solicitudes...</h3>
-    </div>
 
-    <div id="gestor_card" style="display: none; flex-direction: column; gap: 3vh;">
+    <div id="gestor_card" style="display: flex; flex-direction: column; gap: 3vh;">
       
       <!-- ══ ENCABEZADO PREMIUM ══ -->
       <header class="gestor_header_section">
@@ -653,7 +650,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
           </div>
           <h1 class="gestor_title">Postulaciones a Editor</h1>
           <p class="gestor_subtitle">
-            Hola, <strong id="gestor_name">Gestor</strong>. Evalúa y gestiona las solicitudes de ascenso a Editor del equipo de WiiHope.
+            Hola, <strong id="gestor_name">Gestor</strong>. Evalúa y gestiona las solicitudes de ascenso a Editor del equipo de Workwii.
           </p>
         </div>
       </header>
@@ -731,14 +728,22 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
                 </tr>
               </thead>
               <tbody id="gestor_table_body">
-                <!-- Inyectado por JS -->
+                <tr>
+                  <td colspan="4" style="text-align: center; padding: 3rem;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--mco); margin-bottom: 1rem;"></i>
+                    <p style="color: var(--tx3); font-weight: 500;">Cargando solicitudes...</p>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
 
           <!-- Vista Móvil -->
           <div class="gestor_mobile_only" id="gestor_mobile_list">
-            <!-- Inyectado por JS -->
+            <div style="text-align: center; padding: 3rem; width: 100%;">
+              <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--mco); margin-bottom: 1rem;"></i>
+              <p style="color: var(--tx3); font-weight: 500;">Cargando solicitudes...</p>
+            </div>
           </div>
 
           <!-- Estado Vacío -->
@@ -763,7 +768,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
       <p class="gestor_modal_text">
         ¿Estás seguro de que deseas aprobar a <strong id="approve_user_name">usuario</strong> (@<span id="approve_username">usuario</span>)?
         <br /><br />
-        Esto actualizará su rol a <strong>Editor</strong> en WiiHope y le permitirá crear, editar y estructurar nuevos posts de blog.
+        Esto actualizará su rol a <strong>Editor</strong> en Workwii y le permitirá crear, editar y estructurar nuevos posts de blog.
       </p>
       <div class="gestor_modal_actions">
         <button class="gestor_btn_secondary" id="approve_btn_cancel">Cancelar</button>
@@ -774,15 +779,8 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 
 </Layout>
 
-<!-- Inyectar vars de Firebase al cliente -->
-<script is:inline define:vars={{ FB_PROJECT, FB_KEY }}>
-  window.__fbProject = FB_PROJECT;
-  window.__fbKey = FB_KEY;
-</script>
-
 <script>
-  import { db } from '../lib/firebase.js';
-  import { collection, query, getDocs, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+  import { supabase } from '../lib/supabase.js';
   import { protegerRuta } from '../lib/auth.js';
   import { getNombre, Notificacion } from '../lib/widev.js';
 
@@ -794,12 +792,10 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
   let activeRechazoId: string | null = null;
   let activeApproveSol: any = null;
 
-  const COL_SOL = 'wiSolicitudes';
-  const COL_SM = 'smiles';
-
   const formatTime = (ts: any) => {
     if (!ts) return '—';
-    const date = ts.seconds ? new Date(ts.seconds * 1000) : new Date(ts);
+    const date = new Date(ts);
+    if (isNaN(date.getTime())) return '—';
     return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }) + 
            ' a las ' + date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
   };
@@ -909,7 +905,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
           actionsHtml = `
             <div style="display:flex; flex-direction:column; gap:0.3rem">
               <span class="gestor_status_tag ${sol.estado}">
-                <i class="fas ${sol.estado === 'aprobado' ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                <i class="fas ${sol.estado === 'aprobado' ? 'fa-check-circle' : (sol.estado === 'pendiente' ? 'fa-hourglass-half' : 'fa-times-circle')}"></i>
                 ${sol.estado}
               </span>
               ${sol.respuesta ? `<span style="font-size:0.78rem;color:var(--tx3);display:block;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${sol.respuesta}">"${sol.respuesta}"</span>` : ''}
@@ -972,7 +968,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
           actionsHtml = `
             <div style="border-top:1px solid var(--brd);padding-top:1rem;margin-top:0.5rem;display:flex;flex-direction:column;gap:0.4rem">
               <span class="gestor_status_tag ${sol.estado}">
-                <i class="fas ${sol.estado === 'aprobado' ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                <i class="fas ${sol.estado === 'aprobado' ? 'fa-check-circle' : (sol.estado === 'pendiente' ? 'fa-hourglass-half' : 'fa-times-circle')}"></i>
                 ${sol.estado}
               </span>
               ${sol.respuesta ? `<div class="gestor_text_block" style="font-style:italic;background:var(--bg4);padding:0.5rem;border-radius:6px;margin-top:0.2rem">"${sol.respuesta}"</div>` : ''}
@@ -1011,24 +1007,23 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
     const approveModal = document.getElementById('approve_modal');
     if (approveModal) approveModal.classList.add('dpn');
 
-    const feedbackText = "¡Felicidades! Tu postulación ha sido evaluada y aprobada con éxito. Ahora cuentas con el rol de Editor oficial de WiiHope. Comienza a escribir palabras de aliento.";
+    const feedbackText = "¡Felicidades! Tu postulación ha sido evaluada y aprobada con éxito. Ahora cuentas con el rol de Editor oficial de Workwii. Comienza a escribir artículos profesionales de empleo.";
 
     try {
-      // 1. Actualizar solicitud en wiSolicitudes
-      await updateDoc(doc(db, COL_SOL, sol.id), {
-        estado: 'aprobado',
-        respuesta: feedbackText,
-        actualizado: serverTimestamp()
-      });
+      // 1. Actualizar solicitud en Supabase (el trigger trg_procesar_aprobacion_solicitud promueve el rol automáticamente)
+      const { error: updateError } = await supabase
+        .from('solicitudes')
+        .update({
+          estado: 'aprobado',
+          respuesta: feedbackText,
+          actualizado: new Date().toISOString()
+        })
+        .eq('id', sol.id);
 
-      // 2. Ascender rol en smiles
-      await updateDoc(doc(db, COL_SM, sol.usuario), {
-        rol: 'editor',
-        actualizado: serverTimestamp()
-      });
+      if (updateError) throw updateError;
 
-      // 3. Actualizar memoria local y re-renderizar
-      solicitudes = solicitudes.map(s => s.id === sol.id ? { ...s, estado: 'aprobado', respuesta: feedbackText } : s);
+      // 2. Actualizar memoria local y re-renderizar
+      solicitudes = solicitudes.map(s => s.id === sol.id ? { ...s, estado: 'aprobado', respuesta: feedbackText, actualizado: new Date().toISOString() } : s);
       actualizarEstadisticas();
       renderConsole();
       Notificacion(`@${sol.usuario} ha sido ascendido a Editor 🎉`, 'success');
@@ -1054,13 +1049,18 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
     if (!sol) return;
 
     try {
-      await updateDoc(doc(db, COL_SOL, id), {
-        estado: 'rechazado',
-        respuesta: txt,
-        actualizado: serverTimestamp()
-      });
+      const { error: updateError } = await supabase
+        .from('solicitudes')
+        .update({
+          estado: 'rechazado',
+          respuesta: txt,
+          actualizado: new Date().toISOString()
+        })
+        .eq('id', id);
 
-      solicitudes = solicitudes.map(s => s.id === id ? { ...s, estado: 'rechazado', respuesta: txt } : s);
+      if (updateError) throw updateError;
+
+      solicitudes = solicitudes.map(s => s.id === id ? { ...s, estado: 'rechazado', respuesta: txt, actualizado: new Date().toISOString() } : s);
       actualizarEstadisticas();
       renderConsole();
       Notificacion(`Postulación de @${sol.usuario} rechazada con comentarios.`, 'info');
@@ -1204,29 +1204,21 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
       gestorName.textContent = getNombre(u.nombre || u.usuario || 'Gestor');
     }
 
-    const loader = document.getElementById('gestor_loader');
-    const card = document.getElementById('gestor_card');
-
     try {
-      // 1. Obtener todas las solicitudes registradas
-      const snap = await getDocs(collection(db, COL_SOL));
-      solicitudes = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-        .sort((a: any, b: any) => {
-          const tA = a.creado?.seconds || 0;
-          const tB = b.creado?.seconds || 0;
-          return tB - tA; // Más nuevas primero
-        });
+      // 1. Obtener todas las solicitudes registradas de Supabase
+      const { data, error } = await supabase
+        .from('solicitudes')
+        .select('*')
+        .order('creado', { ascending: false });
 
-      // Ocultar loader y renderizar
-      if (loader) loader.style.display = 'none';
-      if (card) card.style.display = 'flex';
+      if (error) throw error;
+      solicitudes = data || [];
 
       actualizarEstadisticas();
       renderConsole();
       setupDelegatedEvents();
     } catch(e) {
       console.error(e);
-      if (loader) loader.style.display = 'none';
       Notificacion('Error de conexión con la base de datos', 'error');
     }
   };

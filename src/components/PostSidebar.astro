@@ -43,7 +43,7 @@ const formatShortDate = (dateVal: any) => {
               <img src={r.imagen} alt={r.imagenAlt || r.titulo} loading="lazy" />
             </div>
             <div class="po_rel_info">
-              <span class="po_rel_cat"><i class="fas fa-paw"></i> {r.categoria}</span>
+              <span class="po_rel_cat"><i class={`fas ${icon}`}></i> {r.categoria}</span>
               <strong>{r.titulo}</strong>
               <span class="po_rel_meta">
                 <i class="fas fa-calendar"></i> {formatShortDate(r.creado)} · <i class="fas fa-eye"></i> {r.vistas || 0} · <i class="fas fa-heart" style="color:#fe0149"></i> {r.likes || 0}
@@ -66,7 +66,7 @@ const formatShortDate = (dateVal: any) => {
               <img src={r.imagen} alt={r.imagenAlt || r.titulo} loading="lazy" />
             </div>
             <div class="po_rel_info">
-              <span class="po_rel_cat"><i class="fas fa-paw"></i> {r.categoria}</span>
+              <span class="po_rel_cat"><i class={`fas ${icon}`}></i> {r.categoria}</span>
               <strong>{r.titulo}</strong>
               <span class="po_rel_meta">
                 <i class="fas fa-calendar"></i> {formatShortDate(r.creado)} · <i class="fas fa-eye"></i> {r.vistas || 0} · <i class="fas fa-heart" style="color:#fe0149"></i> {r.likes || 0}

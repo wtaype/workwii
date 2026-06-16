@@ -1,5 +1,7 @@
 ---
 // src/components/PostComent.astro
+import { linkweb } from '../wii.js';
+
 interface Props {
   slug: string;
   titulo: string;
@@ -8,7 +10,7 @@ interface Props {
 const { slug, titulo } = Astro.props;
 ---
 
-<div id="wi_comments" class="po_comments po_fade po_visible" style="--d:.55s" data-slug={slug} data-title={titulo}>
+<div id="wi_comments" class="po_comments po_fade po_visible" style="--d:.55s" data-slug={slug} data-title={titulo} data-origin={linkweb}>
   <div class="po_comments_title"><i class="fas fa-comments"></i> Comentarios</div>
   <div id="disqus_thread"></div>
 </div>
@@ -24,6 +26,7 @@ const { slug, titulo } = Astro.props;
 
     const slug = commentsContainer.getAttribute('data-slug');
     const title = commentsContainer.getAttribute('data-title');
+    const origin = commentsContainer.getAttribute('data-origin') || 'https://workwii.vercel.app';
     if (!slug) return;
 
     disqusLoaded = false;
@@ -40,7 +43,7 @@ const { slug, titulo } = Astro.props;
       commentsContainer.removeEventListener('touchstart', loadDisqusRef);
 
       const dCfg = function (this: any) {
-        this.page.url = `https://wiihope.com/${slug}`;
+        this.page.url = `${origin}/${slug}`;
         this.page.identifier = slug;
         this.page.title = title || '';
       };
@@ -51,7 +54,7 @@ const { slug, titulo } = Astro.props;
       } else {
         win.disqus_config = dCfg;
         const script = document.createElement('script');
-        script.src = 'https://superwii.disqus.com/embed.js';
+        script.src = 'https://workwii.disqus.com/embed.js';
         script.setAttribute('data-timestamp', String(+new Date()));
         document.body.appendChild(script);
       }

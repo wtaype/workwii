@@ -48,6 +48,29 @@ interface Props {
 }
 
 const { post, related, latest, prevPost, nextPost } = Astro.props;
+
+// Generar cabeceras y contenido modificado en el servidor para evitar JS en el cliente
+const headings: { text: string; id: string; depth: number }[] = [];
+let modifiedContenido = post.contenido || '';
+
+if (modifiedContenido) {
+  let headingCount = 0;
+  modifiedContenido = modifiedContenido.replace(/<(h2|h3)([^>]*?)>([\s\S]*?)<\/\1>/gi, (match: string, tag: string, attrs: string, content: string) => {
+    const id = `po_h_${headingCount++}`;
+    const cleanText = content.replace(/<[^>]*>/g, '').trim();
+    headings.push({
+      text: cleanText,
+      id,
+      depth: tag.toLowerCase() === 'h3' ? 3 : 2
+    });
+    return `<${tag}${attrs} id="${id}">${content}</${tag}>`;
+  });
+}
+
+const processedPost = {
+  ...post,
+  contenido: modifiedContenido
+};
 ---
 
 <style is:global>
@@ -805,15 +828,15 @@ const { post, related, latest, prevPost, nextPost } = Astro.props;
 </style>
 
 <Layout
-  title={post.titulo}
-  description={post.resumen}
-  keywords={post.keywords}
-  path={`/${post.slug || post.id || (Astro.params as any).slug}`}
-  image={post.imagenTop || post.imagen || '/poster.webp'}
+  title={processedPost.titulo}
+  description={processedPost.resumen}
+  keywords={processedPost.keywords}
+  path={`/${processedPost.slug || processedPost.id || (Astro.params as any).slug}`}
+  image={processedPost.imagenTop || processedPost.imagen || '/poster.webp'}
   type="article"
 >
-  <PostPage post={post} prevPost={prevPost} nextPost={nextPost}>
-    <PostSidebar post={post} latest={latest} related={related} />
+  <PostPage post={processedPost} headings={headings} prevPost={prevPost} nextPost={nextPost}>
+    <PostSidebar post={processedPost} latest={latest} related={related} />
   </PostPage>
 </Layout>
 
@@ -850,26 +873,7 @@ const { post, related, latest, prevPost, nextPost } = Astro.props;
       window.addEventListener('scroll', scrollListener);
     }
 
-    // 3. Generar la Tabla de Contenidos (TOC) dinámica
-    const content = document.querySelector('.po_contenido');
-    if (content) {
-      const headings = content.querySelectorAll('h2, h3');
-      const tocContainer = document.getElementById('po_toc_container');
-      if (headings.length && tocContainer) {
-        let html = `
-          <div class="po_toc_box">
-            <div class="po_toc_title"><i class="fas fa-list"></i> En este artículo</div>
-            <ul class="po_toc">`;
-        headings.forEach((el, i) => {
-          const id = `po_h_${i}`;
-          el.setAttribute('id', id);
-          const isH3 = el.tagName.toLowerCase() === 'h3';
-          html += `<li style="margin-left: ${isH3 ? '1.5vh' : '0'}"><a href="#${id}" class="po_toc_link">${el.textContent}</a></li>`;
-        });
-        html += `</ul></div>`;
-        tocContainer.innerHTML = html;
-      }
-    }
+    // 3. Generación de la Tabla de Contenidos (TOC) migrada al servidor para máxima velocidad y rendimiento Lighthouse.
 
     // 4. Sincronización de Me encanta (Likes)
     document.querySelectorAll('.po_like_sync').forEach(btn => {
@@ -957,4 +961,3 @@ const { post, related, latest, prevPost, nextPost } = Astro.props;
   document.addEventListener('astro:page-load', initPost);
   document.addEventListener('astro:before-preparation', cleanupPost);
 </script>
-

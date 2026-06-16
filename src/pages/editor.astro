@@ -1,8 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-const FB_PROJECT = import.meta.env.PUBLIC_FIREBASE_PROJECT_ID ?? '';
-const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 ---
 
 <style is:global>
@@ -610,13 +607,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 <Layout title="Dashboard de Redacción" robots="noindex, nofollow">
   <div class="ed_container">
     
-    <!-- Loader inicial de Firestore -->
-    <div id="ed_loader" style="text-align: center; display: flex; flex-direction: column; gap: 1rem; align-items: center; margin: 8vh auto;">
-      <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--mco);"></i>
-      <h3 style="color: var(--tx3); font-weight: 600;">Cargando tu espacio de trabajo...</h3>
-    </div>
-
-    <div id="ed_card" style="display: none; flex-direction: column; gap: 3vh;">
+    <div id="ed_card" style="display: flex; flex-direction: column; gap: 3vh;">
       
       <!-- ══ ENCABEZADO ══ -->
       <header class="ed_header">
@@ -710,21 +701,29 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
                 </tr>
               </thead>
               <tbody id="ed_table_body">
-                <!-- Inyectado con JS -->
+                <tr>
+                  <td colspan="5" style="text-align: center; padding: 3rem;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--mco); margin-bottom: 1rem;"></i>
+                    <p style="color: var(--tx3); font-weight: 500;">Cargando tu espacio de trabajo...</p>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
 
           <!-- Vista Móvil -->
           <div class="ed_mobile_list" id="ed_mobile_list">
-            <!-- Inyectado con JS -->
+            <div style="text-align: center; padding: 3rem; width: 100%;">
+              <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--mco); margin-bottom: 1rem;"></i>
+              <p style="color: var(--tx3); font-weight: 500;">Cargando tu espacio de trabajo...</p>
+            </div>
           </div>
 
           <!-- Estado Vacío -->
           <div class="ed_empty_state dpn" id="ed_empty">
             <i class="fas fa-feather"></i>
             <h3>Sin resultados</h3>
-            <p id="ed_empty_desc">Aún no has redactado ninguna historia en WiiHope. ¡Crea tu primer post!</p>
+            <p id="ed_empty_desc">Aún no has redactado ninguna historia en Workwii. ¡Crea tu primer post!</p>
           </div>
 
         </div>
@@ -742,7 +741,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
       <p class="ed_modal_text">
         ¿Estás seguro de que deseas eliminar la historia <strong id="delete_post_title">historia</strong>?
         <br /><br />
-        Esta acción es permanente y no se podrá deshacer. El artículo será retirado inmediatamente del blog público de WiiHope.
+        Esta acción es permanente y no se podrá deshacer. El artículo será retirado inmediatamente del blog público de Workwii.
       </p>
       <div class="ed_modal_actions">
         <button class="ed_btn btn_sec" id="delete_btn_cancel">Cancelar</button>
@@ -753,15 +752,8 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 
 </Layout>
 
-<!-- Inyectar vars de Firebase al cliente -->
-<script is:inline define:vars={{ FB_PROJECT, FB_KEY }}>
-  window.__fbProject = FB_PROJECT;
-  window.__fbKey = FB_KEY;
-</script>
-
 <script>
-  import { db } from '../lib/firebase.js';
-  import { collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
+  import { supabase } from '../lib/supabase.js';
   import { protegerRuta } from '../lib/auth.js';
   import { getNombre, Saludar, Notificacion, getls, savels } from '../lib/widev.js';
 
@@ -771,11 +763,10 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
   let busqueda = '';
   let activeDeletePost: any = null;
 
-  const COL_BLOG = 'blog';
-
   const formatTime = (ts: any) => {
     if (!ts) return '—';
-    const date = ts.seconds ? new Date(ts.seconds * 1000) : new Date(ts);
+    const date = new Date(ts);
+    if (isNaN(date.getTime())) return '—';
     return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
@@ -837,7 +828,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
           if (busqueda.trim()) {
             emptyDesc.textContent = 'Ninguna de tus historias coincide con la búsqueda.';
           } else {
-            emptyDesc.textContent = 'Aún no has redactado ninguna historia en WiiHope. ¡Crea tu primer post!';
+            emptyDesc.textContent = 'Aún no has redactado ninguna historia en Workwii. ¡Crea tu primer post!';
           }
         }
       }
@@ -940,8 +931,9 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
     if (modal) modal.classList.add('dpn');
 
     try {
-      // 1. Borrar de Firestore
-      await deleteDoc(doc(db, COL_BLOG, p.id));
+      // 1. Borrar de Supabase
+      const { error } = await supabase.from('blog').delete().eq('id', p.id);
+      if (error) throw error;
 
       // 2. Limpiar cache local del post y blog
       if (typeof localStorage !== 'undefined') {
@@ -1039,7 +1031,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
     if (roleLbl) {
       if (u.rol === 'admin') roleLbl.innerHTML = '<i class="fas fa-crown"></i> Administrador';
       else if (u.rol === 'gestor') roleLbl.innerHTML = '<i class="fas fa-shield-alt"></i> Gestor Editorial';
-      else roleLbl.innerHTML = '<i class="fas fa-pen-fancy"></i> Editor de WiiHope';
+      else roleLbl.innerHTML = '<i class="fas fa-pen-fancy"></i> Editor de Workwii';
     }
 
     // Botón Gestor si rol es gestor o admin
@@ -1052,36 +1044,21 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
     const card = document.getElementById('ed_card');
 
     try {
-      // 1. Consultar posts
-      // Si es admin o gestor, ¿traer todos? Para wiihope, el panel editor es para ver sus propios artículos
-      // e.g. consultamos donde usuario == u.usuario
-      const snap = await getDocs(collection(db, COL_BLOG));
-      const allPosts: any[] = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-      // Si es admin, puede ver y moderar todos los posts en su panel. Si es editor/gestor, solo los suyos.
-      if (u.rol === 'admin') {
-        posts = allPosts;
-      } else {
-        posts = allPosts.filter(p => p.usuario === u.usuario || p.email === u.email);
+      // 1. Consultar posts de Supabase
+      let query = supabase.from('blog').select('*');
+      if (u.rol !== 'admin') {
+        query = query.or(`usuario.eq.${u.usuario},email.eq.${u.email}`);
       }
-
-      // Ordenar por fecha de creación descendente
-      posts.sort((a: any, b: any) => {
-        const tA = a.creado?.seconds || 0;
-        const tB = b.creado?.seconds || 0;
-        return tB - tA;
-      });
-
-      // Ocultar loader y mostrar
-      if (loader) loader.style.display = 'none';
-      if (card) card.style.display = 'flex';
+      
+      const { data, error } = await query.order('creado', { ascending: false });
+      if (error) throw error;
+      posts = data || [];
 
       updateKPIs();
       renderPosts();
       setupEvents();
     } catch(e) {
       console.error(e);
-      if (loader) loader.style.display = 'none';
       Notificacion('Error cargando base de datos', 'error');
     }
   };
