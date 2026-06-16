@@ -54,6 +54,35 @@ const headings: { text: string; id: string; depth: number }[] = [];
 let modifiedContenido = post.contenido || '';
 
 if (modifiedContenido) {
+  // 1. Convertir botones antiguos de YouTube en enlaces limpios
+  modifiedContenido = modifiedContenido.replace(/<button[^>]*?class="po_yt_btn"[^>]*?data-yt="([a-zA-Z0-9_-]+)"[^>]*>([\s\S]*?)<\/button>/gi, (match: string, ytId: string, innerHtml: string) => {
+    const cleanInner = innerHtml.replace(/<i\s+class=(['"])(.*?)\1\s+style=(['"])[^>]*?\3/gi, '<i class="$2 po_ico_youtube"');
+    return `<a href="https://www.youtube.com/watch?v=${ytId}" target="_blank" rel="noopener noreferrer" class="po_yt_link">${cleanInner}</a>`;
+  });
+
+  // 2. Limpiar estilos inline de hr y checklists
+  modifiedContenido = modifiedContenido
+    .replace(/<hr style="border:none;border-top:1px solid var\(--brd\);margin:2vh 0"\/?>/gi, '<hr class="po_hr" />')
+    .replace(/(<input[^>]*?type="checkbox"[^>]*?)style="margin-right:\s*0\.5vh;?"/gi, '$1class="po_todo_check"');
+
+  // 3. Limpiar estilos inline de iconos personalizados combinando clases
+  modifiedContenido = modifiedContenido.replace(/<i\s+class=(['"])(.*?)\1\s+style=(['"])color:\s*(.*?);?\3><\/i>/gi, (match: string, q1: string, classes: string, q2: string, color: string) => {
+    let colorClass = '';
+    const c = color.trim().toLowerCase();
+    if (c === '#fe0149' || c === '#ff3849') colorClass = 'po_ico_red';
+    else if (c === '#ffb636' || c === '#ffc107') colorClass = 'po_ico_yellow';
+    else if (c === '#3cd741') colorClass = 'po_ico_green';
+    else if (c === '#0edeff') colorClass = 'po_ico_cyan';
+    else if (c === '#e0a910') colorClass = 'po_ico_gold';
+    else if (c === 'var(--warning)') colorClass = 'po_ico_warning';
+    else if (c === 'var(--mco)') colorClass = 'po_ico_mco';
+    return `<i class="${classes} ${colorClass}"></i>`;
+  });
+
+  // 4. Inyección automática de Lazy Loading y Async Decoding en imágenes de contenido
+  modifiedContenido = modifiedContenido.replace(/<img\s+(?!([^>]*?\bloading\b))([^>]*?)>/gi, '<img loading="lazy" decoding="async" $1$2>');
+
+  // 5. Procesamiento de encabezados (TOC)
   let headingCount = 0;
   modifiedContenido = modifiedContenido.replace(/<(h2|h3)([^>]*?)>([\s\S]*?)<\/\1>/gi, (match: string, tag: string, attrs: string, content: string) => {
     let customId = '';
@@ -149,6 +178,8 @@ const keywords = seoMeta.keywords || '';
 
 .po_hero_img {
   width: 100%;
+  aspect-ratio: 1180 / 425;
+  object-fit: cover;
   display: block;
   transition: transform .7s ease;
 }
@@ -276,6 +307,8 @@ const keywords = seoMeta.keywords || '';
 .po_contenido p { margin-bottom: 1.8vh; }
 .po_contenido img {
   width: 100%;
+  height: auto;
+  aspect-ratio: auto 16 / 9;
   object-fit: cover;
   border-radius: 1.2vh;
   margin: 2vh 0;
@@ -374,27 +407,40 @@ const keywords = seoMeta.keywords || '';
 .po_table_wrap tr:last-child td { border-bottom: none; }
 .po_table_wrap tr:hover td { background: color-mix(in srgb, var(--mco) 5%, var(--wb)); }
 
-/* YouTube Button */
-.po_yt_btn {
+/* YouTube Links y Utilidades WPO */
+.po_hr {
+  border: none;
+  border-top: 1px solid var(--brd);
+  margin: 2vh 0;
+}
+.po_todo_check {
+  margin-right: 0.5vh;
+}
+.po_yt_link {
+  color: var(--mco);
+  font-weight: 600;
+  text-underline-offset: 2px;
   display: inline-flex;
   align-items: center;
-  padding: 1.2vh 2.5vh;
-  margin: 1.5vh 0;
-  background: var(--bg4);
-  border: 1px solid var(--brd);
-  border-radius: 5vh;
-  color: var(--tx1);
-  font-size: var(--fz_m2);
-  font-weight: 700;
-  cursor: pointer;
-  transition: all var(--tr_f);
+  gap: 0.6vh;
 }
-.po_yt_btn:hover {
-  background: var(--wb);
-  border-color: #fe0149;
-  transform: translateY(-0.2vh);
-  box-shadow: 0 4px 12px rgba(254, 1, 73, 0.15);
+.po_yt_link:hover {
+  text-decoration: underline;
 }
+.po_ico_youtube {
+  color: #fe0149;
+  font-size: 1.15em;
+  margin-right: 2px;
+}
+
+/* Colores de Iconos Personalizados */
+.po_ico_red { color: #fe0149; }
+.po_ico_yellow { color: #FFB636; }
+.po_ico_green { color: #3cd741; }
+.po_ico_cyan { color: #0edeFF; }
+.po_ico_gold { color: #e0a910; }
+.po_ico_mco { color: var(--mco); }
+.po_ico_warning { color: var(--warning); }
 
 .po_contenido strong { color: var(--tx1); }
 
@@ -946,10 +992,14 @@ const keywords = seoMeta.keywords || '';
 
     // 6. Lightbox de video de YouTube por delegación y MutationObserver
     handleYtClickRef = (e: any) => {
-      const btn = e.target?.closest?.('[data-yt]');
-      if (!btn) return;
-      const id = btn.getAttribute('data-yt');
-      if (!id) return;
+      const link = e.target?.closest?.('a');
+      if (!link) return;
+      const href = link.getAttribute('href') || '';
+      const ytMatch = href.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/i);
+      if (!ytMatch) return;
+
+      e.preventDefault();
+      const id = ytMatch[1];
 
       let modal = document.getElementById('wi_yt_modal');
       if (!modal) {

@@ -4,13 +4,18 @@ import sitemap from '@astrojs/sitemap';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { linkweb } from './src/wii.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const firebaseMock = path.resolve(__dirname, './src/lib/firebase.js');
 export default defineConfig({
-  site: 'https://wiihope.com',
+  site: linkweb,
   base: '/',
   build: { inlineStylesheets: 'always' },
+  prefetch: true,
+  image: {
+    domains: ['i.ibb.co', 'ibb.co']
+  },
   vite: {
     resolve: {
       alias: {

@@ -2,6 +2,7 @@
 // src/components/PostPage.astro
 import PostComent from './PostComent.astro';
 import { icon, linkweb } from '../wii.js';
+import { Image } from 'astro:assets';
 
 interface Props {
   post: any;
@@ -27,7 +28,11 @@ const formatLongDate = (dateVal: any) => {
       <div class="po_content">
         <!-- Hero del Post -->
         <div class="po_hero po_fade po_visible" style="--d:0s">
-          <img src={post.imagenTop || post.imagen} alt={post.metaSEO?.alt || post.titulo} class="po_hero_img" loading="eager" />
+          {post.imagenTop || post.imagen ? (
+            <Image src={post.imagenTop || post.imagen} width={1180} height={425} alt={post.metaSEO?.alt || post.titulo} class="po_hero_img" loading="eager" fetchpriority="high" />
+          ) : (
+            <img src="/poster.webp" alt="" class="po_hero_img" />
+          )}
           <div class="po_hero_over">
             <a href="/blog" class="po_back" data-witip="Volver"><i class="fas fa-arrow-left"></i> Blog</a>
             <div class="po_hero_badges">

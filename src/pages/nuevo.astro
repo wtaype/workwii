@@ -509,6 +509,58 @@ import { app } from '../wii.js';
 .nu_status_msg.warning { color: var(--warning); }
 .nu_status_msg.success { color: var(--success); }
 .nu_status_msg.error { color: var(--error); }
+
+/* ── 15. UTILIDADES DE CONTENIDO Y WPO ────────────── */
+.po_hr {
+  border: none;
+  border-top: 1px solid var(--brd);
+  margin: 2vh 0;
+}
+.po_todo_check {
+  margin-right: 0.5vh;
+}
+.po_yt_link {
+  color: var(--mco);
+  font-weight: 600;
+  text-underline-offset: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6vh;
+}
+.po_yt_link:hover {
+  text-decoration: underline;
+}
+.po_ico_youtube {
+  color: #fe0149;
+  font-size: 1.15em;
+  margin-right: 2px;
+}
+.po_hero_img {
+  width: 100%;
+  aspect-ratio: 1180 / 425;
+  object-fit: cover;
+  display: block;
+  transition: transform .7s ease;
+}
+
+.nu_html_prev img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: auto 16 / 9;
+  object-fit: cover;
+  border-radius: 1.2vh;
+  margin: 2vh 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+}
+
+/* Colores de Iconos Personalizados */
+.po_ico_red { color: #fe0149; }
+.po_ico_yellow { color: #FFB636; }
+.po_ico_green { color: #3cd741; }
+.po_ico_cyan { color: #0edeFF; }
+.po_ico_gold { color: #e0a910; }
+.po_ico_mco { color: var(--mco); }
+.po_ico_warning { color: var(--warning); }
 </style>
 
 <Layout title="Nueva historia" name={app} robots="noindex, nofollow">
@@ -754,34 +806,34 @@ import { app } from '../wii.js';
   };
 
   const CUSTOM_ICONS: Record<string, string> = {
-    'corazon': '<i class="fas fa-heart" style="color:#fe0149;"></i>',
-    'heart': '<i class="fas fa-heart" style="color:#fe0149;"></i>',
-    'estrella': '<i class="fas fa-star" style="color:#FFB636;"></i>',
-    'star': '<i class="fas fa-star" style="color:#FFB636;"></i>',
-    'si': '<i class="fas fa-circle-check" style="color:#3cd741;"></i>',
-    'check': '<i class="fas fa-circle-check" style="color:#3cd741;"></i>',
-    'no': '<i class="fas fa-circle-xmark" style="color:#ff3849;"></i>',
-    'times': '<i class="fas fa-circle-xmark" style="color:#ff3849;"></i>',
-    'maletin': '<i class="fas fa-briefcase" style="color:var(--mco);"></i>',
-    'briefcase': '<i class="fas fa-briefcase" style="color:var(--mco);"></i>',
-    'foco': '<i class="fas fa-lightbulb" style="color:#FFC107;"></i>',
-    'idea': '<i class="fas fa-lightbulb" style="color:#FFC107;"></i>',
-    'lightbulb': '<i class="fas fa-lightbulb" style="color:#FFC107;"></i>',
-    'grafico': '<i class="fas fa-chart-line" style="color:#0edeFF;"></i>',
-    'chart': '<i class="fas fa-chart-line" style="color:#0edeFF;"></i>',
-    'usuario': '<i class="fas fa-user-tie" style="color:#e0a910;"></i>',
-    'user': '<i class="fas fa-user-tie" style="color:#e0a910;"></i>',
-    'cruz': '<i class="fas fa-cross" style="color:var(--mco);"></i>',
-    'cross': '<i class="fas fa-cross" style="color:var(--mco);"></i>',
-    'biblia': '<i class="fas fa-book-bible" style="color:var(--mco);"></i>',
-    'bible': '<i class="fas fa-book-bible" style="color:var(--mco);"></i>',
-    'oracion': '<i class="fas fa-hands-praying" style="color:#e0a910;"></i>',
-    'pray': '<i class="fas fa-hands-praying" style="color:#e0a910;"></i>',
-    'paloma': '<i class="fas fa-dove" style="color:#0edeFF;"></i>',
-    'dove': '<i class="fas fa-dove" style="color:#0edeFF;"></i>',
-    'alerta': '<i class="fas fa-triangle-exclamation" style="color:var(--warning);"></i>',
-    'warning': '<i class="fas fa-triangle-exclamation" style="color:var(--warning);"></i>',
-    'info': '<i class="fas fa-circle-info" style="color:#0edeFF;"></i>'
+    'corazon': '<i class="fas fa-heart po_ico_red"></i>',
+    'heart': '<i class="fas fa-heart po_ico_red"></i>',
+    'estrella': '<i class="fas fa-star po_ico_yellow"></i>',
+    'star': '<i class="fas fa-star po_ico_yellow"></i>',
+    'si': '<i class="fas fa-circle-check po_ico_green"></i>',
+    'check': '<i class="fas fa-circle-check po_ico_green"></i>',
+    'no': '<i class="fas fa-circle-xmark po_ico_red"></i>',
+    'times': '<i class="fas fa-circle-xmark po_ico_red"></i>',
+    'maletin': '<i class="fas fa-briefcase po_ico_mco"></i>',
+    'briefcase': '<i class="fas fa-briefcase po_ico_mco"></i>',
+    'foco': '<i class="fas fa-lightbulb po_ico_yellow"></i>',
+    'idea': '<i class="fas fa-lightbulb po_ico_yellow"></i>',
+    'lightbulb': '<i class="fas fa-lightbulb po_ico_yellow"></i>',
+    'grafico': '<i class="fas fa-chart-line po_ico_cyan"></i>',
+    'chart': '<i class="fas fa-chart-line po_ico_cyan"></i>',
+    'usuario': '<i class="fas fa-user-tie po_ico_gold"></i>',
+    'user': '<i class="fas fa-user-tie po_ico_gold"></i>',
+    'cruz': '<i class="fas fa-cross po_ico_mco"></i>',
+    'cross': '<i class="fas fa-cross po_ico_mco"></i>',
+    'biblia': '<i class="fas fa-book-bible po_ico_mco"></i>',
+    'bible': '<i class="fas fa-book-bible po_ico_mco"></i>',
+    'oracion': '<i class="fas fa-hands-praying po_ico_gold"></i>',
+    'pray': '<i class="fas fa-hands-praying po_ico_gold"></i>',
+    'paloma': '<i class="fas fa-dove po_ico_cyan"></i>',
+    'dove': '<i class="fas fa-dove po_ico_cyan"></i>',
+    'alerta': '<i class="fas fa-triangle-exclamation po_ico_warning"></i>',
+    'warning': '<i class="fas fa-triangle-exclamation po_ico_warning"></i>',
+    'info': '<i class="fas fa-circle-info po_ico_cyan"></i>'
   };
 
   const mdToHtml = (md: string) => {
@@ -799,9 +851,8 @@ import { app } from '../wii.js';
       .replace(/~~(.*?)~~/gim, '<del>$1</del>')
       .replace(/`([^`]+)`/gim, '<code>$1</code>')
       .replace(/!\[(.*?)\]\((.*?)\)/gim, '<img alt="$1" src="$2" />')
-      .replace(/\[(.*?)\]\((https:\/\/(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]+)(?:\S*?))\)/gim, '<button type="button" class="po_yt_btn" data-yt="$3"><i class="fab fa-youtube" style="color:#fe0149; font-size:1.2em; margin-right:6px;"></i> $1</button>')
       .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-      .replace(/^---/gim, '<hr style="border:none;border-top:1px solid var(--brd);margin:2vh 0"/>');
+      .replace(/^---/gim, '<hr class="po_hr"/>');
 
     // Reemplazar iconos personalizados con estilos
     Object.keys(CUSTOM_ICONS).forEach(key => {
@@ -846,8 +897,8 @@ import { app } from '../wii.js';
       if (listMatch) {
         if (!inList) { result.push('<ul>'); inList = true; }
         let text = listMatch[1];
-        if (text.startsWith('[ ] ')) text = '<input type="checkbox" disabled style="margin-right:0.5vh"> ' + text.slice(4);
-        else if (text.startsWith('[x] ')) text = '<input type="checkbox" checked disabled style="margin-right:0.5vh"> ' + text.slice(4);
+        if (text.startsWith('[ ] ')) text = '<input type="checkbox" class="po_todo_check" disabled> ' + text.slice(4);
+        else if (text.startsWith('[x] ')) text = '<input type="checkbox" class="po_todo_check" checked disabled> ' + text.slice(4);
         result.push(`<li>${text}</li>`);
       } else {
         if (inList) { result.push('</ul>'); inList = false; }
