@@ -246,7 +246,12 @@ export const wiSmart = (() => {
     savels('wiSmart', 1);
   };
   const init = (o) => {
-    if (o) opt = o;
+    if (o) {
+      if (!opt) opt = {};
+      Object.entries(o).forEach(([t, v]) => {
+        opt[t] = (opt[t] || []).concat(v);
+      });
+    }
     if (getls('wiSmart')) return run();
     const trigger = () => {
       run();
