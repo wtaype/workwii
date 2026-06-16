@@ -85,7 +85,7 @@ const defaultRight = NAV_CONFIG.todos.right;
     if (target.closest('.bt_salir')) {
       e.preventDefault();
       const { salir } = await import('../lib/login.js');
-      await salir(['wiTema', 'cookiesPrivacidad']);
+      await salir(['wiTema','wiSmart', 'cookiesPrivacidad']);
       window.location.href = '/';
       return;
     }

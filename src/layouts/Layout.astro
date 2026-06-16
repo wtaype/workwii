@@ -101,6 +101,8 @@ const seoSchema = {
     <script type="application/ld+json" set:html={JSON.stringify(seoSchema)} />
     <title>{title}</title>
 
+    <!-- Placeholder de persistencia para fuentes cargadas dinámicamente por wiSmart -->
+    <link id="google-fonts" data-astro-transition-persist="google-fonts" />
 
     <!-- Carga asíncrona de estilos de iconos de FontAwesome (No bloqueante) -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
@@ -342,7 +344,7 @@ const seoSchema = {
     }
 
     body {
-      background-color: var(--bg);
+      background: url('/wpuntos.svg'), var(--bg);
     }
 
     .ad_empty {
@@ -1360,10 +1362,8 @@ const seoSchema = {
 
     <!-- Script Interactivo de Selección de Temas (Optimizado al final del Body) -->
     <script>
-      import { wiSmart, wiImgs } from '../lib/widev.js';
-
-      wiSmart({ css: ['https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=optional'] });
-      wiImgs([{ selector: 'body', url: '/wpuntos.svg' }]);
+      import { wiSmart } from '../lib/widev.js';
+      wiSmart({ css: ['https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap'] });
 
       const getTheme = () => {
         try {

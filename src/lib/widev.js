@@ -227,8 +227,8 @@ export const wiAuth = {
   get user() { return getls('wiSmile'); },
   on(fn) { bus.add(fn); const u = this.user; if (u) fn(u); return () => bus.delete(fn); },
   emit(wi) { bus.forEach(fn => { try { fn(wi); } catch(e) { console.error('wiAuth:', e); } }); },
-  login(wi, h = 144, keep = []) { removels.except(['wiTema', 'cookiesPrivacidad', ...keep]); savels('wiSmile', wi, h); this.emit(wi); },
-  logout(keep = []) { removels.except(['wiTema', 'cookiesPrivacidad', ...keep]); this.emit(null); }
+  login(wi, h = 144, keep = []) { removels.except(['wiTema', 'cookiesPrivacidad', 'wiSmart', ...keep]); savels('wiSmile', wi, h); this.emit(wi); },
+  logout(keep = []) { removels.except(['wiTema', 'cookiesPrivacidad', 'wiSmart', ...keep]); this.emit(null); }
 };
 
 // CARGA INTELIGENTE v14_________________________________
@@ -239,12 +239,7 @@ export const wiSmart = (() => {
     if (!opt) return;
     Object.entries(opt).forEach(([t, v]) => [].concat(v).forEach(it => {
       const k = `${t}:${it}`;
-      t === 'css' ? !document.querySelector(`link[href="${it}"]`) && (() => {
-          const el = document.getElementById('google-fonts') || document.head.appendChild(Object.assign(document.createElement('link'), { id: 'google-fonts' }));
-          el.setAttribute('rel', 'stylesheet');
-          el.setAttribute('href', it);
-          el.setAttribute('data-astro-transition-persist', 'google-fonts');
-        })()
+      t === 'css' ? !document.querySelector(`link[href="${it}"]`) && document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: it })).setAttribute('data-astro-transition-persist', 'google-fonts')
         : t === 'js' && typeof it === 'string' ? !document.querySelector(`script[src="${it}"]`) && document.head.appendChild(Object.assign(document.createElement('script'), { src: it, async: true, crossOrigin: 'anonymous' }))
         : typeof it === 'function' && !ok.has(k) && (ok.add(k), it().catch?.(e => console.error('wiSmart:', e)));
     }));
