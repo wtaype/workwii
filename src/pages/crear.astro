@@ -5,8 +5,7 @@ import Layout from '../layouts/Layout.astro';
 import { app } from '../wii.js';
 ---
 
-<!-- Guardia de Renderizado Inicial: Redirigir de inmediato si no hay token local -->
-<script is:inline>localStorage.wiSmile||location.replace('/')</script>
+
 
 <Layout title="Crea tu CV ATS con IA — Workwii" name={app}>
   <style is:global>
@@ -1010,17 +1009,12 @@ import { app } from '../wii.js';
 </Layout>
 
 <script>
-  import { protegerRuta } from '../lib/auth.js';
   import { initIA } from '../lib/crear/creando.js';
   import { initResultado, updatePreview, updateSteps } from '../lib/crear/resultado.js';
   import { initEntrada } from '../lib/crear/entrada.js';
 
   const init = async () => {
-    // 1. Proteger ruta usando el guard centralizado de Supabase + localStorage
-    const uLocal = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
-    if (!uLocal) return;
-
-    // 2. Inicializar Módulos de Entrada
+    // 1. Inicializar Módulos de Entrada
     initEntrada((cvData: any) => {
       // Callback cada vez que cambian datos (guardado en caché local)
       updatePreview(cvData);

@@ -7,11 +7,9 @@ import path from 'node:path';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const firebaseMock = path.resolve(__dirname, './src/lib/firebase.js');
-const BASE = process.env.PUBLIC_BASE || '/';
-
 export default defineConfig({
   site: 'https://wiihope.com',
-  base: BASE,
+  base: '/',
   build: { inlineStylesheets: 'always' },
   vite: {
     resolve: {

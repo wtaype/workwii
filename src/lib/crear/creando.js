@@ -1,4 +1,5 @@
 import { AI_CONFIG } from './config.js';
+import { wiRateLimit, Notificacion } from '../widev.js';
 
 let activeTextarea = null;
 let onApply = null;
@@ -71,6 +72,19 @@ export const initIA = () => {
  * Abre el modal y ejecuta la optimización por IA.
  */
 export const abrirModalIA = async (puesto, empresa, textareaElement, onApplyCallback) => {
+  const isLogged = localStorage.getItem('wiSmile');
+  let rate = null;
+
+  if (!isLogged) {
+    rate = wiRateLimit('guest_cv_creator_uses', 5, 315360000000);
+    if (!rate.ok) {
+      Notificacion('Has alcanzado el límite de 5 usos de prueba. Regístrate gratis para continuar sin límites.', 'warning', 6000);
+      const { abrirLogin } = await import('../login.js');
+      abrirLogin('registrar');
+      return;
+    }
+  }
+
   activeTextarea = textareaElement;
   onApply = onApplyCallback;
 
@@ -98,6 +112,7 @@ export const abrirModalIA = async (puesto, empresa, textareaElement, onApplyCall
 
   try {
     const result = await optimizarLogroConGemini(originalText, puesto, empresa);
+    if (rate) rate.fail(); // Registrar consumo exitoso en el navegador del invitado
     loader.classList.add('dpn');
     optimizedBox.textContent = result;
     optimizedBox.classList.remove('dpn');

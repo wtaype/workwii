@@ -5,7 +5,12 @@ const COMUN = [
 
 export const NAV_CONFIG = {
   todos: {
-    left: [{ href: '/', ico: 'fa-house', txt: 'Inicio' }, ...COMUN],
+    left: [
+      { href: '/', ico: 'fa-house', txt: 'Inicio' },
+      { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
+      { href: '/analisar', ico: 'fa-robot', txt: 'Analizar CV' },
+      ...COMUN
+    ],
     right: [
       { isBtn: true, cls: 'bt_auth registrar', ico: 'fa-user-plus', txt: 'Registrar' },
       { isBtn: true, cls: 'bt_auth login', ico: 'fa-sign-in-alt', txt: 'Ingresar' }
@@ -102,8 +107,7 @@ export function rutaRoles() {
   roles['/mensajes'] = allRoles;
   roles['/perfil'] = allRoles;
   roles['/ser-editor'] = allRoles;
-  roles['/crear'] = allRoles;
-  roles['/analisar'] = allRoles;
+
 
   return { roles, require2FA };
 }
