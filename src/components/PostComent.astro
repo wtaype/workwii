@@ -54,7 +54,7 @@ const { slug, titulo } = Astro.props;
       } else {
         win.disqus_config = dCfg;
         const script = document.createElement('script');
-        script.src = 'https://superwii.disqus.com/embed.js';
+        script.src = 'https://workwii.disqus.com/embed.js';
         script.setAttribute('data-timestamp', String(+new Date()));
         document.body.appendChild(script);
       }
@@ -87,17 +87,8 @@ const { slug, titulo } = Astro.props;
       commentsEl.removeEventListener('mouseenter', loadDisqusRef);
       commentsEl.removeEventListener('touchstart', loadDisqusRef);
     }
-
-    // Limpieza de recursos Disqus al navegar a otra página
-    document.querySelectorAll('script[src*="disqus.com"]').forEach(s => s.remove());
-    document.querySelectorAll('iframe[src*="disqus.com"]').forEach(i => i.remove());
     const thread = document.getElementById('disqus_thread');
     if (thread) thread.innerHTML = '';
-
-    const win = window as any;
-    delete win.DISQUS;
-    delete win.disqus_config;
-    delete win.disqus_thread;
   };
 
   document.addEventListener('astro:page-load', initDisqus);

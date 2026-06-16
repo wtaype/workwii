@@ -1,37 +1,37 @@
---- [Metadatos SEO para el Post de Regalos Virtuales] titulo = 47 caracteres, slug = 32 caracteres, descripcion = 150 caracteres, keywords = 5 palabras -> no eliminar esta linea. 
-Título: Tipos de currículum: ATS y formatos modernos
-SLUG: tipos-de-curriculum-ats-formatos
-Meta Description: Descubre los tipos de currículum más efectivos, cómo estructurar un formato optimizado para ATS y las claves para destacar en los filtros de empleo.
-Meta Keywords: tipos de curriculum, formato ats, plantilla de cv, curriculum moderno, optimizar cv
-Categoría: CV
-Tags: curriculum, ats, empleo, reclutamiento, plantilla, formato, exitoso, buscar-trabajo
+--- [Metadatos SEO] titulo = 47 caracteres, slug = 32 caracteres, descripcion = 150 caracteres, keywords = 5 palabras -> no eliminar esta linea. 
+Título: Qué estudiar en 2026: Carreras con más demanda.
+SLUG: carreras-mas-demandadas-del-2026
+Meta Description: Conoce las carreras universitarias y técnicas con mayor demanda laboral en el 2026, las habilidades clave y cómo prepararte para el empleo del futuro.
+Meta Keywords: carreras mas demandadas, que estudiar 2026, futuro laboral, profesiones del futuro, carreras tecnicas
+Categoría: Carreras
+Tags: estudios, futuro, tecnologia, 2026, universidad, habilidades, demanda-laboral, exito-profesional
 
 Miniatura / ImagenTop (Banner de Portada):
-- Miniatura URL: "https://i.ibb.co/4RthXr8B/b8b3c2cf9a2a.webp"
-- ImagenTop URL: "https://i.ibb.co/Z6wm9bpt/4d289e8f1f7c.webp"
-- ALT sugerido: "Plantilla de currículum optimizado para filtros ATS con un diseño limpio y profesional"
+- Miniatura URL: "https://i.ibb.co/Tqw9fZFz/bb3a5d9711eb.jpg"
+- ImagenTop URL: "https://i.ibb.co/wrp0x3Ln/9892aed1a38b.jpg"
+- ALT sugerido: "Ilustración futurista que muestra las profesiones del año 2026 con tecnología y sostenibilidad"
 
-ImagenCuerpo 1 (Tipos de CV):
-- Enlace: "https://i.ibb.co/Ld0MVyc8/99c518094841.jpg"
-- ALT sugerido: "Comparación visual de los principales formatos de currículum sobre un escritorio"
+ImagenCuerpo 1 (Futuro del Trabajo):
+- Enlace: "https://i.ibb.co/r23bSqBt/e73bd50af604.jpg"
+- ALT sugerido: "Espacio de trabajo moderno con elementos de inteligencia artificial, análisis de datos y robótica"
 
-ImagenCuerpo 2 (Formato ATS):
-- Enlace: "https://i.ibb.co/fYLfqrFb/75104b6bb0cd.jpg"
-- ALT sugerido: "Estructura y diseño de un currículum optimizado para sistemas ATS de reclutamiento"
+ImagenCuerpo 2 (Tecnología e IA):
+- Enlace: "https://i.ibb.co/whhvGJ5V/cdb86fcdcd60.jpg"
+- ALT sugerido: "Ingeniero de software programando algoritmos de aprendizaje automático y redes neuronales"
 
-ImagenCuerpo 3 (Formato Harvard):
-- Enlace: "https://i.ibb.co/Nnb83SRT/1f1b445aab81.jpg"
-- ALT sugerido: "Currículum académico clásico estilo Harvard con secciones estructuradas tradicionalmente"
+ImagenCuerpo 3 (Biotecnología y Salud):
+- Enlace: "https://i.ibb.co/20DSqFKs/245e23145fc0.jpg"
+- ALT sugerido: "Científico en un laboratorio de biotecnología analizando muestras con equipamiento avanzado"
 
-ImagenCuerpo 4 (Formato Funcional):
-- Enlace: "https://i.ibb.co/7JsbmpsQ/6aed13815283.jpg"
-- ALT sugerido: "Estructura de currículum funcional centrado en habilidades y competencias"
+ImagenCuerpo 4 (Sostenibilidad y Energía):
+- Enlace: "https://i.ibb.co/7JvsTk5M/af02a46386ba.jpg"
+- ALT sugerido: "Ingeniero ambiental instalando paneles solares y turbinas eólicas en un campo verde"
 
-ImagenCuerpo 5 (Errores de Formato):
-- Enlace: "https://i.ibb.co/j9687Pyc/27e9afe47bd4.jpg"
-- ALT sugerido: "Ejemplo de currículum rechazado con elementos gráficos excesivos e ilegibles"
+ImagenCuerpo 5 (Negocios y Datos):
+- Enlace: "https://i.ibb.co/ds76yc7p/4d1327d853b3.jpg"
+- ALT sugerido: "Analista de negocios examinando gráficos y KPIs de rendimiento en pantallas de alta tecnología"
 
 ImagenCuerpo 6 (Motivación y Éxito):
-- Enlace: "https://i.ibb.co/nsJZBZhN/07a5da8e9eee.jpg"
-- ALT sugerido: "Profesional sonriente y motivado celebrando su nuevo empleo en una oficina moderna"
+- Enlace: "https://i.ibb.co/YB5MfqFk/e803387388b2.jpg"
+- ALT sugerido: "Joven profesional sonriente celebrando su contratación y éxito laboral en una oficina del futuro"
 ---
