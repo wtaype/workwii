@@ -56,14 +56,33 @@ let modifiedContenido = post.contenido || '';
 if (modifiedContenido) {
   let headingCount = 0;
   modifiedContenido = modifiedContenido.replace(/<(h2|h3)([^>]*?)>([\s\S]*?)<\/\1>/gi, (match: string, tag: string, attrs: string, content: string) => {
-    const id = `po_h_${headingCount++}`;
-    const cleanText = content.replace(/<[^>]*>/g, '').trim();
+    let customId = '';
+    let cleanContent = content;
+    const trimmedContent = content.trim();
+    const contentIdMatch = trimmedContent.match(/(.*?)\s*\{\#([a-zA-Z0-9_-]+)\}\s*$/i);
+    
+    if (contentIdMatch) {
+      cleanContent = contentIdMatch[1].trim();
+      customId = contentIdMatch[2];
+    }
+
+    const idMatch = attrs.match(/id=(['"])(.*?)\1/i);
+    const id = customId || (idMatch ? idMatch[2] : `po_h_${headingCount++}`);
+    
+    let cleanAttrs = attrs;
+    if (!idMatch) {
+      cleanAttrs = `${attrs} id="${id}"`;
+    } else if (customId) {
+      cleanAttrs = attrs.replace(/id=(['"])(.*?)\1/i, `id="${id}"`);
+    }
+
+    const cleanText = cleanContent.replace(/<[^>]*>/g, '').trim();
     headings.push({
       text: cleanText,
       id,
       depth: tag.toLowerCase() === 'h3' ? 3 : 2
     });
-    return `<${tag}${attrs} id="${id}">${content}</${tag}>`;
+    return `<${tag}${cleanAttrs}>${cleanContent}</${tag}>`;
   });
 }
 

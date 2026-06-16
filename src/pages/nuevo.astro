@@ -787,8 +787,12 @@ import { app } from '../wii.js';
   const mdToHtml = (md: string) => {
     if (!md) return '';
     let html = md
-      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+      .replace(/^## (.*?)(?:\s*\{\#([a-zA-Z0-9_-]+)\})?\s*$/gim, (match, title, id) => {
+        return id ? `<h2 id="${id}">${title.trim()}</h2>` : `<h2>${title.trim()}</h2>`;
+      })
+      .replace(/^### (.*?)(?:\s*\{\#([a-zA-Z0-9_-]+)\})?\s*$/gim, (match, title, id) => {
+        return id ? `<h3 id="${id}">${title.trim()}</h3>` : `<h3>${title.trim()}</h3>`;
+      })
       .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
       .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/gim, '<em>$1</em>')
