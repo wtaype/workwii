@@ -1,8 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-const FB_PROJECT = import.meta.env.PUBLIC_FIREBASE_PROJECT_ID ?? '';
-const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 ---
 
 <style is:global>
@@ -451,29 +448,23 @@ select.creador_input {
 }
 </style>
 
-<Layout title="Quiero ser Editor" description="Postúlate para redactar blogs y planificar ideas románticas en WiiHope." robots="noindex, nofollow">
+<Layout title="Quiero ser Editor — Workwii" description="Postúlate para redactar artículos en el blog oficial de Workwii." robots="noindex, nofollow">
   <div class="creador_container">
-    
-    <!-- Loader inicial de Firestore -->
-    <div id="sol_loader" style="text-align: center; display: flex; flexDirection: column; gap: 1rem; alignItems: center; margin: 4vh auto;">
-      <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--mco);"></i>
-      <h3 style="color: var(--tx3); font-weight: 600;">Analizando historial de postulaciones...</h3>
-    </div>
 
-    <div class="creador_card" id="sol_card" style="display: none;">
+    <div class="creador_card" id="sol_card" data-herowi="80">
       
       <!-- COLUMNA IZQUIERDA: IMAGEN MOTIVACIONAL SPLIT (55%) -->
       <div 
         class="creador_left_img" 
-        style="background-image: url('https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&auto=format&fit=crop&q=80')"
+        style="background-image: url('https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&auto=format&fit=crop&q=80')"
       >
         <div class="creador_left_overlay">
           <div class="creador_quote_box">
             <i class="fas fa-quote-left quote_ico"></i>
             <p class="creador_quote_text">
-              "Tu fe puede inspirar y guiar a miles de personas. Escribe palabras de aliento y ayuda a otros a encontrar paz en Dios."
+              "Tu experiencia y conocimiento del mercado laboral pueden abrir puertas para miles de candidatos. Comparte tu conocimiento y guía a otros hacia el éxito."
             </p>
-            <span class="creador_quote_author">— Equipo WiiHope</span>
+            <span class="creador_quote_author">— Equipo Workwii</span>
           </div>
         </div>
       </div>
@@ -490,7 +481,7 @@ select.creador_input {
           <h2 class="creador_pending_title">¡Postulación en Revisión!</h2>
           <p class="creador_pending_text">
             Hola, <strong id="sol_pending_name">usuario</strong>. Recibimos con alegría tu propuesta para ascender a Editor. 
-            Nuestros administradores la están evaluando detalladamente. ¡Pronto recibirás noticias maravillosas!
+            Nuestros administradores la están evaluando detalladamente. ¡Pronto recibirás novedades!
           </p>
           <div class="creador_alert pending">
             <div class="creador_alert_icon"><i class="fas fa-info-circle"></i></div>
@@ -521,14 +512,14 @@ select.creador_input {
         </div>
 
         <!-- CASO C: FORMULARIO ACTIVO -->
-        <div id="sol_form_sec" style="display: none;">
+        <div id="sol_form_sec">
           <div class="creador_header">
             <div class="creador_badge">
-              <i class="fas fa-magic"></i> Usuario a Editor
+              <i class="fas fa-user-tie"></i> Candidato a Editor
             </div>
             <h1 class="creador_title">Quiero ser Editor</h1>
             <p class="creador_subtitle">
-              Escribe blogs oficiales, comparte versículos inspiradores y ayuda a otros Smiles a fortalecer su fe de forma única.
+              Escribe artículos en nuestro blog oficial, comparte guías de reclutamiento y ayuda a otros profesionales a destacar en el mercado laboral.
             </p>
           </div>
 
@@ -561,12 +552,13 @@ select.creador_input {
                   type="text" 
                   id="sol_nombre"
                   class="creador_input" 
-                  value="Cargando..." 
+                  value="" 
+                  placeholder="Tu nombre completo"
                   disabled 
                 />
               </div>
               <div class="creador_group">
-                <label class="creador_label">Usuario WiiHope</label>
+                <label class="creador_label">Usuario Workwii</label>
                 <input 
                   type="text" 
                   id="sol_usuario"
@@ -579,11 +571,11 @@ select.creador_input {
 
             <!-- Motivos TextArea -->
             <div class="creador_group">
-              <label class="creador_label">¿Por qué deseas ser Editor en WiiHope? *</label>
+              <label class="creador_label">¿Por qué deseas ser Editor en Workwii? *</label>
               <textarea 
                 id="sol_motivo"
                 class="creador_textarea" 
-                placeholder="Escribe aquí (mínimo 3 palabras) por qué deseas ser Editor en WiiHope..."
+                placeholder="Escribe aquí (mínimo 3 palabras) por qué deseas ser Editor en Workwii..."
                 maxlength="800"
                 required
               ></textarea>
@@ -591,18 +583,18 @@ select.creador_input {
 
             <!-- Selector Dropdown del tipo de contenido -->
             <div class="creador_group">
-              <label class="creador_label">¿Qué tipo de contenido te gustaría publicar? * (Selecciona al menos 1)</label>
+              <label class="creador_label">¿Qué tipo de contenido te gustaría publicar? *</label>
               <select 
                 id="sol_categoria"
                 class="creador_input" 
                 required
               >
-                <option value="Fe, esperanza y superación de dificultades diarias">Fe, esperanza y superación de dificultades diarias</option>
-                <option value="Oraciones poderosas para sanar el alma y la ansiedad">Oraciones poderosas para sanar el alma y la ansiedad</option>
-                <option value="Reflexiones basadas en la Biblia y versículos clave">Reflexiones basadas en la Biblia y versículos clave</option>
-                <option value="Consejos espirituales para jóvenes y la familia">Consejos espirituales para jóvenes y la familia</option>
-                <option value="Testimonios de milagros y vidas transformadas por Dios">Testimonios de milagros y vidas transformadas por Dios</option>
-                <option value="Otros temas de crecimiento espiritual y devocionales">Otros temas de crecimiento espiritual y devocionales</option>
+                <option value="Optimización de CV y superación de filtros ATS">Optimización de CV y superación de filtros ATS</option>
+                <option value="Consejos prácticos para entrevistas de trabajo y negociación salarial">Consejos prácticos para entrevistas de trabajo y negociación salarial</option>
+                <option value="Tendencias de empleo, trabajo remoto, híbrido y freelance">Tendencias de empleo, trabajo remoto, híbrido y freelance</option>
+                <option value="Desarrollo de habilidades y formación continua (Upskilling)">Desarrollo de habilidades y formación continua (Upskilling)</option>
+                <option value="Marca personal y optimización de perfiles en LinkedIn">Marca personal y optimización de perfiles en LinkedIn</option>
+                <option value="Historias de éxito laboral y motivación profesional">Historias de éxito laboral y motivación profesional</option>
               </select>
             </div>
 
@@ -640,20 +632,15 @@ select.creador_input {
   </div>
 </Layout>
 
-<!-- Inyectar vars de Firebase al cliente (generadas en build-time) -->
-<script is:inline define:vars={{ FB_PROJECT, FB_KEY }}>
-  window.__fbProject = FB_PROJECT;
-  window.__fbKey = FB_KEY;
-</script>
+
 
 <script>
-  import { db } from '../lib/firebase.js';
-  import { collection, query, where, getDocs, doc, setDoc, serverTimestamp } from 'firebase/firestore';
-  import { getls, Notificacion, wiSpin } from '../lib/widev.js';
+  import { supabase } from '../lib/supabase.js';
+  import { getls, Notificacion, wiSpin, herowi } from '../lib/widev.js';
   import { protegerRuta } from '../lib/auth.js';
 
   let u: any = null;
-  const COL = 'wiSolicitudes';
+  const COL = 'solicitudes';
   let eventListeners: { target: EventTarget; type: string; handler: EventListener }[] = [];
 
   const listen = (target: EventTarget, type: string, handler: EventListener) => {
@@ -718,31 +705,102 @@ select.creador_input {
       return;
     }
 
-    const loader = document.getElementById('sol_loader');
-    const card = document.getElementById('sol_card');
+    // Ejecutar animación de entrada inmediatamente
+    herowi('#sol_card');
+
     const pendingSec = document.getElementById('sol_pending_sec');
     const formSec = document.getElementById('sol_form_sec');
     const successSec = document.getElementById('sol_success_sec');
     const pendingName = document.getElementById('sol_pending_name');
     const detailsEl = document.getElementById('solicitud_details');
+    const rejectedAlert = document.getElementById('sol_rejected_alert');
+    const rejectedReason = document.getElementById('sol_rejected_reason');
+
+    // Prellenar inputs fijos de inmediato
+    const nameInput = document.getElementById('sol_nombre') as HTMLInputElement;
+    if (nameInput) nameInput.value = `${u.nombre || ''} ${u.apellidos || ''}`.trim() || u.usuario;
+    const userInput = document.getElementById('sol_usuario') as HTMLInputElement;
+    if (userInput) userInput.value = `@${u.usuario || ''}`;
+
+    // Eventos del formulario
+    const motivoEl = document.getElementById('sol_motivo');
+    const catEl = document.getElementById('sol_categoria');
+    if (motivoEl) listen(motivoEl, 'input', updateProgress);
+    if (catEl) listen(catEl, 'change', updateProgress);
+
+    const form = document.getElementById('sol_form');
+    if (form) {
+      listen(form, 'submit', async (e: Event) => {
+        e.preventDefault();
+        const motivoVal = (document.getElementById('sol_motivo') as HTMLTextAreaElement).value.trim();
+        const catVal = (document.getElementById('sol_categoria') as HTMLSelectElement).value;
+
+        if (contarPalabras(motivoVal) < 3) return;
+
+        const errorAlert = document.getElementById('sol_error_alert');
+        const errorMsg = document.getElementById('sol_error_msg');
+        if (errorAlert) errorAlert.style.display = 'none';
+
+        wiSpin('#sol_submit', true, 'Enviando Propuesta...');
+
+        try {
+          const { error: insertError } = await supabase
+            .from(COL)
+            .insert([{
+              userId: u.id,
+              usuario: u.usuario,
+              nombre: u.nombre || '',
+              apellidos: u.apellidos || '',
+              email: u.email,
+              motivo: motivoVal,
+              ejemplos: catVal,
+              estado: 'pendiente'
+            }]);
+
+          if (insertError) throw insertError;
+
+          // Mostrar pantalla de éxito
+          if (formSec) formSec.style.display = 'none';
+          if (successSec) successSec.style.display = 'block';
+          Notificacion('¡Postulación enviada! 🚀', 'success');
+        } catch (err: any) {
+          console.error(err);
+          if (errorAlert && errorMsg) {
+            errorAlert.style.display = 'flex';
+            errorMsg.textContent = err.message || 'Error al guardar la solicitud en Supabase.';
+          }
+          wiSpin('#sol_submit', false);
+        }
+      });
+    }
+
+    const retryBtn = document.getElementById('sol_retry_btn');
+    if (retryBtn) {
+      listen(retryBtn, 'click', () => {
+        if (rejectedAlert) rejectedAlert.style.display = 'none';
+        const motivoTextarea = document.getElementById('sol_motivo') as HTMLTextAreaElement;
+        if (motivoTextarea) {
+          motivoTextarea.value = '';
+          motivoTextarea.focus();
+        }
+        updateProgress();
+      });
+    }
+
+    // Ejecutar primer check
+    updateProgress();
 
     try {
-      // Consultar solicitudes anteriores por email
-      const q = query(collection(db, COL), where('email', '==', u.email));
-      const snap = await getDocs(q);
+      // Consultar solicitudes anteriores por email en segundo plano
+      const { data: solicitudes, error: queryError } = await supabase
+        .from(COL)
+        .select('*')
+        .eq('email', u.email)
+        .order('creado', { ascending: false });
 
-      // Ordenar en memoria por fecha de creación (descendente)
-      const solicitudes = snap.docs.map(d => Object.assign({ id: d.id }, d.data()))
-        .sort((a: any, b: any) => {
-          const tA = a.creado?.seconds || 0;
-          const tB = b.creado?.seconds || 0;
-          return tB - tA;
-        });
+      if (queryError) throw queryError;
 
-      const activeSol = solicitudes[0]; // La solicitud más reciente
-
-      if (loader) loader.style.display = 'none';
-      if (card) card.style.display = 'flex';
+      const activeSol = solicitudes && solicitudes[0];
 
       if (activeSol && activeSol.estado === 'pendiente') {
         // Pantalla de postulación en revisión
@@ -752,104 +810,24 @@ select.creador_input {
 
         if (pendingName) pendingName.textContent = u.nombre || u.usuario || 'usuario';
         if (detailsEl) {
-          const date = activeSol.creado?.seconds ? new Date(activeSol.creado.seconds * 1000) : new Date();
+          const date = activeSol.creado ? new Date(activeSol.creado) : new Date();
           const dateStr = date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
           const timeStr = date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
           detailsEl.innerHTML = `Enviada el <strong>${dateStr}</strong> a las ${timeStr}.`;
         }
+        // Animamos la sección de pendiente
+        herowi('#sol_pending_sec');
       } else {
-        // Pantalla con formulario de postulación
-        if (formSec) formSec.style.display = 'block';
-        if (pendingSec) pendingSec.style.display = 'none';
-        if (successSec) successSec.style.display = 'none';
-
-        // Prellenar inputs fijos
-        const nameInput = document.getElementById('sol_nombre') as HTMLInputElement;
-        if (nameInput) nameInput.value = `${u.nombre || ''} ${u.apellidos || ''}`.trim() || u.usuario;
-        const userInput = document.getElementById('sol_usuario') as HTMLInputElement;
-        if (userInput) userInput.value = `@${u.usuario || ''}`;
-
-        // Alerta de postulación rechazada previamente
-        const rejectedAlert = document.getElementById('sol_rejected_alert');
-        const rejectedReason = document.getElementById('sol_rejected_reason');
+        // Mostrar alerta de rechazado si aplica
         if (activeSol && activeSol.estado === 'rechazado') {
           if (rejectedAlert) rejectedAlert.style.display = 'flex';
           if (rejectedReason) rejectedReason.textContent = `"${activeSol.respuesta || 'Por favor, expande un poco más tus motivos y enfoques.'}"`;
         } else {
           if (rejectedAlert) rejectedAlert.style.display = 'none';
         }
-
-        // Eventos del formulario
-        const motivoEl = document.getElementById('sol_motivo');
-        const catEl = document.getElementById('sol_categoria');
-        if (motivoEl) listen(motivoEl, 'input', updateProgress);
-        if (catEl) listen(catEl, 'change', updateProgress);
-
-        const form = document.getElementById('sol_form');
-        if (form) {
-          listen(form, 'submit', async (e: Event) => {
-            e.preventDefault();
-            const submitBtn = document.getElementById('sol_submit');
-            const motivoVal = (document.getElementById('sol_motivo') as HTMLTextAreaElement).value.trim();
-            const catVal = (document.getElementById('sol_categoria') as HTMLSelectElement).value;
-
-            if (contarPalabras(motivoVal) < 3) return;
-
-            const errorAlert = document.getElementById('sol_error_alert');
-            const errorMsg = document.getElementById('sol_error_msg');
-            if (errorAlert) errorAlert.style.display = 'none';
-
-            wiSpin(submitBtn, true, 'Enviando Propuesta...');
-
-            try {
-              const solId = `sol_${u.uid}_${Date.now()}`;
-              await setDoc(doc(db, COL, solId), {
-                id: solId,
-                userId: u.uid,
-                usuario: u.usuario,
-                nombre: u.nombre || '',
-                apellidos: u.apellidos || '',
-                email: u.email,
-                motivo: motivoVal,
-                ejemplos: catVal,
-                estado: 'pendiente',
-                creado: serverTimestamp()
-              });
-
-              // Mostrar pantalla de éxito
-              if (formSec) formSec.style.display = 'none';
-              if (successSec) successSec.style.display = 'block';
-              Notificacion('¡Postulación enviada! 🚀', 'success');
-            } catch (err: any) {
-              console.error(err);
-              if (errorAlert && errorMsg) {
-                errorAlert.style.display = 'flex';
-                errorMsg.textContent = err.message || 'Error al guardar la solicitud en Firestore.';
-              }
-              wiSpin(submitBtn, false);
-            }
-          });
-        }
-
-        const retryBtn = document.getElementById('sol_retry_btn');
-        if (retryBtn) {
-          listen(retryBtn, 'click', () => {
-            if (rejectedAlert) rejectedAlert.style.display = 'none';
-            const motivoTextarea = document.getElementById('sol_motivo') as HTMLTextAreaElement;
-            if (motivoTextarea) {
-              motivoTextarea.value = '';
-              motivoTextarea.focus();
-            }
-            updateProgress();
-          });
-        }
-
-        // Ejecutar primer check
-        updateProgress();
       }
     } catch (e: any) {
       console.error(e);
-      if (loader) loader.style.display = 'none';
       Notificacion('Error al consultar solicitudes', 'error');
     }
   };

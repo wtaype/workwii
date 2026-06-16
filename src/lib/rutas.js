@@ -24,6 +24,7 @@ export const NAV_CONFIG = {
       ...COMUN
     ],
     right: [
+      { href: '/ser-editor', ico: 'fa-user-pen', txt: 'Ser Editor' },
       { href: '/plan', ico: 'fa-rocket', txt: 'Planificar' },
       { href: '/notas', ico: 'fa-note-sticky', txt: 'Notas' },
       { href: '/mensajes', ico: 'fa-comments', txt: 'Mensajes' },
