@@ -4,9 +4,6 @@ import Layout from '../layouts/Layout.astro';
 import { app } from '../wii.js';
 ---
 
-<!-- Guardia de Renderizado Inicial: Redirigir de inmediato si no hay token local para evitar parpadeos -->
-<script is:inline>localStorage.wiSmile||location.replace('/')</script>
-
 <Layout title="Optimiza tu CV para Filtros ATS — Workwii" name={app}>
   <style is:global>
     /* ==================== CONTENEDOR PRINCIPAL ==================== */
@@ -836,7 +833,6 @@ import { app } from '../wii.js';
 </Layout>
 
 <script>
-  import { protegerRuta } from '../lib/auth.js';
   import { wiRateLimit, Notificacion } from '../lib/widev.js';
   import { initEntrada, getCvData, getJobDescription, resetEntrada } from '../lib/analisar/entrada.js';
   import { analizarCvConGemini } from '../lib/analisar/analisis.js';
@@ -849,10 +845,6 @@ import { app } from '../wii.js';
   let btnAnalyze: HTMLButtonElement | null;
 
   const init = async () => {
-    // 1. Guardia de seguridad
-    const uLocal = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
-    if (!uLocal) return;
-
     // Obtener referencias de elementos generales
     atsWorkspace = document.getElementById('atsWorkspace');
     atsLoader = document.getElementById('atsLoader');
@@ -874,11 +866,24 @@ import { app } from '../wii.js';
   };
 
   const startAnalysis = async () => {
-    // Validar límite diario (Anti-Abuso)
-    const rate = wiRateLimit('ats_cv_analysis', 5, 'dia');
-    if (!rate.ok) {
-      Notificacion(`Límite diario alcanzado (5 análisis). Intenta nuevamente en ${rate.min} minutos.`, 'warning', 5000);
-      return;
+    const isLogged = localStorage.getItem('wiSmile');
+    let rate = null;
+
+    if (!isLogged) {
+      rate = wiRateLimit('guest_ats_cv_analysis', 5, 315360000000 as any);
+      if (!rate.ok) {
+        Notificacion('Has alcanzado el límite de 5 usos de prueba. Regístrate gratis para continuar sin límites.', 'warning', 6000);
+        const { abrirLogin } = await import('../lib/login.js');
+        abrirLogin('registrar');
+        return;
+      }
+    } else {
+      // Validar límite diario para registrados (Anti-Abuso)
+      rate = wiRateLimit('ats_cv_analysis', 5, 'dia');
+      if (!rate.ok) {
+        Notificacion(`Límite diario alcanzado (5 análisis). Intenta nuevamente en ${rate.min} minutos.`, 'warning', 5000);
+        return;
+      }
     }
 
     if (atsWorkspace) atsWorkspace.style.display = 'none';

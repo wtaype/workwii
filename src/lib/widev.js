@@ -239,7 +239,12 @@ export const wiSmart = (() => {
     if (!opt) return;
     Object.entries(opt).forEach(([t, v]) => [].concat(v).forEach(it => {
       const k = `${t}:${it}`;
-      t === 'css' ? !document.querySelector(`link[href="${it}"]`) && document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: it })).setAttribute('data-astro-transition-persist', 'google-fonts')
+      t === 'css' ? !document.querySelector(`link[href="${it}"]`) && (() => {
+          const el = document.getElementById('google-fonts') || document.head.appendChild(Object.assign(document.createElement('link'), { id: 'google-fonts' }));
+          el.setAttribute('rel', 'stylesheet');
+          el.setAttribute('href', it);
+          el.setAttribute('data-astro-transition-persist', 'google-fonts');
+        })()
         : t === 'js' && typeof it === 'string' ? !document.querySelector(`script[src="${it}"]`) && document.head.appendChild(Object.assign(document.createElement('script'), { src: it, async: true, crossOrigin: 'anonymous' }))
         : typeof it === 'function' && !ok.has(k) && (ok.add(k), it().catch?.(e => console.error('wiSmart:', e)));
     }));

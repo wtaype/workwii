@@ -1,3 +1,5 @@
+import { wiRateLimit, Notificacion } from '../widev.js';
+
 let currentStep = 1;
 const TOTAL_STEPS = 5;
 
@@ -210,7 +212,18 @@ export const updatePreview = (cvData) => {
  * Inicializa eventos del paso de visualización y exportación.
  */
 export const initResultado = (onNavChangeCallback) => {
-  const triggerPrint = () => {
+  const triggerPrint = async () => {
+    const isLogged = localStorage.getItem('wiSmile');
+    if (!isLogged) {
+      const rate = wiRateLimit('guest_cv_creator_uses', 5, 315360000000);
+      if (!rate.ok) {
+        Notificacion('Has alcanzado el límite de 5 usos de prueba. Regístrate gratis para continuar sin límites.', 'warning', 6000);
+        const { abrirLogin } = await import('../login.js');
+        abrirLogin('registrar');
+        return;
+      }
+      rate.fail();
+    }
     window.print();
   };
 

@@ -101,6 +101,9 @@ const seoSchema = {
     <script type="application/ld+json" set:html={JSON.stringify(seoSchema)} />
     <title>{title}</title>
 
+    <!-- Placeholder de persistencia para fuentes cargadas dinámicamente por wiSmart -->
+    <link id="google-fonts" data-astro-transition-persist="google-fonts" />
+
     <!-- Precarga de alta prioridad para los estilos de iconos de FontAwesome -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -971,169 +974,163 @@ const seoSchema = {
     .movil_overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, .12);
-      backdrop-filter: blur(.3vw);
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(8px);
       z-index: 200;
       opacity: 0;
       pointer-events: none;
-      transition: opacity var(--tr_m)
+      transition: opacity var(--tr_m);
     }
 
     .movil_drawer {
       position: fixed;
       top: 0;
       right: 0;
-      width: 80vw;
+      width: 78vw;
       height: 100dvh;
-      background: var(--bg);
+      background: color-mix(in srgb, var(--wb) 95%, transparent);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       z-index: 201;
       transform: translateX(100%);
-      transition: transform var(--tr_m);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
-      padding: 2vh 0;
+      padding: 3vh 0;
       overflow-y: auto;
-      box-shadow: -1vh 0 3vh rgba(0, 0, 0, .08)
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+      border-left: 1px solid var(--brd);
     }
 
-    body.movil_open {
-      overflow: hidden
-    }
-
-    body.movil_open .movil_overlay {
-      opacity: 1;
-      pointer-events: auto
-    }
-
-    body.movil_open .movil_drawer {
-      transform: translateX(0)
-    }
-
+    body.movil_open { overflow: hidden; }
+    body.movil_open .movil_overlay { opacity: 1; pointer-events: auto; }
+    body.movil_open .movil_drawer { transform: translateX(0); }
     .movil_close {
-      color: var(--mco);
       position: absolute;
-      top: 1px;
-      right: 2px;
-      font-size: var(--fz_m4);
-      padding: .8vh 1.2vh;
-      background: none;
-      border: none;
-      cursor: pointer
+      top: 1.8vh !important;
+      right: 3.5vh !important;
+      width: 4.4vh;
+      height: 4.4vh;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--mco) 10%, transparent) !important;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: none !important;
+      box-shadow: none !important;
+      color: var(--mco) !important;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
-
     .movil_close:hover {
-      color: var(--mco)
+      background: var(--mco) !important;
+      color: var(--wb) !important;
+      transform: scale(1.1) rotate(90deg) !important;
+    }
+    .movil_close i {
+      font-size: var(--fz_m3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .movil_logo {
-      text-align: center;
-      padding: 3vh 2vh 1vh;
+      text-align: left;
+      padding: 2.5vh 3.5vh 1.5vh;
       font-size: var(--fz_m5);
-      font-weight: 700;
-      color: var(--bg2)
+      font-weight: 800;
+      color: var(--mco) !important; /* Nombre de página a color del tema */
+      letter-spacing: -0.5px;
+      line-height: 1;
     }
-
-    .movil_logo i {
-      margin-right: .5vh
+    .movil_logo a,
+    .movil_logo a:hover,
+    .movil_logo a:active,
+    .movil_logo a:focus,
+    .movil_logo a:visited {
+      color: var(--mco) !important;
+      text-decoration: none !important;
     }
 
     .movil_nav {
       display: flex;
       flex-direction: column;
-      margin-top: 1vh;
-      padding: 0 1vh;
-      text-align: left
+      margin-top: 2vh;
+      padding: 0 2vh;
+      gap: 0.8vh;
     }
 
-    .movil_nav .nv_item {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 2vh;
-      padding: 2.5vh 2.5vh;
-      color: var(--tx);
-      font-size: var(--fz_m2);
-      font-weight: 500;
-      border-bottom: 1px solid var(--brd);
-      background: none;
-      border-radius: 0;
-      box-shadow: none
+    /* Estilo unificado para los enlaces/botones del nav móvil */
+    .movil_nav .nv_item,
+    .movil_nav .bt_auth,
+    .movil_nav .bt_salir {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 2vh !important;
+      padding: 1.5vh 2.5vh !important;
+      color: color-mix(in srgb, var(--tx1) 75%, var(--mco)) !important; /* Mezcla el texto oscuro con el color del tema */
+      font-size: var(--fz_m2) !important;
+      font-weight: 600 !important;
+      background: transparent !important;
+      border-radius: 1.2vh !important;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      border: none !important;
+      box-shadow: none !important;
+      width: 100% !important;
+      text-align: left !important;
+      cursor: pointer !important;
     }
 
-    .movil_nav .nv_item:last-child {
-      border-bottom: none
+    /* Color de hover con excelente contraste */
+    .movil_nav .nv_item:hover,
+    .movil_nav .bt_auth:hover {
+      background: var(--bg4) !important;
+      color: var(--tx) !important;
+      transform: translateX(5px) !important;
     }
 
-    .movil_nav .nv_item i {
-      font-size: var(--fz_l);
-      color: var(--mco);
-      min-width: 3vh
-    }
-
-    .movil_nav .nv_item span {
-      font-size: var(--fz_m1)
+    .movil_nav .nv_item i,
+    .movil_nav .bt_auth i,
+    .movil_nav .bt_salir i {
+      font-size: var(--fz_m2) !important; /* Iconos más pequeños y elegantes */
+      color: var(--mco) !important;
+      width: 3vh !important;
+      display: flex !important;
+      justify-content: center !important;
+      transition: all 0.3s ease !important;
     }
 
     .movil_nav .nv_item.active {
-      color: var(--mco);
-      font-weight: 700;
-      background: var(--bg4);
-      border-radius: .6vh
+      color: #fff !important;
+      background: linear-gradient(135deg, var(--mco), var(--hva)) !important;
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--mco) 20%, transparent) !important;
     }
 
     .movil_nav .nv_item.active i {
-      color: var(--mco)
-    }
-
-    .movil_divider {
-      height: 1px;
-      background: var(--brd);
-      margin: 1vh 2.5vh
-    }
-
-    .movil_nav .bt_auth {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 2.5vh;
-      padding: 2.5vh 2.5vh;
-      color: var(--tx);
-      font-size: var(--fz_m2);
-      font-weight: 500;
-      border-bottom: 1px solid var(--brd);
-      background: none;
-      border-radius: 0;
-      box-shadow: none;
-      width: 100%;
-      text-align: left;
-      cursor: pointer
-    }
-
-    .movil_nav .bt_auth:last-child {
-      border-bottom: none
-    }
-
-    .movil_nav .bt_auth i {
-      font-size: var(--fz_l1);
-      color: var(--mco);
-      min-width: 3vh
-    }
-
-    .movil_nav .bt_auth span {
-      font-size: var(--fz_m2)
-    }
-
-    .movil_nav .bt_auth:hover {
-      background: var(--bg4);
-      border-radius: .6vh
+      color: #fff !important;
     }
 
     .movil_nav .bt_salir {
-      color: var(--error)
+      color: var(--tx2) !important;
     }
 
     .movil_nav .bt_salir i {
-      color: var(--error)
+      color: var(--tx3) !important;
+    }
+
+    .movil_nav .bt_salir:hover {
+      background: color-mix(in srgb, var(--error) 10%, transparent) !important;
+      color: var(--error) !important;
+      transform: translateX(5px) !important;
+    }
+
+    .movil_nav .bt_salir:hover i {
+      color: var(--error) !important;
     }
 
     /* ==================== RESPONSIVE ==================== */
