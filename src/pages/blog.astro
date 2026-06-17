@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { app } from '../wii.js';
-import { seoPages } from '../lib/seo.js';
+import { seo } from '../lib/seo.js';
 
 ---
 
@@ -355,7 +355,7 @@ import { seoPages } from '../lib/seo.js';
 }
 </style>
 
-<Layout {...seoPages.blog}>
+<Layout {...seo.blog}>
   <div class="bl_wrap">
     <div class="bl_hero" data-herowi="100">
       <h1 class="bl_hero_tit">Consejos y <span class="bl_grad">Estrategias</span> 💼</h1>

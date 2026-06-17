@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { app, descri, id } from '../wii.js';
+import { seo } from '../lib/seo.js';
 ---
 
 <style is:global>
@@ -157,7 +158,7 @@ import { app, descri, id } from '../wii.js';
 }
 </style>
 
-<Layout title="Descubre" description={`Descubre todas las herramientas y recursos profesionales que ${app} tiene para ti.`}>
+<Layout {...seo.descubre}>
 <div class="dc_wrap">
   <div class="dc_hero wi_fadeUp" style="--d:0s">
     <div class="dc_badge"><i class="fas fa-briefcase"></i> Funcionalidades</div>

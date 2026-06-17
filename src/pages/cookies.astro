@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { app } from '../wii.js';
+import { seo } from '../lib/seo.js';
 const year = () => new Date().getFullYear();
 ---
 
@@ -375,7 +376,7 @@ const year = () => new Date().getFullYear();
 .ck_ext_link:hover { opacity: 0.7; }
 </style>
 
-<Layout title="Cookies" description={`Política de Cookies de ${app} - Total transparencia`}>
+<Layout {...seo.cookies}>
 <div class="ac_wrap tm_wrap">
   <section class="ac_hero tm_hero">
     <div class="ac_hero_orb ac_orb1"></div><div class="ac_hero_orb ac_orb2"></div><div class="ac_hero_orb ac_orb3"></div>

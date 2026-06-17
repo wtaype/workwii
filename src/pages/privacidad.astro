@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { app } from '../wii.js';
+import { seo } from '../lib/seo.js';
 const year = () => new Date().getFullYear();
 ---
 
@@ -437,7 +438,7 @@ const year = () => new Date().getFullYear();
 }
 </style>
 
-<Layout title="Privacidad" description={`Política de Privacidad de ${app} - Tu privacidad es sagrada`}>
+<Layout {...seo.privacidad}>
 <div class="ac_wrap tm_wrap">
 
   <!-- ══ HERO ══ -->

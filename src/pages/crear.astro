@@ -3,11 +3,12 @@
 // Creador de CV ATS interactivo con Optimización de IA (Gemini) y soporte de Supabase
 import Layout from '../layouts/Layout.astro';
 import { app } from '../wii.js';
+import { seo } from '../lib/seo.js';
 ---
 
 
 
-<Layout title="Crea tu CV ATS con IA — Workwii" name={app}>
+<Layout {...seo.crear}>
   <style is:global>
     /* =========================================================================
        CREAR.CSS — Estilos Premium del Creador de CV ATS

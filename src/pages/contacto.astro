@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { app, id } from '../wii.js';
+import { seo } from '../lib/seo.js';
 ---
 
 <style is:global>
@@ -569,7 +570,7 @@ import { app, id } from '../wii.js';
 }
 </style>
 
-<Layout title="Contacto" description={`Contacta con ${app} - Envíanos tu mensaje`}>
+<Layout {...seo.contacto}>
 <div class="ac_wrap ct_wrap">
   <section class="ac_hero ct_hero">
     <div class="ac_hero_orb ac_orb1"></div>

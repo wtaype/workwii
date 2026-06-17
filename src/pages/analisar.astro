@@ -2,9 +2,10 @@
 // src/pages/analisar.astro
 import Layout from '../layouts/Layout.astro';
 import { app } from '../wii.js';
+import { seo } from '../lib/seo.js';
 ---
 
-<Layout title="Optimiza tu CV para Filtros ATS — Workwii" name={app}>
+<Layout {...seo.analisar}>
   <style is:global>
     /* ==================== CONTENEDOR PRINCIPAL ==================== */
     .anal_ats {

@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { Saludar } from '../lib/widev.js';
 import { app } from '../wii.js';
-import { seoPages } from '../lib/seo.js';
+import { seo } from '../lib/seo.js';
 import { supabase } from '../lib/supabase.js';
 
 const PREGUNTAS = [
@@ -24,7 +24,7 @@ const PASOS = [
   ['3', 'Conquista tu Puesto', 'Entrena en el simulador y postula con la seguridad de que tu perfil pasará cualquier filtro.'],
 ];
 
-let posts = [];
+let posts: any[] = [];
 try {
   const { data: rawPosts, error } = await supabase
     .from('blog')
@@ -516,7 +516,7 @@ try {
 @media (max-width: 480px)  { .ib_grid { grid-template-columns: 1fr; } }
 </style>
 
-<Layout {...seoPages.inicio}>
+<Layout {...seo.inicio}>
   <div class="inicio">
     <section class="hero">
       <div class="hero_txt">
@@ -587,6 +587,43 @@ try {
       </div>
     </section>
 
+    <section class="sec_ib" id="sec_blog">
+      <h1 class="mainh1"><i class="fas fa-graduation-cap"></i> Consejos y Estrategias Profesionales</h1>
+      <p class="sec_desc">Aprende a destacar tu perfil, redactar tu trayectoria y triunfar en entrevistas</p>
+      <div class="ib_grid" id="ib_grid" data-herowi="100">
+        {posts.length > 0 ? (
+          posts.map((p) => {
+            const catColors = { Animales:'#0EBEFF', Naturaleza:'#25b62a', Amor:'#ff3849', Inspiración:'#ffa726', Vida:'#6a00f5' };
+            const c = catColors[p.categoria as keyof typeof catColors] ?? 'var(--mco)';
+            const formattedDate = p.creado ? new Date(p.creado).toLocaleDateString('es-PE', { day:'numeric', month:'short', year:'numeric' }) : '';
+            return (
+              <a href={`/${p.slug || p.id || ''}`} class="ib_card">
+                <div class="ib_img" style={`background-image:url('${p.imagen || '/poster.webp'}')`}>
+                  <span class="ib_cat" style={`background:color-mix(in srgb,${c} 20%,transparent);color:${c}`}>{p.categoria || 'Blog'}</span>
+                </div>
+                <div class="ib_body">
+                  <h3 class="ib_tit">{p.titulo || 'Sin título'}</h3>
+                  <p class="ib_resumen">{(p.descripcion || p.resumen || '').slice(0, 90)}...</p>
+                  <div class="ib_meta">
+                    <span><i class="fas fa-calendar-alt"></i> {formattedDate}</span>
+                    <span><i class="fas fa-eye"></i> {p.vistas || 0}</span>
+                    <span><i class="fas fa-heart" style="color:#fe0149"></i> {p.likes || 0}</span>
+                  </div>
+                </div>
+              </a>
+            );
+          })
+        ) : (
+          <p class="ib_empty"><i class="fas fa-dove"></i> Próximamente nuevos artículos</p>
+        )}
+      </div>
+      <div class="ib_footer">
+        <a class="btn_sec ib_ver_mas font_o" href="/blog">
+          <i class="fas fa-arrow-right"></i><span>Ver todos los artículos</span>
+        </a>
+      </div>
+    </section>
+
     <section class="sec_preguntas" id="dolores">
       <div class="sec_head">
         <h2><i class="fas fa-circle-question"></i> ¿Te pasa algo de esto?</h2>
@@ -631,43 +668,6 @@ try {
             <p>{d}</p>
           </div>
         ))}
-      </div>
-    </section>
-
-    <section class="sec_ib" id="sec_blog">
-      <h1 class="mainh1"><i class="fas fa-graduation-cap"></i> Consejos y Estrategias Profesionales</h1>
-      <p class="sec_desc">Aprende a destacar tu perfil, redactar tu trayectoria y triunfar en entrevistas</p>
-      <div class="ib_grid" id="ib_grid" data-herowi="100">
-        {posts.length > 0 ? (
-          posts.map((p) => {
-            const catColors = { Animales:'#0EBEFF', Naturaleza:'#25b62a', Amor:'#ff3849', Inspiración:'#ffa726', Vida:'#6a00f5' };
-            const c = catColors[p.categoria as keyof typeof catColors] ?? 'var(--mco)';
-            const formattedDate = p.creado ? new Date(p.creado).toLocaleDateString('es-PE', { day:'numeric', month:'short', year:'numeric' }) : '';
-            return (
-              <a href={`/${p.slug || p.id || ''}`} class="ib_card">
-                <div class="ib_img" style={`background-image:url('${p.imagen || '/poster.webp'}')`}>
-                  <span class="ib_cat" style={`background:color-mix(in srgb,${c} 20%,transparent);color:${c}`}>{p.categoria || 'Blog'}</span>
-                </div>
-                <div class="ib_body">
-                  <h3 class="ib_tit">{p.titulo || 'Sin título'}</h3>
-                  <p class="ib_resumen">{(p.descripcion || p.resumen || '').slice(0, 90)}...</p>
-                  <div class="ib_meta">
-                    <span><i class="fas fa-calendar-alt"></i> {formattedDate}</span>
-                    <span><i class="fas fa-eye"></i> {p.vistas || 0}</span>
-                    <span><i class="fas fa-heart" style="color:#fe0149"></i> {p.likes || 0}</span>
-                  </div>
-                </div>
-              </a>
-            );
-          })
-        ) : (
-          <p class="ib_empty"><i class="fas fa-dove"></i> Próximamente nuevos artículos</p>
-        )}
-      </div>
-      <div class="ib_footer">
-        <a class="btn_sec ib_ver_mas font_o" href="/blog">
-          <i class="fas fa-arrow-right"></i><span>Ver todos los artículos</span>
-        </a>
       </div>
     </section>
 

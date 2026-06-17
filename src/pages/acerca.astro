@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { app, descri, id } from '../wii.js';
+import { seo } from '../lib/seo.js';
 ---
 
 <style is:global>
@@ -531,7 +532,7 @@ import { app, descri, id } from '../wii.js';
 }
 </style>
 
-<Layout title="Acerca" description={`Acerca de ${app} - ${descri}`}>
+<Layout {...seo.acerca}>
 <div class="ac_wrap">
 
   <!-- ══ HERO ══ -->

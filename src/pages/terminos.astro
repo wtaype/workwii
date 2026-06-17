@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { app } from '../wii.js';
+import { seo } from '../lib/seo.js';
 ---
 
 <style is:global>
@@ -818,7 +819,7 @@ import { app } from '../wii.js';
 
 </style>
 
-<Layout title="Términos y Condiciones" description={`Términos y Condiciones de uso de ${app}`}>
+<Layout {...seo.terminos}>
 
 <div class="ac_wrap tm_wrap">
 
