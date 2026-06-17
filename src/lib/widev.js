@@ -289,7 +289,7 @@ export const Saludar = () => {
   return hrs >= 5 && hrs < 12 ? 'Buenos días, ' : hrs >= 12 && hrs < 18 ? 'Buenas tardes, ' : 'Buenas noches, ';
 };
 
-// NOTIFICACIONES V10.1_________________________________
+// ── 11. NOTIFICACIONES BANNER: Notificacion ──────────────────
 export function Notificacion(msg, tipo = 'error', tiempo = 3000) {
   const ico = {success:'fa-check-circle',error:'fa-times-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'}[tipo] || 'fa-info-circle';
   let container = document.getElementById('notificationsContainer');
@@ -310,7 +310,7 @@ export function Notificacion(msg, tipo = 'error', tiempo = 3000) {
   const notif = document.createElement('div');
   notif.className = `notification notif-${tipo}`;
   Object.assign(notif.style, {
-    background: 'var(--white)',
+    background: 'var(--wb, #fff)',
     borderLeft: `4px solid var(--${tipo})`,
     boxShadow: '0 4px 12px rgba(0,0,0,.1)',
     borderRadius: '8px',
@@ -322,7 +322,12 @@ export function Notificacion(msg, tipo = 'error', tiempo = 3000) {
     transform: 'translateX(20px)',
     transition: 'all .3s ease'
   });
-  notif.innerHTML = `<i class="fas ${ico}" style="color:var(--${tipo});"></i><span style="flex:1;color:var(--tx);">${msg}</span><button style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--tx);">&times;</button>`;
+  
+  notif.innerHTML = `
+    <i class="fas ${ico}" style="color:var(--${tipo}); font-size:1.2rem;"></i>
+    <span style="flex:1;color:var(--tx, #000);font-size:var(--fz_m1, 0.95rem);font-weight:500;">${msg}</span>
+    <button style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--tx2, #666);margin-left:.5rem;line-height:1;">&times;</button>
+  `;
   container.appendChild(notif);
 
   requestAnimationFrame(() => {
@@ -340,7 +345,7 @@ export function Notificacion(msg, tipo = 'error', tiempo = 3000) {
   setTimeout(cerrar, tiempo);
 }
 
-// MENSAJE V10.2_________________________________
+// ── 12. MENSAJE FLOTANTE: Mensaje ────────────────────────────
 export function Mensaje(msg, tipo = 'success') {
   document.querySelectorAll('.alert-box').forEach(el => el.remove());
   const ico = {success:'fa-circle-check',error:'fa-circle-exclamation',warning:'fa-exclamation-triangle',info:'fa-info-circle'}[tipo] || 'fa-info-circle';
@@ -350,10 +355,9 @@ export function Mensaje(msg, tipo = 'success') {
     position: 'fixed',
     top: '20px',
     left: '50%',
-    transform: 'translateX(-50%)',
     padding: '15px 20px',
     borderRadius: '8px',
-    background: `var(--${tipo}-bg, var(--white))`,
+    background: 'var(--wb, #fff)',
     color: `var(--${tipo})`,
     borderLeft: `4px solid var(--${tipo})`,
     boxShadow: '0 4px 12px rgba(0,0,0,.1)',
@@ -364,15 +368,24 @@ export function Mensaje(msg, tipo = 'success') {
     minWidth: '300px',
     maxWidth: '90%',
     opacity: '0',
-    transition: 'opacity 0.3s ease'
+    transition: 'opacity 0.3s ease, transform 0.3s ease',
+    transform: 'translate(-50%, -20px)'
   });
-  alerta.innerHTML = `<i class="fas ${ico}" style="color:var(--${tipo});"></i><span>${msg}</span>`;
+  
+  alerta.innerHTML = `
+    <i class="fas ${ico}" style="font-size:1.4rem;"></i>
+    <span style="font-size:var(--fz_m2, 1rem);font-weight:500;">${msg}</span>
+  `;
   document.body.appendChild(alerta);
 
-  requestAnimationFrame(() => alerta.style.opacity = '1');
+  requestAnimationFrame(() => {
+    alerta.style.opacity = '1';
+    alerta.style.transform = 'translate(-50%, 0)';
+  });
 
   setTimeout(() => {
     alerta.style.opacity = '0';
+    alerta.style.transform = 'translate(-50%, -20px)';
     setTimeout(() => alerta.remove(), 300);
   }, 3000);
 }

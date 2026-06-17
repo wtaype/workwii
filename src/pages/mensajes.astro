@@ -158,82 +158,57 @@ import { app } from '../wii.js';
 </Layout>
 
 <script>
-  import { db } from '../lib/firebase.js';
-  import { collection, setDoc, doc, query, where, getDocs, deleteDoc, serverTimestamp, limit } from 'firebase/firestore';
+  import { supabase } from '../lib/supabase.js';
   import { protegerRuta } from '../lib/auth.js';
-  import { Notificacion, wicopy, getls, Saludar } from '../lib/widev.js';
+  import { Notificacion, wicopy, getls, Saludar, wiTip, Mensaje } from '../lib/widev.js';
 
   let msgs: any[] = [];
   let pendiente: string | null = null;
   let enviando = false;
-  let refreshTimer: any = null;
-  let _onVis: any = null;
+  let channel: any = null;
+  let currentUserId = '';
 
   const CACHE = 'wi_mensajes_cache';
   const LIMIT = 50;
 
-  const _save = (d: any) => {
-    try {
-      localStorage.setItem(CACHE, JSON.stringify(d));
-    } catch (_) {}
-  };
-
-  const _cache = (): any[] => {
-    try {
-      return JSON.parse(localStorage.getItem(CACHE) || '[]');
-    } catch (_) {
-      return [];
-    }
-  };
-
-  const _scroll = () => {
-    const el = document.getElementById('wmChat');
-    if (el) {
-      requestAnimationFrame(() => el.scrollTop = el.scrollHeight);
-    }
-  };
+  const _save = (d: any) => { try { localStorage.setItem(CACHE, JSON.stringify(d)); } catch (_) {} };
+  const _cache = (): any[] => { try { return JSON.parse(localStorage.getItem(CACHE) || '[]'); } catch (_) { return []; } };
+  const _scroll = () => { const el = document.getElementById('wmChat'); if (el) requestAnimationFrame(() => el.scrollTop = el.scrollHeight); };
 
   const _status = (ok: boolean) => {
     const dot = document.querySelector('.wm_dot');
     const dotxt = document.querySelector('.wm_dotxt');
     if (dot && dotxt) {
-      dot.classList.remove('active', 'error');
-      dot.classList.add(ok ? 'active' : 'error');
+      dot.className = `wm_dot ${ok ? 'active' : 'error'}`;
       dotxt.textContent = ok ? 'Online' : 'Offline';
     }
   };
 
-  const _dateLabel = (ts: any) => {
-    if (!ts) return 'Hoy';
-    const d = ts.toDate?.() || new Date((ts.seconds || 0) * 1000);
-    const hoy = new Date(), ayer = new Date(hoy);
-    hoy.setHours(0, 0, 0, 0);
-    ayer.setDate(ayer.getDate() - 1);
-    ayer.setHours(0, 0, 0, 0);
-    return d >= hoy ? 'Hoy' : d >= ayer ? 'Ayer' : d.toLocaleDateString('es', { day: 'numeric', month: 'long' });
+  const _dateLabel = (creado: string) => {
+    if (!creado) return 'Hoy';
+    const d = new Date(creado);
+    const hoy = new Date().toDateString();
+    const ayer = new Date(Date.now() - 864e5).toDateString();
+    const ds = d.toDateString();
+    return ds === hoy ? 'Hoy' : ds === ayer ? 'Ayer' : d.toLocaleDateString('es', { day: 'numeric', month: 'long' });
   };
 
-  const _hora = (ts: any) => {
-    if (!ts) return 'Ahora';
-    const d = ts.toDate?.() || new Date((ts.seconds || 0) * 1000);
-    return d.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
-  };
-
-  const _esc = (t: string) => String(t || '').replace(/[&<>"']/g, c => { const map: Record<string, string> = { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }; return map[c] || c; });
+  const _hora = (creado: string) => creado ? new Date(creado).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' }) : 'Ahora';
+  const _esc = (t: string) => String(t || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[c] || c));
   const _empty = (ico: string, txt: string, sub: string) => `<div class="wm_empty"><i class="fas ${ico}"></i><p>${txt}</p><span>${sub}</span></div>`;
 
   const _htmlList = (list: any[]): string => {
     if (!list?.length) return _empty('fa-comment-dots', 'Sin mensajes aún', 'Escribe tu primer mensaje 👇');
     let lastLabel = '';
     return list.map((m: any) => {
-      const label = _dateLabel(m.fecha);
+      const label = _dateLabel(m.creado);
       const sep = label !== lastLabel ? `<div class="wm_sep"><span>${label}</span></div>` : '';
       lastLabel = label;
       return `${sep}<div class="wm_item" data-id="${m.id}" data-witip="Click para copiar">
         <div class="wm_bubble">
           <p class="wm_txt">${_esc(m.mensaje).replace(/\n/g, '<br>')}</p>
           <div class="wm_foot">
-            <span class="wm_time">${_hora(m.fecha)}</span>
+            <span class="wm_time">${_hora(m.creado)}</span>
             <i class="fas fa-check-double wm_check"></i>
           </div>
         </div>
@@ -244,34 +219,32 @@ import { app } from '../wii.js';
 
   const _cargar = async (email: string, silent = false) => {
     try {
-      const q = query(collection(db, 'wiMensajes'), where('email', '==', email), limit(LIMIT));
-      const snap = await getDocs(q);
-      msgs = snap.docs.map((d: any) => ({ id: d.id, ...d.data() })).sort((a: any, b: any) => (a.fecha?.seconds || 0) - (b.fecha?.seconds || 0));
+      const { data, error } = await supabase.from('mensajes').select('*').eq('email', email).order('creado', { ascending: true }).limit(LIMIT);
+      if (error) throw error;
+      msgs = data || [];
       _save(msgs);
       const chat = document.getElementById('wmChat');
       if (chat) chat.innerHTML = _htmlList(msgs);
       _status(true);
       _scroll();
     } catch (e) {
-      console.error('❌ Mensajes:', e);
+      console.error(e);
       _status(false);
       if (!silent) {
         const cache = _cache();
         const chat = document.getElementById('wmChat');
-        if (chat) {
-          if (cache.length) {
-            msgs = cache;
-            chat.innerHTML = _htmlList(msgs);
-            Notificacion('Caché local 📦', 'warning', 2000);
-          } else {
-            chat.innerHTML = _empty('fa-wifi-slash', 'Sin conexión', 'Verifica tu internet');
-          }
+        if (chat && cache.length) {
+          msgs = cache;
+          chat.innerHTML = _htmlList(msgs);
+          Notificacion('Caché local', 'warning', 2000);
+        } else if (chat) {
+          chat.innerHTML = _empty('fa-wifi-slash', 'Sin conexión', 'Verifica tu internet');
         }
       }
     }
   };
 
-  const _enviar = (email: string) => {
+  const _enviar = async (email: string) => {
     if (enviando) return;
     const ta = document.getElementById('wmNuevo') as HTMLTextAreaElement;
     const nota = ta?.value.trim();
@@ -279,11 +252,24 @@ import { app } from '../wii.js';
     enviando = true;
 
     const wiUser = getls('wiSmile') || {};
-    const { usuario = '', nombre = '' } = wiUser;
-    const id = `m${Date.now()}`;
+    const id = crypto.randomUUID();
+
+    if (!currentUserId) {
+      const { data: { user } } = await supabase.auth.getUser();
+      currentUserId = user?.id || '';
+      if (!currentUserId) { enviando = false; return; }
+    }
 
     // UI instantánea (Optimista)
-    const fake = { id, mensaje: nota, email, usuario: nombre || usuario || email, fecha: { seconds: Date.now() / 1000 } };
+    const fake = {
+      id,
+      mensaje: nota,
+      email,
+      usuario: wiUser.nombre || wiUser.usuario || email,
+      creado: new Date().toISOString(),
+      actualizado: new Date().toISOString(),
+      pin: false
+    };
     msgs.push(fake);
     _save(msgs);
 
@@ -291,41 +277,39 @@ import { app } from '../wii.js';
     if (chat) chat.innerHTML = _htmlList(msgs);
     _scroll();
 
-    if (ta) {
-      ta.value = '';
-      ta.style.height = 'auto';
-      ta.focus();
+    if (ta) { ta.value = ''; ta.style.height = 'auto'; ta.focus(); }
+    const count = document.getElementById('wmCount'); if (count) count.textContent = '0/500';
+    const btn = document.getElementById('wmEnviar') as HTMLButtonElement; if (btn) btn.disabled = true;
+
+    try {
+      const { error } = await supabase.from('mensajes').insert([{
+        id,
+        "userId": currentUserId,
+        usuario: wiUser.nombre || wiUser.usuario || email,
+        email,
+        mensaje: nota,
+        pin: false
+      }]);
+      if (error) throw error;
+      _status(true);
+      Notificacion('Mensaje enviado', 'success', 1200);
+    } catch (e) {
+      console.error(e);
+      msgs = msgs.filter(m => m.id !== id);
+      _save(msgs);
+      if (chat) chat.innerHTML = _htmlList(msgs);
+      Notificacion('Error al guardar', 'error');
+    } finally {
+      enviando = false;
     }
-    const count = document.getElementById('wmCount');
-    if (count) count.textContent = '0/500';
-
-    const btn = document.getElementById('wmEnviar') as HTMLButtonElement;
-    if (btn) btn.disabled = true;
-
-    // Sincronizar en Firestore
-    setDoc(doc(db, 'wiMensajes', id), { id, mensaje: nota, email, usuario: nombre || usuario || email, fecha: serverTimestamp() })
-      .then(() => {
-        _status(true);
-      })
-      .catch(e => {
-        console.error('❌ Enviar:', e);
-        msgs = msgs.filter(m => m.id !== id);
-        _save(msgs);
-        if (chat) chat.innerHTML = _htmlList(msgs);
-        Notificacion('Error al guardar', 'error');
-      })
-      .finally(() => {
-        enviando = false;
-      });
   };
 
-  const _eliminar = () => {
+  const _eliminar = async () => {
     if (!pendiente) return;
     const id = pendiente;
     pendiente = null;
     document.getElementById('wmEliminar')?.classList.remove('show');
 
-    // UI instantánea (Optimista)
     const backup = [...msgs];
     msgs = msgs.filter(m => m.id !== id);
     _save(msgs);
@@ -338,17 +322,18 @@ import { app } from '../wii.js';
       if (chat) chat.innerHTML = _htmlList(msgs);
     }, 250);
 
-    // Borrar de Firestore
-    deleteDoc(doc(db, 'wiMensajes', id))
-      .then(() => Notificacion('Eliminado 🗑️', 'success', 1200))
-      .catch(e => {
-        console.error('❌ Eliminar:', e);
-        msgs = backup;
-        _save(msgs);
-        const chat = document.getElementById('wmChat');
-        if (chat) chat.innerHTML = _htmlList(msgs);
-        Notificacion('Error al eliminar', 'error');
-      });
+    try {
+      const { error } = await supabase.from('mensajes').delete().eq('id', id);
+      if (error) throw error;
+      Notificacion('Eliminado', 'success', 1200);
+    } catch (e) {
+      console.error(e);
+      msgs = backup;
+      _save(msgs);
+      const chat = document.getElementById('wmChat');
+      if (chat) chat.innerHTML = _htmlList(msgs);
+      Notificacion('Error al eliminar', 'error');
+    }
   };
 
   let eventListeners: { target: EventTarget; type: string; handler: EventListener }[] = [];
@@ -358,15 +343,8 @@ import { app } from '../wii.js';
   };
 
   const cleanup = () => {
-    clearInterval(refreshTimer);
-    refreshTimer = null;
-    if (_onVis) {
-      document.removeEventListener('visibilitychange', _onVis);
-      _onVis = null;
-    }
-    eventListeners.forEach(({ target, type, handler }) => {
-      target.removeEventListener(type, handler);
-    });
+    if (channel) { supabase.removeChannel(channel); channel = null; }
+    eventListeners.forEach(({ target, type, handler }) => target.removeEventListener(type, handler));
     eventListeners = [];
     msgs = [];
     pendiente = null;
@@ -385,7 +363,6 @@ import { app } from '../wii.js';
         tx.style.height = 'auto';
         tx.style.height = `${Math.min(tx.scrollHeight, 150)}px`;
       });
-
       listen(tx, 'keydown', (e: Event) => {
         const keyEvent = e as KeyboardEvent;
         if (keyEvent.key === 'Enter' && !keyEvent.shiftKey) {
@@ -395,9 +372,7 @@ import { app } from '../wii.js';
       });
     }
 
-    if (btn) {
-      listen(btn, 'click', () => _enviar(userEmail));
-    }
+    if (btn) listen(btn, 'click', () => _enviar(userEmail));
 
     const chatEl = document.getElementById('wmChat');
     if (chatEl) {
@@ -406,7 +381,6 @@ import { app } from '../wii.js';
         const item = target.closest('.wm_item') as HTMLElement;
         if (!item) return;
 
-        // Si dio clic en borrar
         if (target.closest('.wm_del')) {
           e.stopPropagation();
           pendiente = (target.closest('.wm_del') as HTMLElement).dataset.id || null;
@@ -414,75 +388,89 @@ import { app } from '../wii.js';
           return;
         }
 
-        // Clic en el globo de chat para copiar texto
         const id = item.dataset.id;
         const msg = msgs.find(m => m.id === id);
         if (!msg) return;
-        wicopy(msg.mensaje, item as any, '¡Copiado! <i class="fas fa-check-circle"></i>');
+        wicopy(msg.mensaje);
+        Mensaje('Mensaje copiado', 'success');
         item.classList.add('copied');
         setTimeout(() => item.classList.remove('copied'), 800);
       });
     }
 
     const btnCancel = document.getElementById('wmCancel');
-    if (btnCancel) {
-      listen(btnCancel, 'click', () => {
-        document.getElementById('wmEliminar')?.classList.remove('show');
-        pendiente = null;
-      });
-    }
+    if (btnCancel) listen(btnCancel, 'click', () => { document.getElementById('wmEliminar')?.classList.remove('show'); pendiente = null; });
 
     const modal = document.getElementById('wmEliminar');
-    if (modal) {
-      listen(modal, 'click', (e: Event) => {
-        if (e.target === modal) {
-          modal.classList.remove('show');
-          pendiente = null;
-        }
-      });
-    }
+    if (modal) listen(modal, 'click', (e: Event) => { if (e.target === modal) { modal.classList.remove('show'); pendiente = null; } });
 
     const btnConfirm = document.getElementById('wmConfirm');
-    if (btnConfirm) {
-      listen(btnConfirm, 'click', _eliminar);
-    }
+    if (btnConfirm) listen(btnConfirm, 'click', _eliminar);
   };
 
   const initMensajes = async () => {
     cleanup();
+    wiTip();
 
-    // 1. Proteger ruta usando el guard centralizado de Firebase + localStorage
     const u = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
     if (!u) return;
 
     const userEmail = u.email;
     const display = u.nombre || u.usuario || u.email || '';
 
-    // Actualizar nombre
+    const { data: { user } } = await supabase.auth.getUser();
+    currentUserId = user?.id || '';
+
     const welcome = document.getElementById('wmHeaderWelcome');
     if (welcome) welcome.innerHTML = `${Saludar()} <strong>${display}</strong>`;
 
     setupEvents(userEmail);
 
-    // Cargar caché inicial y sincronizar
     const initialCache = _cache();
     const chat = document.getElementById('wmChat');
-    if (chat) {
-      chat.innerHTML = _htmlList(initialCache);
-    }
+    if (chat) chat.innerHTML = _htmlList(initialCache);
     _scroll();
 
-    _cargar(userEmail, true);
+    await _cargar(userEmail, true);
 
-    // Refresco cada 30 segundos si la pestaña está visible
-    refreshTimer = setInterval(() => {
-      if (!document.hidden) _cargar(userEmail, true);
-    }, 30000);
-
-    _onVis = () => {
-      if (!document.hidden) _cargar(userEmail, true);
-    };
-    document.addEventListener('visibilitychange', _onVis);
+    channel = supabase
+      .channel('realtime-mensajes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'mensajes' },
+        (payload: any) => {
+          if (payload.eventType === 'INSERT') {
+            const d = payload.new;
+            if (!msgs.some(m => m.id === d.id)) {
+              msgs.push(d);
+              msgs.sort((a: any, b: any) => new Date(a.creado).getTime() - new Date(b.creado).getTime());
+              _save(msgs);
+              const chatEl = document.getElementById('wmChat');
+              if (chatEl) chatEl.innerHTML = _htmlList(msgs);
+              _scroll();
+            }
+          } else if (payload.eventType === 'UPDATE') {
+            const d = payload.new;
+            const idx = msgs.findIndex(m => m.id === d.id);
+            if (idx !== -1) {
+              msgs[idx] = d;
+              msgs.sort((a: any, b: any) => new Date(a.creado).getTime() - new Date(b.creado).getTime());
+              _save(msgs);
+              const chatEl = document.getElementById('wmChat');
+              if (chatEl) chatEl.innerHTML = _htmlList(msgs);
+            }
+          } else if (payload.eventType === 'DELETE') {
+            const d = payload.old;
+            msgs = msgs.filter(m => m.id !== d.id);
+            _save(msgs);
+            const chatEl = document.getElementById('wmChat');
+            if (chatEl) chatEl.innerHTML = _htmlList(msgs);
+          }
+        }
+      )
+      .subscribe((status: string) => {
+        _status(status === 'SUBSCRIBED');
+      });
   };
 
   document.addEventListener('astro:page-load', initMensajes);

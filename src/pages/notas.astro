@@ -459,6 +459,18 @@ import { app } from '../wii.js';
     transform: translateY(-1px);
   }
 
+  /* Tags display */
+  .wn_tags_display { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
+  .wn_tag_badge { font-size: var(--fz_s2); background: rgba(0,0,0,0.06); color: var(--tx2); padding: 0.2rem 0.6rem; border-radius: 0.4rem; font-weight: 600; border: 1px solid var(--brd); }
+  
+  /* Tags input (hidden in view mode, visible in edit mode) */
+  .wn_tags_input { display: none; width: 100%; border: 1px solid var(--brd); border-radius: 0.5rem; padding: 0.4rem 0.6rem; font-size: var(--fz_s4); font-family: inherit; margin-top: 0.5rem; outline: none; background: var(--wb); color: var(--tx); box-sizing: border-box; }
+  .wn_card.editing .wn_tags_input { display: block; }
+  .wn_card.editing .wn_tags_display { display: none; }
+
+  /* Archive button */
+  .wn_toolbar .wn_archive.active { color: var(--c-accent, var(--mco)); background: var(--bg5); }
+
   /* Responsive */
   @media (max-width: 768px) {
     .wn_container { padding: 1rem; }
@@ -496,6 +508,9 @@ import { app } from '../wii.js';
         </div>
       </div>
       <div class="wn_actions">
+        <button class="wn_btn_new" id="wnToggleArchive" style="background: var(--bg4); color: var(--tx); border: 1px solid var(--brd);">
+          <i class="fas fa-archive"></i> <span id="wnToggleText">Ver Archivadas</span>
+        </button>
         <button class="wn_btn_new" id="wnNueva">
           <i class="fas fa-plus"></i> <span>Nueva</span>
         </button>
@@ -533,21 +548,23 @@ import { app } from '../wii.js';
 </Layout>
 
 <script>
-  import { db } from '../lib/firebase.js';
-  import { collection, setDoc, doc, query, where, getDocs, deleteDoc, serverTimestamp, limit } from 'firebase/firestore';
+  import { supabase } from '../lib/supabase.js';
   import { protegerRuta } from '../lib/auth.js';
-  import { Notificacion, getls, Saludar } from '../lib/widev.js';
+  import { Notificacion, getls, Saludar, wiTip } from '../lib/widev.js';
 
+  let msgs: any[] = [];
   let notas: any[] = [];
   let editando: string | null = null;
   let saveTimer: any = null;
-  let _onVis: any = null;
+  let channel: any = null;
+  let currentUserId = '';
+  let mostrarArchivadas = false;
 
   const CACHE_KEY = 'wi_notas_cache';
   const CACHE_TIME_KEY = 'wi_notas_cache_time';
   const LIMIT = 100;
   const DEBOUNCE = 1200;
-  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+  const CACHE_DURATION = 5 * 60 * 1000;
 
   const COLORES = [
     { id: 'Cielo',  hex: '#0EBEFF', bg: 'rgba(14,190,255,.12)', tx: 'var(--tx)', rgb: '14,190,255' },
@@ -568,22 +585,11 @@ import { app } from '../wii.js';
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '[]'); } catch (_) { return []; } 
   };
 
-  const _isCacheValid = (): boolean => {
-    const time = parseInt(localStorage.getItem(CACHE_TIME_KEY) || '0');
-    return Date.now() - time < CACHE_DURATION;
-  };
-
-  const _clearCache = () => {
-    localStorage.removeItem(CACHE_KEY);
-    localStorage.removeItem(CACHE_TIME_KEY);
-  };
-
   const _status = (ok: boolean, txt?: string) => {
     const dot = document.querySelector('.wn_dot');
     const dotxt = document.querySelector('.wn_dotxt');
     if (dot && dotxt) {
-      dot.classList.remove('active', 'error');
-      dot.classList.add(ok ? 'active' : 'error');
+      dot.className = `wn_dot ${ok ? 'active' : 'error'}`;
       dotxt.textContent = txt || (ok ? 'Online' : 'Offline');
     }
   };
@@ -592,7 +598,7 @@ import { app } from '../wii.js';
 
   const _fecha = (ts: any) => {
     if (!ts) return 'Ahora';
-    const d = ts.toDate?.() || new Date((ts.seconds || 0) * 1000);
+    const d = new Date(ts);
     const hoy = new Date(); hoy.setHours(0,0,0,0);
     const ayer = new Date(hoy); ayer.setDate(ayer.getDate() - 1);
     if (d >= hoy) return d.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
@@ -600,66 +606,232 @@ import { app } from '../wii.js';
     return d.toLocaleDateString('es', { day: 'numeric', month: 'short' });
   };
 
-  const _esc = (t: string) => String(t||'').replace(/[&<>"']/g, c => { const map: Record<string, string> = { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }; return map[c] || c; });
+  const _escVal = (t: string) => String(t || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[c] || c));
   const _empty = (ico: string, txt: string, sub: string) => `<div class="wn_empty"><i class="fas ${ico}"></i><p>${txt}</p><span>${sub}</span></div>`;
 
-  const _htmlGrid = (list: any[]): string => {
-    if (!list?.length) return _empty('fa-sticky-note', 'Sin notas aún', 'Crea tu primera nota 👆');
-    return list.map((n: any) => {
-      const c = _getColor(n.color);
-      return `
-      <div class="wn_card${n.pin ? ' pinned' : ''}" data-id="${n.id}" style="--c-bg:${c.bg};--c-tx:${c.tx};--c-accent:${c.hex}">
-        <div class="wn_card_inner">
-          ${n.pin ? '<span class="wn_pin_badge"><i class="fas fa-thumbtack"></i></span>' : ''}
-          <div class="wn_titulo" contenteditable="true" data-placeholder="Título" spellcheck="false">${_esc(n.titulo)}</div>
-          <div class="wn_contenido" contenteditable="true" data-placeholder="Escribe aquí..." spellcheck="false">${_esc(n.contenido).replace(/\n/g,'<br>')}</div>
-          <div class="wn_footer">
-            <span class="wn_fecha">${_fecha(n.fecha)}</span>
-            <span class="wn_saved"><i class="fas fa-check"></i></span>
-          </div>
-          <div class="wn_toolbar">
-            <button class="wn_pin${n.pin?' active':''}" data-witip="Fijar"><i class="fas fa-thumbtack"></i></button>
-            <button class="wn_color" data-witip="Color"><i class="fas fa-palette"></i></button>
-            <button class="wn_del" data-witip="Eliminar"><i class="fas fa-trash"></i></button>
-          </div>
-          <div class="wn_colors">${COLORES.map(x=>`<span class="wn_color_opt${x.id===n.color?' active':''}" data-color="${x.id}" style="--cc:${x.hex}"></span>`).join('')}</div>
-        </div>
-      </div>`;
-    }).join('');
+  const mdToHtml = (md: string) => {
+    if (!md) return '';
+    let html = _escVal(md);
+    html = html
+      .replace(/^### (.*?)$/gim, '<h3>$1</h3>')
+      .replace(/^## (.*?)$/gim, '<h2>$1</h2>')
+      .replace(/^# (.*?)$/gim, '<h1>$1</h1>')
+      .replace(/^\> (.*?)$/gim, '<blockquote>$1</blockquote>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/~~(.*?)~~/g, '<del>$1</del>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/!\[(.*?)\]\((.*?)\)/g, '<img alt="$1" src="$2" style="max-width:100%; border-radius:0.5vh;" />')
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+      .replace(/^- (.*?)$/gim, '<li>$1</li>')
+      .replace(/\n/g, '<br>');
+    return html;
+  };
+
+  const _htmlCardInner = (n: any) => {
+    const c = _getColor(n.color);
+    return `
+      ${n.pin ? '<span class="wn_pin_badge"><i class="fas fa-thumbtack"></i></span>' : ''}
+      <div class="wn_titulo" contenteditable="true" data-placeholder="Título" spellcheck="false">${_escVal(n.titulo)}</div>
+      <div class="wn_contenido" contenteditable="true" data-placeholder="Escribe aquí..." spellcheck="false">${n.contenido || _escVal(n.contenidoMD).replace(/\n/g,'<br>')}</div>
+      
+      <div class="wn_tags_display">
+        ${n.tags ? n.tags.split(',').map((t: string) => `<span class="wn_tag_badge">${_escVal(t.trim())}</span>`).join('') : ''}
+      </div>
+      <input type="text" class="wn_tags_input" placeholder="Etiquetas (comas)..." value="${_escVal(n.tags || '')}" />
+
+      <div class="wn_footer">
+        <span class="wn_fecha">${_fecha(n.actualizado || n.creado)}</span>
+        <span class="wn_saved"><i class="fas fa-check"></i></span>
+      </div>
+      <div class="wn_toolbar">
+        <button class="wn_pin${n.pin?' active':''}" data-witip="Fijar"><i class="fas fa-thumbtack"></i></button>
+        <button class="wn_color" data-witip="Color"><i class="fas fa-palette"></i></button>
+        <button class="wn_archive${n.archivado?' active':''}" data-witip="${n.archivado ? 'Desarchivar' : 'Archivar'}"><i class="fas ${n.archivado ? 'fa-box-open' : 'fa-box'}"></i></button>
+        <button class="wn_del" data-witip="Eliminar"><i class="fas fa-trash"></i></button>
+      </div>
+      <div class="wn_colors">${COLORES.map(x=>`<span class="wn_color_opt${x.id===n.color?' active':''}" data-color="${x.id}" style="--cc:${x.hex}"></span>`).join('')}</div>
+    `;
+  };
+
+  const _getTime = (field: any) => {
+    if (!field) return 0;
+    if (typeof field === 'number') return field;
+    return new Date(field).getTime();
   };
 
   const _sortNotas = () => {
     notas.sort((a, b) => {
       if (a.pin !== b.pin) return b.pin ? 1 : -1;
-      return (b.fecha?.seconds || 0) - (a.fecha?.seconds || 0);
+      return _getTime(b.actualizado || b.creado) - _getTime(a.actualizado || a.creado);
     });
   };
 
-  const _cargarDesdeFirestore = async (email: string, silent = false) => {
+  const _renderGrid = () => {
+    const grid = document.getElementById('wnGrid');
+    if (!grid) return;
+
+    const filtered = notas.filter(n => !!n.archivado === mostrarArchivadas);
+
+    if (!filtered.length) {
+      grid.innerHTML = _empty(
+        mostrarArchivadas ? 'fa-archive' : 'fa-sticky-note',
+        mostrarArchivadas ? 'Sin notas archivadas' : 'Sin notas aún',
+        mostrarArchivadas ? 'Tus notas archivadas aparecerán aquí' : 'Crea tu primera nota 👆'
+      );
+      return;
+    }
+
+    const emptyEl = grid.querySelector('.wn_empty');
+    if (emptyEl) emptyEl.remove();
+
+    const cards = grid.querySelectorAll('.wn_card');
+    cards.forEach(card => {
+      const id = card.getAttribute('data-id');
+      if (!filtered.some(n => n.id === id)) {
+        card.remove();
+      }
+    });
+
+    filtered.forEach((n, index) => {
+      const c = _getColor(n.color);
+      let card = grid.querySelector(`.wn_card[data-id="${n.id}"]`) as HTMLElement;
+
+      if (!card) {
+        const temp = document.createElement('div');
+        temp.innerHTML = `
+          <div class="wn_card${n.pin ? ' pinned' : ''}" data-id="${n.id}" style="--c-bg:${c.bg};--c-tx:${c.tx};--c-accent:${c.hex}">
+            <div class="wn_card_inner">
+              ${_htmlCardInner(n)}
+            </div>
+          </div>
+        `;
+        const newCard = temp.firstElementChild as HTMLElement;
+        if (index === 0) {
+          grid.prepend(newCard);
+        } else {
+          const sibling = grid.children[index];
+          if (sibling) {
+            grid.insertBefore(newCard, sibling);
+          } else {
+            grid.appendChild(newCard);
+          }
+        }
+      } else {
+        card.style.setProperty('--c-bg', c.bg);
+        card.style.setProperty('--c-tx', c.tx);
+        card.style.setProperty('--c-accent', c.hex);
+
+        if (n.pin) card.classList.add('pinned');
+        else card.classList.remove('pinned');
+
+        const inner = card.querySelector('.wn_card_inner');
+        if (inner) {
+          const badge = inner.querySelector('.wn_pin_badge');
+          if (n.pin && !badge) {
+            const span = document.createElement('span');
+            span.className = 'wn_pin_badge';
+            span.innerHTML = '<i class="fas fa-thumbtack"></i>';
+            inner.prepend(span);
+          } else if (!n.pin && badge) {
+            badge.remove();
+          }
+        }
+
+        const pinBtn = card.querySelector('.wn_pin');
+        if (pinBtn) {
+          if (n.pin) pinBtn.classList.add('active');
+          else pinBtn.classList.remove('active');
+        }
+
+        const archiveBtn = card.querySelector('.wn_archive');
+        if (archiveBtn) {
+          if (n.archivado) {
+            archiveBtn.classList.add('active');
+            archiveBtn.setAttribute('data-witip', 'Desarchivar');
+            const icon = archiveBtn.querySelector('i');
+            if (icon) icon.className = 'fas fa-box-open';
+          } else {
+            archiveBtn.classList.remove('active');
+            archiveBtn.setAttribute('data-witip', 'Archivar');
+            const icon = archiveBtn.querySelector('i');
+            if (icon) icon.className = 'fas fa-box';
+          }
+        }
+
+        card.querySelectorAll('.wn_color_opt').forEach(opt => {
+          const colorVal = opt.getAttribute('data-color');
+          if (colorVal === n.color) opt.classList.add('active');
+          else opt.classList.remove('active');
+        });
+
+        const dateEl = card.querySelector('.wn_fecha');
+        if (dateEl) dateEl.textContent = _fecha(n.actualizado || n.creado);
+
+        const tit = card.querySelector('.wn_titulo') as HTMLElement;
+        const cont = card.querySelector('.wn_contenido') as HTMLElement;
+        const tagsInput = card.querySelector('.wn_tags_input') as HTMLInputElement;
+
+        const isEditing = card.classList.contains('editing') ||
+                          document.activeElement === tit ||
+                          document.activeElement === cont ||
+                          document.activeElement === tagsInput;
+
+        if (!isEditing) {
+          if (tit) tit.innerText = n.titulo;
+          if (cont) cont.innerHTML = n.contenido || _escVal(n.contenidoMD).replace(/\n/g,'<br>');
+          if (tagsInput) tagsInput.value = n.tags || '';
+          
+          const tagsDisplay = card.querySelector('.wn_tags_display');
+          if (tagsDisplay) {
+            tagsDisplay.innerHTML = n.tags ? n.tags.split(',').map((t: string) => `<span class="wn_tag_badge">${_escVal(t.trim())}</span>`).join('') : '';
+          }
+        }
+      }
+    });
+
+    const sortedIds = filtered.map(n => n.id);
+    const elements = Array.from(grid.children) as HTMLElement[];
+    elements.forEach(el => {
+      const id = el.getAttribute('data-id');
+      if (id) {
+        const expectedIndex = sortedIds.indexOf(id);
+        if (expectedIndex !== -1 && grid.children[expectedIndex] !== el) {
+          grid.insertBefore(el, grid.children[expectedIndex]);
+        }
+      }
+    });
+  };
+
+  const _cargarDesdeSupabase = async (email: string, silent = false) => {
     try {
       _status(false, 'Cargando...');
-      const q = query(collection(db, 'wiNotas'), where('email', '==', email), limit(LIMIT));
-      const snap = await getDocs(q);
-      notas = snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+      const { data, error } = await supabase
+        .from('notas')
+        .select('*')
+        .eq('email', email)
+        .limit(LIMIT);
+      
+      if (error) throw error;
+      
+      notas = data || [];
       _sortNotas();
       _saveCache(notas);
-      const grid = document.getElementById('wnGrid');
-      if (grid) grid.innerHTML = _htmlGrid(notas);
+      _renderGrid();
       _status(true);
     } catch (e) {
-      console.error('❌ Notas:', e);
+      console.error(e);
       _status(false, 'Offline');
       if (!silent) {
         const cache = _getCache();
-        const grid = document.getElementById('wnGrid');
-        if (grid) {
-          if (cache.length) {
-            notas = cache;
-            grid.innerHTML = _htmlGrid(notas);
-            Notificacion('Usando caché local 📦', 'warning', 2000);
-          } else {
-            grid.innerHTML = _empty('fa-wifi-slash', 'Sin conexión', 'Verifica tu internet');
-          }
+        if (cache.length) {
+          notas = cache;
+          _sortNotas();
+          _renderGrid();
+          Notificacion('Usando caché local 📦', 'warning', 2000);
+        } else {
+          const grid = document.getElementById('wnGrid');
+          if (grid) grid.innerHTML = _empty('fa-wifi-slash', 'Sin conexión', 'Verifica tu internet');
         }
       }
     }
@@ -667,109 +839,138 @@ import { app } from '../wii.js';
 
   const _smartLoad = (email: string) => {
     const cache = _getCache();
-    if (cache.length && _isCacheValid()) {
+    if (cache.length) {
       notas = cache;
       _sortNotas();
-      const grid = document.getElementById('wnGrid');
-      if (grid) grid.innerHTML = _htmlGrid(notas);
+      _renderGrid();
       _status(true, 'Cache');
-    } else {
-      _cargarDesdeFirestore(email, false);
     }
+    _cargarDesdeSupabase(email, true);
   };
 
   const _syncNotas = async (email: string) => {
     const syncBtn = document.getElementById('wnSync');
     if (syncBtn) syncBtn.classList.add('spinning');
-    _clearCache();
-    await _cargarDesdeFirestore(email, false);
+    await _cargarDesdeSupabase(email, false);
     if (syncBtn) syncBtn.classList.remove('spinning');
     Notificacion('Sincronizado ✓', 'success', 1500);
   };
 
   const _crearNota = async (email: string) => {
-    const id = `nota_${Date.now()}`;
+    const id = crypto.randomUUID();
     const wiUser = getls('wiSmile') || {};
     const { usuario = '', nombre = '' } = wiUser;
 
     const nueva = {
-      id, titulo: '', contenido: '', color: 'Cielo', pin: false,
+      id, titulo: '', contenido: '', contenidoMD: '', color: 'Cielo', pin: false, archivado: false, tags: '',
       email, usuario: nombre || usuario || email,
-      fecha: { seconds: Date.now() / 1000 }
+      creado: new Date().toISOString(), actualizado: new Date().toISOString()
     };
 
     notas.unshift(nueva);
     _saveCache(notas);
-    const grid = document.getElementById('wnGrid');
-    if (grid) grid.innerHTML = _htmlGrid(notas);
+    _renderGrid();
 
     setTimeout(() => {
-      const card = document.querySelector(`.wn_card[data-id="${id}"]`);
+      const card = document.querySelector(`.wn_card[data-id="${id}"]`) as HTMLElement;
       if (card) {
         card.classList.add('editing');
         (card.querySelector('.wn_titulo') as HTMLElement)?.focus();
       }
-    }, 50);
+    }, 100);
 
     try {
-      await setDoc(doc(db, 'wiNotas', id), { ...nueva, fecha: serverTimestamp() });
+      const { error } = await supabase.from('notas').insert([{
+        id,
+        "userId": currentUserId,
+        usuario: nueva.usuario,
+        email,
+        titulo: nueva.titulo,
+        contenido: nueva.contenido,
+        "contenidoMD": nueva.contenidoMD,
+        color: nueva.color,
+        pin: nueva.pin,
+        archivado: nueva.archivado,
+        tags: nueva.tags
+      }]);
+      if (error) throw error;
       _status(true);
       Notificacion('Nueva nota ✨', 'success', 1200);
     } catch (e) {
-      console.error('❌ Crear nota:', e);
+      console.error(e);
+      _status(false);
       notas = notas.filter(n => n.id !== id);
       _saveCache(notas);
-      if (grid) grid.innerHTML = _htmlGrid(notas);
+      _renderGrid();
       Notificacion('Error al crear', 'error');
     }
   };
 
-  const _toggleEditar = (id: string) => {
+  const _cerrarEdicion = async (id: string) => {
     const card = document.querySelector(`.wn_card[data-id="${id}"]`);
     if (!card) return;
 
-    const currentlyEditing = document.querySelector('.wn_card.editing');
-    if (currentlyEditing && currentlyEditing !== card) {
-      currentlyEditing.classList.remove('editing');
+    card.classList.remove('editing');
+    const tit = card.querySelector('.wn_titulo') as HTMLElement;
+    const cont = card.querySelector('.wn_contenido') as HTMLElement;
+    const tagsInput = card.querySelector('.wn_tags_input') as HTMLInputElement;
+    const nota = notas.find(n => n.id === id);
+    if (!nota) return;
+
+    const tituloVal = tit?.innerText.trim() || '';
+    const contVal = cont?.innerText.trim() || '';
+    const tagsVal = tagsInput?.value.trim() || '';
+
+    const htmlVal = mdToHtml(contVal);
+
+    if (nota.titulo !== tituloVal || nota.contenidoMD !== contVal || nota.tags !== tagsVal) {
+      nota.titulo = tituloVal;
+      nota.contenidoMD = contVal;
+      nota.contenido = htmlVal;
+      nota.tags = tagsVal;
+      nota.actualizado = new Date().toISOString();
+      _saveCache(notas);
+      
+      card.classList.add('saving');
+      
+      try {
+        const { error } = await supabase.from('notas').upsert({
+          id,
+          "userId": currentUserId,
+          usuario: nota.usuario,
+          email: nota.email,
+          titulo: tituloVal,
+          contenido: htmlVal,
+          "contenidoMD": contVal,
+          color: nota.color,
+          pin: nota.pin,
+          archivado: nota.archivado,
+          tags: tagsVal,
+          actualizado: nota.actualizado
+        });
+        if (error) throw error;
+        _status(true);
+        card.classList.remove('saving');
+        card.classList.add('saved');
+        Notificacion('Nota guardada', 'success', 1200);
+        setTimeout(() => card.classList.remove('saved'), 800);
+      } catch (e) {
+        console.error(e);
+        _status(false);
+        card.classList.remove('saving');
+        Notificacion('Error al guardar', 'error');
+      }
     }
 
-    card.classList.toggle('editing');
-    if (card.classList.contains('editing')) {
-      (card.querySelector('.wn_titulo') as HTMLElement)?.focus();
+    if (cont) cont.innerHTML = htmlVal || '';
+    const tagsDisplay = card.querySelector('.wn_tags_display');
+    if (tagsDisplay) {
+      tagsDisplay.innerHTML = tagsVal ? tagsVal.split(',').map(t => `<span class="wn_tag_badge">${_escVal(t.trim())}</span>`).join('') : '';
     }
   };
 
   const _guardarNota = async (id: string, email: string) => {
-    const card = document.querySelector(`.wn_card[data-id="${id}"]`);
-    if (!card) return;
-
-    const titulo = (card.querySelector('.wn_titulo') as HTMLElement)?.innerText.trim() || '';
-    const contenido = (card.querySelector('.wn_contenido') as HTMLElement)?.innerText.trim() || '';
-
-    const nota = notas.find(n => n.id === id);
-    if (!nota) return;
-
-    if (nota.titulo === titulo && nota.contenido === contenido) return;
-
-    nota.titulo = titulo;
-    nota.contenido = contenido;
-    _saveCache(notas);
-    card.classList.add('saving');
-
-    try {
-      await setDoc(doc(db, 'wiNotas', id), {
-        id, titulo, contenido, color: nota.color, pin: nota.pin,
-        email, usuario: nota.usuario, fecha: serverTimestamp()
-      });
-      _status(true);
-      card.classList.remove('saving');
-      card.classList.add('saved');
-      setTimeout(() => card.classList.remove('saved'), 800);
-    } catch (e) {
-      console.error('❌ Guardar nota:', e);
-      card.classList.remove('saving');
-      Notificacion('Error al guardar', 'error');
-    }
+    _cerrarEdicion(id);
   };
 
   const _debounceGuardar = (id: string, email: string) => {
@@ -777,51 +978,117 @@ import { app } from '../wii.js';
     saveTimer = setTimeout(() => _guardarNota(id, email), DEBOUNCE);
   };
 
-  const _togglePin = async (id: string, email: string) => {
+  const _togglePin = async (id: string) => {
     const nota = notas.find(n => n.id === id);
     if (!nota) return;
 
     nota.pin = !nota.pin;
+    nota.actualizado = new Date().toISOString();
     _sortNotas();
     _saveCache(notas);
-    const grid = document.getElementById('wnGrid');
-    if (grid) grid.innerHTML = _htmlGrid(notas);
+    _renderGrid();
 
     try {
-      await setDoc(doc(db, 'wiNotas', id), { ...nota, fecha: serverTimestamp() });
+      const { error } = await supabase.from('notas').upsert({
+        id,
+        "userId": currentUserId,
+        usuario: nota.usuario,
+        email: nota.email,
+        titulo: nota.titulo,
+        contenido: nota.contenido,
+        "contenidoMD": nota.contenidoMD,
+        color: nota.color,
+        pin: nota.pin,
+        archivado: nota.archivado,
+        tags: nota.tags,
+        actualizado: nota.actualizado
+      });
+      if (error) throw error;
       _status(true);
       Notificacion(nota.pin ? 'Fijada 📌' : 'Desanclada', 'success', 1000);
     } catch (e) {
-      console.error('❌ Pin:', e);
+      console.error(e);
+      _status(false);
       nota.pin = !nota.pin;
       _sortNotas();
       _saveCache(notas);
-      if (grid) grid.innerHTML = _htmlGrid(notas);
+      _renderGrid();
     }
   };
 
-  const _cambiarColor = async (id: string, colorId: string, email: string) => {
+  const _cambiarColor = async (id: string, colorId: string) => {
     const nota = notas.find(n => n.id === id);
     if (!nota || nota.color === colorId) return;
 
-    const old = nota.color;
+    const oldColor = nota.color;
     nota.color = colorId;
+    nota.actualizado = new Date().toISOString();
     _saveCache(notas);
-    const grid = document.getElementById('wnGrid');
-    if (grid) grid.innerHTML = _htmlGrid(notas);
+    _renderGrid();
 
     try {
-      await setDoc(doc(db, 'wiNotas', id), { ...nota, fecha: serverTimestamp() });
+      const { error } = await supabase.from('notas').upsert({
+        id,
+        "userId": currentUserId,
+        usuario: nota.usuario,
+        email: nota.email,
+        titulo: nota.titulo,
+        contenido: nota.contenido,
+        "contenidoMD": nota.contenidoMD,
+        color: nota.color,
+        pin: nota.pin,
+        archivado: nota.archivado,
+        tags: nota.tags,
+        actualizado: nota.actualizado
+      });
+      if (error) throw error;
       _status(true);
     } catch (e) {
-      console.error('❌ Color:', e);
-      nota.color = old;
+      console.error(e);
+      _status(false);
+      nota.color = oldColor;
       _saveCache(notas);
-      if (grid) grid.innerHTML = _htmlGrid(notas);
+      _renderGrid();
     }
   };
 
-  const _eliminar = async (email: string) => {
+  const _archivarNota = async (id: string) => {
+    const nota = notas.find(n => n.id === id);
+    if (!nota) return;
+
+    nota.archivado = !nota.archivado;
+    nota.actualizado = new Date().toISOString();
+    _saveCache(notas);
+    _renderGrid();
+
+    try {
+      const { error } = await supabase.from('notas').upsert({
+        id,
+        "userId": currentUserId,
+        usuario: nota.usuario,
+        email: nota.email,
+        titulo: nota.titulo,
+        contenido: nota.contenido,
+        "contenidoMD": nota.contenidoMD,
+        color: nota.color,
+        pin: nota.pin,
+        archivado: nota.archivado,
+        tags: nota.tags,
+        actualizado: nota.actualizado
+      });
+      if (error) throw error;
+      _status(true);
+      Notificacion(nota.archivado ? 'Archivada 📦' : 'Desarchivada', 'success', 1000);
+    } catch (e) {
+      console.error(e);
+      _status(false);
+      nota.archivado = !nota.archivado;
+      _saveCache(notas);
+      _renderGrid();
+    }
+  };
+
+  const _eliminar = async () => {
     if (!editando) return;
     const id = editando;
     editando = null;
@@ -835,19 +1102,20 @@ import { app } from '../wii.js';
     if (card) card.classList.add('deleting');
 
     setTimeout(() => {
-      const grid = document.getElementById('wnGrid');
-      if (grid) grid.innerHTML = _htmlGrid(notas);
+      _renderGrid();
     }, 250);
 
     try {
-      await deleteDoc(doc(db, 'wiNotas', id));
+      const { error } = await supabase.from('notas').delete().eq('id', id);
+      if (error) throw error;
+      _status(true);
       Notificacion('Eliminada 🗑️', 'success', 1000);
     } catch (e) {
-      console.error('❌ Eliminar nota:', e);
+      console.error(e);
+      _status(false);
       notas = backup;
       _saveCache(notas);
-      const grid = document.getElementById('wnGrid');
-      if (grid) grid.innerHTML = _htmlGrid(notas);
+      _renderGrid();
       Notificacion('Error al eliminar', 'error');
     }
   };
@@ -861,13 +1129,8 @@ import { app } from '../wii.js';
   const cleanup = () => {
     clearTimeout(saveTimer);
     saveTimer = null;
-    if (_onVis) {
-      document.removeEventListener('visibilitychange', _onVis);
-      _onVis = null;
-    }
-    eventListeners.forEach(({ target, type, handler }) => {
-      target.removeEventListener(type, handler);
-    });
+    if (channel) { supabase.removeChannel(channel); channel = null; }
+    eventListeners.forEach(({ target, type, handler }) => target.removeEventListener(type, handler));
     eventListeners = [];
     notas = [];
     editando = null;
@@ -875,13 +1138,28 @@ import { app } from '../wii.js';
 
   const setupEvents = (userEmail: string) => {
     const btnNueva = document.getElementById('wnNueva');
-    if (btnNueva) {
-      listen(btnNueva, 'click', () => _crearNota(userEmail));
-    }
+    if (btnNueva) listen(btnNueva, 'click', () => _crearNota(userEmail));
 
     const btnSync = document.getElementById('wnSync');
-    if (btnSync) {
-      listen(btnSync, 'click', () => _syncNotas(userEmail));
+    if (btnSync) listen(btnSync, 'click', () => _syncNotas(userEmail));
+
+    const btnToggle = document.getElementById('wnToggleArchive');
+    const toggleText = document.getElementById('wnToggleText');
+    if (btnToggle && toggleText) {
+      listen(btnToggle, 'click', () => {
+        mostrarArchivadas = !mostrarArchivadas;
+        toggleText.textContent = mostrarArchivadas ? 'Ver Activas' : 'Ver Archivadas';
+        const icon = btnToggle.querySelector('i');
+        if (icon) icon.className = mostrarArchivadas ? 'fas fa-sticky-note' : 'fas fa-archive';
+        
+        const pageTitle = document.querySelector('.wn_text h1');
+        if (pageTitle) {
+          pageTitle.innerHTML = mostrarArchivadas ? 
+            `<i class="fas fa-archive"></i> Notas Archivadas` : 
+            `<i class="fas fa-sticky-note"></i> Mis Notas`;
+        }
+        _renderGrid();
+      });
     }
 
     const gridEl = document.getElementById('wnGrid');
@@ -893,80 +1171,98 @@ import { app } from '../wii.js';
 
         const id = card.dataset.id || '';
 
-        // Si es botón de la barra de herramientas
         if (target.closest('.wn_toolbar, .wn_colors')) {
-          // Si es Pin
-          if (target.closest('.wn_pin')) {
-            e.stopPropagation();
-            _togglePin(id, userEmail);
-            return;
-          }
-          // Si es Color
-          if (target.closest('.wn_color')) {
-            e.stopPropagation();
-            card.querySelector('.wn_colors')?.classList.toggle('show');
-            return;
-          }
-          // Si es Borrar
-          if (target.closest('.wn_del')) {
-            e.stopPropagation();
-            editando = id;
-            document.getElementById('wnEliminar')?.classList.add('show');
-            return;
-          }
-          // Si es opción de color
+          if (target.closest('.wn_pin')) { e.stopPropagation(); _togglePin(id); return; }
+          if (target.closest('.wn_color')) { e.stopPropagation(); card.querySelector('.wn_colors')?.classList.toggle('show'); return; }
+          if (target.closest('.wn_archive')) { e.stopPropagation(); _archivarNota(id); return; }
+          if (target.closest('.wn_del')) { e.stopPropagation(); editando = id; document.getElementById('wnEliminar')?.classList.add('show'); return; }
           if (target.closest('.wn_color_opt')) {
             e.stopPropagation();
             const opt = target.closest('.wn_color_opt') as HTMLElement;
-            _cambiarColor(id, opt.dataset.color || '', userEmail);
+            _cambiarColor(id, opt.dataset.color || '');
             card.querySelector('.wn_colors')?.classList.remove('show');
             return;
           }
           return;
         }
 
-        // Clic general en la tarjeta para editar
-        _toggleEditar(id);
+        const tit = card.querySelector('.wn_titulo') as HTMLElement;
+        const cont = card.querySelector('.wn_contenido') as HTMLElement;
+        const tagsInput = card.querySelector('.wn_tags_input') as HTMLInputElement;
+        
+        if (!card.classList.contains('editing') && target !== tit && target !== cont && target !== tagsInput) {
+          const currentlyEditing = document.querySelector('.wn_card.editing') as HTMLElement;
+          if (currentlyEditing && currentlyEditing !== card) {
+            _cerrarEdicion(currentlyEditing.dataset.id || '');
+          }
+          card.classList.add('editing');
+          const nota = notas.find(n => n.id === id);
+          if (cont && nota) {
+            cont.innerText = nota.contenidoMD || nota.contenido || '';
+          }
+          tit?.focus();
+        }
       });
 
       listen(gridEl, 'input', (e: Event) => {
         const target = e.target as HTMLElement;
-        if (target.classList.contains('wn_titulo') || target.classList.contains('wn_contenido')) {
+        if (target.classList.contains('wn_titulo') || target.classList.contains('wn_contenido') || target.classList.contains('wn_tags_input')) {
           const card = target.closest('.wn_card') as HTMLElement;
-          if (card) {
-            _debounceGuardar(card.dataset.id || '', userEmail);
+          if (card) _debounceGuardar(card.dataset.id || '', userEmail);
+        }
+      });
+
+      listen(gridEl, 'focusin', (e: Event) => {
+        const target = e.target as HTMLElement;
+        const card = target.closest('.wn_card') as HTMLElement;
+        if (!card) return;
+
+        const id = card.dataset.id || '';
+        const nota = notas.find(n => n.id === id);
+        if (!nota) return;
+
+        if (!card.classList.contains('editing')) {
+          const currentlyEditing = document.querySelector('.wn_card.editing') as HTMLElement;
+          if (currentlyEditing && currentlyEditing !== card) {
+            _cerrarEdicion(currentlyEditing.dataset.id || '');
+          }
+          card.classList.add('editing');
+          const cont = card.querySelector('.wn_contenido') as HTMLElement;
+          if (cont && (target === cont || cont.contains(target))) {
+            cont.innerText = nota.contenidoMD || nota.contenido || '';
           }
         }
       });
-    }
 
-    const btnCancel = document.getElementById('wnCancel');
-    if (btnCancel) {
-      listen(btnCancel, 'click', () => {
-        document.getElementById('wnEliminar')?.classList.remove('show');
-        editando = null;
+      listen(gridEl, 'focusout', (e: Event) => {
+        const card = (e.target as HTMLElement).closest('.wn_card') as HTMLElement;
+        if (!card) return;
+        const id = card.dataset.id || '';
+        setTimeout(() => {
+          if (card.classList.contains('editing') && !card.contains(document.activeElement)) {
+            _cerrarEdicion(id);
+          }
+        }, 150);
       });
     }
+
+    const btnCancel = document.getElementById('wmCancel');
+    if (btnCancel) listen(btnCancel, 'click', () => { document.getElementById('wmEliminar')?.classList.remove('show'); editando = null; });
 
     const modal = document.getElementById('wnEliminar');
-    if (modal) {
-      listen(modal, 'click', (e: Event) => {
-        if (e.target === modal) {
-          modal.classList.remove('show');
-          editando = null;
-        }
-      });
-    }
+    if (modal) listen(modal, 'click', (e: Event) => { if (e.target === modal) { modal.classList.remove('show'); editando = null; } });
 
     const btnConfirm = document.getElementById('wnConfirm');
-    if (btnConfirm) {
-      listen(btnConfirm, 'click', () => _eliminar(userEmail));
-    }
+    if (btnConfirm) listen(btnConfirm, 'click', _eliminar);
 
     listen(document, 'click', (e: Event) => {
       const target = e.target as HTMLElement;
       if (!target.closest('.wn_colors, .wn_color')) {
         document.querySelectorAll('.wn_colors').forEach(el => el.classList.remove('show'));
+      }
+      const activeCard = document.querySelector('.wn_card.editing') as HTMLElement;
+      if (activeCard && !activeCard.contains(target) && !target.closest('.wn_modal, .wn_modal_body')) {
+        _cerrarEdicion(activeCard.dataset.id || '');
       }
     });
   };
@@ -974,26 +1270,56 @@ import { app } from '../wii.js';
   const initNotas = async () => {
     cleanup();
 
-    // 1. Proteger ruta usando el guard centralizado de Firebase + localStorage
     const u = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
     if (!u) return;
 
     const userEmail = u.email;
     const display = u.nombre || u.usuario || u.email || '';
 
-    // Saludo
+    const { data: { user } } = await supabase.auth.getUser();
+    currentUserId = user?.id || '';
+
     const welcome = document.getElementById('wnHeaderWelcome');
     if (welcome) welcome.innerHTML = `${Saludar()} <strong>${display}</strong>`;
 
+    wiTip();
     setupEvents(userEmail);
     _smartLoad(userEmail);
 
-    _onVis = () => {
-      if (!document.hidden && !_isCacheValid()) {
-        _cargarDesdeFirestore(userEmail, true);
-      }
-    };
-    document.addEventListener('visibilitychange', _onVis);
+    channel = supabase
+      .channel('realtime-notas')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'notas' },
+        (payload: any) => {
+          if (payload.eventType === 'INSERT') {
+            const d = payload.new;
+            if (!notas.some(n => n.id === d.id)) {
+              notas.push(d);
+              _sortNotas();
+              _saveCache(notas);
+              _renderGrid();
+            }
+          } else if (payload.eventType === 'UPDATE') {
+            const d = payload.new;
+            const idx = notas.findIndex(n => n.id === d.id);
+            if (idx !== -1) {
+              notas[idx] = d;
+              _sortNotas();
+              _saveCache(notas);
+              _renderGrid();
+            }
+          } else if (payload.eventType === 'DELETE') {
+            const d = payload.old;
+            notas = notas.filter(n => n.id !== d.id);
+            _saveCache(notas);
+            _renderGrid();
+          }
+        }
+      )
+      .subscribe((status: string) => {
+        _status(status === 'SUBSCRIBED');
+      });
   };
 
   document.addEventListener('astro:page-load', initNotas);
