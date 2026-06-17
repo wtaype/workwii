@@ -317,8 +317,7 @@ import { app } from '../wii.js';
 </Layout>
 
 <script>
-  import { db } from '../lib/firebase.js';
-  import { collection, setDoc, doc, query, where, getDocs, deleteDoc, serverTimestamp } from 'firebase/firestore';
+  import { supabase } from '../lib/supabase.js';
   import { protegerRuta } from '../lib/auth.js';
   import { Notificacion, getls, savels, Saludar, wiFade, wiTiempo, formatearFechaHora } from '../lib/widev.js';
 
@@ -327,6 +326,13 @@ import { app } from '../wii.js';
   let savedRange: Range | null = null;
   let metaTimer: any = null;
   let eventListeners: { target: EventTarget; type: string; handler: EventListener }[] = [];
+
+  // Evitar BFCache (botón Atrás)
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) {
+      window.location.reload();
+    }
+  });
 
   const LS_KEY = 'word_docs';
   const uid = () => 'wd' + Date.now();
@@ -361,47 +367,77 @@ import { app } from '../wii.js';
     savedRange = null;
   };
 
-  // ── FIRESTORE CLOUD WRITES ──
+  // ── SUPABASE CLOUD WRITES ──
   const guardarNube = async (d: any, email: string, usuario: string) => {
     try {
-      await setDoc(doc(db, 'word', d.id), {
-        id: d.id, usuario, email,
-        titulo: String(d.titulo || ''), contenido: String(d.contenido || ''),
-        pin: !!d.pin, creado: serverTimestamp(), actualizado: serverTimestamp()
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user authenticated');
+
+      const { error } = await supabase.from('word').insert({
+        id: d.id,
+        userId: user.id,
+        usuario,
+        email,
+        titulo: String(d.titulo || ''),
+        contenido: String(d.contenido || ''),
+        pin: !!d.pin,
+        creado: new Date().toISOString(),
+        actualizado: new Date().toISOString()
       });
-    } catch(e) { console.error('[word] guardarNube:', e); }
+      if (error) throw error;
+    } catch(e) {
+      console.error('[word] guardarNube:', e);
+      throw e;
+    }
   };
 
   const actualizarNube = async (d: any, email: string, usuario: string) => {
     try {
-      await setDoc(doc(db, 'word', d.id), { 
-        id: d.id, usuario, email,
-        titulo: String(d.titulo || ''), contenido: String(d.contenido || ''), 
-        pin: !!d.pin, actualizado: serverTimestamp() 
-      }, { merge: true });
-    } catch(e) { console.error('[word] actualizarNube:', e); }
+      const { error } = await supabase.from('word').update({
+        titulo: String(d.titulo || ''),
+        contenido: String(d.contenido || ''),
+        pin: !!d.pin,
+        actualizado: new Date().toISOString()
+      }).eq('id', d.id);
+      if (error) throw error;
+    } catch(e) {
+      console.error('[word] actualizarNube:', e);
+      throw e;
+    }
   };
 
   const eliminarNube = async (id: string) => {
     try {
-      await deleteDoc(doc(db, 'word', id));
+      const { error } = await supabase.from('word').delete().eq('id', id);
+      if (error) throw error;
     } catch (e) {
       console.error('[word] eliminarNube:', e);
+      throw e;
     }
   };
 
   const cargarNube = async (email: string): Promise<any[] | null> => {
     try {
-      const snap = await getDocs(query(collection(db, 'word'), where('email', '==', email)));
-      return snap.docs.map((d: any) => {
-        const x = d.data();
-        return {
-          id: d.id, titulo: x.titulo || '', contenido: x.contenido || '',
-          pin: !!x.pin, creado: x.creado?.toMillis?.() || Date.now(),
-          actualizado: x.actualizado?.toMillis?.() || Date.now(), synced: true
-        };
-      });
-    } catch { return null; }
+      const { data, error } = await supabase
+        .from('word')
+        .select('*')
+        .eq('email', email);
+
+      if (error) throw error;
+
+      return (data || []).map((x: any) => ({
+        id: x.id,
+        titulo: x.titulo || '',
+        contenido: x.contenido || '',
+        pin: !!x.pin,
+        creado: x.creado ? new Date(x.creado).getTime() : Date.now(),
+        actualizado: x.actualizado ? new Date(x.actualizado).getTime() : Date.now(),
+        synced: true
+      }));
+    } catch (e) {
+      console.error('[word] cargarNube error:', e);
+      return null;
+    }
   };
 
   // ── HELPERS & RENDER ──
@@ -805,7 +841,7 @@ import { app } from '../wii.js';
   const initDashboard = async () => {
     cleanup();
 
-    // 1. Proteger ruta usando el guard centralizado de Firebase + localStorage
+    // 1. Proteger ruta usando el guard centralizado de Supabase + localStorage
     const u = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
     if (!u) return;
 

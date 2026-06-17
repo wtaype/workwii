@@ -1,8 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-const FB_PROJECT = import.meta.env.PUBLIC_FIREBASE_PROJECT_ID ?? '';
-const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 ---
 
 <style is:global>
@@ -16,8 +13,13 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
   gap: 3vh;
   width: 100%;
   min-height: calc(100vh - 80px);
-  padding: 2vh 0 6vh;
+  padding: 2vh 0; /* Ancho completo con padding lateral adaptativo */
   animation: smw_entry 0.6s ease-out;
+}
+
+@keyframes smw_entry {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .us_header_section {
@@ -357,6 +359,11 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
   animation: smw_fall 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+@keyframes smw_fall {
+  from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .us_modal_title {
   font-size: var(--fz_m3);
   font-weight: 800;
@@ -403,6 +410,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
   font-size: var(--fz_s2);
   font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
 }
 .us_btn_secondary:hover {
   background: var(--bg4);
@@ -424,6 +432,33 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
   box-shadow: 0 6px 15px color-mix(in srgb, var(--mco) 25%, transparent);
 }
 
+/* Estado Vacío */
+.us_empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8vh 2vw;
+  gap: 2vh;
+  color: var(--tx3);
+  text-align: center;
+}
+.us_empty i {
+  font-size: 6vh;
+  color: var(--mco);
+  opacity: 0.5;
+}
+.us_empty h3 {
+  font-size: var(--fz_m3);
+  font-weight: 800;
+  color: var(--tx1);
+  margin: 0;
+}
+.us_empty p {
+  font-size: var(--fz_m1);
+  margin: 0;
+}
+
 .dpn { display: none !important; }
 </style>
 
@@ -437,7 +472,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 <Layout title="Moderación de Usuarios" robots="noindex, nofollow">
   <div class="us_container">
     
-    <!-- Loader inicial de Firestore -->
+    <!-- Loader inicial de Supabase -->
     <div id="us_loader" style="text-align: center; display: flex; flex-direction: column; gap: 1rem; align-items: center; margin: 8vh auto;">
       <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--mco);"></i>
       <h3 style="color: var(--tx3); font-weight: 600;">Cargando base de datos de usuarios...</h3>
@@ -513,7 +548,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
           </div>
 
           <!-- Estado Vacío -->
-          <div class="ad_empty dpn" id="us_empty">
+          <div class="us_empty dpn" id="us_empty">
             <i class="fas fa-search"></i>
             <h3>No se encontraron usuarios</h3>
             <p>Intenta con otros términos o filtros.</p>
@@ -566,7 +601,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
       <p style="font-size: var(--fz_m1); color: var(--tx2); line-height: 1.6;">
         Estás a punto de borrar de forma permanente a <strong id="delete_user_display">usuario</strong> (@<span id="delete_username">username</span>).
         <br /><br />
-        Esta acción removerá el perfil de la colección <strong>smiles</strong> y liberará su nombre de usuario de la colección <strong>registros</strong>. Esto no se puede deshacer.
+        Esta acción removerá el perfil de la tabla <strong>smiles</strong>. Esto no se puede deshacer.
       </p>
       <div class="us_modal_actions">
         <button class="us_btn_secondary" id="delete_btn_cancel">Cancelar</button>
@@ -577,17 +612,10 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 
 </Layout>
 
-<!-- Inyectar vars de Firebase al cliente -->
-<script is:inline define:vars={{ FB_PROJECT, FB_KEY }}>
-  window.__fbProject = FB_PROJECT;
-  window.__fbKey = FB_KEY;
-</script>
-
 <script>
-  import { db } from '../lib/firebase.js';
-  import { collection, query, getDocs, doc, updateDoc, deleteDoc, limit, serverTimestamp } from 'firebase/firestore';
+  import { supabase } from '../lib/supabase.js';
   import { protegerRuta } from '../lib/auth.js';
-  import { getNombre, Notificacion } from '../lib/widev.js';
+  import { Notificacion } from '../lib/widev.js';
 
   let u: any = null;
   let usuarios: any[] = [];
@@ -601,7 +629,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
 
   const formatTime = (ts: any) => {
     if (!ts) return 'Inactivo';
-    const date = ts.seconds ? new Date(ts.seconds * 1000) : new Date(ts);
+    const date = new Date(ts);
     return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) + 
            ' ' + date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
   };
@@ -646,7 +674,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
       tableBody.innerHTML = list.map(user => {
         const nom = `${user.nombre || ''} ${user.apellidos || ''}`.trim() || user.usuario || 'Usuario';
         const img = user.avatar || defaultAvatar;
-        const act = formatTime(user.ultActividad);
+        const act = formatTime(user.actualizado);
         const est = user.estado || (user.activo ? 'activo' : 'bloqueado');
 
         return `
@@ -674,8 +702,8 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
             </td>
             <td>
               <div class="us_actions">
-                <button class="us_btn_action btn_edit" data-id="${user.usuario}" title="Editar Cuenta"><i class="fas fa-edit"></i></button>
-                <button class="us_btn_action btn_delete" data-id="${user.usuario}" title="Eliminar Cuenta"><i class="fas fa-trash-alt"></i></button>
+                <button class="us_btn_action btn_edit" data-id="${user.id}" title="Editar Cuenta"><i class="fas fa-edit"></i></button>
+                <button class="us_btn_action btn_delete" data-id="${user.id}" title="Eliminar Cuenta"><i class="fas fa-trash-alt"></i></button>
               </div>
             </td>
           </tr>
@@ -688,7 +716,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
       mobileList.innerHTML = list.map(user => {
         const nom = `${user.nombre || ''} ${user.apellidos || ''}`.trim() || user.usuario || 'Usuario';
         const img = user.avatar || defaultAvatar;
-        const act = formatTime(user.ultActividad);
+        const act = formatTime(user.actualizado);
         const est = user.estado || (user.activo ? 'activo' : 'bloqueado');
 
         return `
@@ -710,8 +738,8 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
             <div class="us_card_row">
               <small style="color:var(--tx3); font-size:0.75rem; font-weight:600;">Actividad: ${act}</small>
               <div class="us_actions">
-                <button class="us_btn_action btn_edit" data-id="${user.usuario}"><i class="fas fa-edit"></i></button>
-                <button class="us_btn_action btn_delete" data-id="${user.usuario}"><i class="fas fa-trash-alt"></i></button>
+                <button class="us_btn_action btn_edit" data-id="${user.id}"><i class="fas fa-edit"></i></button>
+                <button class="us_btn_action btn_delete" data-id="${user.id}"><i class="fas fa-trash-alt"></i></button>
               </div>
             </div>
           </div>
@@ -735,14 +763,19 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
     if (modal) modal.classList.add('dpn');
 
     try {
-      await updateDoc(doc(db, 'smiles', user.usuario), {
-        rol: newRol,
-        estado: newEst,
-        activo: newAct,
-        actualizado: serverTimestamp()
-      });
+      const { error } = await supabase
+        .from('smiles')
+        .update({
+          rol: newRol,
+          estado: newEst,
+          activo: newAct,
+          actualizado: new Date().toISOString()
+        })
+        .eq('id', user.id);
 
-      usuarios = usuarios.map(u => u.usuario === user.usuario ? { ...u, rol: newRol, estado: newEst, activo: newAct } : u);
+      if (error) throw error;
+
+      usuarios = usuarios.map(u => u.id === user.id ? { ...u, rol: newRol, estado: newEst, activo: newAct, actualizado: new Date().toISOString() } : u);
       renderConsole();
       Notificacion(`Cuenta @${user.usuario} actualizada`, 'success');
     } catch(err) {
@@ -761,13 +794,14 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
     if (modal) modal.classList.add('dpn');
 
     try {
-      // 1. Eliminar perfil de smiles
-      await deleteDoc(doc(db, 'smiles', user.usuario));
+      const { error } = await supabase
+        .from('smiles')
+        .delete()
+        .eq('id', user.id);
 
-      // 2. Eliminar de registros para liberar el usuario e email
-      await deleteDoc(doc(db, 'registros', user.usuario));
+      if (error) throw error;
 
-      usuarios = usuarios.filter(u => u.usuario !== user.usuario);
+      usuarios = usuarios.filter(u => u.id !== user.id);
       renderConsole();
       Notificacion(`Cuenta @${user.usuario} eliminada permanentemente`, 'info');
     } catch (err) {
@@ -787,7 +821,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
       const btnEdit = target.closest('.btn_edit');
       if (btnEdit) {
         const id = btnEdit.getAttribute('data-id');
-        const user = usuarios.find(u => u.usuario === id);
+        const user = usuarios.find(u => u.id === id);
         if (user) {
           activeEditUser = user;
           const modalUsername = document.getElementById('modal_username');
@@ -806,7 +840,7 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
       const btnDelete = target.closest('.btn_delete');
       if (btnDelete) {
         const id = btnDelete.getAttribute('data-id');
-        const user = usuarios.find(u => u.usuario === id);
+        const user = usuarios.find(u => u.id === id);
         if (user) {
           activeDeleteUser = user;
           const delUserDisplay = document.getElementById('delete_user_display');
@@ -871,7 +905,8 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
   };
 
   const init = async () => {
-    // 2FA Vault Lock Check (incorporado para la Fase 3)
+    if (window.location.pathname.replace(/\/$/, '') !== '/usuarios') return;
+
     if (sessionStorage.getItem('vault_unlocked') !== 'true') {
       window.location.replace('/verificar');
       return;
@@ -884,13 +919,14 @@ const FB_KEY     = import.meta.env.PUBLIC_FIREBASE_API_KEY ?? '';
     const card = document.getElementById('us_card');
 
     try {
-      const snap = await getDocs(query(collection(db, 'smiles'), limit(300)));
-      usuarios = snap.docs.map(doc => doc.data())
-        .sort((a: any, b: any) => {
-          const tA = a.ultActividad?.seconds || 0;
-          const tB = b.ultActividad?.seconds || 0;
-          return tB - tA; // Más activos primero
-        });
+      const { data, error } = await supabase
+        .from('smiles')
+        .select('*')
+        .order('actualizado', { ascending: false })
+        .limit(300);
+
+      if (error) throw error;
+      usuarios = data || [];
 
       if (loader) loader.style.display = 'none';
       if (card) card.style.display = 'flex';

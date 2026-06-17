@@ -6,8 +6,6 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { linkweb } from './src/wii.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const firebaseMock = path.resolve(__dirname, './src/lib/firebase.js');
 export default defineConfig({
   site: linkweb,
   base: '/',
@@ -15,16 +13,6 @@ export default defineConfig({
   prefetch: true,
   image: {
     domains: ['i.ibb.co', 'ibb.co']
-  },
-  vite: {
-    resolve: {
-      alias: {
-        'firebase/app': firebaseMock,
-        'firebase/auth': firebaseMock,
-        'firebase/firestore': firebaseMock,
-        'firebase/app-check': firebaseMock
-      }
-    }
   },
   integrations: [
     sitemap({
