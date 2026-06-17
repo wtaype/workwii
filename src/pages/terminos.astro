@@ -1,10 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { app } from '../wii.js';
 ---
 
 <style is:global>
 /* =========================================================================
-   ACERCA.CSS — WiiHope Premium Style
+   ACERCA.CSS — Workwii Premium Style
    ========================================================================= */
 
 @keyframes ac_float {
@@ -534,7 +535,7 @@ import Layout from '../layouts/Layout.astro';
 }
 
 /* =========================================================================
-   TERMINOS.CSS — WiiHope Legal Style (complementa acerca.css)
+   TERMINOS.CSS — Workwii Legal Style (complementa acerca.css)
    ========================================================================= */
 
 /* ── HERO TERMINOS ── */
@@ -817,7 +818,7 @@ import Layout from '../layouts/Layout.astro';
 
 </style>
 
-<Layout title="Términos y Condiciones" description="Términos y Condiciones de uso de WiiHope">
+<Layout title="Términos y Condiciones" description={`Términos y Condiciones de uso de ${app}`}>
 
 <div class="ac_wrap tm_wrap">
 
@@ -830,8 +831,8 @@ import Layout from '../layouts/Layout.astro';
       <div class="ac_hero_badge"><i class="fas fa-file-contract"></i> Transparencia y Compromiso</div>
       <h1 class="ac_hero_tit">Términos y<br><span class="ac_grad">Condiciones</span></h1>
       <p class="ac_hero_sub">
-        Al usar WiiHope, te unes a una comunidad de fe y amor. Estos términos aseguran que 
-        nuestro espacio siga siendo <strong>seguro y edificante para todos.</strong>
+        Al usar {app}, te unes a una comunidad profesional. Estos términos aseguran que 
+        nuestro espacio siga siendo <strong>seguro y productivo para todos.</strong>
       </p>
       <div class="tm_hero_chips">
         <span class="tm_chip"><i class="fas fa-shield-halved"></i> Tu privacidad es sagrada</span>
@@ -877,10 +878,10 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
         <div class="tm_sec_body">
-          <p>WiiHope es una plataforma digital gratuita dedicada a la meditación, oración y estudio bíblico. Al usar nuestra aplicación, te comprometes a:</p>
+          <p>{app} es una plataforma digital gratuita dedicada a la creación, edición y optimización de currículums, así como a la simulación de entrevistas con IA. Al usar nuestra aplicación, te comprometes a:</p>
           <ul class="tm_list">
-            <li><i class="fas fa-check"></i> Respetar la integridad de los contenidos sagrados compartidos.</li>
-            <li><i class="fas fa-check"></i> No utilizar el chat de oración para fines comerciales, spam o contenido ofensivo.</li>
+            <li><i class="fas fa-check"></i> Respetar la integridad de los contenidos y servicios de la plataforma.</li>
+            <li><i class="fas fa-check"></i> No utilizar la simulación de entrevistas para fines comerciales, spam o de forma malintencionada.</li>
             <li><i class="fas fa-check"></i> Mantener un lenguaje respetuoso y lleno de empatía hacia otros miembros.</li>
             <li><i class="fas fa-check"></i> No intentar acceder sin autorización a cuentas ajenas o sistemas internos.</li>
             <li><i class="fas fa-check"></i> Ser mayor de 13 años para registrarte. Menores requieren supervisión de un adulto.</li>
@@ -898,12 +899,12 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
         <div class="tm_sec_body">
-          <p>Utilizamos una arquitectura híbrida para que tu fe no dependa de una conexión a internet:</p>
+          <p>Utilizamos una arquitectura híbrida para que tu trabajo no dependa de una conexión constante a internet:</p>
           <ul class="tm_list">
-            <li><i class="fas fa-check"></i> Tus citas favoritas se guardan primero en tu dispositivo (LocalStorage).</li>
+            <li><i class="fas fa-check"></i> Tus documentos y notas se guardan primero localmente en tu dispositivo (LocalStorage).</li>
             <li><i class="fas fa-check"></i> Si inicias sesión, sincronizamos tus datos con la nube (Supabase) para que te acompañen en cualquier dispositivo.</li>
             <li><i class="fas fa-check"></i> Eres responsable de sincronizar tus datos antes de limpiar el historial de tu navegador si deseas conservarlos.</li>
-            <li><i class="fas fa-check"></i> WiiHope no se responsabiliza por pérdida de datos causada por limpiar el caché del navegador sin haber iniciado sesión.</li>
+            <li><i class="fas fa-check"></i> {app} no se responsabiliza por pérdida de datos causada por limpiar el caché del navegador sin haber iniciado sesión.</li>
           </ul>
         </div>
       </div>
@@ -918,7 +919,7 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
         <div class="tm_sec_body">
-          <p>WiiHope puede mostrar anuncios publicitarios de <strong>Google AdSense</strong> para financiar el mantenimiento de la plataforma. Al usar nuestro sitio:</p>
+          <p>{app} puede mostrar anuncios publicitarios de <strong>Google AdSense</strong> para financiar el mantenimiento de la plataforma. Al usar nuestro sitio:</p>
           <ul class="tm_list">
             <li><i class="fas fa-check"></i> Google AdSense puede mostrar anuncios personalizados según tu historial de navegación.</li>
             <li><i class="fas fa-check"></i> Utilizamos cookies de DoubleClick y otras tecnologías de Google para mostrar publicidad relevante.</li>
@@ -927,7 +928,7 @@ import Layout from '../layouts/Layout.astro';
           </ul>
           <div class="tm_alert">
             <i class="fas fa-info-circle"></i>
-            <p>Los ingresos por publicidad nos permiten mantener WiiHope completamente gratuito para todos. Gracias por tu comprensión.</p>
+            <p>Los ingresos por publicidad nos permiten mantener {app} completamente gratuito para todos. Gracias por tu comprensión.</p>
           </div>
         </div>
       </div>
@@ -942,11 +943,11 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
         <div class="tm_sec_body">
-          <p>WiiHope es un proyecto desarrollado por <strong>Wilder Taype</strong>. Todos los derechos reservados 2026.</p>
+          <p>{app} es un proyecto desarrollado por <strong>Wilder Taype</strong>. Todos los derechos reservados 2026.</p>
           <ul class="tm_list">
-            <li><i class="fas fa-check"></i> El diseño, código fuente y funcionalidades de WiiHope son propiedad exclusiva del autor.</li>
-            <li><i class="fas fa-check"></i> Agradecemos a <em>Faith Comes By Hearing</em> por los audios del Nuevo Testamento en Quechua.</li>
-            <li><i class="fas fa-check"></i> Tu contenido personal (notas, peticiones de oración) sigue siendo de tu propiedad exclusiva.</li>
+            <li><i class="fas fa-check"></i> El diseño, código fuente y funcionalidades de {app} son propiedad exclusiva del autor.</li>
+            <li><i class="fas fa-check"></i> Agradecemos a todos los usuarios y profesionales que colaboran enviando feedback para mejorar el editor.</li>
+            <li><i class="fas fa-check"></i> Tu contenido personal (currículums, notas y documentos) sigue siendo de tu propiedad exclusiva.</li>
             <li><i class="fas fa-check"></i> Al publicar contenido en nuestro blog, nos otorgas una licencia de uso no exclusiva para mostrarlo en la plataforma.</li>
           </ul>
         </div>
@@ -962,11 +963,11 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
         <div class="tm_sec_body">
-          <p>WiiHope se proporciona "tal cual" sin garantías de ningún tipo. En la medida máxima permitida por la ley:</p>
+          <p>{app} se proporciona "tal cual" sin garantías de ningún tipo. En la medida máxima permitida por la ley:</p>
           <ul class="tm_list">
             <li><i class="fas fa-check"></i> No garantizamos disponibilidad ininterrumpida del servicio (puede haber mantenimientos).</li>
-            <li><i class="fas fa-check"></i> No somos responsables por decisiones tomadas basadas en el contenido espiritual de la plataforma.</li>
-            <li><i class="fas fa-check"></i> Los testimonios y frases son de carácter inspiracional y no constituyen asesoramiento profesional.</li>
+            <li><i class="fas fa-check"></i> No somos responsables por decisiones o resultados de tus procesos de selección y postulaciones de empleo.</li>
+            <li><i class="fas fa-check"></i> Los testimonios y sugerencias de la IA son de carácter informativo y no constituyen asesoramiento profesional.</li>
             <li><i class="fas fa-check"></i> Nos reservamos el derecho de modificar o discontinuar el servicio con notificación previa.</li>
           </ul>
         </div>
@@ -982,13 +983,13 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
         <div class="tm_sec_body">
-          <p>Para mantener WiiHope como un espacio seguro y edificante, está estrictamente prohibido:</p>
+          <p>Para mantener {app} como un espacio seguro y productivo, está estrictamente prohibido:</p>
           <ul class="tm_list">
             <li><i class="fas fa-times" style="color:#FF5C69"></i> Publicar contenido ofensivo, violento, discriminatorio o inapropiado.</li>
-            <li><i class="fas fa-times" style="color:#FF5C69"></i> Difundir información falsa o que atente contra la fe y valores de la comunidad.</li>
+            <li><i class="fas fa-times" style="color:#FF5C69"></i> Difundir información falsa o maliciosa.</li>
             <li><i class="fas fa-times" style="color:#FF5C69"></i> Realizar actividades de spam, phishing o ingeniería social.</li>
             <li><i class="fas fa-times" style="color:#FF5C69"></i> Usar bots, scrapers o herramientas automatizadas para acceder a la plataforma.</li>
-            <li><i class="fas fa-times" style="color:#FF5C69"></i> Copiar o redistribuir el contenido de WiiHope sin autorización expresa.</li>
+            <li><i class="fas fa-times" style="color:#FF5C69"></i> Copiar o redistribuir el contenido de {app} sin autorización expresa.</li>
           </ul>
         </div>
       </div>
@@ -1019,10 +1020,10 @@ import Layout from '../layouts/Layout.astro';
         </div>
         <div class="tm_sec_body">
           <p>Nos reservamos el derecho de modificar estos Términos y Condiciones en cualquier momento. Los cambios entrarán en vigencia inmediatamente después de su publicación en esta página.</p>
-          <p>Te notificaremos cambios significativos a través de la plataforma. El uso continuado de WiiHope después de los cambios constituye tu aceptación de los nuevos términos.</p>
+          <p>Te notificaremos cambios significativos a través de la plataforma. El uso continuado de {app} después de los cambios constituye tu aceptación de los nuevos términos.</p>
           <div class="tm_alert">
             <i class="fas fa-calendar-check"></i>
-            <p>Última actualización: Abril 2026. Versión 1.0.0 de WiiHope.</p>
+            <p>Última actualización: Abril 2026. Versión 1.0.0 de {app}.</p>
           </div>
         </div>
       </div>
@@ -1046,7 +1047,7 @@ import Layout from '../layouts/Layout.astro';
                 <span>wilder.taype@hotmail.com</span>
               </div>
             </a>
-            <a href="https://github.com/wtaype/wiihope/issues" target="_blank" rel="noopener" class="tm_contact_item">
+            <a href="https://github.com/wtaype/workwii/issues" target="_blank" rel="noopener" class="tm_contact_item">
               <i class="fab fa-github" style="color:#0EBEFF"></i>
               <div>
                 <strong>GitHub Issues</strong>
@@ -1067,7 +1068,7 @@ import Layout from '../layouts/Layout.astro';
       <div class="ac_hero_orb ac_orb2"></div>
       <div class="ac_cta_glow"></div>
       <div class="ac_cta_inner">
-        <span class="ac_cta_emoji">🕊️</span>
+        <span class="ac_cta_emoji"><i class="fas fa-file-contract" style="font-size:4.5rem;color:var(--mco);"></i></span>
         <h2>¿Tienes alguna pregunta?</h2>
         <p>Estamos aquí para ayudarte. Contáctanos con total confianza.</p>
         <div class="ac_cta_btns">
@@ -1117,7 +1118,7 @@ import Layout from '../layouts/Layout.astro';
       });
     });
 
-    console.log('📜 WiiHope Términos cargados');
+    console.log('📜 ' + app + ' Términos cargados');
     window.__WIREADY__ = true;
   };
 

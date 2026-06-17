@@ -1,10 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { app, descri, id } from '../wii.js';
 ---
 
 <style is:global>
 /* =====================================================
-   DESCUBRE.CSS — Funciones y Potencial de WiiHope
+   DESCUBRE.CSS — Funciones y Potencial de Workwii
 ===================================================== */
 
 .dc_wrap { margin: 0 auto; padding: 8vh 4vw 12vh; font-family: var(--ff_P); }
@@ -156,21 +157,21 @@ import Layout from '../layouts/Layout.astro';
 }
 </style>
 
-<Layout title="Descubre" description="Descubre todo lo que WiiHope tiene para ofrecerte">
+<Layout title="Descubre" description={`Descubre todas las herramientas y recursos profesionales que ${app} tiene para ti.`}>
 <div class="dc_wrap">
   <div class="dc_hero wi_fadeUp" style="--d:0s">
-    <div class="dc_badge"><i class="fas fa-heart"></i> Nuestro Propósito</div>
-    <h1 class="dc_title">Respira, Vibra y <span class="dc_grad">Ama</span></h1>
-    <p class="dc_desc">Descubre todo lo que WiiHope tiene para ofrecerte. Un rincón digital diseñado para renovar tu fe, encontrar paz y compartir la luz con el mundo.</p>
+    <div class="dc_badge"><i class="fas fa-briefcase"></i> Funcionalidades</div>
+    <h1 class="dc_title">Potencia tu <span class="dc_grad">Carrera</span></h1>
+    <p class="dc_desc">Descubre todas las herramientas gratuitas que {app} tiene para ti. Un espacio de trabajo premium diseñado para optimizar tu currículum, entrenar con Inteligencia Artificial y destacar profesionalmente.</p>
   </div>
   
   <div class="dc_bento">
-    <!-- Carta 1: Oración -->
+    <!-- Carta 1: Editor de CV -->
     <div class="dc_card dc_c_large wi_fadeUp" style="--d:0.1s">
-      <div class="dc_icon"><i class="fas fa-praying-hands"></i></div>
+      <div class="dc_icon"><i class="fas fa-file-invoice"></i></div>
       <div class="dc_info">
-        <h3>Un refugio de oración</h3>
-        <p>Encuentra consuelo y guía en nuestro espacio dedicado. Habla con Dios, reflexiona sobre tu camino y renueva tus fuerzas con la ayuda de ChatWil y nuestras guías espirituales.</p>
+        <h3>Editor de CV en Tiempo Real</h3>
+        <p>Escribe y edita tu currículum profesional de forma dinámica y libre de distracciones. Con guardado en la nube automatizado para que nunca pierdas tu progreso.</p>
       </div>
       <div class="dc_visual">
         <div class="dc_graph">
@@ -179,29 +180,29 @@ import Layout from '../layouts/Layout.astro';
       </div>
     </div>
 
-    <!-- Carta 2: Reflexiones -->
+    <!-- Carta 2: Optimización ATS -->
     <div class="dc_card wi_fadeUp" style="--d:0.2s">
-      <div class="dc_icon" style="color:#E4405F; background:rgba(228,64,95,0.1);"><i class="fas fa-book-open"></i></div>
+      <div class="dc_icon" style="color:#E4405F; background:rgba(228,64,95,0.1);"><i class="fas fa-magnifying-glass-chart"></i></div>
       <div class="dc_info">
-        <h3>Reflexiones de vida</h3>
-        <p>Lee artículos inspiradores, testimonios y mensajes que alimentarán tu alma cada día.</p>
+        <h3>Optimización ATS</h3>
+        <p>Adapta el vocabulario de tu perfil a las palabras clave del puesto. Analiza la compatibilidad técnica de tu CV con ofertas reales.</p>
       </div>
       <div class="dc_visual">
         <div class="dc_apps">
-          <div class="dc_app"><i class="fas fa-cross"></i></div>
-          <div class="dc_app"><i class="fas fa-dove"></i></div>
-          <div class="dc_app"><i class="fas fa-bible"></i></div>
-          <div class="dc_app"><i class="fas fa-heart"></i></div>
+          <div class="dc_app"><i class="fas fa-briefcase"></i></div>
+          <div class="dc_app"><i class="fas fa-circle-check"></i></div>
+          <div class="dc_app"><i class="fas fa-robot"></i></div>
+          <div class="dc_app"><i class="fas fa-magnifying-glass"></i></div>
         </div>
       </div>
     </div>
 
-    <!-- Carta 3: Comunidad -->
+    <!-- Carta 3: Entrevistas IA -->
     <div class="dc_card wi_fadeUp" style="--d:0.3s">
-      <div class="dc_icon" style="color:#7000FF; background:rgba(112,0,255,0.1);"><i class="fas fa-users"></i></div>
+      <div class="dc_icon" style="color:#7000FF; background:rgba(112,0,255,0.1);"><i class="fas fa-comments"></i></div>
       <div class="dc_info">
-        <h3>Comunidad de Fe</h3>
-        <p>Únete a cientos de personas que buscan compartir amor, esperanza y crecimiento espiritual juntos.</p>
+        <h3>Simulación de Entrevistas</h3>
+        <p>Practica preguntas de reclutamiento real con nuestro asistente ChatWil entrenado por IA, recibiendo feedback detallado en cada respuesta.</p>
       </div>
       <div class="dc_visual">
         <div class="dc_blocks">
@@ -212,12 +213,12 @@ import Layout from '../layouts/Layout.astro';
       </div>
     </div>
 
-    <!-- Carta 4: Retiros (Span 2) -->
+    <!-- Carta 4: Guías Profesionales -->
     <div class="dc_card dc_c_large wi_fadeUp" style="--d:0.4s">
-      <div class="dc_icon" style="color:#0EBEFF; background:rgba(14,190,255,0.1);"><i class="fas fa-campground"></i></div>
+      <div class="dc_icon" style="color:#0EBEFF; background:rgba(14,190,255,0.1);"><i class="fas fa-lightbulb"></i></div>
       <div class="dc_info">
-        <h3>Retiros y Encuentros</h3>
-        <p>Participa en nuestros eventos presenciales y virtuales. Momentos diseñados para desconectar del ruido del mundo y reconectar con tu paz interior.</p>
+        <h3>Blog & Guías Profesionales</h3>
+        <p>Aprende las mejores técnicas de búsqueda de empleo, redacción de perfiles, marcas personales y consejos prácticos para destacar frente a los reclutadores más exigentes.</p>
       </div>
       <div class="dc_visual">
         <div class="dc_colors">
@@ -226,12 +227,12 @@ import Layout from '../layouts/Layout.astro';
       </div>
     </div>
 
-    <!-- Carta 5: Donaciones -->
+    <!-- Carta 5: Gestor de Notas -->
     <div class="dc_card wi_fadeUp" style="--d:0.5s">
-      <div class="dc_icon" style="color:#29C72E; background:rgba(41,199,46,0.1);"><i class="fas fa-hand-holding-heart"></i></div>
+      <div class="dc_icon" style="color:#29C72E; background:rgba(41,199,46,0.1);"><i class="fas fa-note-sticky"></i></div>
       <div class="dc_info">
-        <h3>Siembra con propósito</h3>
-        <p>Apoya nuestro ministerio. Con tus aportes voluntarios, nos ayudas a llevar mensajes de esperanza a más corazones.</p>
+        <h3>Gestor de Notas</h3>
+        <p>Organiza tus apuntes, registra los logros profesionales que quieras incluir en tu CV y prepárate eficientemente para tus entrevistas.</p>
       </div>
       <div class="dc_visual">
         <div class="dc_pay">
@@ -241,12 +242,12 @@ import Layout from '../layouts/Layout.astro';
       </div>
     </div>
 
-    <!-- Carta 6: Mensajes de Esperanza -->
+    <!-- Carta 6: Alertas de Empleo -->
     <div class="dc_card dc_c_large wi_fadeUp" style="--d:0.6s">
       <div class="dc_icon" style="color:#FF8C00; background:rgba(255,140,0,0.1);"><i class="fas fa-envelope-open-text"></i></div>
       <div class="dc_info">
-        <h3>Mensajes de Esperanza</h3>
-        <p>Suscríbete para recibir píldoras de sabiduría, versículos inspiradores y notificaciones de nuestros últimos artículos. Ilumina tus mañanas con nosotros.</p>
+        <h3>Boletín y Novedades</h3>
+        <p>Recibe notificaciones sobre plantillas actualizadas, nuevas herramientas de análisis de currículum y tendencias del mercado laboral directamente en tu correo.</p>
       </div>
       <div class="dc_visual">
         <div class="dc_form">
@@ -257,7 +258,7 @@ import Layout from '../layouts/Layout.astro';
   </div>
 
   <div class="dc_cta wi_fadeUp" style="--d:0.8s">
-    <a href="/login" class="dc_cta_btn"><i class="fas fa-heart"></i> Únete a la Comunidad</a>
+    <a href="/word" class="dc_cta_btn"><i class="fas fa-rocket"></i> Empezar a Optimizar</a>
   </div>
 </div>
 </Layout>
@@ -276,7 +277,7 @@ const initDescubre = () => {
     observer.observe(el);
   });
 
-  console.log('🚀 WiiHope Descubre cargado');
+  console.log('🚀 Workwii Descubre cargado');
   window.__WIREADY__ = true;
 };
 

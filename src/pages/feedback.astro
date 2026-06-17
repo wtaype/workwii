@@ -1,10 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { app } from '../wii.js';
 ---
 
 <style is:global>
 /* =========================================================================
-   ACERCA.CSS — WiiHope Premium Style
+   ACERCA.CSS — Workwii Premium Style
    ========================================================================= */
 
 @keyframes ac_float {
@@ -256,7 +257,7 @@ import Layout from '../layouts/Layout.astro';
 .ac_btn_s:hover { background: var(--bg5); border-color: var(--tx3); }
 
 /* =========================================================================
-   TERMINOS.CSS — WiiHope Legal Style (complementa acerca.css)
+   TERMINOS.CSS — Workwii Legal Style (complementa acerca.css)
    ========================================================================= */
 
 /* ── HERO TERMINOS ── */
@@ -313,7 +314,7 @@ import Layout from '../layouts/Layout.astro';
 }
 </style>
 
-<Layout title="Feedback" description="Feedback y Contacto en WiiHope - Tu opinión nos importa">
+<Layout title="Feedback" description={`Feedback y Contacto en ${app} - Tu opinión nos importa`}>
 <div class="ac_wrap tm_wrap">
   <section class="ac_hero tm_hero">
     <div class="ac_hero_orb ac_orb1"></div>
@@ -323,12 +324,12 @@ import Layout from '../layouts/Layout.astro';
       <div class="ac_hero_badge"><i class="fas fa-heart-pulse"></i> Tu opinión nos importa</div>
       <h1 class="ac_hero_tit">Feedback &<br><span class="ac_grad">Contacto</span></h1>
       <p class="ac_hero_sub">
-        WiiHope crece gracias a ti. Tu opinión, sugerencia o reporte
-        nos ayuda a crear <strong>un espacio de paz cada vez mejor.</strong>
+        {app} crece gracias a ti. Tu opinión, sugerencia o reporte de error
+        nos ayuda a crear <strong>una plataforma cada vez más útil y potente.</strong>
       </p>
       <div class="tm_hero_chips">
         <span class="tm_chip"><i class="fas fa-bolt"></i> Respuesta rápida</span>
-        <span class="tm_chip"><i class="fas fa-heart"></i> Con amor</span>
+        <span class="tm_chip"><i class="fas fa-heart"></i> Soporte dedicado</span>
         <span class="tm_chip"><i class="fas fa-lock"></i> Confidencial</span>
       </div>
     </div>
@@ -341,7 +342,7 @@ import Layout from '../layouts/Layout.astro';
       <p class="ac_sec_sub">Elige el canal que más te acomode</p>
     </div>
     <div class="fb_canales">
-      <a href="https://github.com/wtaype/wiihope/issues" target="_blank" rel="noopener" class="fb_canal wi_fadeUp" style="--cc:#24292e">
+      <a href="https://github.com/wtaype/workwii/issues" target="_blank" rel="noopener" class="fb_canal wi_fadeUp" style="--cc:#24292e">
         <div class="fb_canal_ico" style="background:#24292e;color:#fff"><i class="fab fa-github"></i></div>
         <div class="fb_canal_info">
           <strong>GitHub Issues</strong>
@@ -370,22 +371,22 @@ import Layout from '../layouts/Layout.astro';
       <div class="ac_feat_card wi_fadeUp" style="--sc:#FF5C69">
         <div class="ac_feat_ico"><i class="fas fa-bug"></i></div>
         <h3>Reportar un error</h3>
-        <p>Algo no funciona como debería.</p>
+        <p>Algo no funciona como debería en la aplicación.</p>
       </div>
       <div class="ac_feat_card wi_fadeUp" style="--sc:#FFDA34">
         <div class="ac_feat_ico"><i class="fas fa-lightbulb"></i></div>
         <h3>Sugerir una idea</h3>
-        <p>Tienes una función que mejoraría WiiHope.</p>
+        <p>Tienes una función que mejoraría {app}.</p>
       </div>
       <div class="ac_feat_card wi_fadeUp" style="--sc:#0EBEFF">
         <div class="ac_feat_ico"><i class="fas fa-star"></i></div>
         <h3>Dejar una opinión</h3>
-        <p>Cuéntanos cómo ha sido tu experiencia.</p>
+        <p>Cuéntanos cómo ha sido tu experiencia con las herramientas.</p>
       </div>
       <div class="ac_feat_card wi_fadeUp" style="--sc:#29C72E">
-        <div class="ac_feat_ico"><i class="fas fa-hands-praying"></i></div>
-        <h3>Petición espiritual</h3>
-        <p>Algo relacionado con el contenido de fe.</p>
+        <div class="ac_feat_ico"><i class="fas fa-cloud-arrow-up"></i></div>
+        <h3>Uso del Editor / Nube</h3>
+        <p>Soporte técnico o dudas con el guardado en la nube.</p>
       </div>
     </div>
   </section>
@@ -398,9 +399,9 @@ import Layout from '../layouts/Layout.astro';
       <div class="ac_cta_inner">
         <span class="ac_cta_emoji">💬</span>
         <h2>¡Gracias por ayudarnos<br>a crecer!</h2>
-        <p>Cada mensaje que recibimos nos motiva a seguir construyendo WiiHope con amor.</p>
+        <p>Cada mensaje que recibimos nos motiva a seguir construyendo {app} con dedicación.</p>
         <div class="ac_cta_btns">
-          <a href="https://github.com/wtaype/wiihope/issues" target="_blank" rel="noopener" class="ac_btn_p ac_btn_lg">
+          <a href="https://github.com/wtaype/workwii/issues" target="_blank" rel="noopener" class="ac_btn_p ac_btn_lg">
             <i class="fab fa-github"></i> GitHub Issues
           </a>
           <a href="mailto:wilder.taype@hotmail.com" class="ac_btn_s ac_btn_lg">
@@ -427,7 +428,7 @@ const initFeedback = () => {
     observer.observe(el);
   });
 
-  console.log('💬 WiiHope Feedback cargado');
+  console.log('💬 ' + app + ' Feedback cargado');
   window.__WIREADY__ = true;
 };
 

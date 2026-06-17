@@ -1,10 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { app, id } from '../wii.js';
 ---
 
 <style is:global>
 /* =========================================================================
-   ACERCA.CSS — WiiHope Premium Style
+   ACERCA.CSS — Workwii Premium Style
    ========================================================================= */
 
 @keyframes ac_float {
@@ -256,7 +257,7 @@ import Layout from '../layouts/Layout.astro';
 .ac_btn_s:hover { background: var(--bg5); border-color: var(--tx3); }
 
 /* =========================================================================
-   TERMINOS.CSS — WiiHope Legal Style (complementa acerca.css)
+   TERMINOS.CSS — Workwii Legal Style (complementa acerca.css)
    ========================================================================= */
 
 /* ── HERO TERMINOS ── */
@@ -285,7 +286,7 @@ import Layout from '../layouts/Layout.astro';
 .tm_chip i { color: var(--mco); }
 
 /* =========================================================================
-   CONTACTO.CSS — WiiHope Contact Style
+   CONTACTO.CSS — Workwii Contact Style
    ========================================================================= */
 
 .ct_sec { 
@@ -568,7 +569,7 @@ import Layout from '../layouts/Layout.astro';
 }
 </style>
 
-<Layout title="Contacto" description="Contacta con WiiHope - Envíanos tu mensaje">
+<Layout title="Contacto" description={`Contacta con ${app} - Envíanos tu mensaje`}>
 <div class="ac_wrap ct_wrap">
   <section class="ac_hero ct_hero">
     <div class="ac_hero_orb ac_orb1"></div>
@@ -576,15 +577,15 @@ import Layout from '../layouts/Layout.astro';
     <div class="ac_hero_orb ac_orb3"></div>
     <div class="ac_hero_body">
       <div class="ac_hero_badge"><i class="fas fa-paper-plane"></i> Estamos para ti</div>
-      <h1 class="ac_hero_tit">Escríbenos<br><span class="ac_grad">con fe 💬</span></h1>
+      <h1 class="ac_hero_tit">Escríbenos<br><span class="ac_grad">tu mensaje 💬</span></h1>
       <p class="ac_hero_sub">
-        ¿Tienes una petición, sugerencia o simplemente quieres decir hola?
-        <strong>Tu mensaje llega directo a nuestros corazones.</strong>
+        ¿Tienes alguna sugerencia, consulta o reporte de error sobre {app}?
+        <strong>Tu mensaje nos ayuda a seguir mejorando las herramientas.</strong>
       </p>
       <div class="tm_hero_chips">
         <span class="tm_chip"><i class="fas fa-clock"></i> Respuesta en 24–48h</span>
         <span class="tm_chip"><i class="fas fa-lock"></i> 100% Confidencial</span>
-        <span class="tm_chip"><i class="fas fa-heart"></i> Con amor</span>
+        <span class="tm_chip"><i class="fas fa-heart"></i> Soporte dedicado</span>
       </div>
     </div>
   </section>
@@ -613,11 +614,9 @@ import Layout from '../layouts/Layout.astro';
             <label for="ct_asunto"><i class="fas fa-tag"></i> Asunto</label>
             <select id="ct_asunto" required>
               <option value="">Selecciona un motivo</option>
-              <option value="Petición de Oración">Petición de Oración</option>
-              <option value="Agradecimiento">Agradecimiento</option>
               <option value="Sugerencia o Idea">Sugerencia o Idea</option>
               <option value="Reporte de Error">Reporte de Error</option>
-              <option value="Pregunta sobre el Blog">Pregunta sobre el Blog</option>
+              <option value="Pregunta sobre el Editor">Pregunta sobre el Editor / CV</option>
               <option value="Colaboración o Alianza">Colaboración o Alianza</option>
               <option value="Otro">Otro</option>
             </select>
@@ -676,7 +675,7 @@ import Layout from '../layouts/Layout.astro';
         <div class="ct_info_card wi_fadeUp" style="margin-top:3vh">
           <h3><i class="fas fa-share-nodes"></i> También nos encuentras en</h3>
           <div class="ct_redes">
-            <a href="https://github.com/wtaype/wiihope" target="_blank" rel="noopener" class="ct_red" style="--rc:#24292e">
+            <a href="https://github.com/wtaype/workwii" target="_blank" rel="noopener" class="ct_red" style="--rc:#24292e">
               <i class="fab fa-github"></i><span>GitHub</span>
             </a>
             <a href="https://wtaype.github.io/" target="_blank" rel="noopener" class="ct_red" style="--rc:#0EBEFF">
@@ -705,18 +704,18 @@ import Layout from '../layouts/Layout.astro';
       <div class="ct_faq_item wi_fadeUp">
         <div class="ct_faq_q">
           <i class="fas fa-circle-question"></i>
-          <h3>¿Puedo sugerir versículos o frases?</h3>
+          <h3>¿Puedo sugerir nuevas funciones para el editor de CV?</h3>
           <i class="fas fa-chevron-down ct_faq_arr"></i>
         </div>
-        <div class="ct_faq_a"><p>Por supuesto. Usa el formulario con el asunto "Sugerencia o Idea" y con gusto lo evaluamos.</p></div>
+        <div class="ct_faq_a"><p>Por supuesto. Constantemente agregamos herramientas y mejoras de UX. Envía tu sugerencia con el asunto "Sugerencia o Idea".</p></div>
       </div>
       <div class="ct_faq_item wi_fadeUp">
         <div class="ct_faq_q">
           <i class="fas fa-circle-question"></i>
-          <h3>¿WiiHope es completamente gratuito?</h3>
+          <h3>¿{app} es completamente gratuito?</h3>
           <i class="fas fa-chevron-down ct_faq_arr"></i>
         </div>
-        <div class="ct_faq_a"><p>Sí, WiiHope es y siempre será 100% gratuito. Los anuncios nos ayudan a mantener el servicio.</p></div>
+        <div class="ct_faq_a"><p>Sí, {app} es y siempre será 100% gratuito para que puedas redactar y preparar tus postulaciones sin barreras.</p></div>
       </div>
       <div class="ct_faq_item wi_fadeUp">
         <div class="ct_faq_q">
@@ -724,7 +723,7 @@ import Layout from '../layouts/Layout.astro';
           <h3>¿Mis mensajes son confidenciales?</h3>
           <i class="fas fa-chevron-down ct_faq_arr"></i>
         </div>
-        <div class="ct_faq_a"><p>Absolutamente. Tus mensajes solo los lee el equipo de WiiHope. Nunca compartimos tu información.</p></div>
+        <div class="ct_faq_a"><p>Absolutamente. Tus mensajes solo los lee el equipo de {app}. Nunca compartimos tu información personal con terceros.</p></div>
       </div>
     </div>
   </section>
@@ -735,14 +734,14 @@ import Layout from '../layouts/Layout.astro';
       <div class="ac_hero_orb ac_orb2"></div>
       <div class="ac_cta_glow"></div>
       <div class="ac_cta_inner">
-        <span class="ac_cta_emoji">🕊️</span>
+        <span class="ac_cta_emoji"><i class="fas fa-envelope-open-text" style="font-size:4.5rem;color:var(--mco);"></i></span>
         <h2>¿Prefieres el correo directo?</h2>
         <p>También puedes escribirnos directamente a nuestro email.</p>
         <div class="ac_cta_btns">
           <a href="mailto:wilder.taype@hotmail.com" class="ac_btn_p ac_btn_lg">
             <i class="fas fa-envelope"></i> Enviar email
           </a>
-          <a href="https://github.com/wtaype/wiihope/issues" target="_blank" rel="noopener" class="ac_btn_s ac_btn_lg">
+          <a href="https://github.com/wtaype/workwii/issues" target="_blank" rel="noopener" class="ac_btn_s ac_btn_lg">
             <i class="fab fa-github"></i> GitHub Issues
           </a>
         </div>
@@ -812,7 +811,7 @@ const initContacto = () => {
     observer.observe(el);
   });
 
-  console.log('📩 WiiHope Contacto cargado');
+  console.log('📩 ' + app + ' Contacto cargado');
   window.__WIREADY__ = true;
 };
 

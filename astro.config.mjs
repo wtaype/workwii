@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { linkweb } from './src/wii.js';
+import { linkweb, id } from './src/wii.js';
 
 export default defineConfig({
   site: linkweb,
@@ -26,7 +26,7 @@ export default defineConfig({
         const check = (arr) => arr.some(x => p.includes(x));
         
         // 3. Selección ternaria ultracorta para prioridades y frecuencias
-        const [pri, freq] = (p === '/' || p === '/wiihope') ? [1.0, 'daily']
+        const [pri, freq] = (p === '/' || p === `/${id}`) ? [1.0, 'daily']
           : check(['/blog', '/citas', '/musica', '/orar']) ? [0.9, 'daily']
           : [0.8, 'weekly'];
           

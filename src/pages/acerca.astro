@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { app, descri, id } from '../wii.js';
 ---
 
 <style is:global>
@@ -530,7 +531,7 @@ import Layout from '../layouts/Layout.astro';
 }
 </style>
 
-<Layout title="Acerca" description="Acerca de WiiHope - Un rincón de paz en tu mundo digital">
+<Layout title="Acerca" description={`Acerca de ${app} - ${descri}`}>
 <div class="ac_wrap">
 
   <!-- ══ HERO ══ -->
@@ -540,39 +541,39 @@ import Layout from '../layouts/Layout.astro';
     <div class="ac_hero_orb ac_orb3"></div>
     <div class="ac_hero_body">
       <div class="ac_hero_logo">
-        <img src="/perfil.webp" alt="WiiHope" loading="lazy">
+        <img src="/perfil.webp" alt={app} loading="lazy">
       </div>
-      <div class="ac_hero_badge"><i class="fas fa-dove"></i> Un rincón de paz en tu mundo digital</div>
-      <h1 class="ac_hero_tit">WiiHope</h1>
+      <div class="ac_hero_badge"><i class="fas fa-briefcase"></i> Tu aliado inteligente para conseguir empleo</div>
+      <h1 class="ac_hero_tit">{app}</h1>
       <p class="ac_hero_sub">
-        Encuentra inspiración, sabiduría bíblica y un espacio de oración diseñado 
-        para fortalecer tu espíritu cada día. <strong>Respira, Vibra, Ama.</strong>
+        Optimiza tu currículum, supera los filtros ATS y simula entrevistas reales 
+        impulsadas por Inteligencia Artificial para destacar en el mercado laboral.
       </p>
       <div class="ac_hero_stats">
         
           <div class="ac_stat" style="--sc:#0EBEFF">
-            <i class="fas fa-infinity" style="color:#0EBEFF"></i>
-            <strong>∞</strong>
-            <span>Fe y Esperanza</span>
+            <i class="fas fa-file-invoice" style="color:#0EBEFF"></i>
+            <strong>100%</strong>
+            <span>Optimización ATS</span>
           </div>
           <div class="ac_stat" style="--sc:#FF5C69">
             <i class="fas fa-heart" style="color:#FF5C69"></i>
-            <strong>100%</strong>
+            <strong>Gratis</strong>
             <span>Completamente gratis</span>
           </div>
           <div class="ac_stat" style="--sc:#29C72E">
-            <i class="fas fa-clock" style="color:#29C72E"></i>
+            <i class="fas fa-robot" style="color:#29C72E"></i>
             <strong>24/7</strong>
-            <span>Acompañamiento</span>
+            <span>Feedback con IA</span>
           </div>
           <div class="ac_stat" style="--sc:#7000FF">
-            <i class="fas fa-hands-praying" style="color:#7000FF"></i>
-            <strong>1M+</strong>
-            <span>Vidas inspiradas</span>
+            <i class="fas fa-check-double" style="color:#7000FF"></i>
+            <strong>10K+</strong>
+            <span>CVs Mejorados</span>
           </div>
       </div>
       <div class="ac_hero_btns">
-        <a href="/biblia" class="ac_btn_p"><i class="fas fa-book-bible"></i> Leer la Biblia</a>
+        <a href="/word" class="ac_btn_p"><i class="fas fa-file-word"></i> Optimizar CV</a>
         <button class="ac_btn_s" id="ac_compartir"><i class="fas fa-share-nodes"></i> Compartir App</button>
       </div>
       <div class="ac_hero_scroll"><i class="fas fa-chevron-down"></i></div>
@@ -592,12 +593,12 @@ import Layout from '../layouts/Layout.astro';
     </div>
     <div class="ac_counter_sep"></div>
     <div class="ac_counter_item">
-      <span>∞</span>
-      <p>Amor y Fe</p>
+      <i class="fas fa-infinity" style="font-size: var(--fz_l2); color: var(--tx);"></i>
+      <p>Simulaciones IA</p>
     </div>
     <div class="ac_counter_sep"></div>
     <div class="ac_counter_item">
-      <span class="ac_counter_num" data-target="2024">2024</span>
+      <span class="ac_counter_num" data-target="2026">2026</span>
       <p>Siempre actualizado</p>
     </div>
   </div>
@@ -606,22 +607,22 @@ import Layout from '../layouts/Layout.astro';
   <section class="ac_sec">
     <div class="ac_sec_head">
       <div class="ac_sec_badge"><i class="fas fa-heart"></i> Acerca de nosotros</div>
-      <h2 class="ac_sec_tit">El propósito de <span class="ac_grad">WiiHope</span></h2>
+      <h2 class="ac_sec_tit">El propósito de <span class="ac_grad">{app}</span></h2>
     </div>
     <div class="ac_historia wi_fadeUp">
-      <p><strong>Wiihope</strong> es una aplicación diseñada para compartir y aprender más sobre la palabra de Dios. Su propósito es fortalecer la fe y ser una herramienta de protección, prosperidad y bendición.</p>
+      <p><strong>{app}</strong> es una aplicación diseñada para ayudarte a crear y optimizar tu currículum profesional. Su propósito es ayudarte a superar los exigentes filtros ATS (Applicant Tracking Systems) y prepararte adecuadamente para tus futuras entrevistas laborales.</p>
       
-      <p>En esta app encontrarás el Padre Nuestro, o como mi madre solía llamarlo, <em>"el teléfono de Dios"</em>. Ella me decía que esta oración es la clave para comunicarnos con Él, ya que fue la que Jesús nos enseñó para mostrar cómo orar correctamente.</p>
+      <p>Inspirados en la necesidad de democratizar el acceso a herramientas profesionales de calidad, desarrollamos una plataforma que actúa como el puente inteligente entre tu perfil actual y tu próximo gran empleo. Creemos firmemente que la preparación técnica y el feedback oportuno marcan la diferencia en los procesos de selección modernos.</p>
       
-      <p>Además, hemos reunido las mejores frases de protección, salvación y seguridad en Dios para inspirarte en tu día a día. También podrás disfrutar de audios dramatizados del Nuevo Testamento en quechua, ideales para entender y transmitir el mensaje de una manera más cercana y enriquecedora. Agradecemos profundamente a <strong>Faith Comes By Hearing</strong>, la creadora de este contenido maravilloso, por permitirnos incluirlo en Wiihope.</p>
+      <p>Además de un lienzo interactivo para redactar tus documentos de forma limpia y organizada en tiempo real, integramos un sistema de asistencia por IA capaz de simular entrevistas reales. Podrás entrenar tus respuestas en base al puesto al que postulas, recibiendo retroalimentación constructiva al instante.</p>
 
-      <p>Esta app fue desarrollada por mí, con el objetivo de digitalizar estos recursos y hacerlos accesibles para más personas en todo momento y lugar.</p>
+      <p>Esta app fue construida para digitalizar estos recursos y hacerlos 100% accesibles para todos los profesionales en búsqueda de nuevas oportunidades, en cualquier momento y desde cualquier dispositivo.</p>
       
-      <p>Si llegaste hasta aquí, ¡Dios te bendiga! Y si no, también, porque su amor y cuidado están contigo siempre. ¡Recuerda avanzar con fe y confianza!</p>
+      <p>Agradecemos sinceramente tu confianza en nosotros. ¡Te deseamos el mayor de los éxitos en tu camino profesional y recuerda que tu potencial no tiene límites!</p>
 
       <div class="ac_firma">
-        <strong>Con amor, Wilder Taype</strong>
-        <span>Creador de Wiihope</span>
+        <strong>Con aprecio, Wilder Taype</strong>
+        <span>Creador de {app}</span>
       </div>
     </div>
   </section>
@@ -629,41 +630,41 @@ import Layout from '../layouts/Layout.astro';
   <!-- ══ BENEFICIOS ══ -->
   <section class="ac_sec ac_sec_alt">
     <div class="ac_sec_head">
-      <div class="ac_sec_badge"><i class="fas fa-star"></i> ¿Por qué WiiHope?</div>
-      <h2 class="ac_sec_tit">Beneficios que traen <span class="ac_grad">paz interior</span></h2>
-      <p class="ac_sec_sub">Desarrollado pensando en tu tranquilidad y comodidad espiritual</p>
+      <div class="ac_sec_badge"><i class="fas fa-star"></i> ¿Por qué {app}?</div>
+      <h2 class="ac_sec_tit">Beneficios para impulsar tu <span class="ac_grad">perfil laboral</span></h2>
+      <p class="ac_sec_sub">Herramientas profesionales potenciadas por Inteligencia Artificial</p>
     </div>
     <div class="ac_feat_grid">
       
         <div class="ac_feat_card wi_fadeUp ac_color_cielo">
-          <div class="ac_feat_ico"><i class="fas fa-book-bible"></i></div>
-          <h3>Sabiduría en tu idioma</h3>
-          <p>Escucha y lee la Biblia en Quechua y otros idiomas de forma fácil e intuitiva, en un reproductor súper rápido.</p>
+          <div class="ac_feat_ico"><i class="fas fa-file-lines"></i></div>
+          <h3>Editor de CV Profesional</h3>
+          <p>Crea y edita tus documentos profesionales en tiempo real con un lienzo optimizado y libre de distracciones.</p>
         </div>
         <div class="ac_feat_card wi_fadeUp ac_color_dulce">
-          <div class="ac_feat_ico"><i class="fas fa-quote-left"></i></div>
-          <h3>Citas que Inspiran</h3>
-          <p>Encuentra y comparte miles de frases y pasajes bíblicos agrupados por categorías, con un buscador inteligente.</p>
+          <div class="ac_feat_ico"><i class="fas fa-magnifying-glass-chart"></i></div>
+          <h3>Optimización ATS</h3>
+          <p>Analiza y adapta tu CV según las palabras clave requeridas por las empresas para superar filtros automatizados.</p>
         </div>
         <div class="ac_feat_card wi_fadeUp ac_color_paz">
-          <div class="ac_feat_ico"><i class="fas fa-hand-holding-heart"></i></div>
-          <h3>Asistencia de Oración</h3>
-          <p>No estás solo. Escribe tus peticiones y recibe acompañamiento, esperanza y empatía al instante con nuestro chat de oración.</p>
+          <div class="ac_feat_ico"><i class="fas fa-comments"></i></div>
+          <h3>Simulador de Entrevistas</h3>
+          <p>Practica con una IA entrenada que te hará preguntas reales de reclutamiento según tu especialidad y puesto objetivo.</p>
         </div>
         <div class="ac_feat_card wi_fadeUp ac_color_mora">
-          <div class="ac_feat_ico"><i class="fas fa-seedling"></i></div>
-          <h3>Blog Edificante</h3>
-          <p>Lee artículos, testimonios y reflexiones diseñados para nutrir tu alma, mejorar tu salud emocional y fortalecer tu fe.</p>
+          <div class="ac_feat_ico"><i class="fas fa-lightbulb"></i></div>
+          <h3>Consejos de Empleo</h3>
+          <p>Accede a guías y plantillas detalladas para optimizar tu redacción, mejorar tu marca personal y captar reclutadores.</p>
         </div>
         <div class="ac_feat_card wi_fadeUp ac_color_cielo">
-          <div class="ac_feat_ico"><i class="fas fa-face-smile"></i></div>
-          <h3>Diseño Inmersivo</h3>
-          <p>Cada detalle visual y animación ha sido creado para brindarte paz, sin distracciones molestas y con alta velocidad.</p>
+          <div class="ac_feat_ico"><i class="fas fa-wand-magic-sparkles"></i></div>
+          <h3>Interfaz Premium</h3>
+          <p>Cada animación y detalle visual está adaptado con colores suaves para brindarte una zona de trabajo cómoda y veloz.</p>
         </div>
         <div class="ac_feat_card wi_fadeUp ac_color_dulce">
           <div class="ac_feat_ico"><i class="fas fa-mobile-screen"></i></div>
-          <h3>100% Accesible</h3>
-          <p>Lleva la esperanza a todas partes. WiiHope está optimizado para funcionar perfecto y ultrarrápido en cualquier celular.</p>
+          <h3>100% Responsivo</h3>
+          <p>Lleva tu currículum contigo. Edita, estructura y consulta tus notas de empleo cómodamente desde cualquier dispositivo móvil.</p>
         </div>
     </div>
   </section>
@@ -672,30 +673,30 @@ import Layout from '../layouts/Layout.astro';
   <section class="ac_sec">
     <div class="ac_sec_head">
       <div class="ac_sec_badge"><i class="fas fa-route"></i> Empieza ahora</div>
-      <h2 class="ac_sec_tit">3 pasos para <span class="ac_grad">conectar</span></h2>
-      <p class="ac_sec_sub">Es muy fácil dejarte acompañar por el amor y la fe</p>
+      <h2 class="ac_sec_tit">3 pasos para <span class="ac_grad">destacar</span></h2>
+      <p class="ac_sec_sub">Optimiza tu perfil profesional en minutos</p>
     </div>
     <div class="ac_pasos">
       
         <div class="ac_paso wi_fadeUp">
           <div class="ac_paso_num">1</div>
-          <div class="ac_paso_ico"><i class="fas fa-eye"></i></div>
-          <h3>Descubre</h3>
-          <p>Explora nuestra amplia colección de citas y versículos.</p>
+          <div class="ac_paso_ico"><i class="fas fa-pen-nib"></i></div>
+          <h3>Redacta</h3>
+          <p>Escribe y estructura el contenido de tu currículum profesional en nuestro editor dinámico.</p>
         </div>
         <div class="ac_paso_sep"><i class="fas fa-chevron-right"></i></div>
         <div class="ac_paso wi_fadeUp">
           <div class="ac_paso_num">2</div>
-          <div class="ac_paso_ico"><i class="fas fa-headphones"></i></div>
-          <h3>Medita</h3>
-          <p>Relájate escuchando los capítulos bíblicos en formato audio de alta calidad.</p>
+          <div class="ac_paso_ico"><i class="fas fa-chart-line"></i></div>
+          <h3>Optimiza</h3>
+          <p>Ajusta el vocabulario técnico para superar las pruebas de los filtros automáticos ATS.</p>
         </div>
         <div class="ac_paso_sep"><i class="fas fa-chevron-right"></i></div>
         <div class="ac_paso wi_fadeUp">
           <div class="ac_paso_num">3</div>
-          <div class="ac_paso_ico"><i class="fas fa-hand-holding-heart"></i></div>
-          <h3>Comparte</h3>
-          <p>Envía un artículo de nuestro blog o una frase a alguien que necesite luz hoy.</p>
+          <div class="ac_paso_ico"><i class="fas fa-user-astronaut"></i></div>
+          <h3>Simula</h3>
+          <p>Responde preguntas de IA de reclutamiento real y entrena tus respuestas para triunfar.</p>
         </div>
         
     </div>
@@ -705,57 +706,57 @@ import Layout from '../layouts/Layout.astro';
   <section class="ac_sec ac_sec_alt">
     <div class="ac_sec_head">
       <div class="ac_sec_badge"><i class="fas fa-comments"></i> Comunidad</div>
-      <h2 class="ac_sec_tit">Personas que usan <span class="ac_grad">WiiHope</span></h2>
-      <p class="ac_sec_sub">Descubre cómo nuestra plataforma está tocando vidas</p>
+      <h2 class="ac_sec_tit">Profesionales que usan <span class="ac_grad">{app}</span></h2>
+      <p class="ac_sec_sub">Casos de éxito y testimonios de nuestra comunidad laboral</p>
     </div>
     <div class="ac_test_grid">
       
         <div class="ac_test_card wi_fadeUp">
           <div class="ac_test_stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-          <p class="ac_test_txt">"El chat de oración llegó en el momento que más lo necesitaba. Sentí un verdadero alivio y paz al leer sus palabras. Gracias por esta plataforma."</p>
+          <p class="ac_test_txt">"El editor en tiempo real y los consejos de IA me ayudaron a estructurar mi CV en minutos. Conseguí mi primera entrevista técnica en semanas."</p>
           <div class="ac_test_autor">
-            <span class="ac_test_avatar">👩</span>
-            <div><strong>María C.</strong><span>Lectora Frecuente</span></div>
+            <span class="ac_test_avatar"><i class="fas fa-user-graduate"></i></span>
+            <div><strong>María C.</strong><span>Ingeniera de Software</span></div>
           </div>
         </div>
         <div class="ac_test_card wi_fadeUp">
           <div class="ac_test_stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-          <p class="ac_test_txt">"Escuchar la Biblia en quechua mientras voy al trabajo me llena de energía y paz. La aplicación es rapidísima y muy fácil de usar."</p>
+          <p class="ac_test_txt">"Simular la entrevista técnica con la IA me dio la confianza que necesitaba. El feedback de las preguntas fue muy acertado y directo."</p>
           <div class="ac_test_autor">
-            <span class="ac_test_avatar">👨</span>
-            <div><strong>Juan Pérez</strong><span>Usuario Diario</span></div>
+            <span class="ac_test_avatar"><i class="fas fa-user-tie"></i></span>
+            <div><strong>Juan Pérez</strong><span>Analista de Datos</span></div>
           </div>
         </div>
         <div class="ac_test_card wi_fadeUp">
           <div class="ac_test_stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-          <p class="ac_test_txt">"Los artículos del blog siempre tienen la reflexión exacta para mi día. La interfaz es tan hermosa y relajante que da gusto entrar."</p>
+          <p class="ac_test_txt">"Me encantan los consejos del blog con plantillas. La interfaz oscura es preciosa y me permite trabajar de noche sin cansar la vista."</p>
           <div class="ac_test_autor">
-            <span class="ac_test_avatar">👵</span>
-            <div><strong>Rosa M.</strong><span>Comunidad</span></div>
+            <span class="ac_test_avatar"><i class="fas fa-user-gear"></i></span>
+            <div><strong>Rosa M.</strong><span>Administradora</span></div>
           </div>
         </div>
         <div class="ac_test_card wi_fadeUp">
           <div class="ac_test_stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-          <p class="ac_test_txt">"Wiihope ha sido una verdadera bendición en mi vida. Encontrar el Padre Nuestro y tantas frases de protección me motiva a avanzar con más fe cada día."</p>
+          <p class="ac_test_txt">"Superar los filtros automáticos (ATS) siempre fue mi dolor de cabeza. Gracias al analizador de palabras clave logré pasar el primer filtro."</p>
           <div class="ac_test_autor">
-            <span class="ac_test_avatar">🙏</span>
-            <div><strong>Carlos G.</strong><span>Comunidad</span></div>
+            <span class="ac_test_avatar"><i class="fas fa-briefcase"></i></span>
+            <div><strong>Carlos G.</strong><span>Project Manager</span></div>
           </div>
         </div>
         <div class="ac_test_card wi_fadeUp">
           <div class="ac_test_stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-          <p class="ac_test_txt">"La rapidez de la app es increíble. Poder leer la Biblia y escuchar los audios en quechua sin esperas es justo lo que buscaba para mis momentos de oración."</p>
+          <p class="ac_test_txt">"La rapidez de la aplicación móvil es fantástica. Puedo revisar y actualizar mis notas profesionales de camino a las oficinas de selección."</p>
           <div class="ac_test_autor">
-            <span class="ac_test_avatar">✨</span>
-            <div><strong>Elena R.</strong><span>Usuario Premium</span></div>
+            <span class="ac_test_avatar"><i class="fas fa-bolt"></i></span>
+            <div><strong>Elena R.</strong><span>Consultora de RRHH</span></div>
           </div>
         </div>
         <div class="ac_test_card wi_fadeUp">
           <div class="ac_test_stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-          <p class="ac_test_txt">"WiiHope se ha convertido en mi refugio diario. Las frases de protección me dan la fuerza que necesito para enfrentar cualquier reto con fe."</p>
+          <p class="ac_test_txt">"Workwii se ha convertido en mi herramienta diaria de desarrollo profesional. Las guías de CV son oro puro para cualquier postulante."</p>
           <div class="ac_test_autor">
-            <span class="ac_test_avatar">👨‍👩‍👧</span>
-            <div><strong>Pedro S.</strong><span>Comunidad</span></div>
+            <span class="ac_test_avatar"><i class="fas fa-graduation-cap"></i></span>
+            <div><strong>Pedro S.</strong><span>Diseñador UX</span></div>
           </div>
         </div>
     </div>
@@ -765,32 +766,24 @@ import Layout from '../layouts/Layout.astro';
   <section class="ac_sec">
     <div class="ac_sec_head">
       <div class="ac_sec_badge"><i class="fas fa-layer-group"></i> Funciones</div>
-      <h2 class="ac_sec_tit">Herramientas para <span class="ac_grad">fortalecer tu fe</span></h2>
-      <p class="ac_sec_sub">Diseñadas para acompañarte en tus momentos de oración y meditación</p>
+      <h2 class="ac_sec_tit">Herramientas para <span class="ac_grad">potenciar tu perfil</span></h2>
+      <p class="ac_sec_sub">Diseñadas para acompañarte en tu preparación profesional y laboral</p>
     </div>
     <div class="ac_modulos_grid">
       
-        <a href="/biblia" class="ac_modulo_card wi_fadeUp" style="--mc:#0EBEFF">
-          <div class="ac_modulo_ico"><i class="fas fa-book-bible"></i></div>
+        <a href="/word" class="ac_modulo_card wi_fadeUp" style="--mc:#0EBEFF">
+          <div class="ac_modulo_ico"><i class="fas fa-file-word"></i></div>
           <div class="ac_modulo_info">
-            <strong>Audio Biblia</strong>
-            <span>Escucha la Palabra</span>
-          </div>
-          <div class="ac_modulo_arr"><i class="fas fa-arrow-right"></i></div>
-        </a>
-        <a href="/citas" class="ac_modulo_card wi_fadeUp" style="--mc:#FF5C69">
-          <div class="ac_modulo_ico"><i class="fas fa-quote-left"></i></div>
-          <div class="ac_modulo_info">
-            <strong>Citas</strong>
-            <span>Frases de esperanza</span>
+            <strong>Editor de CV</strong>
+            <span>Escribe tu currículum</span>
           </div>
           <div class="ac_modulo_arr"><i class="fas fa-arrow-right"></i></div>
         </a>
         <a href="/chatwil" class="ac_modulo_card wi_fadeUp" style="--mc:#29C72E">
-          <div class="ac_modulo_ico"><i class="fas fa-hands-praying"></i></div>
+          <div class="ac_modulo_ico"><i class="fas fa-robot"></i></div>
           <div class="ac_modulo_info">
-            <strong>Ora por mi</strong>
-            <span>Pide oración aquí</span>
+            <strong>Entrevista IA</strong>
+            <span>Simula preguntas reales</span>
           </div>
           <div class="ac_modulo_arr"><i class="fas fa-arrow-right"></i></div>
         </a>
@@ -807,24 +800,21 @@ import Layout from '../layouts/Layout.astro';
         <span class="ac_particle"></span><span class="ac_particle"></span><span class="ac_particle"></span><span class="ac_particle"></span><span class="ac_particle"></span><span class="ac_particle"></span>
       </div>
       <div class="ac_cta_inner">
-        <span class="ac_cta_emoji">🕊️</span>
-        <h2>¿Listo para encontrar<br>inspiración?</h2>
-        <p>Entra a nuestra comunidad de amor y paz, es completamente gratis.</p>
+        <span class="ac_cta_emoji"><i class="fas fa-rocket" style="font-size: 3rem; color: var(--sc, #7000FF);"></i></span>
+        <h2>¿Listo para dar el<br>siguiente paso?</h2>
+        <p>Optimiza tu perfil profesional y supera cualquier proceso de selección hoy mismo.</p>
         <div class="ac_cta_chips">
           
-            <a href="/biblia" class="ac_chip" style="--cc:#0EBEFF" data-witip="Escucha la Palabra" data-wtipo="top" data-wtiempo="1800">
-              <i class="fas fa-book-bible"></i> Audio Biblia
+            <a href="/word" class="ac_chip" style="--cc:#0EBEFF" data-witip="Optimizar CV" data-wtipo="top" data-wtiempo="1800">
+              <i class="fas fa-file-word"></i> Editor de CV
             </a>
-            <a href="/citas" class="ac_chip" style="--cc:#FF5C69" data-witip="Frases de esperanza" data-wtipo="top" data-wtiempo="1800">
-              <i class="fas fa-quote-left"></i> Citas
-            </a>
-            <a href="/chatwil" class="ac_chip" style="--cc:#29C72E" data-witip="Pide oración aquí" data-wtipo="top" data-wtiempo="1800">
-              <i class="fas fa-hands-praying"></i> Ora por mi
+            <a href="/chatwil" class="ac_chip" style="--cc:#29C72E" data-witip="Simulador de entrevistas" data-wtipo="top" data-wtiempo="1800">
+              <i class="fas fa-robot"></i> Simulador IA
             </a>
         </div>
         <div class="ac_cta_btns">
-          <a href="/citas" class="ac_btn_p ac_btn_lg"><i class="fas fa-quote-left"></i> Leer Frases</a>
-          <a href="/blog" class="ac_btn_s ac_btn_lg"><i class="fas fa-seedling"></i> Ir al Blog</a>
+          <a href="/word" class="ac_btn_p ac_btn_lg"><i class="fas fa-file-word"></i> Ir al Editor</a>
+          <a href="/blog" class="ac_btn_s ac_btn_lg"><i class="fas fa-lightbulb"></i> Ver Blog</a>
         </div>
       </div>
     </div>
@@ -895,8 +885,8 @@ import Layout from '../layouts/Layout.astro';
         const url = window.location.origin;
         if (navigator.share) {
           navigator.share({ 
-            title: 'WiiHope', 
-            text: '✨ Encuentra paz y esperanza en WiiHope.', 
+            title: document.title, 
+            text: `Optimiza tu CV y supera entrevistas con la ayuda de la Inteligencia Artificial.`, 
             url 
           }).catch(() => {});
         } else {
@@ -909,7 +899,7 @@ import Layout from '../layouts/Layout.astro';
       });
     }
 
-    console.log('🕊️ WiiHope Acerca actualizado');
+    console.log('CV Acerca actualizado');
     window.__WIREADY__ = true;
   };
 

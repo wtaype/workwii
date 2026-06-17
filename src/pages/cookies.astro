@@ -1,11 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { app } from '../wii.js';
 const year = () => new Date().getFullYear();
 ---
 
 <style is:global>
 /* =========================================================================
-   ACERCA.CSS — WiiHope Premium Style
+   ACERCA.CSS — Workwii Premium Style
    ========================================================================= */
 
 @keyframes ac_float {
@@ -257,7 +258,7 @@ const year = () => new Date().getFullYear();
 .ac_btn_s:hover { background: var(--bg5); border-color: var(--tx3); }
 
 /* =========================================================================
-   TERMINOS.CSS — WiiHope Legal Style (complementa acerca.css)
+   TERMINOS.CSS — Workwii Legal Style (complementa acerca.css)
    ========================================================================= */
 
 /* ── HERO TERMINOS ── */
@@ -374,7 +375,7 @@ const year = () => new Date().getFullYear();
 .ck_ext_link:hover { opacity: 0.7; }
 </style>
 
-<Layout title="Cookies" description="Política de Cookies de WiiHope - Total transparencia">
+<Layout title="Cookies" description={`Política de Cookies de ${app} - Total transparencia`}>
 <div class="ac_wrap tm_wrap">
   <section class="ac_hero tm_hero">
     <div class="ac_hero_orb ac_orb1"></div><div class="ac_hero_orb ac_orb2"></div><div class="ac_hero_orb ac_orb3"></div>
@@ -404,7 +405,7 @@ const year = () => new Date().getFullYear();
           <span class="ck_tag" style="background:color-mix(in srgb,#0EBEFF 15%,transparent);color:#0EBEFF">Esencial</span>
         </div>
         <h3 class="ck_tit">Cookies de Sesión y Autenticación</h3>
-        <p class="ck_desc">Necesarias para que WiiHope funcione. Sin ellas no puedes iniciar sesión.</p>
+        <p class="ck_desc">Necesarias para que {app} funcione. Sin ellas no puedes iniciar sesión.</p>
         <ul class="tm_list">
           <li><i class="fas fa-check"></i>Supabase Auth mantiene tu sesión mediante tokens seguros.</li>
           <li><i class="fas fa-check"></i>Se eliminan automáticamente al cerrar sesión.</li>
@@ -420,7 +421,7 @@ const year = () => new Date().getFullYear();
         <h3 class="ck_tit">LocalStorage (Preferencias y Caché)</h3>
         <p class="ck_desc">Almacenamiento local para una experiencia ultrarrápida sin depender de internet.</p>
         <ul class="tm_list">
-          <li><i class="fas fa-check"></i>Guarda citas favoritas y progreso de lectura bíblica.</li>
+          <li><i class="fas fa-check"></i>Guarda borradores de CV locales y configuraciones del editor.</li>
           <li><i class="fas fa-check"></i>Almacena tu tema visual preferido (Cielo, Mora, Futuro…).</li>
           <li><i class="fas fa-check"></i>Caché de la app para carga instantánea.</li>
           <li><i class="fas fa-check"></i>Borrable desde Configuración → Privacidad de tu navegador.</li>
@@ -433,7 +434,7 @@ const year = () => new Date().getFullYear();
           <span class="ck_tag" style="background:color-mix(in srgb,#FF5C69 15%,transparent);color:#FF5C69">Publicidad</span>
         </div>
         <h3 class="ck_tit">Cookies de Google AdSense</h3>
-        <p class="ck_desc">WiiHope usa Google AdSense para mostrar anuncios que financian el servicio gratuito.</p>
+        <p class="ck_desc">{app} usa Google AdSense para mostrar anuncios que financian el servicio gratuito.</p>
         <ul class="tm_list">
           <li><i class="fas fa-check"></i>Google usa cookies como NID o IDE para personalizar anuncios.</li>
           <li><i class="fas fa-check"></i>Basadas en tu historial de navegación.</li>
@@ -449,7 +450,7 @@ const year = () => new Date().getFullYear();
           <span class="ck_tag" style="background:color-mix(in srgb,#7000FF 15%,transparent);color:#7000FF">Analítica</span>
         </div>
         <h3 class="ck_tit">Cookies de Analítica Web</h3>
-        <p class="ck_desc">Usamos Analytics para entender cómo se usa WiiHope y poder mejorarlo.</p>
+        <p class="ck_desc">Usamos Analytics para entender cómo se usa {app} y poder mejorarlo.</p>
         <ul class="tm_list">
           <li><i class="fas fa-check"></i>Miden visitas, páginas populares y tiempo de sesión.</li>
           <li><i class="fas fa-check"></i>Los datos son anónimos y no te identifican.</li>
@@ -489,7 +490,7 @@ const year = () => new Date().getFullYear();
     </div>
     <div class="tm_alert" style="max-width:800px;margin:6vh auto 0">
       <i class="fas fa-triangle-exclamation"></i>
-      <p>Deshabilitar ciertas cookies puede afectar el inicio de sesión y la sincronización de tus datos en WiiHope.</p>
+      <p>Deshabilitar ciertas cookies puede afectar el inicio de sesión y la sincronización de tus datos en {app}.</p>
     </div>
   </section>
 
@@ -536,7 +537,7 @@ const initCookies = () => {
     });
   });
 
-  console.log('🍪 WiiHope Cookies cargada');
+  console.log('🍪 ' + app + ' Cookies cargada');
   window.__WIREADY__ = true;
 };
 

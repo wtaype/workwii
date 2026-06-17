@@ -1,11 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { app } from '../wii.js';
 const year = () => new Date().getFullYear();
 ---
 
 <style is:global>
 /* =========================================================================
-   ACERCA.CSS — WiiHope Premium Style
+   ACERCA.CSS — Workwii Premium Style
    ========================================================================= */
 
 @keyframes ac_float {
@@ -209,7 +210,7 @@ const year = () => new Date().getFullYear();
 .ac_btn_lg { padding: 2.2vh 5vh; font-size: var(--fz_m2); }
 
 /* =========================================================================
-   TERMINOS.CSS — WiiHope Legal Style (complementa acerca.css)
+   TERMINOS.CSS — Workwii Legal Style (complementa acerca.css)
    ========================================================================= */
 
 /* ── HERO TERMINOS ── */
@@ -436,7 +437,7 @@ const year = () => new Date().getFullYear();
 }
 </style>
 
-<Layout title="Privacidad" description="Política de Privacidad de WiiHope - Tu privacidad es sagrada">
+<Layout title="Privacidad" description={`Política de Privacidad de ${app} - Tu privacidad es sagrada`}>
 <div class="ac_wrap tm_wrap">
 
   <!-- ══ HERO ══ -->
@@ -448,7 +449,7 @@ const year = () => new Date().getFullYear();
       <div class="ac_hero_badge"><i class="fas fa-lock"></i> Tu privacidad es sagrada</div>
       <h1 class="ac_hero_tit">Política de<br><span class="ac_grad">Privacidad</span></h1>
       <p class="ac_hero_sub">
-        En WiiHope, tu privacidad no es solo una obligación legal —
+        En {app}, tu privacidad no es solo una obligación legal —
         es un <strong>valor fundamental</strong> que guía cada decisión que tomamos.
       </p>
       <div class="tm_hero_chips">
@@ -508,7 +509,7 @@ const year = () => new Date().getFullYear();
     <div class="ac_sec_head">
       <div class="ac_sec_badge"><i class="fas fa-shield-halved"></i> Privacidad</div>
       <h2 class="ac_sec_tit">Tu información, <span class="ac_grad">tu control</span></h2>
-      <p class="ac_sec_sub">Leemos tu privacidad con la misma seriedad con que leemos la Palabra de Dios.</p>
+      <p class="ac_sec_sub">Protegemos tus datos para que puedas enfocarte en tu crecimiento profesional.</p>
     </div>
     <div class="tm_secs_grid">
       <!-- 01 -->
@@ -521,10 +522,10 @@ const year = () => new Date().getFullYear();
           </div>
         </div>
         <div class="tm_sec_body">
-          <p>WiiHope recopila únicamente la información necesaria para brindarte la mejor experiencia espiritual:</p>
+          <p>{app} recopila únicamente la información necesaria para brindarte las mejores herramientas de optimización profesional y redacción:</p>
           <ul class="tm_list">
             <li><i class="fas fa-check"></i> <strong>Datos de cuenta:</strong> Nombre, correo electrónico y foto de perfil (si te registras con Google).</li>
-            <li><i class="fas fa-check"></i> <strong>Contenido personal:</strong> Notas, peticiones de oración y preferencias de lectura que tú mismo creas.</li>
+            <li><i class="fas fa-check"></i> <strong>Contenido personal:</strong> Notas de postulación, currículums creados y configuraciones del editor.</li>
             <li><i class="fas fa-check"></i> <strong>Datos de uso:</strong> Páginas visitadas, tiempo de sesión y funciones utilizadas (de forma anónima).</li>
             <li><i class="fas fa-check"></i> <strong>Datos técnicos:</strong> Tipo de navegador, sistema operativo y dirección IP (para seguridad y diagnóstico).</li>
           </ul>
@@ -545,9 +546,9 @@ const year = () => new Date().getFullYear();
           </div>
         </div>
         <div class="tm_sec_body">
-          <p>La información que recopilamos tiene un único propósito: mejorar tu experiencia espiritual en WiiHope.</p>
+          <p>La información que recopilamos tiene un único propósito: mejorar tu experiencia de redacción y preparación en {app}.</p>
           <ul class="tm_list">
-            <li><i class="fas fa-check"></i> Personalizar tu experiencia y recordar tus preferencias de tema y lectura.</li>
+            <li><i class="fas fa-check"></i> Personalizar tu experiencia y recordar tus preferencias de tema visual y edición.</li>
             <li><i class="fas fa-check"></i> Sincronizar tus datos entre dispositivos de forma segura.</li>
             <li><i class="fas fa-check"></i> Mejorar la plataforma identificando errores y áreas de mejora.</li>
             <li><i class="fas fa-check"></i> Enviarte notificaciones importantes sobre cambios en el servicio (solo si te registraste).</li>
@@ -566,9 +567,9 @@ const year = () => new Date().getFullYear();
           </div>
         </div>
         <div class="tm_sec_body">
-          <p>WiiHope utiliza <strong>Google AdSense</strong> para mostrar anuncios publicitarios. Este servicio:</p>
+          <p>{app} utiliza <strong>Google AdSense</strong> para mostrar anuncios publicitarios. Este servicio:</p>
           <ul class="tm_list">
-            <li><i class="fas fa-check"></i> Puede usar cookies para mostrar anuncios basados en tus visitas previas a WiiHope y otros sitios web.</li>
+            <li><i class="fas fa-check"></i> Puede usar cookies para mostrar anuncios basados en tus visitas previas a {app} y otros sitios web.</li>
             <li><i class="fas fa-check"></i> Google, como proveedor externo, utiliza cookies para servir anuncios según el historial de visitas del usuario.</li>
             <li><i class="fas fa-check"></i> Puedes optar por no recibir anuncios personalizados visitando <a href="https://adssettings.google.com" target="_blank" rel="noopener">Google Ads Settings</a>.</li>
             <li><i class="fas fa-check"></i> También puedes desactivar el uso de cookies de terceros en la configuración de tu navegador.</li>
@@ -590,11 +591,11 @@ const year = () => new Date().getFullYear();
           </div>
         </div>
         <div class="tm_sec_body">
-          <p>WiiHope no vende, alquila ni comercializa tu información personal. Únicamente compartimos datos en estos casos:</p>
+          <p>{app} no vende, alquila ni comercializa tu información personal. Únicamente compartimos datos en estos casos:</p>
           <ul class="tm_list">
             <li><i class="fas fa-check"></i> <strong>Supabase:</strong> Para autenticación, base de datos y almacenamiento en la nube.</li>
             <li><i class="fas fa-check"></i> <strong>Google AdSense:</strong> Para mostrar anuncios publicitarios relevantes.</li>
-            <li><i class="fas fa-check"></i> <strong>Requerimiento legal:</strong> Si la ley lo exige o para proteger los derechos de WiiHope y sus usuarios.</li>
+            <li><i class="fas fa-check"></i> <strong>Requerimiento legal:</strong> Si la ley lo exige o para proteger los derechos de {app} y sus usuarios.</li>
           </ul>
           <p>Todos nuestros proveedores de terceros cumplen con los más altos estándares internacionales de seguridad y privacidad.</p>
         </div>
@@ -629,7 +630,7 @@ const year = () => new Date().getFullYear();
           </div>
         </div>
         <div class="tm_sec_body">
-          <p>En WiiHope, tú tienes el control total sobre tu información personal:</p>
+          <p>En {app}, tú tienes el control total sobre tu información personal:</p>
           <ul class="tm_list">
             <li><i class="fas fa-check"></i> <strong>Acceso:</strong> Puedes solicitar una copia de tus datos personales en cualquier momento.</li>
             <li><i class="fas fa-check"></i> <strong>Rectificación:</strong> Puedes corregir información incorrecta desde tu perfil.</li>
@@ -674,7 +675,7 @@ const year = () => new Date().getFullYear();
           </div>
         </div>
         <div class="tm_sec_body">
-          <p>WiiHope está diseñado para personas de todas las edades, pero con responsabilidad:</p>
+          <p>{app} está diseñado para personas de todas las edades, pero con responsabilidad:</p>
           <ul class="tm_list">
             <li><i class="fas fa-check"></i> No recopilamos conscientemente datos personales de menores de 13 años sin consentimiento parental.</li>
             <li><i class="fas fa-check"></i> Si eres padre/tutor y crees que tu hijo nos proporcionó datos, contáctanos para eliminarlos.</li>
@@ -696,7 +697,7 @@ const year = () => new Date().getFullYear();
           <p>Nos reservamos el derecho de actualizar esta Política de Privacidad cuando sea necesario. Te notificaremos sobre cambios significativos a través de la plataforma.</p>
           <div class="tm_alert">
             <i class="fas fa-calendar-check"></i>
-            <p>Última actualización: Abril {year()} · Al continuar usando WiiHope después de los cambios, aceptas la política actualizada.</p>
+            <p>Última actualización: Abril {year()} · Al continuar usando {app} después de los cambios, aceptas la política actualizada.</p>
           </div>
         </div>
       </div>
@@ -764,7 +765,7 @@ const initPrivacidad = () => {
     });
   });
 
-  console.log('🔒 WiiHope Privacidad cargada');
+  console.log('🔒 ' + app + ' Privacidad cargada');
   window.__WIREADY__ = true;
 };
 

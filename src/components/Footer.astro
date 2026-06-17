@@ -1,12 +1,12 @@
 ---
 // src/components/Footer.astro
-import { app, lanzamiento, by, linkme, version } from '../wii.js';
+import { app, lanzamiento, by, linkme, version, id } from '../wii.js';
 
 const REDES = [
-  { tit: 'YouTube',   ico: 'fab fa-youtube',   url: 'https://www.youtube.com/@wiihope',   bg: '#ff0000' },
-  { tit: 'Facebook',  ico: 'fab fa-facebook-f', url: 'https://www.facebook.com/wiihopee', bg: '#1877F2' },
-  { tit: 'Instagram', ico: 'fab fa-instagram',  url: 'https://www.instagram.com/WiiHopee', bg: 'linear-gradient(45deg,#f58529,#dd2a7b,#515bd4)' },
-  { tit: 'TikTok',    ico: 'fab fa-tiktok',     url: 'https://www.tiktok.com/@wiihope',   bg: '#000'    },
+  { tit: 'YouTube',   ico: 'fab fa-youtube',   url: `https://www.youtube.com/@${id}`,   bg: '#ff0000' },
+  { tit: 'Facebook',  ico: 'fab fa-facebook-f', url: `https://www.facebook.com/${id}e`, bg: '#1877F2' },
+  { tit: 'Instagram', ico: 'fab fa-instagram',  url: `https://www.instagram.com/${app}e`, bg: 'linear-gradient(45deg,#f58529,#dd2a7b,#515bd4)' },
+  { tit: 'TikTok',    ico: 'fab fa-tiktok',     url: `https://www.tiktok.com/@${id}`,   bg: '#000'    },
 ];
 
 const ahora = new Date();
