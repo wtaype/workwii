@@ -168,6 +168,11 @@ import { app } from '../wii.js';
     font-size: 12px; transition: color 0.2s; padding: 2px;
   }
   .wd_act_pin:hover, .wd_act_pin.active { color: #FFB800; }
+  .wd_act_del {
+    background: transparent; border: none; color: var(--tx3); cursor: pointer;
+    font-size: 12px; transition: color 0.2s; padding: 2px;
+  }
+  .wd_act_del:hover { color: var(--error) !important; }
   .wd_cloud_ok { color: #29C72E; font-size: 12px; }
   .wd_cloud_pen { color: var(--tx3); font-size: 12px; }
 
@@ -189,20 +194,22 @@ import { app } from '../wii.js';
     display: flex; justify-content: center; align-items: flex-start;
   }
   .wd_page {
-    background: #fff; width: 100%; max-width: 100%;
-    min-height: 1100px; padding: 10vh 8vw;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-radius: 4px; border: 1px solid #ddd;
+    background: var(--bg8, #fff); width: 100%; max-width: 100%;
+    min-height: 1100px; padding: 8vh 6vw;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.04); border-radius: 16px; border: 1px solid var(--brd);
+    transition: background-color var(--tr_m), border-color var(--tr_m), box-shadow var(--tr_m);
   }
   .wd_editor {
-    outline: none; min-height: 800px; font-family: 'Segoe UI', system-ui; font-size: 16px; line-height: 1.6; color: #222;
+    outline: none; min-height: 800px; font-family: 'Segoe UI', system-ui; font-size: 16px; line-height: 1.6; color: var(--tx);
+    transition: color var(--tr_m);
   }
-  .wd_editor[data-placeholder]:empty:before { content: attr(data-placeholder); color: #aaa; pointer-events: none; font-style: italic; }
+  .wd_editor[data-placeholder]:empty:before { content: attr(data-placeholder); color: var(--tx3); opacity: 0.6; pointer-events: none; font-style: italic; }
 
   /* Editor Content Normalization */
-  .wd_editor h1, .wd_editor h2, .wd_editor h3 { margin-top: 1em; margin-bottom: 0.5em; font-weight: bold; }
-  .wd_editor p { margin-bottom: 1em; }
-  .wd_editor ul, .wd_editor ol { padding-left: 2em; margin-bottom: 1em; }
-  .wd_editor img { max-width: 100%; height: auto; border-radius: 4px; margin: 1em 0; }
+  .wd_editor h1, .wd_editor h2, .wd_editor h3 { margin-top: 1em; margin-bottom: 0.5em; font-weight: bold; color: var(--tx); }
+  .wd_editor p { margin-bottom: 1em; color: var(--tx); }
+  .wd_editor ul, .wd_editor ol { padding-left: 2em; margin-bottom: 1em; color: var(--tx); }
+  .wd_editor img { max-width: 100%; height: auto; border-radius: 8px; margin: 1em 0; }
 
   /* Responsive */
   @media (max-width: 768px) {
@@ -210,14 +217,60 @@ import { app } from '../wii.js';
     .wd_canvas { padding: 2vh 1vw 5vh; }
     .wd_page { padding: 5vh 4vw; }
   }
+
+  /* Connection Dot status */
+  .wd_dot.active { background: #10B981 !important; box-shadow: 0 0 8px rgba(16,185,129,0.5); }
+  .wd_dot.error { background: #EF4444 !important; box-shadow: 0 0 8px rgba(239,68,68,0.5); }
+
+  /* ── INTERFACE AND DESIGN RULES (Fase 6) ── */
+  #wd_btn_menu { color: var(--mco); }
+  #wd_l_ht { width: 60px; }
+  
+  .wd_color_picker_group {
+    display: flex; align-items: center; padding: 0 0.5vh; height: 4vh;
+  }
+  .wd_color_picker_icon {
+    color: var(--tx2); margin-right: 0.5vh; font-size: 12px;
+  }
+  .wd_color_picker_input {
+    width: 2.5vh; height: 2.5vh; border: none; background: none; cursor: pointer; padding: 0;
+  }
+
+  .wd_meta_sep_main { display: none; }
+  #wd_meta {
+    display: none; padding: 0 1.5vh; gap: 2vh; border: none; background: transparent;
+  }
+
+  .wd_sb_actions_container {
+    display: flex; gap: 1vh; margin-top: 1.5vh;
+  }
+  .wd_btn_flex_center {
+    flex: 1; justify-content: center;
+  }
+  .wd_btn_square_refresh {
+    display: none; justify-content: center; align-items: center; aspect-ratio: 1; padding: 1.2vh;
+  }
+
+  .wd_sb_head_flex {
+    display: flex; gap: 5px; align-items: center;
+  }
+  .wd_status {
+    display: flex; align-items: center; gap: 0.5vh; margin-right: 5px; font-size: 11px;
+  }
+  .wd_dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #ccc; display: inline-block; transition: all 0.25s;
+  }
+  .wd_dotxt {
+    color: var(--tx3); font-weight: 700;
+  }
 </style>
 
-<Layout title="Planificar" name={app} robots="noindex, nofollow">
+<Layout title="Documentos" name={app} robots="noindex, nofollow">
   <div class="wd_wrap">
     <!-- RIBBON -->
     <header class="wd_ribbon">
       <div class="wd_tools">
-        <button id="wd_btn_menu" class="wd_btn_tool" style="color:var(--mco);" data-witip="Archivos"><i class="fas fa-bars"></i></button>
+        <button id="wd_btn_menu" class="wd_btn_tool" data-witip="Archivos"><i class="fas fa-bars"></i></button>
         <div class="wd_tool_sep"></div>
         
         <div class="wd_tool_group">
@@ -253,7 +306,7 @@ import { app } from '../wii.js';
           <button class="wd_btn_tool" data-cmd="insertUnorderedList" data-witip="Viñetas"><i class="fas fa-list-ul"></i></button>
           <button class="wd_btn_tool" data-cmd="insertOrderedList" data-witip="Numeración"><i class="fas fa-list-ol"></i></button>
           <div class="wd_tool_sep"></div>
-          <select id="wd_l_ht" class="wd_font_sel" style="width:60px;" data-witip="Interlineado">
+          <select id="wd_l_ht" class="wd_font_sel" data-witip="Interlineado">
              <option value="1">1.0</option>
              <option value="1.15">1.15</option>
              <option value="1.5">1.5</option>
@@ -262,20 +315,21 @@ import { app } from '../wii.js';
         </div>
         
         <div class="wd_tool_group">
-          <div data-witip="Color Texto" style="display:flex; align-items:center; padding: 0 0.5vh; height: 4vh;">
-             <i class="fas fa-font" style="color:var(--tx2); margin-right: 0.5vh; font-size:12px;"></i>
-             <input type="color" id="wd_c_txt" value="#222222" style="width:2.5vh;height:2.5vh;border:none;background:none;cursor:pointer;padding:0;">
+          <div data-witip="Color Texto" class="wd_color_picker_group">
+             <i class="fas fa-font wd_color_picker_icon"></i>
+             <input type="color" id="wd_c_txt" value="#222222" class="wd_color_picker_input">
           </div>
           <div class="wd_tool_sep"></div>
-          <div data-witip="Color Resaltado" style="display:flex; align-items:center; padding: 0 0.5vh; height: 4vh;">
-             <i class="fas fa-highlighter" style="color:var(--tx2); margin-right: 0.5vh; font-size:12px;"></i>
-             <input type="color" id="wd_c_bg" value="#ffff00" style="width:2.5vh;height:2.5vh;border:none;background:none;cursor:pointer;padding:0;">
+          <div data-witip="Color Resaltado" class="wd_color_picker_group">
+             <i class="fas fa-highlighter wd_color_picker_icon"></i>
+             <input type="color" id="wd_c_bg" value="#ffff00" class="wd_color_picker_input">
           </div>
         </div>
 
         <!-- Metadata Group (Integrated in Ribbon) -->
-        <div class="wd_tool_sep wd_meta_sep_main" style="display:none"></div>
-        <div id="wd_meta" class="wd_meta_group" style="display:none; padding: 0 1.5vh; gap: 2vh; border: none; background: transparent;">
+        <div class="wd_tool_sep wd_meta_sep_main"></div>
+        <div id="wd_meta" class="wd_meta_group">
+          <span class="wd_meta_item" id="wd_saludo" data-witip="Usuario activo"><i class="fas fa-user-circle"></i> <span>—</span></span>
           <span class="wd_meta_item" id="wd_meta_rel" data-witip="Actividad reciente"><i class="fas fa-clock"></i> <span>—</span></span>
           <span class="wd_meta_item" id="wd_meta_cre" data-witip="Fecha de creación"><i class="fas fa-calendar-plus"></i> <span>—</span></span>
           <span class="wd_meta_item" id="wd_meta_upd" data-witip="Última edición"><i class="fas fa-pen-nib"></i> <span>—</span></span>
@@ -289,16 +343,18 @@ import { app } from '../wii.js';
       <aside id="wd_sidebar" class="wd_sidebar">
         <div class="wd_sb_actions_panel">
           <input type="text" id="wd_in_tit" class="wd_doc_title_sb" placeholder="Título del documento..." autocomplete="off">
-          <div style="display:flex; gap:1vh; margin-top:1.5vh;">
-            <button id="wd_btn_save" class="wd_btn_main" style="flex:1; justify-content:center;"><i class="fas fa-save"></i> Guardar</button>
-            <button id="wd_btn_del" class="wd_btn_sec wd_btn_del_doc" data-witip="Eliminar"><i class="fas fa-trash-can"></i></button>
+          <div class="wd_sb_actions_container">
+            <button id="wd_btn_new" class="wd_btn_main wd_btn_flex_center" data-witip="Nuevo Documento"><i class="fas fa-plus"></i> Nuevo</button>
+            <button id="wd_btn_refresh" class="wd_btn_sec wd_btn_square_refresh" data-witip="Sincronizar documentos"><i class="fas fa-sync-alt"></i></button>
           </div>
         </div>
         <div class="wd_sb_head">
-          <h3 id="wd_saludo">Archivos</h3>
-          <div style="display:flex; gap: 5px;">
-            <button id="wd_btn_refresh" class="wd_sb_btn" style="display:none" data-witip="Actualizar"><i class="fas fa-rotate-right"></i></button>
-            <button id="wd_btn_new" class="wd_sb_btn" data-witip="Nuevo Documento"><i class="fas fa-plus"></i></button>
+          <h3>Archivos</h3>
+          <div class="wd_sb_head_flex">
+            <div class="wd_status">
+              <span class="wd_dot"></span>
+              <span class="wd_dotxt">Conectando...</span>
+            </div>
           </div>
         </div>
         <div id="wd_sb_list" class="wd_sb_list">
@@ -319,13 +375,17 @@ import { app } from '../wii.js';
 <script>
   import { supabase } from '../lib/supabase.js';
   import { protegerRuta } from '../lib/auth.js';
-  import { Notificacion, getls, savels, Saludar, wiFade, wiTiempo, formatearFechaHora } from '../lib/widev.js';
+  import { Notificacion, getls, savels, Saludar, wiFade, wiTiempo, formatearFechaHora, wiTip } from '../lib/widev.js';
 
   let docs: any[] = [];
   let act: any = null;
   let savedRange: Range | null = null;
-  let metaTimer: any = null;
   let eventListeners: { target: EventTarget; type: string; handler: EventListener }[] = [];
+  let saveTimer: any = null;
+  const DEBOUNCE = 1500;
+  let channel: any = null;
+  let emailAct = '';
+  let userAct = '';
 
   // Evitar BFCache (botón Atrás)
   window.addEventListener('pageshow', (e) => {
@@ -337,7 +397,7 @@ import { app } from '../wii.js';
   const LS_KEY = 'word_docs';
   const uid = () => 'wd' + Date.now();
   const DEMO = [
-    { id: 'ej1', titulo: 'Documento de Ejemplo', contenido: '<p>Este es un documento de ejemplo. <b>Prueba a editar el texto</b> y usar las herramientas de la barra superior para darle estilo.</p>', pin: true, creado: Date.now(), actualizado: Date.now(), synced: false }
+    { id: 'ej1', titulo: 'Documento de Ejemplo', contenido: '<p>Este es un documento de ejemplo. <b>Prueba a editar el texto</b> y usar las herramientas de la barra superior para darle estilo.</p>', "contenidoMD": 'Este es un documento de ejemplo. Prueba a editar el texto y usar las herramientas de la barra superior para darle estilo.', tags: '', pin: true, creado: Date.now(), actualizado: Date.now(), synced: false }
   ];
 
   const ls = {
@@ -356,8 +416,12 @@ import { app } from '../wii.js';
   };
 
   const cleanup = () => {
-    clearInterval(metaTimer);
-    metaTimer = null;
+    clearTimeout(saveTimer);
+    saveTimer = null;
+    if (channel) {
+      supabase.removeChannel(channel);
+      channel = null;
+    }
     eventListeners.forEach(({ target, type, handler }) => {
       target.removeEventListener(type, handler);
     });
@@ -365,6 +429,45 @@ import { app } from '../wii.js';
     docs = [];
     act = null;
     savedRange = null;
+  };
+
+  const _status = (ok: boolean, txt?: string) => {
+    const dot = document.querySelector('.wd_dot');
+    const dotxt = document.querySelector('.wd_dotxt');
+    if (dot && dotxt) {
+      dot.className = `wd_dot ${ok ? 'active' : 'error'}`;
+      dotxt.textContent = txt || (ok ? 'Online' : 'Offline');
+    }
+  };
+
+  // Convertidor simple de HTML a Markdown
+  const htmlToMd = (html: string) => {
+    if (!html) return '';
+    let md = html;
+    md = md
+      .replace(/<h1[^>]*>(.*?)<\/h1>/gim, '# $1\n')
+      .replace(/<h2[^>]*>(.*?)<\/h2>/gim, '## $1\n')
+      .replace(/<h3[^>]*>(.*?)<\/h3>/gim, '### $1\n')
+      .replace(/<strong[^>]*>(.*?)<\/strong>/gim, '**$1**')
+      .replace(/<b[^>]*>(.*?)<\/b>/gim, '**$1**')
+      .replace(/<em[^>]*>(.*?)<\/em>/gim, '*$1*')
+      .replace(/<i[^>]*>(.*?)<\/i>/gim, '*$1*')
+      .replace(/<del[^>]*>(.*?)<\/del>/gim, '~~$1~~')
+      .replace(/<strike[^>]*>(.*?)<\/strike>/gim, '~~$1~~')
+      .replace(/<s[^>]*>(.*?)<\/s>/gim, '~~$1~~')
+      .replace(/<li[^>]*>(.*?)<\/li>/gim, '- $1\n')
+      .replace(/<p[^>]*>(.*?)<\/p>/gim, '$1\n\n')
+      .replace(/<br\s*\/?>/gim, '\n')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#039;/g, "'");
+
+    // Quitar cualquier etiqueta HTML restante
+    md = md.replace(/<[^>]*>/g, '');
+    return md.trim();
   };
 
   // ── SUPABASE CLOUD WRITES ──
@@ -375,11 +478,13 @@ import { app } from '../wii.js';
 
       const { error } = await supabase.from('word').insert({
         id: d.id,
-        userId: user.id,
+        "userId": user.id,
         usuario,
         email,
         titulo: String(d.titulo || ''),
         contenido: String(d.contenido || ''),
+        "contenidoMD": String(d.contenidoMD || ''),
+        tags: String(d.tags || ''),
         pin: !!d.pin,
         creado: new Date().toISOString(),
         actualizado: new Date().toISOString()
@@ -396,6 +501,8 @@ import { app } from '../wii.js';
       const { error } = await supabase.from('word').update({
         titulo: String(d.titulo || ''),
         contenido: String(d.contenido || ''),
+        "contenidoMD": String(d.contenidoMD || ''),
+        tags: String(d.tags || ''),
         pin: !!d.pin,
         actualizado: new Date().toISOString()
       }).eq('id', d.id);
@@ -429,7 +536,10 @@ import { app } from '../wii.js';
         id: x.id,
         titulo: x.titulo || '',
         contenido: x.contenido || '',
+        "contenidoMD": x.contenidoMD || '',
+        tags: x.tags || '',
         pin: !!x.pin,
+        archivado: !!x.archivado,
         creado: x.creado ? new Date(x.creado).getTime() : Date.now(),
         actualizado: x.actualizado ? new Date(x.actualizado).getTime() : Date.now(),
         synced: true
@@ -458,6 +568,7 @@ import { app } from '../wii.js';
           <h4>${titulo}</h4>
           <div class="wd_doc_acts">
             <button class="wd_act_pin${d.pin ? ' active' : ''}" data-id="${d.id}" data-witip="${d.pin ? 'Desanclar' : 'Fijar'}"><i class="fas fa-thumbtack"></i></button>
+            <button class="wd_act_del" data-id="${d.id}" data-witip="Eliminar Documento"><i class="fas fa-trash-can"></i></button>
             <i class="fas ${d.synced ? 'fa-cloud wd_cloud_ok' : 'fa-cloud-arrow-up wd_cloud_pen'}" data-witip="${d.synced ? 'En nube' : 'Local'}"></i>
           </div>
         </div>
@@ -479,6 +590,7 @@ import { app } from '../wii.js';
         ? lista.map((d: any) => tplListItem(d, act?.id)).join('') 
         : '<div class="wd_empty">No tienes documentos. Crea uno nuevo.</div>';
       await wiFade('#wd_sb_list', html, 80);
+      wiTip(); // Registrar tooltips de los nuevos elementos
     }
   };
 
@@ -505,15 +617,6 @@ import { app } from '../wii.js';
     if (mUpd) mUpd.textContent = formatearFechaHora(d.actualizado);
   };
 
-  const startMetaTimer = (d: any) => {
-    clearInterval(metaTimer);
-    if (!d) return;
-    metaTimer = setInterval(() => {
-      const mRel = document.querySelector('#wd_meta_rel span');
-      if (mRel) mRel.textContent = wiTiempo(d.actualizado || d.creado);
-    }, 60000);
-  };
-
   const cargarDocUI = (d: any) => {
     act = d;
     const tit = document.getElementById('wd_in_tit') as HTMLInputElement;
@@ -522,12 +625,11 @@ import { app } from '../wii.js';
     if (edit) edit.innerHTML = d.contenido || '';
     renderLista();
     updateMeta(d);
-    startMetaTimer(d);
   };
 
   const crearNuevo = (email: string) => {
     docs = docs.filter(n => !n.id.startsWith('ej')); // Limpiar DEMO
-    const n = { id: uid(), titulo: '', contenido: '', pin: false, creado: Date.now(), actualizado: Date.now(), synced: false };
+    const n = { id: uid(), titulo: '', contenido: '', "contenidoMD": '', tags: '', pin: false, creado: Date.now(), actualizado: Date.now(), synced: false };
     docs.unshift(n);
     ls.set(docs);
     cargarDocUI(n);
@@ -547,6 +649,7 @@ import { app } from '../wii.js';
     
     act.titulo = tit?.value.trim() || '';
     act.contenido = edit?.innerHTML || '';
+    act.contenidoMD = htmlToMd(act.contenido);
     act.actualizado = Date.now();
     ls.set(docs);
     
@@ -560,10 +663,75 @@ import { app } from '../wii.js';
       const p = item.querySelector('p');
       if (p) p.textContent = txt.length > 50 ? txt.substring(0, 50) + '...' : (txt || 'Sin contenido...');
       
-      const cloud = item.querySelector('.wd_cloud_ok');
+      const cloud = item.querySelector('.wd_doc_acts i');
       if (cloud) {
         cloud.className = 'fas fa-cloud-arrow-up wd_cloud_pen';
         cloud.setAttribute('data-witip', 'Local (Cambios sin guardar)');
+      }
+    }
+  };
+
+  const _debounceGuardar = () => {
+    if (!act) return;
+
+    // Cambiar estado visual del ícono de nube a cargando/sincronizando
+    const item = document.querySelector(`#wd_sb_list .wd_doc_item[data-id="${act.id}"]`);
+    if (item) {
+      const cloud = item.querySelector('.wd_doc_acts i');
+      if (cloud) {
+        cloud.className = 'fas fa-spinner fa-spin wd_cloud_pen';
+        cloud.setAttribute('data-witip', 'Guardando en segundo plano...');
+      }
+    }
+
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async () => {
+      await autosaveDoc();
+    }, DEBOUNCE);
+  };
+
+  const autosaveDoc = async () => {
+    if (!act) return;
+    const tit = document.getElementById('wd_in_tit') as HTMLInputElement;
+    const edit = document.getElementById('wd_editor');
+    
+    const tituloVal = tit?.value.trim() || '';
+    const contenidoVal = edit?.innerHTML || '';
+    const mdVal = htmlToMd(contenidoVal);
+
+    // Guardado en la nube
+    try {
+      if (act.synced) {
+        await actualizarNube(act, emailAct, userAct);
+      } else {
+        await guardarNube(act, emailAct, userAct);
+        act.synced = true;
+        ls.set(docs);
+      }
+
+      _status(true);
+      Notificacion('Documento guardado', 'success', 1000);
+      
+      // Actualizar ícono de la nube a exitoso
+      const item = document.querySelector(`#wd_sb_list .wd_doc_item[data-id="${act.id}"]`);
+      if (item) {
+        const cloud = item.querySelector('.wd_doc_acts i');
+        if (cloud) {
+          cloud.className = 'fas fa-cloud wd_cloud_ok';
+          cloud.setAttribute('data-witip', 'Guardado en la nube');
+        }
+      }
+      updateMeta(act);
+    } catch (err) {
+      console.error(err);
+      _status(false, 'Offline');
+      const item = document.querySelector(`#wd_sb_list .wd_doc_item[data-id="${act.id}"]`);
+      if (item) {
+        const cloud = item.querySelector('.wd_doc_acts i');
+        if (cloud) {
+          cloud.className = 'fas fa-cloud-arrow-up wd_cloud_pen';
+          cloud.setAttribute('data-witip', 'Local (Error de red)');
+        }
       }
     }
   };
@@ -619,17 +787,17 @@ import { app } from '../wii.js';
     if (btnRefresh) {
       listen(btnRefresh, 'click', async () => {
         const icon = btnRefresh.querySelector('i');
-        if (icon?.classList.contains('wd_spin')) return;
-        icon?.classList.add('wd_spin');
+        if (icon?.classList.contains('fa-spin')) return;
+        icon?.classList.add('fa-spin');
 
         const remotos = await cargarNube(email);
         if (remotos) {
           docs = remotos;
           ls.set(docs);
           if (docs.length) cargarDocUI(sorted()[0]); else crearNuevo(email);
-          Notificacion('Sincronizado ✓', 'success');
+          Notificacion('Sincronizado', 'success');
         }
-        icon?.classList.remove('wd_spin');
+        icon?.classList.remove('fa-spin');
       });
     }
 
@@ -647,9 +815,34 @@ import { app } from '../wii.js';
           const d = docs.find(x => x.id === docId);
           if (d) {
             d.pin = !d.pin;
+            d.actualizado = Date.now();
             ls.set(docs);
             renderLista();
-            if (d.synced) actualizarNube(d, email, usuario);
+            if (d.synced) {
+              _debounceGuardar();
+            }
+          }
+          return;
+        }
+
+        // Si da clic en eliminar
+        const del = target.closest('.wd_act_del') as HTMLElement;
+        if (del) {
+          e.stopPropagation();
+          const docId = del.dataset.id || '';
+          const d = docs.find(x => x.id === docId);
+          if (!d) return;
+          if (!confirm(`¿Eliminar "${d.titulo || 'Documento sin título'}" permanentemente?`)) return;
+
+          docs = docs.filter(x => x.id !== docId);
+          ls.set(docs);
+          if (d.synced) eliminarNube(docId);
+          Notificacion('Documento eliminado', 'info');
+
+          if (act && act.id === docId) {
+            docs.length ? cargarDocUI(sorted()[0]) : crearNuevo(emailAct);
+          } else {
+            renderLista();
           }
           return;
         }
@@ -659,69 +852,33 @@ import { app } from '../wii.js';
         const item = target.closest('.wd_doc_item') as HTMLElement;
         if (item) {
           const d = docs.find(x => x.id === item.dataset.id);
-          if (d && d.id !== act?.id) cargarDocUI(d);
+          if (d && d.id !== act?.id) {
+            // Guardar el anterior antes de cambiar
+            if (act) autosaveDoc();
+            cargarDocUI(d);
+          }
         }
       });
     }
 
-    const btnDelDoc = document.querySelector('.wd_btn_del_doc');
-    if (btnDelDoc) {
-      listen(btnDelDoc, 'click', () => {
-        if (!act || !confirm('¿Eliminar este documento permanentemente?')) return;
-        docs = docs.filter(x => x.id !== act.id);
-        ls.set(docs);
-        if (act.synced) eliminarNube(act.id);
-        Notificacion('Documento eliminado', 'success');
-        docs.length ? cargarDocUI(sorted()[0]) : crearNuevo(email);
-      });
-    }
-
-    const btnSave = document.getElementById('wd_btn_save');
-    if (btnSave) {
-      listen(btnSave, 'click', () => {
-        if (!act) return;
-        triggerSave();
-
-        const hasData = act.titulo || extraerTextoPlano(act.contenido).trim().length > 0;
-        if (hasData) {
-          const icon = btnSave.querySelector('i');
-          icon?.classList.remove('fa-save');
-          icon?.classList.add('fa-spinner', 'wd_spin');
-
-          const op = act.synced ? actualizarNube(act, email, usuario) : guardarNube(act, email, usuario);
-          op.then(() => {
-            act.synced = true;
-            act.actualizado = Date.now();
-            ls.set(docs);
-
-            const item = document.querySelector(`#wd_sb_list .wd_doc_item[data-id="${act.id}"]`);
-            const penCloud = item?.querySelector('.fa-cloud-arrow-up');
-            if (penCloud) {
-              penCloud.className = 'fas fa-cloud wd_cloud_ok';
-              penCloud.setAttribute('data-witip', 'En nube');
-            }
-
-            updateMeta(act);
-            icon?.classList.remove('fa-spinner', 'wd_spin');
-            icon?.classList.add('fa-save');
-            Notificacion('¡Guardado con éxito! ☁️', 'success');
-          }).catch(() => {
-            icon?.classList.remove('fa-spinner', 'wd_spin');
-            icon?.classList.add('fa-save');
-            Notificacion('Error al guardar en la nube', 'error');
-          });
-        } else {
-          Notificacion('Agrega un título o contenido primero', 'warning');
-        }
-      });
-    }
-
-    // Editor inputs
+    // Editor inputs (Autosave debounced)
     const editor = document.getElementById('wd_editor');
     if (editor) {
       listen(editor, 'input', () => {
         revisarTools();
         triggerSave();
+        _debounceGuardar();
+      });
+
+      listen(editor, 'keydown', (e: Event) => {
+        const keyEvent = e as KeyboardEvent;
+        if (keyEvent.key === 'Enter') {
+          setTimeout(async () => {
+            clearTimeout(saveTimer);
+            triggerSave();
+            await autosaveDoc();
+          }, 0);
+        }
       });
 
       listen(editor, 'mouseup', () => {
@@ -739,7 +896,10 @@ import { app } from '../wii.js';
 
     const titleInput = document.getElementById('wd_in_tit');
     if (titleInput) {
-      listen(titleInput, 'input', triggerSave);
+      listen(titleInput, 'input', () => {
+        triggerSave();
+        _debounceGuardar();
+      });
     }
 
     // Ribbon actions
@@ -750,6 +910,7 @@ import { app } from '../wii.js';
         document.execCommand(cmd, false);
         revisarTools();
         editor?.focus();
+        _debounceGuardar();
       });
     });
 
@@ -765,6 +926,7 @@ import { app } from '../wii.js';
         document.execCommand('fontName', false, (fFam as HTMLSelectElement).value);
         editor?.focus();
         triggerSave();
+        _debounceGuardar();
       });
     }
 
@@ -792,6 +954,7 @@ import { app } from '../wii.js';
 
         editor?.focus();
         triggerSave();
+        _debounceGuardar();
       });
     }
 
@@ -818,6 +981,7 @@ import { app } from '../wii.js';
         }
         editor?.focus();
         triggerSave();
+        _debounceGuardar();
       });
     }
 
@@ -826,6 +990,7 @@ import { app } from '../wii.js';
       listen(cTxt, 'input', () => {
         document.execCommand('foreColor', false, (cTxt as HTMLInputElement).value);
         editor?.focus();
+        _debounceGuardar();
       });
     }
 
@@ -834,6 +999,7 @@ import { app } from '../wii.js';
       listen(cBg, 'input', () => {
         document.execCommand('hiliteColor', false, (cBg as HTMLInputElement).value);
         editor?.focus();
+        _debounceGuardar();
       });
     }
   };
@@ -845,18 +1011,18 @@ import { app } from '../wii.js';
     const u = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
     if (!u) return;
 
-    const email = u.email;
-    const usuario = u.nombre || u.usuario || u.email;
+    emailAct = u.email;
+    userAct = u.nombre || u.usuario || u.email;
 
     // Mostrar botón de actualización
     const refreshBtn = document.getElementById('wd_btn_refresh');
     if (refreshBtn) refreshBtn.style.display = 'flex';
 
     // Saludo
-    const saludo = document.getElementById('wd_saludo');
-    if (saludo) saludo.textContent = `${Saludar()}${u.nombre || u.usuario}`;
+    const saludoSpan = document.querySelector('#wd_saludo span');
+    if (saludoSpan) saludoSpan.textContent = `${Saludar()}${u.nombre || u.usuario}`;
 
-    setupEvents(email, usuario);
+    setupEvents(emailAct, userAct);
 
     // Cargar caché local e inicializar
     docs = ls.get();
@@ -867,7 +1033,7 @@ import { app } from '../wii.js';
     }
 
     // Carga de la nube asíncrona
-    const remotos = await cargarNube(email);
+    const remotos = await cargarNube(emailAct);
     if (remotos) {
       docs = remotos;
       ls.set(docs);
@@ -876,8 +1042,85 @@ import { app } from '../wii.js';
     if (docs.length) {
       cargarDocUI(sorted()[0]);
     } else {
-      crearNuevo(email);
+      crearNuevo(emailAct);
     }
+
+    // Configurar Suscripción Realtime en Supabase
+    channel = supabase
+      .channel('realtime-word')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'word' },
+        (payload: any) => {
+          if (payload.eventType === 'INSERT') {
+            const d = payload.new;
+            if (d.email === emailAct && !docs.some(x => x.id === d.id)) {
+              docs.push({
+                id: d.id,
+                titulo: d.titulo || '',
+                contenido: d.contenido || '',
+                "contenidoMD": d.contenidoMD || '',
+                tags: d.tags || '',
+                pin: !!d.pin,
+                archivado: !!d.archivado,
+                creado: d.creado ? new Date(d.creado).getTime() : Date.now(),
+                actualizado: d.actualizado ? new Date(d.actualizado).getTime() : Date.now(),
+                synced: true
+              });
+              ls.set(docs);
+              renderLista();
+            }
+          } else if (payload.eventType === 'UPDATE') {
+            const d = payload.new;
+            if (d.email === emailAct) {
+              const idx = docs.findIndex(x => x.id === d.id);
+              if (idx !== -1) {
+                docs[idx] = {
+                  id: d.id,
+                  titulo: d.titulo || '',
+                  contenido: d.contenido || '',
+                  "contenidoMD": d.contenidoMD || '',
+                  tags: d.tags || '',
+                  pin: !!d.pin,
+                  archivado: !!d.archivado,
+                  creado: d.creado ? new Date(d.creado).getTime() : Date.now(),
+                  actualizado: d.actualizado ? new Date(d.actualizado).getTime() : Date.now(),
+                  synced: true
+                };
+                ls.set(docs);
+                renderLista();
+
+                // Si es el documento abierto, sincronizar sin interferir si está en foco
+                if (act && act.id === d.id) {
+                  const titInput = document.getElementById('wd_in_tit') as HTMLInputElement;
+                  const editorEl = document.getElementById('wd_editor');
+                  const isFocused = document.activeElement === titInput || document.activeElement === editorEl;
+                  if (!isFocused) {
+                    act = docs[idx];
+                    if (titInput) titInput.value = act.titulo || '';
+                    if (editorEl) editorEl.innerHTML = act.contenido || '';
+                    updateMeta(act);
+                  }
+                }
+              }
+            }
+          } else if (payload.eventType === 'DELETE') {
+            const d = payload.old;
+            if (docs.some(x => x.id === d.id)) {
+              docs = docs.filter(x => x.id !== d.id);
+              ls.set(docs);
+              renderLista();
+              if (act && act.id === d.id) {
+                if (docs.length) cargarDocUI(sorted()[0]); else crearNuevo(emailAct);
+              }
+            }
+          }
+        }
+      )
+      .subscribe((status: string) => {
+        _status(status === 'SUBSCRIBED');
+      });
+    wiTip();
   };
 
   document.addEventListener('astro:page-load', initDashboard);

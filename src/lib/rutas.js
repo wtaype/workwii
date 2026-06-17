@@ -25,7 +25,7 @@ export const NAV_CONFIG = {
     ],
     right: [
       { href: '/ser-editor', ico: 'fa-user-pen', txt: 'Ser Editor' },
-      { href: '/plan', ico: 'fa-rocket', txt: 'Planificar' },
+      { href: '/word', ico: 'fa-file-word', txt: 'Documentos' },
       { href: '/notas', ico: 'fa-note-sticky', txt: 'Notas' },
       { href: '/mensajes', ico: 'fa-comments', txt: 'Mensajes' },
       { isPerfil: true }, { isSalir: true }
@@ -103,7 +103,7 @@ export function rutaRoles() {
   // Asegurar que las herramientas comunes de candidatos estén accesibles para todos los roles logueados
   const allRoles = ['usuario', 'editor', 'gestor', 'admin'];
   roles['/smile'] = allRoles;
-  roles['/plan'] = allRoles;
+  roles['/word'] = allRoles;
   roles['/notas'] = allRoles;
   roles['/mensajes'] = allRoles;
   roles['/perfil'] = allRoles;
