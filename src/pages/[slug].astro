@@ -932,12 +932,16 @@ const keywords = seoMeta.keywords || '';
 </Layout>
 
 <script>
-  import { supabase } from '../lib/supabase.js';
-  import { wicopy, showi, herowi, wiImgs } from '../lib/widev.js';
+  import { wicopy, showi, herowi, wiImgs, wiSmart } from '../lib/widev.js';
 
   let scrollListener: any = null;
   let handleYtClickRef: any = null;
   let realtimeChannel: any = null;
+
+  const getSupabase = async () => {
+    const { supabase } = await import('../lib/supabase.js');
+    return supabase;
+  };
 
   const initPost = () => {
     const postEl = document.querySelector('.po_wrap') as HTMLElement;
@@ -950,13 +954,7 @@ const keywords = seoMeta.keywords || '';
     const postId = postEl.dataset.id;
     if (!slug) return;
 
-    // 1. Aumentar vistas (solo una vez por sesión del navegador)
-    if (!sessionStorage.getItem(`wi_view_${slug}`)) {
-      sessionStorage.setItem(`wi_view_${slug}`, '1');
-      supabase.rpc('incrementar_vistas_blog', { post_slug: slug }).then(({ error }) => {
-        if (error) console.error('Error al incrementar vistas:', error);
-      });
-    }
+
 
     // 2. Controlar la barra de progreso al hacer scroll
     const progress = document.getElementById('po_progress');
@@ -987,8 +985,10 @@ const keywords = seoMeta.keywords || '';
           el.textContent = String((parseInt(el.textContent || '0') || 0) + 1);
         });
 
-        supabase.rpc('incrementar_likes_blog', { post_slug: slug }).then(({ error }) => {
-          if (error) console.error('Error al incrementar likes:', error);
+        getSupabase().then(db => {
+          db.rpc('incrementar_likes_blog', { post_slug: slug }).then(({ error }) => {
+            if (error) console.error('Error al incrementar likes:', error);
+          });
         });
       });
     });
@@ -1042,66 +1042,71 @@ const keywords = seoMeta.keywords || '';
     };
     document.addEventListener('click', handleYtClickRef);
 
-    // 7. Conexión diferida y pasiva a Supabase Realtime (WebSockets)
-    if (postId) {
-      const startRealtime = () => {
-        // Consultar valores de la base de datos al montarse para sincronizar con la verdad absoluta
-        supabase
-          .from('blog')
-          .select('likes, vistas')
-          .eq('id', postId)
-          .maybeSingle()
-          .then(({ data }) => {
-            if (data) {
-              if (typeof data.likes === 'number') {
-                document.querySelectorAll('.po_likes_count_text').forEach(el => {
-                  el.textContent = String(data.likes);
-                });
-              }
-              if (typeof data.vistas === 'number') {
-                document.querySelectorAll('.po_vistas_count_text').forEach(el => {
-                  el.textContent = String(data.vistas);
-                });
-              }
-            }
-          });
+    // 6. Carga inteligente con wiSmart para vistas, estadísticas y realtime
+    wiSmart({
+      fn: [
+        async () => {
+          const db = await getSupabase();
 
-        // Suscribirse al canal WebSocket filtrando por el ID de este post
-        realtimeChannel = supabase
-          .channel(`stats_realtime_${postId}`)
-          .on(
-            'postgres_changes',
-            {
-              event: 'UPDATE',
-              schema: 'public',
-              table: 'blog',
-              filter: `id=eq.${postId}`,
-            },
-            (payload: any) => {
-              const { likes: nuevosLikes, vistas: nuevasVistas } = payload.new;
-              if (typeof nuevosLikes === 'number') {
-                document.querySelectorAll('.po_likes_count_text').forEach(el => {
-                  el.textContent = String(nuevosLikes);
-                });
-              }
-              if (typeof nuevasVistas === 'number') {
-                document.querySelectorAll('.po_vistas_count_text').forEach(el => {
-                  el.textContent = String(nuevasVistas);
-                });
-              }
-            }
-          )
-          .subscribe();
-      };
+          // Aumentar vistas (solo una vez por sesión del navegador)
+          if (!sessionStorage.getItem(`wi_view_${slug}`)) {
+            sessionStorage.setItem(`wi_view_${slug}`, '1');
+            db.rpc('incrementar_vistas_blog', { post_slug: slug }).then(({ error }) => {
+              if (error) console.error('Error al incrementar vistas:', error);
+            });
+          }
 
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => startRealtime());
-      } else {
-        setTimeout(startRealtime, 1500);
-      }
-    }
+          // Conexión pasiva a Supabase Realtime y estadísticas
+          if (postId) {
+            db.from('blog')
+              .select('likes, vistas')
+              .eq('id', postId)
+              .maybeSingle()
+              .then(({ data }) => {
+                if (data) {
+                  if (typeof data.likes === 'number') {
+                    document.querySelectorAll('.po_likes_count_text').forEach(el => {
+                      el.textContent = String(data.likes);
+                    });
+                  }
+                  if (typeof data.vistas === 'number') {
+                    document.querySelectorAll('.po_vistas_count_text').forEach(el => {
+                      el.textContent = String(data.vistas);
+                    });
+                  }
+                }
+              });
 
-    // 8. Lanzar efectos de entrada
+            realtimeChannel = db.channel(`stats_realtime_${postId}`)
+              .on(
+                'postgres_changes',
+                {
+                  event: 'UPDATE',
+                  schema: 'public',
+                  table: 'blog',
+                  filter: `id=eq.${postId}`,
+                },
+                (payload: any) => {
+                  const { likes: nuevosLikes, vistas: nuevasVistas } = payload.new;
+                  if (typeof nuevosLikes === 'number') {
+                    document.querySelectorAll('.po_likes_count_text').forEach(el => {
+                      el.textContent = String(nuevosLikes);
+                    });
+                  }
+                  if (typeof nuevasVistas === 'number') {
+                    document.querySelectorAll('.po_vistas_count_text').forEach(el => {
+                      el.textContent = String(nuevasVistas);
+                    });
+                  }
+                }
+              )
+              .subscribe();
+          }
+        }
+      ]
+    });
+
+    // 7. Lanzar efectos de entrada
     if (typeof herowi === 'function') herowi();
     if (typeof showi === 'function') showi();
   };
@@ -1116,8 +1121,10 @@ const keywords = seoMeta.keywords || '';
       handleYtClickRef = null;
     }
     if (realtimeChannel) {
-      supabase.removeChannel(realtimeChannel);
-      realtimeChannel = null;
+      getSupabase().then(db => {
+        db.removeChannel(realtimeChannel);
+        realtimeChannel = null;
+      });
     }
   };
 
