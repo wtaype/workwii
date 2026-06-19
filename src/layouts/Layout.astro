@@ -1,11 +1,12 @@
 ---
 import { ClientRouter } from 'astro:transitions';
-import { app, titulo, descri, keywii, linkweb, by, linkme}  from '../wii.js';
+import { app, titulo, descri, keywii, linkweb, by, linkme, dtema }  from '../wii.js';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { rutaRoles } from '../lib/rutas.js';
 
 const ROUTE_ROLES = rutaRoles();
+const wtema = dtema;
 
 interface Props {
   name?: string;
@@ -112,7 +113,7 @@ const seoSchema = {
     <ClientRouter />
 
     <!-- Aplicación del tema síncrona inmediata para evitar parpadeo blanco (flash) -->
-    <script is:inline>(() => { const a = () => { try { let t = localStorage.wiTema; try { const u = JSON.parse(localStorage.getItem('wiSmile') || '{}').value; if (u?.tema) t = u.tema; } catch (_) {} const [n, c] = (t || 'Oro|#FFC107').split('|'); document.documentElement.dataset.theme = n; (document.querySelector('meta[name="theme-color"]') || document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'theme-color' }))).content = c; } catch (e) {} }; a(); document.addEventListener('astro:after-swap', a); })();</script>
+    <script is:inline define:vars={{ wtema }}>(() => { window.wtema = wtema; const a = () => { try { let t = localStorage.wiTema; try { const u = JSON.parse(localStorage.getItem('wiSmile') || '{}').value; if (u?.tema) t = u.tema; } catch (_) {} const [n, c] = (t || wtema).split('|'); document.documentElement.dataset.theme = n; (document.querySelector('meta[name="theme-color"]') || document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'theme-color' }))).content = c; } catch (e) {} }; a(); document.addEventListener('astro:after-swap', a); })();</script>
 
     <!-- Guardia Unificada de Rutas (Seguridad y Rendimiento) -->
     <script is:inline define:vars={{ ROUTE_ROLES }}>(() => { const c = (p) => { const a = p.replace(/\/$/, '') || '/'; const r = ROUTE_ROLES.roles[a]; if (!r) return 1; try { const u = JSON.parse(localStorage.getItem('wiSmile') || '{}').value; if (u && r.includes(u.rol)) { return ROUTE_ROLES.require2FA.includes(a) && sessionStorage.getItem('vault_unlocked') !== 'true' ? '/verificar' : 1; } } catch (e) {} return 0; }; const h = (p, e) => { const r = c(p); if (r !== 1) { if (e) e.preventDefault(); window.location.replace(r || '/'); } }; h(window.location.pathname); document.addEventListener('astro:before-preparation', (e) => h(e.to.pathname, e)); })();</script>
@@ -159,15 +160,15 @@ const seoSchema = {
 
       --white: #fff;
       --offline: #ddd;
-      --Cielo: #0EBEFF;
-      --Dulce: #FF5C69;
-      --Paz: #29C72E;
-      --Oro: #FFDA34;
-      --Mora: #7000FF;
-      --Futuro: #21273B;
+      --cielo: #0EBEFF;
+      --dulce: #FF5C69;
+      --paz: #29C72E;
+      --oro: #FFDA34;
+      --mora: #7000FF;
+      --futuro: #21273B;
     }
 
-    :root[data-theme="Cielo"] {
+    :root[data-theme="cielo"] {
       --bg: #ccefff;
       --wb: #e5f7ff;
       --tx: #000;
@@ -193,7 +194,7 @@ const seoSchema = {
       --bt: #1978d7;
     }
 
-    :root[data-theme="Dulce"] {
+    :root[data-theme="dulce"] {
       --bg: #ffccd1;
       --wb: #ffebed;
       --tx: #000;
@@ -219,7 +220,7 @@ const seoSchema = {
       --bt: #ff3849;
     }
 
-    :root[data-theme="Paz"] {
+    :root[data-theme="paz"] {
       --bg: #ccffce;
       --wb: #ebffeb;
       --tx: #000;
@@ -245,7 +246,7 @@ const seoSchema = {
       --bt: #25b62a;
     }
 
-    :root[data-theme="Oro"] {
+    :root[data-theme="oro"] {
       --bg: #fff8d1;
       --wb: #fffde8;
       --tx: #000;
@@ -271,7 +272,7 @@ const seoSchema = {
       --bt: #FFDA34;
     }
 
-    :root[data-theme="Mora"] {
+    :root[data-theme="mora"] {
       --bg: #e4ccff;
       --wb: #f4ebff;
       --tx: #000;
@@ -297,7 +298,7 @@ const seoSchema = {
       --bt: #6a00f5;
     }
 
-    :root[data-theme="Futuro"] {
+    :root[data-theme="futuro"] {
       --bg: #0a0e1a;
       --wb: #151b2e;
       --tx: #e0e7ff;
@@ -587,28 +588,28 @@ const seoSchema = {
       top: 0
     }
 
-    .tema[data-ths^="Cielo"] {
-      background: var(--Cielo)
+    .tema[data-ths^="cielo"] {
+      background: var(--cielo)
     }
 
-    .tema[data-ths^="Dulce"] {
-      background: var(--Dulce)
+    .tema[data-ths^="dulce"] {
+      background: var(--dulce)
     }
 
-    .tema[data-ths^="Paz"] {
-      background: var(--Paz)
+    .tema[data-ths^="paz"] {
+      background: var(--paz)
     }
 
-    .tema[data-ths^="Mora"] {
-      background: var(--Mora)
+    .tema[data-ths^="mora"] {
+      background: var(--mora)
     }
 
-    .tema[data-ths^="Futuro"] {
-      background: var(--Futuro)
+    .tema[data-ths^="futuro"] {
+      background: var(--futuro)
     }
 
-    .tema[data-ths^="Oro"] {
-      background: var(--Oro)
+    .tema[data-ths^="oro"] {
+      background: var(--oro)
     }
 
     #wiTema:hover {
@@ -1351,24 +1352,25 @@ const seoSchema = {
     <Footer />
 
     <div id="wiTema">
-      <div class="tema" data-ths="Cielo|#0EBEFF"></div>
-      <div class="tema" data-ths="Dulce|#FF5C69"></div>
-      <div class="tema" data-ths="Paz|#29C72E"></div>
-      <div class="tema mtha" data-ths="Oro|#FFC107"></div>
-      <div class="tema" data-ths="Mora|#7000FF"></div>
-      <div class="tema" data-ths="Futuro|#21273B"></div>
+      <div class="tema" data-ths="cielo|#0EBEFF"></div>
+      <div class="tema" data-ths="dulce|#FF5C69"></div>
+      <div class="tema" data-ths="paz|#29C72E"></div>
+      <div class="tema mtha" data-ths="oro|#FFC107"></div>
+      <div class="tema" data-ths="mora|#7000FF"></div>
+      <div class="tema" data-ths="futuro|#21273B"></div>
     </div>
 
     <!-- Script Interactivo de Selección de Temas (Optimizado al final del Body) -->
     <script>
       import { wiSmart } from '../lib/widev.js';
+      import { dtema } from '../wii.js';
       wiSmart({ css: ['https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap'] });
 
       const getTheme = () => {
         try {
           const u = JSON.parse(localStorage.getItem('wiSmile') || '{}').value;
-          return u?.tema || localStorage.wiTema || 'Oro|#FFC107';
-        } catch { return localStorage.wiTema || 'Oro|#FFC107'; }
+          return u?.tema || localStorage.wiTema || dtema;
+        } catch { return localStorage.wiTema || dtema; }
       };
 
       const applyTheme = (ths: string) => {

@@ -1,7 +1,7 @@
 import './login.css';
 import { supabase } from './supabase.js';
 import { wiTip, Mensaje, savels, getls, wiSpin, wiAuth, abrirModal, cerrarTodos, wiRateLimit } from './widev.js';
-import { app } from '../wii.js';
+import { app, dtema } from '../wii.js';
 
 // ── CONFIG ───────────────────────────────────────────────────────────────────
 let rolPublico = 'usuario';
@@ -372,7 +372,7 @@ if (typeof window !== 'undefined') {
             estado: 'activo',
             terminos: true,
             terminosFecha: new Date().toISOString(),
-            tema: localStorage.wiTema || 'Oro|#FFC107',
+            tema: localStorage.wiTema || dtema,
             avatar: user.user_metadata?.avatar_url || avatarMain,
             plan: 'free',
             segmento: 'general',
@@ -466,7 +466,7 @@ if (typeof window !== 'undefined') {
             estado: 'activo',
             terminos: true,
             terminosFecha: new Date().toISOString(),
-            tema: localStorage.wiTema || 'Oro|#FFC107',
+            tema: localStorage.wiTema || dtema,
             avatar: avatarMain,
             plan: 'free',
             segmento: 'general',
