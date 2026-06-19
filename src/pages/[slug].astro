@@ -79,8 +79,15 @@ if (modifiedContenido) {
     return `<i class="${classes} ${colorClass}"></i>`;
   });
 
-  // 4. Inyección automática de Lazy Loading y Async Decoding en imágenes de contenido
-  modifiedContenido = modifiedContenido.replace(/<img\s+(?!([^>]*?\bloading\b))([^>]*?)>/gi, '<img loading="lazy" decoding="async" $1$2>');
+  // 4. Inyección automática de wiImgs (Skeletons y Carga diferida) en imágenes de contenido
+  modifiedContenido = modifiedContenido.replace(/<img\s+([^>]*?)src=(['"])(.*?)\2([^>]*?)>/gi, (match: string, before: string, quote: string, src: string, after: string) => {
+    const rest = (before + ' ' + after).trim();
+    if (rest.includes('class=')) {
+      return `<img data-src="${src}" ${rest.replace(/class=(['"])(.*?)\1/gi, 'class=$1$2 wi_skeleton img_fade$1')}>`;
+    } else {
+      return `<img data-src="${src}" class="wi_skeleton img_fade" ${rest}>`;
+    }
+  });
 
   // 5. Procesamiento de encabezados (TOC)
   let headingCount = 0;
@@ -926,7 +933,7 @@ const keywords = seoMeta.keywords || '';
 
 <script>
   import { supabase } from '../lib/supabase.js';
-  import { wicopy, showi, herowi } from '../lib/widev.js';
+  import { wicopy, showi, herowi, wiImgs } from '../lib/widev.js';
 
   let scrollListener: any = null;
   let handleYtClickRef: any = null;
@@ -935,6 +942,9 @@ const keywords = seoMeta.keywords || '';
   const initPost = () => {
     const postEl = document.querySelector('.po_wrap') as HTMLElement;
     if (!postEl) return;
+
+    // Inicializar lazy loading de imágenes
+    wiImgs('.po_wrap');
 
     const slug = postEl.dataset.slug;
     const postId = postEl.dataset.id;

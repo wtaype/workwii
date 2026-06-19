@@ -6,21 +6,6 @@ import { seo } from '../lib/seo.js';
 ---
 
 <style is:global>
-/* =====================================================
-   BLOG.CSS — Workwii · Lista de historias
-   1.  Skeleton & shimmer
-   2.  Fade entrada
-   3.  Wrap
-   4.  Hero
-   5.  Search bar
-   6.  Barra sticky
-   7.  Result bar
-   8.  Grid de cards
-   9.  Card — imagen & overlay
-   10. Card — body & footer
-   11. Ver más & Sin resultados
-   12. Responsive
- ===================================================== */
 
 /* ── 1. SKELETON ─────────────────────────────────── */
 @keyframes shimmer {
@@ -408,7 +393,7 @@ import { seo } from '../lib/seo.js';
 
 <script>
   import { supabase } from '../lib/supabase.js';
-  import { savels, getls, Notificacion } from '../lib/widev.js';
+  import { savels, getls, Notificacion, wiImgs } from '../lib/widev.js';
 
   const PAG_INI = 16, PAG_MAS = 8;
   
@@ -452,7 +437,7 @@ import { seo } from '../lib/seo.js';
     return `
       <a href="/${p.slug || p.id}" class="bl_card">
         <div class="bl_card_img">
-          <img src="${p.imagen || 'https://placehold.co/600x400?text=📖'}" alt="${p.imagenAlt || p.titulo}" loading="lazy" onerror="this.src='https://placehold.co/600x400?text=📖'"/>
+          <img data-src="${p.imagen || '/poster.webp'}" alt="${p.imagenAlt || p.titulo}" class="wi_skeleton img_fade" />
           <div class="bl_card_over">
             <span class="bl_card_cat" style="--cc:${c.color}"><i class="fas ${c.icon}"></i> ${p.categoria || '—'}</span>
             ${p.pin ? `<span class="bl_card_dest" data-witip="Destacada"><i class="fas fa-thumbtack"></i></span>` : ''}
@@ -612,6 +597,7 @@ import { seo } from '../lib/seo.js';
     if (typeof (window as any).herowi === 'function') {
       (window as any).herowi();
     }
+    wiImgs('#bl_grid');
     
     if (masWrapEl) {
       masWrapEl.style.display = (newItems.length && newItems !== lista) ? 'none' : (hasMore ? 'flex' : 'none');

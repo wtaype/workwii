@@ -598,7 +598,7 @@ try {
             const formattedDate = p.creado ? new Date(p.creado).toLocaleDateString('es-PE', { day:'numeric', month:'short', year:'numeric' }) : '';
             return (
               <a href={`/${p.slug || p.id || ''}`} class="ib_card">
-                <div class="ib_img" style={`background-image:url('${p.imagen || '/poster.webp'}')`}>
+                <div class="ib_img wi_skeleton" data-bg={p.imagen || '/poster.webp'}>
                   <span class="ib_cat" style={`background:color-mix(in srgb,${c} 20%,transparent);color:${c}`}>{p.categoria || 'Blog'}</span>
                 </div>
                 <div class="ib_body">
@@ -691,7 +691,7 @@ try {
 </Layout>
 
 <script>
-  import { herowi } from '../lib/widev.js';
+  import { herowi, wiImgs } from '../lib/widev.js';
 
   /** @type {ReturnType<typeof setInterval>|null} */
   let roleInterval: any = null;
@@ -741,6 +741,7 @@ try {
     }
 
     herowi();
+    wiImgs('#sec_blog');
   };
 
   document.addEventListener('astro:page-load', init);
