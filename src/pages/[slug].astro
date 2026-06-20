@@ -788,23 +788,45 @@ const keywords = seoMeta.keywords || '';
             const db = await getDb();
             if (isPostCleanedUp) return;
 
-            // Vistas: solo 1x por sesión (sessionStorage no persiste entre sesiones)
-            if (!sessionStorage.getItem(`wi_view_${slug}`)) {
-              sessionStorage.setItem(`wi_view_${slug}`, '1');
-              db.rpc('incrementar_vistas_blog', { post_slug: slug });
+            const viewMarkKey = `wi_view_${slug}`;
+            let viewIncremented = false;
+
+            // 1. Registro de vistas único usando localStorage (1 hora de expiración para mayor libertad)
+            if (!getls(viewMarkKey)) {
+              savels(viewMarkKey, '1', 1); // Marca de 1 hora vistas
+              viewIncremented = true;
+
+              // Incremento optimista instantáneo en la UI para evitar congelamientos
+              const statsCached = getls(`wi_stats_${slug}`) || { vistas: 0, likes: 0 };
+              statsCached.vistas = (statsCached.vistas || 0) + 1;
+              savels(`wi_stats_${slug}`, statsCached, 1); // Guardar en cache stats 1h
+              
+              // Reflejar de inmediato en el DOM
+              document.querySelectorAll('.po_vistas_count_text').forEach((el: any) => {
+                el.textContent = String(statsCached.vistas);
+              });
             }
 
-            // Fetch stats reales desde Supabase
+            // 2. Si se incrementó la vista local, esperar que el rpc termine en Supabase
+            if (viewIncremented) {
+              await db.rpc('incrementar_vistas_blog', { post_slug: slug });
+            }
+
+            // 3. Consultar estadísticas reales desde Supabase (likes y vistas generales)
             if (postId) {
               const { data } = await db.from('blog').select('likes, vistas').eq('id', postId).maybeSingle();
               if (isPostCleanedUp) return;
               if (data) {
+                // Sincronizar: elegir el número mayor entre base de datos y nuestro optimista local
+                const localStats = getls(`wi_stats_${slug}`) || { vistas: 0 };
+                const finalVistas = Math.max(data.vistas, localStats.vistas || 0);
+
                 document.querySelectorAll('.po_likes_count_text').forEach((el: any)  => el.textContent = String(data.likes));
-                document.querySelectorAll('.po_vistas_count_text').forEach((el: any) => el.textContent = String(data.vistas));
-                savels(`wi_stats_${slug}`, { likes: data.likes, vistas: data.vistas }, 1);
+                document.querySelectorAll('.po_vistas_count_text').forEach((el: any) => el.textContent = String(finalVistas));
+                savels(`wi_stats_${slug}`, { likes: data.likes, vistas: finalVistas }, 1);
               }
 
-              // Realtime WebSocket — actualizaciones tipo Facebook
+              // 4. Realtime WebSocket — actualizaciones instantáneas concurrentes (tipo Facebook)
               if (isPostCleanedUp) return;
               realtimeChannel = db.channel(`stats_${postId}`)
                 .on('postgres_changes', {
@@ -819,7 +841,6 @@ const keywords = seoMeta.keywords || '';
                 })
                 .subscribe();
 
-              // Si se limpió mientras nos suscribíamos, remover inmediatamente
               if (isPostCleanedUp && realtimeChannel) {
                 db.removeChannel(realtimeChannel);
                 realtimeChannel = null;
