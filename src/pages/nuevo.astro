@@ -1,9 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { app } from '../wii.js';
+import { app, id } from '../wii.js';
 ---
 
 <style is:global>
+@import "../lib/blog/post.css";
 
 /* ── 1. WRAP & HEAD ──────────────────────────────── */
 .nu_wrap {
@@ -55,7 +56,7 @@ import { app } from '../wii.js';
   box-shadow: 0 4px 12px rgba(0,0,0,.02);
   display: flex;
   flex-direction: column;
-  gap: 0.8vh;
+  gap: 0;
 }
 .nu_card_title {
   font-size: var(--fz_m2);
@@ -65,7 +66,6 @@ import { app } from '../wii.js';
   align-items: center;
   gap: 0.6vh;
   padding-bottom: 0.8vh;
-  border-bottom: 1px solid var(--brd);
   margin-bottom: 0.4vh;
 }
 .nu_card_title i { color: var(--mco); }
@@ -79,7 +79,6 @@ import { app } from '../wii.js';
   justify-content: space-between;
   align-items: center;
   padding-bottom: 0.8vh;
-  border-bottom: 1px solid var(--brd);
   margin-bottom: 0.4vh;
   flex-wrap: wrap;
   gap: 0.5vh;
@@ -163,8 +162,8 @@ import { app } from '../wii.js';
   border-radius: 0.7vh;
   overflow: hidden;
   transition: border-color var(--tr_f);
+  margin-top: 1.5vh;
 }
-.nu_slug_box:focus-within { border-color: var(--mco); box-shadow: 0 0 0 3px var(--bg4); }
 .nu_slug_label {
   display: flex;
   align-items: center;
@@ -208,6 +207,7 @@ import { app } from '../wii.js';
   min-height: 2vh;
   padding: 0 0.3vh;
   transition: all var(--tr_f);
+  margin-top: 0.5vh;
 }
 .nu_slug_status.ok { color: var(--success); }
 .nu_slug_status.err { color: var(--error); }
@@ -216,12 +216,40 @@ import { app } from '../wii.js';
 .nu_toolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4vh;
+  gap: 0.5vh;
   padding: 0.6vh;
   background: var(--bg4);
   border-radius: 0.6vh;
   border: 1px solid var(--brd);
+  margin-bottom: 1vh;
 }
+.nu_toolbar_grp {
+  display: flex;
+  gap: 0.4vh;
+}
+.nu_toolbar_grp.border_right {
+  border-right: 1px solid var(--brd);
+  padding-right: 0.6vh;
+  margin-right: 0.2vh;
+}
+.nu_toolbar_grp.border_left {
+  border-left: 1px solid var(--brd);
+  padding-left: 0.6vh;
+  margin-left: 0.2vh;
+}
+.nu_tool_h3_span {
+  font-size: 0.85em;
+  font-weight: bold;
+}
+.nu_tool .fa-briefcase { color: var(--mco); }
+.nu_tool .fa-lightbulb { color: #FFC107; }
+.nu_tool .fa-chart-line { color: #0edeFF; }
+.nu_tool .fa-user-tie { color: #e0a910; }
+.nu_tool .fa-heart { color: #fe0149; }
+.nu_tool .fa-star { color: #FFB636; }
+.nu_tool .fa-circle-check { color: #3cd741; }
+.nu_tool .fa-circle-xmark { color: #ff3849; }
+
 .nu_tool {
   width: 3.6vh;
   height: 3.6vh;
@@ -277,16 +305,20 @@ import { app } from '../wii.js';
   resize: vertical;
   border-radius: 0.6vh;
 }
-.nu_html_prev {
-  min-height: 36vh;
-  padding: 1.5vh 2vh;
-  background: var(--bg3);
-  border-radius: 0.8vh;
-  border: 1px solid var(--brd);
-  color: var(--tx);
-  line-height: 1.9;
-  font-size: var(--fz_m2);
-  overflow-y: auto;
+
+.nu_image_input_group {
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+  margin-bottom: 1.5vh;
+}
+.nu_image_input_group.no_margin {
+  margin-bottom: 0;
+}
+.nu_image_field_label {
+  font-size: var(--fz_s4);
+  color: var(--tx2);
+  font-weight: 600;
 }
 
 /* ── 7. IMAGEN DESTACADA ─────────────────────────── */
@@ -509,65 +541,13 @@ import { app } from '../wii.js';
 .nu_status_msg.warning { color: var(--warning); }
 .nu_status_msg.success { color: var(--success); }
 .nu_status_msg.error { color: var(--error); }
-
-/* ── 15. UTILIDADES DE CONTENIDO Y WPO ────────────── */
-.po_hr {
-  border: none;
-  border-top: 1px solid var(--brd);
-  margin: 2vh 0;
-}
-.po_todo_check {
-  margin-right: 0.5vh;
-}
-.po_yt_link {
-  color: var(--mco);
-  font-weight: 600;
-  text-underline-offset: 2px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6vh;
-}
-.po_yt_link:hover {
-  text-decoration: underline;
-}
-.po_ico_youtube {
-  color: #fe0149;
-  font-size: 1.15em;
-  margin-right: 2px;
-}
-.po_hero_img {
-  width: 100%;
-  aspect-ratio: 1180 / 425;
-  object-fit: cover;
-  display: block;
-  transition: transform .7s ease;
-}
-
-.nu_html_prev img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: auto 16 / 9;
-  object-fit: cover;
-  border-radius: 1.2vh;
-  margin: 2vh 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,.05);
-}
-
-/* Colores de Iconos Personalizados */
-.po_ico_red { color: #fe0149; }
-.po_ico_yellow { color: #FFB636; }
-.po_ico_green { color: #3cd741; }
-.po_ico_cyan { color: #0edeFF; }
-.po_ico_gold { color: #e0a910; }
-.po_ico_mco { color: var(--mco); }
-.po_ico_warning { color: var(--warning); }
 </style>
 
-<Layout title="Nueva historia" name={app} robots="noindex, nofollow">
+<Layout title="Nueva publicación" name={app} robots="noindex, nofollow">
   <div class="nu_wrap">
     <div class="nu_head">
       <div class="nu_head_left">
-        <h1 id="nu_main_title"><i class="fas fa-pen-fancy"></i> Nueva historia</h1>
+        <h1 id="nu_main_title"><i class="fas fa-laptop-code"></i> Nueva publicación</h1>
         <p id="nu_edit_info"></p>
       </div>
       <div class="nu_head_right">
@@ -587,16 +567,15 @@ import { app } from '../wii.js';
               <span id="nu_titulo_msg" class="nu_status_msg"></span>
               <span><span id="nu_titulo_cnt">0</span>/47</span>
             </div>
-            <div class="nu_slug_box" style="margin-top: 1.5vh;">
-              <span class="nu_slug_label"><i class="fas fa-link"></i> <span id="nu_domain_lbl">workwii.vercel.app/</span></span>
-              <input id="nu_slug_inp" type="text" placeholder="mi-historia" maxlength="32" spellcheck="false"/>
-              <button type="button" id="nu_slug_reset" class="nu_slug_btn" title="Regenerar"><i class="fas fa-rotate"></i></button>
+            <div class="nu_slug_box">
+              <span class="nu_slug_label"><i class="fas fa-link"></i> <span id="nu_domain_lbl">{id}.vercel.app/</span></span>
+              <input id="nu_slug_inp" type="text" placeholder="novedades-ia" maxlength="32" spellcheck="false"/>
             </div>
             <div class="nu_counter_box">
               <span id="nu_slug_msg" class="nu_status_msg"></span>
               <span><span id="nu_slug_cnt">0</span>/32</span>
             </div>
-            <div id="nu_slug_status" class="nu_slug_status" style="margin-top: 0.5vh;"></div>
+            <div id="nu_slug_status" class="nu_slug_status"></div>
           </div>
           
           <div class="nu_grid_seo">
@@ -610,7 +589,7 @@ import { app } from '../wii.js';
             </div>
             <div class="nu_card">
               <div class="nu_card_title"><i class="fas fa-search"></i> Palabras Clave (Meta Keywords)</div>
-              <textarea id="nu_keywords" rows="3" maxlength="100" placeholder="curriculum, cv, ats, entrevista, empleo, workwii..."></textarea>
+              <textarea id="nu_keywords" rows="3" maxlength="100" placeholder={`ia, programacion, javascript, python, frontend, ${id}...`}></textarea>
               <div class="nu_counter_box">
                 <span id="nu_keywords_msg" class="nu_status_msg"></span>
                 <span><span id="nu_keywords_cnt">0</span>/5 palabras clave</span>
@@ -626,40 +605,40 @@ import { app } from '../wii.js';
                 <button type="button" class="nu_tab" data-tab="prev"><i class="fas fa-eye"></i> Preview</button>
               </div>
             </div>
-            <div class="nu_toolbar" style="flex-wrap:wrap; display: flex; gap: 0.5vh; margin-bottom: 1vh;">
-              <div class="nu_toolbar_grp" style="display:flex;gap:0.4vh;border-right:1px solid var(--brd);padding-right:0.6vh;margin-right:0.2vh">
+            <div class="nu_toolbar">
+              <div class="nu_toolbar_grp border_right">
                 <button type="button" class="nu_tool" data-tag="**texto**" title="Negrita"><i class="fas fa-bold"></i></button>
                 <button type="button" class="nu_tool" data-tag="*texto*" title="Cursiva"><i class="fas fa-italic"></i></button>
                 <button type="button" class="nu_tool" data-tag="~~texto~~" title="Tachado"><i class="fas fa-strikethrough"></i></button>
               </div>
-              <div class="nu_toolbar_grp" style="display:flex;gap:0.4vh;border-right:1px solid var(--brd);padding-right:0.6vh;margin-right:0.2vh">
+              <div class="nu_toolbar_grp border_right">
                 <button type="button" class="nu_tool" data-tag="## Título H2" title="Subtítulo (H2)"><i class="fas fa-heading"></i></button>
-                <button type="button" class="nu_tool" data-tag="### Título H3" title="Sección (H3)"><span style="font-size: 0.85em; font-weight: bold;">H3</span></button>
+                <button type="button" class="nu_tool" data-tag="### Título H3" title="Sección (H3)"><span class="nu_tool_h3_span">H3</span></button>
               </div>
-              <div class="nu_toolbar_grp" style="display:flex;gap:0.4vh;border-right:1px solid var(--brd);padding-right:0.6vh;margin-right:0.2vh">
+              <div class="nu_toolbar_grp border_right">
                 <button type="button" class="nu_tool" data-tag="- item" title="Lista"><i class="fas fa-list-ul"></i></button>
                 <button type="button" class="nu_tool" data-tag="- [ ] tarea" title="Checklist"><i class="fas fa-check-square"></i></button>
                 <button type="button" class="nu_tool" data-tag="> cita" title="Citar"><i class="fas fa-quote-right"></i></button>
                 <button type="button" class="nu_tool" data-tag="&#10;---&#10;" title="Separador"><i class="fas fa-minus"></i></button>
               </div>
-              <div class="nu_toolbar_grp" style="display:flex;gap:0.4vh;">
+              <div class="nu_toolbar_grp">
                 <button type="button" class="nu_tool" data-tag="`código`" title="Código"><i class="fas fa-code"></i></button>
                 <button type="button" class="nu_tool" data-tag="![desc](url)" title="Imagen"><i class="fas fa-image"></i></button>
                 <button type="button" class="nu_tool" data-tag="[texto](url)" title="Enlace"><i class="fas fa-link"></i></button>
               </div>
-              <div class="nu_toolbar_grp" style="display:flex;gap:0.4vh;border-left:1px solid var(--brd);padding-left:0.6vh;margin-left:0.2vh">
-                <button type="button" class="nu_tool" data-tag=":maletin:" title="Maletín Profesional"><i class="fas fa-briefcase" style="color:var(--mco);"></i></button>
-                <button type="button" class="nu_tool" data-tag=":foco:" title="Idea / Foco"><i class="fas fa-lightbulb" style="color:#FFC107;"></i></button>
-                <button type="button" class="nu_tool" data-tag=":grafico:" title="Gráfico de Crecimiento"><i class="fas fa-chart-line" style="color:#0edeFF;"></i></button>
-                <button type="button" class="nu_tool" data-tag=":usuario:" title="Profesional / Empleo"><i class="fas fa-user-tie" style="color:#e0a910;"></i></button>
-                <button type="button" class="nu_tool" data-tag=":corazon:" title="Corazón"><i class="fas fa-heart" style="color:#fe0149;"></i></button>
-                <button type="button" class="nu_tool" data-tag=":estrella:" title="Estrella"><i class="fas fa-star" style="color:#FFB636;"></i></button>
-                <button type="button" class="nu_tool" data-tag=":si:" title="Check Verde"><i class="fas fa-circle-check" style="color:#3cd741;"></i></button>
-                <button type="button" class="nu_tool" data-tag=":no:" title="X Roja"><i class="fas fa-circle-xmark" style="color:#ff3849;"></i></button>
+              <div class="nu_toolbar_grp border_left">
+                <button type="button" class="nu_tool" data-tag=":maletin:" title="Maletín Profesional"><i class="fas fa-briefcase"></i></button>
+                <button type="button" class="nu_tool" data-tag=":foco:" title="Idea / Foco"><i class="fas fa-lightbulb"></i></button>
+                <button type="button" class="nu_tool" data-tag=":grafico:" title="Gráfico de Crecimiento"><i class="fas fa-chart-line"></i></button>
+                <button type="button" class="nu_tool" data-tag=":usuario:" title="Profesional / Empleo"><i class="fas fa-user-tie"></i></button>
+                <button type="button" class="nu_tool" data-tag=":corazon:" title="Corazón"><i class="fas fa-heart"></i></button>
+                <button type="button" class="nu_tool" data-tag=":estrella:" title="Estrella"><i class="fas fa-star"></i></button>
+                <button type="button" class="nu_tool" data-tag=":si:" title="Check Verde"><i class="fas fa-circle-check"></i></button>
+                <button type="button" class="nu_tool" data-tag=":no:" title="X Roja"><i class="fas fa-circle-xmark"></i></button>
               </div>
             </div>
-            <textarea id="nu_contenido" class="nu_code" rows="18" placeholder="Escribe tu artículo en Markdown...&#10;&#10;## Optimización de Currículum para Filtros ATS&#10;&#10;Para superar los filtros automáticos..."></textarea>
-            <div id="nu_prev_html" class="nu_html_prev dpn po_contenido" style="padding: 1.5vh; border: 1px solid var(--brd); border-radius: 1vh; min-height: 20vh; margin-top: 1vh; background: var(--wb); overflow-wrap: break-word;"></div>
+            <textarea id="nu_contenido" class="nu_code" rows="18" placeholder="Escribe tu artículo en Markdown...&#10;&#10;## Tendencias de Inteligencia Artificial en 2026&#10;&#10;Las nuevas tecnologías de IA están..."></textarea>
+            <div id="nu_prev_html" class="nu_html_prev dpn po_contenido"></div>
             <div class="nu_content_footer">
               <span id="nu_palabras" class="nu_hint"><i class="fas fa-font"></i> 0 palabras</span>
               <span id="nu_lectura" class="nu_hint"><i class="fas fa-clock"></i> 1 min</span>
@@ -680,26 +659,24 @@ import { app } from '../wii.js';
 
           <div class="nu_card">
             <div class="nu_card_title"><i class="fas fa-folder"></i> Categoría</div>
-            <input id="nu_cat_inp" type="text" placeholder="Ej: CV, Entrevistas, Teletrabajo..." maxlength="30" required/>
-            <div id="nu_cat_sug" class="nu_sug_box"></div>
+            <input id="nu_cat_inp" type="text" placeholder="Escribe una categoría" maxlength="30" required/>
           </div>
 
           <div class="nu_card">
             <div class="nu_card_title"><i class="fas fa-tags"></i> Tags</div>
-            <input id="nu_tags_inp" type="text" placeholder="Escribe y presiona Enter o coma"/>
-            <div id="nu_tag_sug" class="nu_sug_box"></div>
+            <input id="nu_tags_inp" type="text" placeholder="Escribe tags con comas"/>
             <div id="nu_tags_box" class="nu_tags_box"></div>
           </div>
 
           <div class="nu_card">
             <div class="nu_card_title"><i class="fas fa-image"></i> Imágenes</div>
-            <div style="display:flex; flex-direction:column; gap:1vh; margin-bottom: 1.5vh;">
-              <label style="font-size:var(--fz_s4); color:var(--tx2); font-weight:600;"><i class="fas fa-compress"></i> Miniatura (Inicio-Blog)</label>
+            <div class="nu_image_input_group">
+              <label class="nu_image_field_label"><i class="fas fa-compress"></i> Miniatura (Inicio-Blog)</label>
               <input id="nu_img" type="url" placeholder="https://... (Sugerido: 334x208px)" required/>
               <div id="nu_img_prev" class="nu_img_prev dpn"><img id="nu_img_el" src="" alt=""/><button type="button" id="nu_img_clear" class="nu_img_clear" title="Quitar"><i class="fas fa-xmark"></i></button></div>
             </div>
-            <div style="display:flex; flex-direction:column; gap:1vh;">
-              <label style="font-size:var(--fz_s4); color:var(--tx2); font-weight:600;"><i class="fas fa-panorama"></i> ImagenTop (Post)</label>
+            <div class="nu_image_input_group no_margin">
+              <label class="nu_image_field_label"><i class="fas fa-panorama"></i> ImagenTop (Post)</label>
               <input id="nu_img_top" type="url" placeholder="https://... (Sugerido: 1180x425px)"/>
               <div id="nu_img_top_prev" class="nu_img_prev dpn"><img id="nu_img_top_el" src="" alt=""/><button type="button" id="nu_img_top_clear" class="nu_img_clear" title="Quitar"><i class="fas fa-xmark"></i></button></div>
             </div>
@@ -727,6 +704,7 @@ import { app } from '../wii.js';
   import { protegerRuta } from '../lib/auth.js';
   import { wiSpin, Notificacion, Mensaje, getls, savels } from '../lib/widev.js';
   import { linkweb } from '../wii.js';
+  import { mdToHtml, wiSanihtml, countWords } from '../lib/blog/procesarmd.js';
 
   let tags: string[] = [];
   let sT: any, iT: any, iT2: any;
@@ -734,17 +712,12 @@ import { app } from '../wii.js';
   let editSlug: string | null = null;
   let draftTimer: any = null;
   let eventListeners: { target: EventTarget; type: string; handler: EventListener }[] = [];
-
-  const COL = 'blog';
+  let slugAbortController: AbortController | null = null;
+  let slugDebounceTimer: any = null;
 
   const toSlug = (s: string) => s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
     .replace(/\b(el|la|los|las|de|del|en|un|una|y|a|con|por|para|que|es|se)\b/g,' ')
     .replace(/[^a-z0-9\s_-]/g,'').replace(/\s+/g,'-').replace(/[-_]{2,}/g,'-').replace(/^[-_]|[-_]$/g,'').slice(0,50);
-
-  const countWords = (html: string) => {
-    const t = html.replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean);
-    return { words: t.length, min: Math.max(1, Math.ceil(t.length/200)) };
-  };
 
   const getEditSlug = () => new URLSearchParams(window.location.search).get('edit') || null;
 
@@ -757,6 +730,11 @@ import { app } from '../wii.js';
     clearTimeout(draftTimer);
     clearTimeout(iT);
     clearTimeout(iT2);
+    clearTimeout(slugDebounceTimer);
+    if (slugAbortController) {
+      slugAbortController.abort();
+      slugAbortController = null;
+    }
     eventListeners.forEach(({ target, type, handler }) => {
       target.removeEventListener(type, handler);
     });
@@ -766,7 +744,6 @@ import { app } from '../wii.js';
     editSlug = null;
   };
 
-  const toMs = (v: any) => v ? new Date(v).getTime() : null;
   const ser = (d: any) => {
     if (!d) return null;
     return {
@@ -774,15 +751,14 @@ import { app } from '../wii.js';
       resumen: d.descripcion || '',
       keywords: d.metaSEO?.keywords || '',
       contenidoMd: d.contenidoMD || '',
-      tiempoLectura: d.lecturaTM || '',
-      creado: toMs(d.creado),
-      actualizado: toMs(d.actualizado)
+      tiempoLectura: d.lecturaTM || ''
+      // creado/actualizado vienen como ISO string de Supabase ✅
     };
   };
 
   const getPost = async (slug: string, force = false) => {
     if (!force) { const c = getls(`wi_post_${slug}`); if (c) return { data: c, fromCache: true }; }
-    const { data, error } = await supabase.from('blog').select('*').eq('slug', slug).maybeSingle();
+    const { data, error } = await supabase.from('blog').select('id, slug, titulo, descripcion, categoria, contenidoMD, imagen, imagenTop, activo, pin, tags, metaSEO').eq('slug', slug).maybeSingle();
     if (error || !data) return null;
     const mapped = ser(data);
     savels(`wi_post_${slug}`, mapped, 12);
@@ -792,129 +768,6 @@ import { app } from '../wii.js';
   const clearPostCache = (s: string) => { if (typeof localStorage !== 'undefined') localStorage.removeItem(`wi_post_${s}`); };
   const clearBlogCache = () => { if (typeof localStorage !== 'undefined') Object.keys(localStorage).filter(k => k.startsWith('wi_blogs')).forEach(k => localStorage.removeItem(k)); };
 
-  const wiSanihtml = (html: string) => {
-    if (!html) return '';
-    let str = html.toString();
-    str = str.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-    str = str.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
-    str = str.replace(/(\bon[a-z]+\s*=\s*"[^"]*")/gi, '');
-    str = str.replace(/(\bon[a-z]+\s*=\s*'[^']*')/gi, '');
-    str = str.replace(/(\bon[a-z]+\s*=\s*[^\s>]+)/gi, '');
-    str = str.replace(/<\/?(iframe|embed|object|applet)\b[^>]*>/gi, '');
-    str = str.replace(/href\s*=\s*(['"]?)\s*javascript:[^>]*\1/gi, 'href="#"');
-    return str;
-  };
-
-  const CUSTOM_ICONS: Record<string, string> = {
-    'corazon': '<i class="fas fa-heart po_ico_red"></i>',
-    'heart': '<i class="fas fa-heart po_ico_red"></i>',
-    'estrella': '<i class="fas fa-star po_ico_yellow"></i>',
-    'star': '<i class="fas fa-star po_ico_yellow"></i>',
-    'si': '<i class="fas fa-circle-check po_ico_green"></i>',
-    'check': '<i class="fas fa-circle-check po_ico_green"></i>',
-    'no': '<i class="fas fa-circle-xmark po_ico_red"></i>',
-    'times': '<i class="fas fa-circle-xmark po_ico_red"></i>',
-    'maletin': '<i class="fas fa-briefcase po_ico_mco"></i>',
-    'briefcase': '<i class="fas fa-briefcase po_ico_mco"></i>',
-    'foco': '<i class="fas fa-lightbulb po_ico_yellow"></i>',
-    'idea': '<i class="fas fa-lightbulb po_ico_yellow"></i>',
-    'lightbulb': '<i class="fas fa-lightbulb po_ico_yellow"></i>',
-    'grafico': '<i class="fas fa-chart-line po_ico_cyan"></i>',
-    'chart': '<i class="fas fa-chart-line po_ico_cyan"></i>',
-    'usuario': '<i class="fas fa-user-tie po_ico_gold"></i>',
-    'user': '<i class="fas fa-user-tie po_ico_gold"></i>',
-    'cruz': '<i class="fas fa-cross po_ico_mco"></i>',
-    'cross': '<i class="fas fa-cross po_ico_mco"></i>',
-    'biblia': '<i class="fas fa-book-bible po_ico_mco"></i>',
-    'bible': '<i class="fas fa-book-bible po_ico_mco"></i>',
-    'oracion': '<i class="fas fa-hands-praying po_ico_gold"></i>',
-    'pray': '<i class="fas fa-hands-praying po_ico_gold"></i>',
-    'paloma': '<i class="fas fa-dove po_ico_cyan"></i>',
-    'dove': '<i class="fas fa-dove po_ico_cyan"></i>',
-    'alerta': '<i class="fas fa-triangle-exclamation po_ico_warning"></i>',
-    'warning': '<i class="fas fa-triangle-exclamation po_ico_warning"></i>',
-    'info': '<i class="fas fa-circle-info po_ico_cyan"></i>'
-  };
-
-  const mdToHtml = (md: string) => {
-    if (!md) return '';
-    let html = md
-      .replace(/^## (.*?)(?:\s*\{\#([a-zA-Z0-9_-]+)\})?\s*$/gim, (match, title, id) => {
-        return id ? `<h2 id="${id}">${title.trim()}</h2>` : `<h2>${title.trim()}</h2>`;
-      })
-      .replace(/^### (.*?)(?:\s*\{\#([a-zA-Z0-9_-]+)\})?\s*$/gim, (match, title, id) => {
-        return id ? `<h3 id="${id}">${title.trim()}</h3>` : `<h3>${title.trim()}</h3>`;
-      })
-      .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
-      .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-      .replace(/~~(.*?)~~/gim, '<del>$1</del>')
-      .replace(/`([^`]+)`/gim, '<code>$1</code>')
-      .replace(/!\[(.*?)\]\((.*?)\)/gim, '<img alt="$1" src="$2" />')
-      .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-      .replace(/^---/gim, '<hr class="po_hr"/>');
-
-    // Reemplazar iconos personalizados con estilos
-    Object.keys(CUSTOM_ICONS).forEach(key => {
-      const regex = new RegExp(`:${key}:`, 'gim');
-      html = html.replace(regex, CUSTOM_ICONS[key]);
-    });
-
-    // Soporte para iconos Font Awesome genéricos
-    html = html
-      .replace(/:fa-([a-z0-9-]+):/gim, '<i class="fas fa-$1"></i>')
-      .replace(/:far-([a-z0-9-]+):/gim, '<i class="far fa-$1"></i>')
-      .replace(/:fab-([a-z0-9-]+):/gim, '<i class="fab fa-$1"></i>');
-
-    const lines = html.split('\n');
-    const result: string[] = [];
-    let inList = false;
-    let inTable = false;
-
-    lines.forEach(line => {
-      const trimLine = line.trim();
-
-      // Table parsing logic
-      if (trimLine.startsWith('|') && trimLine.endsWith('|')) {
-        if (!inTable) {
-          result.push('<div class="po_table_wrap"><table>');
-          inTable = true;
-        }
-        if (trimLine.match(/^\|?[\s\-\|:]+\|?$/)) return;
-        
-        const cells = trimLine.split('|').filter((c, i, a) => (i > 0 && i < a.length - 1));
-        const isHeader = inTable && result[result.length-1].includes('<table>');
-        const tag = isHeader ? 'th' : 'td';
-        result.push('<tr>' + cells.map(c => `<${tag}>${c.trim()}</${tag}>`).join('') + '</tr>');
-        return;
-      } else if (inTable) {
-        result.push('</table></div>');
-        inTable = false;
-      }
-
-      // List parsing logic
-      const listMatch = line.match(/^[\-\*]\s+(.*)$/);
-      if (listMatch) {
-        if (!inList) { result.push('<ul>'); inList = true; }
-        let text = listMatch[1];
-        if (text.startsWith('[ ] ')) text = '<input type="checkbox" class="po_todo_check" disabled> ' + text.slice(4);
-        else if (text.startsWith('[x] ')) text = '<input type="checkbox" class="po_todo_check" checked disabled> ' + text.slice(4);
-        result.push(`<li>${text}</li>`);
-      } else {
-        if (inList) { result.push('</ul>'); inList = false; }
-        if (trimLine === '') return;
-        if (!line.match(/^<(h2|h3|ul|ol|li|blockquote|img|hr|div|table|tr|th|td)/)) {
-          result.push(`<p>${line}</p>`);
-        } else {
-          result.push(line);
-        }
-      }
-    });
-
-    if (inTable) result.push('</table></div>');
-    if (inList) result.push('</ul>');
-    return result.join('\n');
-  };
 
   const getDraftKey = () => isEdit ? 'wi_draft_edit_' + editSlug : 'wi_draft_new';
 
@@ -978,14 +831,12 @@ import { app } from '../wii.js';
           }
         }
       }
-      const catSugEl = document.getElementById('nu_cat_sug');
-      if (catSugEl && setCats.size > 0) {
-        catSugEl.innerHTML = Array.from(setCats).slice(0, 8).map(c => `<span class="nu_sug_chip cat_sug">${c}</span>`).join('');
-      }
-      const tagSugEl = document.getElementById('nu_tag_sug');
-      if (tagSugEl && setTags.size > 0) {
-        tagSugEl.innerHTML = Array.from(setTags).slice(0, 12).map(t => `<span class="nu_sug_chip tag_sug">#${t}</span>`).join('');
-      }
+      const defaultCats = ['IA', 'Programación', 'Frontend', 'Backend', 'Portafolio', 'Herramientas', 'Ciberseguridad', 'Astro'];
+      const defaultTags = ['ia', 'webdev', 'javascript', 'typescript', 'react', 'nextjs', 'astro', 'python', 'portfolio', 'css', 'firebase', 'software'];
+      
+      const catsToRender = setCats.size > 0 ? Array.from(setCats) : defaultCats;
+      const tagsToRender = setTags.size > 0 ? Array.from(setTags) : defaultTags;
+
     } catch (e) {
       console.warn('No se pudieron cargar sugerencias', e);
     }
@@ -1086,7 +937,6 @@ import { app } from '../wii.js';
     };
 
     if (titleInp) listen(titleInp, 'input', updateTituloCounter);
-    if (slugInp) listen(slugInp, 'input', updateSlugCounter);
     if (resumenInp) listen(resumenInp, 'input', updateResumenCounter);
     if (keywordsInp) listen(keywordsInp, 'input', updateKeywordsCounter);
 
@@ -1148,24 +998,22 @@ import { app } from '../wii.js';
               imagenTop: imgTop,
               tags,
               lecturaTM: readTime,
-              metaSEO: { keywords },
-              actualizado: new Date().toISOString()
+              metaSEO: { keywords }
             }).eq('slug', editSlug);
-            
             if (error) throw error;
             
             clearPostCache(editSlug);
             clearBlogCache();
-            Mensaje('¡Historia actualizada! 💼✨', 'success');
+             Mensaje('¡Publicación actualizada!', 'success');
             setTimeout(() => window.location.href = `/${editSlug}`, 1200);
           } else {
-            const { data: existingPost, error: checkError } = await supabase.from('blog').select('slug').eq('slug', slug).maybeSingle();
-            if (existingPost) {
+            const { data: existing } = await supabase.from('blog').select('slug').eq('slug', slug).maybeSingle();
+            if (existing) {
               wiSpin(btnSelector, false);
               Notificacion('Slug existente', 'warning');
               return;
             }
-            const { error } = await supabase.from('blog').insert([{
+            const { error: insError } = await supabase.from('blog').insert({
               slug,
               activo: (document.getElementById('nu_activo') as HTMLInputElement).checked,
               pin: (document.getElementById('nu_pin') as HTMLInputElement).checked,
@@ -1185,13 +1033,13 @@ import { app } from '../wii.js';
               likes: 0,
               lecturaTM: readTime,
               metaSEO: { keywords }
-            }]);
-
-            if (error) throw error;
-
+              // creado + actualizado: DEFAULT en la tabla Supabase ✅
+            });
+            if (insError) throw insError;
+            
             clearBlogCache();
             localStorage.removeItem(getDraftKey());
-            Mensaje('¡Historia publicada! 💼✨', 'success');
+             Mensaje('¡Publicación creada! 🚀✨', 'success');
             setTimeout(() => window.location.href = `/${slug}`, 1200);
           }
         } catch (err) {
@@ -1202,61 +1050,81 @@ import { app } from '../wii.js';
       });
     }
 
-    // Slug generation on keypress/change
-    if (titleInp && !isEdit) {
-      listen(titleInp, 'input', () => {
-        if (slugInp) {
-          slugInp.value = toSlug((titleInp as HTMLInputElement).value);
-          const slugStatus = document.getElementById('nu_slug_status');
-          if (slugStatus) slugStatus.innerHTML = '';
-        }
-      });
-    }
+    // Slug generation on keypress/change disabled (now completed manually)
 
-    if (slugInp && !isEdit) {
+    if (slugInp) {
       listen(slugInp, 'input', () => {
-        slugInp.value = slugInp.value.replace(/[^a-z0-9_-]/gi, s => s === ' ' ? '-' : '').toLowerCase().replace(/[-_]{2,}/g, '-');
-        const slugStatus = document.getElementById('nu_slug_status');
-        if (slugStatus) {
-          slugStatus.innerHTML = '<i class="fas fa-pen"></i> Escribiendo...';
-          slugStatus.className = 'nu_slug_status';
+        if (!isEdit) {
+          slugInp.value = slugInp.value.replace(/[^a-z0-9_-]/gi, s => s === ' ' ? '-' : '').toLowerCase().replace(/[-_]{2,}/g, '-');
         }
-      });
+        
+        // Ejecutar contador de caracteres del slug
+        updateSlugCounter();
 
-      listen(slugInp, 'change', async () => {
-        const v = slugInp.value;
+        if (isEdit) return; // Si es edición, no validar contra la base de datos
+
         const slugStatus = document.getElementById('nu_slug_status');
-        if (!slugStatus) return;
-        if (!v) { slugStatus.innerHTML = ''; slugStatus.className = 'nu_slug_status'; return; }
-        if (v.length < 3) {
-          slugStatus.innerHTML = '<i class="fas fa-exclamation"></i> Muy corto';
-          slugStatus.className = 'nu_slug_status err';
+        const v = slugInp.value;
+
+        // Cancelar debounce y abort controller previos
+        clearTimeout(slugDebounceTimer);
+        if (slugAbortController) {
+          slugAbortController.abort();
+          slugAbortController = null;
+        }
+
+        if (!v) {
+          if (slugStatus) {
+            slugStatus.innerHTML = '';
+            slugStatus.className = 'nu_slug_status';
+          }
           return;
         }
-        slugStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        slugStatus.className = 'nu_slug_status';
-        try {
-          const { data, error } = await supabase.from('blog').select('slug').eq('slug', v).maybeSingle();
-          if (data) {
-            slugStatus.innerHTML = '<i class="fas fa-xmark"></i> Ya existe';
-            slugStatus.className = 'nu_slug_status err';
-          } else {
-            slugStatus.innerHTML = '<i class="fas fa-check"></i> OK';
-            slugStatus.className = 'nu_slug_status ok';
-          }
-        } catch (_) {
-          slugStatus.innerHTML = '';
-        }
-      });
 
-      const resetSlugBtn = document.getElementById('nu_slug_reset');
-      if (resetSlugBtn && titleInp) {
-        listen(resetSlugBtn, 'click', () => {
-          slugInp.value = toSlug((titleInp as HTMLInputElement).value);
-          slugInp.dispatchEvent(new Event('input'));
-          slugInp.dispatchEvent(new Event('change'));
-        });
-      }
+        if (v.length < 3) {
+          if (slugStatus) {
+            slugStatus.innerHTML = '<i class="fas fa-exclamation"></i> Muy corto';
+            slugStatus.className = 'nu_slug_status err';
+          }
+          return;
+        }
+
+        if (slugStatus) {
+          slugStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validando...';
+          slugStatus.className = 'nu_slug_status';
+        }
+
+        // Validación con debounce de 300ms
+        slugDebounceTimer = setTimeout(async () => {
+          if (!slugStatus) return;
+          slugAbortController = new AbortController();
+          try {
+            const { data: existing, error } = await supabase
+              .from('blog')
+              .select('slug')
+              .eq('slug', v)
+              .abortSignal(slugAbortController.signal)
+              .maybeSingle();
+
+            if (error) throw error;
+
+            if (existing) {
+              slugStatus.innerHTML = '<i class="fas fa-xmark"></i> Ya existe';
+              slugStatus.className = 'nu_slug_status err';
+            } else {
+              slugStatus.innerHTML = '<i class="fas fa-check"></i> OK';
+              slugStatus.className = 'nu_slug_status ok';
+            }
+          } catch (err: any) {
+            if (err.name !== 'AbortError') {
+              console.warn('[slug check]', err);
+              slugStatus.innerHTML = '';
+            }
+          } finally {
+            slugAbortController = null;
+          }
+        }, 300);
+      });
     }
 
     // Character counter for resumen is handled automatically in setupEvents
@@ -1393,25 +1261,7 @@ import { app } from '../wii.js';
         return;
       }
 
-      // Suggest category
-      const catSug = target.closest('.cat_sug');
-      if (catSug) {
-        const catInp = document.getElementById('nu_cat_inp') as HTMLInputElement;
-        if (catInp) { catInp.value = catSug.textContent || ''; saveDraft(); }
-        return;
-      }
-
-      // Suggest tag
-      const tagSug = target.closest('.tag_sug');
-      if (tagSug) {
-        const t = (tagSug.textContent || '').replace('#', '').trim();
-        if (t && !tags.includes(t) && tags.length < 8) {
-          tags.push(t);
-          renderTags();
-          saveDraft();
-        }
-        return;
-      }
+      // Suggest category and tag click handlers removed
     });
   };
 
@@ -1446,7 +1296,7 @@ import { app } from '../wii.js';
     const viewPostBtnEl = document.getElementById('nu_view_post_btn');
 
     if (isEdit) {
-      if (mainTitleEl) mainTitleEl.innerHTML = `<i class="fas fa-pen"></i> Editar historia`;
+      if (mainTitleEl) mainTitleEl.innerHTML = `<i class="fas fa-pen"></i> Editar publicación`;
       if (editInfoEl) editInfoEl.innerHTML = `Editando: <strong>${editSlug}</strong> ✏️`;
       if (btnLblEl) btnLblEl.textContent = 'Guardar';
       if (btnLblAsideEl) btnLblAsideEl.textContent = 'Guardar cambios';

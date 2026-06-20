@@ -59,8 +59,6 @@ Este sector no solo demanda habilidades técnicas en SQL o Python, sino una prof
 
 ![Analista de negocios examinando gráficos y KPIs de rendimiento en pantallas de alta tecnología](https://i.ibb.co/ds76yc7p/4d1327d853b3.jpg)
 
----
-
 ## 2. Habilidades clave para destacar en el mercado actual {#habilidades-clave}
 
 En 2026, los reclutadores no solo evalúan tus conocimientos técnicos especializados (*hard skills*), sino tu capacidad de adaptación y tus habilidades interpersonales (*soft skills*). De acuerdo con el último reporte sobre el futuro del empleo del [World Economic Forum (WEF)](https://www.weforum.org/reports/the-future-of-jobs-report-2023/) que detalla las megatendencias globales, la hibridación de perfiles es fundamental. Las organizaciones valoran especialmente a los profesionales híbridos: personas que poseen una sólida base en una disciplina clásica (como el derecho o la administración) pero que además dominan herramientas de automatización, análisis de datos o inteligencia artificial.
@@ -85,8 +83,6 @@ Aprender a elegir tu camino profesional marcará el rumbo de tu éxito en el mer
 Decidir qué estudiar o hacia dónde reorientar tu carrera laboral puede generar incertidumbre y presión emocional. Sin embargo, debes recordar que **el aprendizaje es un viaje continuo y ninguna elección actual te define para siempre**. El entorno laboral moderno recompensa a las personas curiosas y adaptables. Prepárate con dedicación, elige un área que despierte tu curiosidad intelectual y confía en tus capacidades para adaptarte a los cambios. ¡El futuro está lleno de oportunidades para quienes nunca se cansan de aprender!
 
 ![Joven profesional sonriente celebrando su contratación y éxito laboral en una oficina del futuro](https://i.ibb.co/YB5MfqFk/e803387388b2.jpg)
-
----
 
 ## 4. Pasos rápidos para prepararte hoy mismo {#pasos-preparacion}
 

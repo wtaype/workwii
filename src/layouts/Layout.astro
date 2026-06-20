@@ -121,7 +121,6 @@ const seoSchema = {
   <body>
     <Header />
 
-    <!-- Estilo global base encapsulado en el Layout -->
     <style is:global data-astro-transition-persist="global-css">
  /* ==================== VARIABLES GLOBALES ==================== */
     :root {
@@ -149,7 +148,6 @@ const seoSchema = {
       --tr_f: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
       --ff_P: 'Poppins', 'Segoe UI', system-ui;
       --ff_O: 'Outfit', 'Segoe UI', system-ui;
-      --ff_R: 'Rubik', 'Segoe UI', system-ui;
       --gradient-dia: linear-gradient(135deg, #0EBEFF 0%, #29C72E 100%);
       --gradient-noche: linear-gradient(135deg, #21273B 0%, #7000FF 100%);
 
@@ -379,8 +377,6 @@ const seoSchema = {
     /* ==================== ESTILOS ESENCIALES HTML ==================== */
     p {
       color: var(--tx);
-      font-size: var(--fz_m2);
-      line-height: 1.6;
       margin-bottom: 1vh
     }
 
@@ -987,9 +983,9 @@ const seoSchema = {
       position: fixed;
       top: 0;
       right: 0;
-      width: 78vw;
+      width: 80vw;
       height: 100dvh;
-      background: color-mix(in srgb, var(--wb) 95%, transparent);
+      background: var(--bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       z-index: 201;
@@ -1000,7 +996,6 @@ const seoSchema = {
       padding: 3vh 0;
       overflow-y: auto;
       box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
-      border-left: 1px solid var(--brd);
     }
 
     body.movil_open { overflow: hidden; }
@@ -1187,10 +1182,10 @@ const seoSchema = {
     /* ── REDES SOCIALES FOOTER ── */
     .redsscc {
       width: 3.6vh;
-      height: 31.22px;
-      border-radius: .5vh;
+      height: 3.6vh;
+      border-radius: 0.8vh;
       background: var(--rb, var(--mco));
-      color: #fff;
+      color: var(--white);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1246,11 +1241,12 @@ const seoSchema = {
     }
 
     .cookiess_link {
-      display: inline;
+      display: inline-flex;
       color: var(--mco);
       font-weight: 500;
       text-decoration: underline;
-      display: inline-flex; padding: 0.3vh 0; margin-left: 1vh;
+      padding: 0.3vh 0; 
+      margin-left: 1vh;
     }
 
     .cookiess_btns {
@@ -1344,6 +1340,7 @@ const seoSchema = {
     @keyframes mf { from { opacity: 0; } to { opacity: 1; } }
     @keyframes mp { from { transform: translateY(10px) scale(.98); opacity: .6; } to { transform: translateY(0) scale(1); opacity: 1; } }
     </style>
+    
     <!-- Slot principal donde se renderizará el contenido de cada página -->
     <main id="wimain"> 
       <slot />

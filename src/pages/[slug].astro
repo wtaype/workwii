@@ -3,16 +3,18 @@ import Layout from '../layouts/Layout.astro';
 import PostPage from '../components/PostPage.astro';
 import PostSidebar from '../components/PostSidebar.astro';
 import { supabase } from '../lib/supabase.js';
+import { procesarHtml } from '../lib/blog/procesarmd.js';
 
 export async function getStaticPaths() {
   try {
     const { data: posts, error } = await supabase
       .from('blog')
-      .select('*')
+      .select('id, slug, activo, titulo, descripcion, categoria, imagen, imagenTop, tags, vistas, likes, lecturaTM, pin, usuario, autor, email, userId, creado, actualizado, metaSEO, contenido')
       .eq('activo', true)
       .order('creado', { ascending: false });
 
     if (error) throw error;
+
     if (!posts || !posts.length) {
       return [{
         params: { slug: 'ejemplo-de-articulo-con-mas-de-11-caracteres' },
@@ -22,12 +24,10 @@ export async function getStaticPaths() {
 
     return posts.map((post: any, index: number) => {
       const related = posts.filter((p: any) => p.categoria === post.categoria && p.slug !== post.slug).slice(0, 3);
-      const latest = posts.filter((p: any) => p.slug !== post.slug).slice(0, 5);
-      const prevPost = posts[index + 1] || null;
-      const nextPost = posts[index - 1] || null;
+      const latest  = posts.filter((p: any) => p.slug !== post.slug).slice(0, 5);
       return {
         params: { slug: post.slug },
-        props: { post, related, latest, prevPost, nextPost }
+        props: { post, related, latest, prevPost: posts[index + 1] || null, nextPost: posts[index - 1] || null }
       };
     }) as any;
   } catch (err) {
@@ -54,42 +54,10 @@ const headings: { text: string; id: string; depth: number }[] = [];
 let modifiedContenido = post.contenido || '';
 
 if (modifiedContenido) {
-  // 1. Convertir botones antiguos de YouTube en enlaces limpios
-  modifiedContenido = modifiedContenido.replace(/<button[^>]*?class="po_yt_btn"[^>]*?data-yt="([a-zA-Z0-9_-]+)"[^>]*>([\s\S]*?)<\/button>/gi, (match: string, ytId: string, innerHtml: string) => {
-    const cleanInner = innerHtml.replace(/<i\s+class=(['"])(.*?)\1\s+style=(['"])[^>]*?\3/gi, '<i class="$2 po_ico_youtube"');
-    return `<a href="https://www.youtube.com/watch?v=${ytId}" target="_blank" rel="noopener noreferrer" class="po_yt_link">${cleanInner}</a>`;
-  });
+  // Aplicar procesamiento unificado común (YouTube, HRs, Checkboxes, Lazy Loading, Figcaptions)
+  modifiedContenido = procesarHtml(modifiedContenido);
 
-  // 2. Limpiar estilos inline de hr y checklists
-  modifiedContenido = modifiedContenido
-    .replace(/<hr style="border:none;border-top:1px solid var\(--brd\);margin:2vh 0"\/?>/gi, '<hr class="po_hr" />')
-    .replace(/(<input[^>]*?type="checkbox"[^>]*?)style="margin-right:\s*0\.5vh;?"/gi, '$1class="po_todo_check"');
-
-  // 3. Limpiar estilos inline de iconos personalizados combinando clases
-  modifiedContenido = modifiedContenido.replace(/<i\s+class=(['"])(.*?)\1\s+style=(['"])color:\s*(.*?);?\3><\/i>/gi, (match: string, q1: string, classes: string, q2: string, color: string) => {
-    let colorClass = '';
-    const c = color.trim().toLowerCase();
-    if (c === '#fe0149' || c === '#ff3849') colorClass = 'po_ico_red';
-    else if (c === '#ffb636' || c === '#ffc107') colorClass = 'po_ico_yellow';
-    else if (c === '#3cd741') colorClass = 'po_ico_green';
-    else if (c === '#0edeff') colorClass = 'po_ico_cyan';
-    else if (c === '#e0a910') colorClass = 'po_ico_gold';
-    else if (c === 'var(--warning)') colorClass = 'po_ico_warning';
-    else if (c === 'var(--mco)') colorClass = 'po_ico_mco';
-    return `<i class="${classes} ${colorClass}"></i>`;
-  });
-
-  // 4. Inyección automática de wiImgs (Skeletons y Carga diferida) en imágenes de contenido
-  modifiedContenido = modifiedContenido.replace(/<img\s+([^>]*?)src=(['"])(.*?)\2([^>]*?)>/gi, (match: string, before: string, quote: string, src: string, after: string) => {
-    const rest = (before + ' ' + after).trim();
-    if (rest.includes('class=')) {
-      return `<img data-src="${src}" ${rest.replace(/class=(['"])(.*?)\1/gi, 'class=$1$2 wi_skeleton img_fade$1')}>`;
-    } else {
-      return `<img data-src="${src}" class="wi_skeleton img_fade" ${rest}>`;
-    }
-  });
-
-  // 5. Procesamiento de encabezados (TOC)
+  // Extraer e identificar encabezados en el servidor para el TOC
   let headingCount = 0;
   modifiedContenido = modifiedContenido.replace(/<(h2|h3)([^>]*?)>([\s\S]*?)<\/\1>/gi, (match: string, tag: string, attrs: string, content: string) => {
     let customId = '';
@@ -132,6 +100,7 @@ const keywords = seoMeta.keywords || '';
 ---
 
 <style is:global>
+@import "../lib/blog/post.css";
 
 /* ── 1. SKELETON ─────────────────────────────────── */
 @keyframes shimmer {
@@ -231,49 +200,6 @@ const keywords = seoMeta.keywords || '';
 .po_tags,
 .po_share { padding-left: 3vh; padding-right: 3vh; }
 
-/* ── 5. HEADER ───────────────────────────────────── */
-.po_header { padding-top: 2.5vh; }
-
-.po_titulo {
-  font-size: var(--fz_x1);
-  font-weight: 800;
-  color: var(--tx1);
-  line-height: 1.2;
-  margin-bottom: 1.5vh;
-  font-family: var(--ff_O);
-}
-.po_resumen {
-  font-size: var(--fz_m3);
-  color: var(--tx2);
-  line-height: 1.7;
-  font-style: italic;
-  padding: 1.2vh 2vh;
-  background: var(--bg4);
-  border-left: 3px solid var(--mco);
-  border-radius: 0 1vh 1vh 0;
-  margin-bottom: .5vh;
-}
-.po_meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1.2vh;
-  margin-top: 1.8vh;
-  padding-top: 1.5vh;
-  border-top: 1px solid var(--brd);
-}
-.po_meta span {
-  display: flex;
-  align-items: center;
-  gap: .4vh;
-  font-size: var(--fz_s4);
-  color: var(--tx3);
-  cursor: default;
-  transition: color var(--tr_f);
-}
-.po_meta span:hover { color: var(--mco); }
-.po_meta i { color: var(--mco); }
-
 /* ── 6. CACHE BADGE ──────────────────────────────── */
 .po_cache_badge {
   display: inline-flex !important;
@@ -292,164 +218,6 @@ const keywords = seoMeta.keywords || '';
   0%, 100% { opacity: 1;   transform: scale(1);    }
   50%       { opacity: .82; transform: scale(1.04); }
 }
-
-/* ── 7. CONTENIDO HTML ───────────────────────────── */
-.po_contenido {
-  padding-top: 0;
-  padding-block: 2vh;
-  border-bottom: 1px solid var(--brd);
-  color: var(--tx);
-  line-height: 1.95;
-  font-size: var(--fz_m3);
-}
-.po_contenido h2 {
-  font-size: var(--fz_l1);
-  font-weight: 700;
-  color: var(--tx1);
-  margin: 3vh 0 1.2vh;
-  padding-bottom: .5vh;
-  border-bottom: 2px solid var(--bg5);
-}
-.po_contenido h3 { font-size: var(--fz_m5); font-weight: 700; color: var(--mco); margin: 2.5vh 0 .8vh; }
-.po_contenido p { margin-bottom: 1.8vh; }
-.po_contenido img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: auto 16 / 9;
-  object-fit: cover;
-  border-radius: 1.2vh;
-  margin: 2vh 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,.05);
-}
-.po_contenido blockquote {
-  margin: 2.5vh 0; padding: 1.5vh 2vh;
-  background: var(--bg4);
-  border-left: 3px solid var(--mco);
-  border-radius: 0 1vh 1vh 0;
-  font-style: italic; color: var(--tx2); font-size: var(--fz_m3);
-}
-.po_contenido a { color: var(--mco); font-weight: 500; text-underline-offset: 2px; }
-.po_contenido a:hover { text-decoration: underline; }
-
-/* Listas Pro */
-.po_contenido ul { 
-  list-style: none; 
-  padding: 0; 
-  margin: 2vh 0 2.5vh 0; 
-}
-.po_contenido ol { 
-  list-style: decimal; 
-  padding-left: 3.5vh; 
-  margin: 2vh 0 2.5vh 0; 
-}
-.po_contenido ul li { 
-  position: relative;
-  padding-left: 3vh;
-  margin-bottom: 1.2vh; 
-  line-height: 1.7;
-}
-.po_contenido ul li:has(> i) {
-  padding-left: 0;
-}
-.po_contenido ol li { 
-  margin-bottom: 1.2vh; 
-  line-height: 1.7;
-}
-.po_contenido ul li::before {
-  content: '\f004'; /* Font Awesome Heart */
-  font-family: 'Font Awesome 6 Free', 'Font Awesome 5 Free', sans-serif;
-  font-weight: 900;
-  position: absolute;
-  left: 0;
-  top: 0.4vh;
-  font-size: var(--fz_s4);
-  opacity: 0.8;
-  color: var(--mco);
-}
-.po_contenido ul li:has(> i)::before {
-  display: none;
-}
-.po_contenido ul li > i {
-  margin-right: 1vh;
-}
-
-/* Tablas Pro */
-.po_table_wrap {
-  width: 100%;
-  overflow-x: auto;
-  margin: 3vh 0;
-  border-radius: 1.5vh;
-  border: 1px solid color-mix(in srgb, var(--mco) 25%, var(--brd));
-  box-shadow: 0 8px 30px rgba(0,0,0,.02);
-  background: var(--wb);
-}
-.po_table_wrap table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 500px;
-  margin: 0;
-}
-.po_table_wrap th {
-  background: color-mix(in srgb, var(--mco) 8%, var(--wb));
-  color: var(--mco);
-  font-weight: 700;
-  text-align: left;
-  padding: 1.8vh 2.5vh;
-  border-bottom: 2px solid color-mix(in srgb, var(--mco) 25%, var(--brd));
-  border-right: 1px solid color-mix(in srgb, var(--mco) 15%, var(--brd));
-  font-size: var(--fz_m2);
-}
-.po_table_wrap td {
-  padding: 1.5vh 2.5vh;
-  border-bottom: 1px solid color-mix(in srgb, var(--mco) 10%, var(--bg5));
-  border-right: 1px solid color-mix(in srgb, var(--mco) 10%, var(--bg5));
-  color: var(--tx2);
-  font-size: var(--fz_m1);
-  transition: background var(--tr_f);
-}
-.po_table_wrap th:last-child,
-.po_table_wrap td:last-child {
-  border-right: none;
-}
-.po_table_wrap tr:last-child td { border-bottom: none; }
-.po_table_wrap tr:hover td { background: color-mix(in srgb, var(--mco) 5%, var(--wb)); }
-
-/* YouTube Links y Utilidades WPO */
-.po_hr {
-  border: none;
-  border-top: 1px solid var(--brd);
-  margin: 2vh 0;
-}
-.po_todo_check {
-  margin-right: 0.5vh;
-}
-.po_yt_link {
-  color: var(--mco);
-  font-weight: 600;
-  text-underline-offset: 2px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6vh;
-}
-.po_yt_link:hover {
-  text-decoration: underline;
-}
-.po_ico_youtube {
-  color: #fe0149;
-  font-size: 1.15em;
-  margin-right: 2px;
-}
-
-/* Colores de Iconos Personalizados */
-.po_ico_red { color: #fe0149; }
-.po_ico_yellow { color: #FFB636; }
-.po_ico_green { color: #3cd741; }
-.po_ico_cyan { color: #0edeFF; }
-.po_ico_gold { color: #e0a910; }
-.po_ico_mco { color: var(--mco); }
-.po_ico_warning { color: var(--warning); }
-
-.po_contenido strong { color: var(--tx1); }
 
 /* ── 8. TAGS ─────────────────────────────────────── */
 .po_tags {
@@ -532,27 +300,6 @@ const keywords = seoMeta.keywords || '';
 }
 .po_side_title i { color: var(--mco); }
 
-/* ── AD STICKY ───────────────────────────────────── */
-.po_ad_sticky {
-  position: sticky;
-  top: 7vh;
-  border-radius: 1.8vh;
-  overflow: hidden;
-  border: 1px solid var(--brd);
-  box-shadow: 0 4px 12px rgba(0,0,0,.04);
-  background: var(--wb);
-}
-.po_ad_sticky .lc_ad_side { margin: 0; }
-.po_ad_sticky .wi_ad_link {
-  display: block;
-  border-radius: 1.8vh !important;
-  overflow: hidden;
-  margin: auto;
-}
-.po_ad_sticky .wi_ad_img {
-  transition: transform .5s ease;
-}
-.po_ad_sticky .wi_ad_link:hover .wi_ad_img { transform: scale(1.04); }
 
 /* ── 11. SIDEBAR — AUTOR ─────────────────────────── */
 .po_autor_box { display: flex; align-items: center; gap: 1.2vh; }
@@ -699,8 +446,8 @@ const keywords = seoMeta.keywords || '';
 
 .po_toc_box {
   background: var(--bg4);
-  padding: 1.5vh 2.5vh 0 1.5vh;
-  margin: 2vh 3vh 0 3vh;
+  padding: 2vh 2.5vh;
+  margin: 2vh 3vh 3.5vh 3vh;
   border-radius: 1vh;
   border-left: 3px solid var(--mco);
 }
@@ -724,7 +471,7 @@ const keywords = seoMeta.keywords || '';
 .po_toc li { margin: 0; }
 .po_toc_link {
   color: var(--tx2);
-  font-size: var(--fz_m1);
+  font-size: var(--fz_m3);
   text-decoration: none;
   transition: color var(--tr_f);
   display: block;
@@ -758,7 +505,7 @@ const keywords = seoMeta.keywords || '';
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2vh;
-  margin-top: 1vh;
+  margin-top: 3vh;
 }
 .po_pn_card {
   display: flex;
@@ -853,7 +600,7 @@ const keywords = seoMeta.keywords || '';
     gap: 1.5vh;
   }
   .po_hero_img { height: 28vh; }
-  .po_titulo   { font-size: var(--fz_l2); }
+  .po_titulo   { font-size: var(--fz_l1); }
   .po_side_card:hover { transform: none; }
 }
 
@@ -893,17 +640,10 @@ const keywords = seoMeta.keywords || '';
   border-radius: 1.5vh;
   overflow: hidden;
   width: 95%;
-  max-width: 800px;
+  max-width: 65vw;
   border: 1px solid rgba(255,255,255,.1);
 }
-#wi_yt_modal .wi_yt_close {
-  color: #fff;
-  text-shadow: 0 0 8px #000;
-  right: 1.5vh;
-  top: 1vh;
-  font-size: 2.2rem;
-  z-index: 10;
-}
+
 #wi_yt_player {
   width: 100%;
   aspect-ratio: 16/9;
@@ -932,202 +672,179 @@ const keywords = seoMeta.keywords || '';
 </Layout>
 
 <script>
-  import { wicopy, showi, herowi, wiImgs, wiSmart } from '../lib/widev.js';
+  import { wicopy, showi, herowi, wiImgs, getls, savels, wiSmart } from '../lib/widev.js';
 
-  let scrollListener: any = null;
+  let scrollListener: any  = null;
   let handleYtClickRef: any = null;
-  let realtimeChannel: any = null;
+  let realtimeChannel: any  = null;
+  let isPostCleanedUp = false;
 
-  const getSupabase = async () => {
-    const { supabase } = await import('../lib/supabase.js');
-    return supabase;
-  };
+  const getDb = async () => (await import('../lib/supabase.js')).supabase;
 
   const initPost = () => {
+    isPostCleanedUp = false;
     const postEl = document.querySelector('.po_wrap') as HTMLElement;
     if (!postEl) return;
 
-    // Inicializar lazy loading de imágenes
     wiImgs('.po_wrap');
 
-    const slug = postEl.dataset.slug;
+    const slug   = postEl.dataset.slug;
     const postId = postEl.dataset.id;
     if (!slug) return;
 
+    // 1. Cache local → sin parpadeo de números
+    const cached = getls(`wi_stats_${slug}`) || getls(`wi_post_${slug}`);
+    if (cached) {
+      document.querySelectorAll('.po_vistas_count_text').forEach((el: any) => el.textContent = String(cached.vistas || 0));
+      document.querySelectorAll('.po_likes_count_text').forEach((el: any)  => el.textContent = String(cached.likes  || 0));
+    }
 
-
-    // 2. Controlar la barra de progreso al hacer scroll
+    // 2. Progress bar de lectura
     const progress = document.getElementById('po_progress');
     if (progress) {
       scrollListener = () => {
-        const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPct = totalHeight > 0 ? (window.scrollY / totalHeight) * 100 : 0;
-        progress.style.width = `${scrollPct}%`;
+        const total = document.documentElement.scrollHeight - window.innerHeight;
+        progress.style.width = total > 0 ? `${(window.scrollY / total) * 100}%` : '0%';
       };
       window.addEventListener('scroll', scrollListener);
     }
 
-    // 3. Generación de la Tabla de Contenidos (TOC) migrada al servidor para máxima velocidad y rendimiento Lighthouse.
-
-    // 4. Sincronización de Me encanta (Likes)
-    document.querySelectorAll('.po_like_sync').forEach(btn => {
-      if (localStorage.getItem(`wi_like_${slug}`)) {
-        btn.classList.add('active');
-      }
+    // 3. Likes toggle instantáneo
+    document.querySelectorAll('.po_like_sync').forEach((btn: any) => {
+      if (localStorage.getItem(`wi_like_${slug}`)) btn.classList.add('active');
 
       btn.addEventListener('click', () => {
-        if (localStorage.getItem(`wi_like_${slug}`)) return;
-        localStorage.setItem(`wi_like_${slug}`, '1');
+        const hasLiked = localStorage.getItem(`wi_like_${slug}`);
+        const diff = hasLiked ? -1 : 1;
 
-        document.querySelectorAll('.po_like_sync').forEach(b => b.classList.add('active'));
+        if (hasLiked) {
+          localStorage.removeItem(`wi_like_${slug}`);
+          document.querySelectorAll('.po_like_sync').forEach((b: any) => b.classList.remove('active'));
+        } else {
+          localStorage.setItem(`wi_like_${slug}`, '1');
+          document.querySelectorAll('.po_like_sync').forEach((b: any) => b.classList.add('active'));
+        }
 
-        document.querySelectorAll('.po_likes_count_text').forEach(el => {
-          el.textContent = String((parseInt(el.textContent || '0') || 0) + 1);
+        // UI inmediata
+        document.querySelectorAll('.po_likes_count_text').forEach((el: any) => {
+          el.textContent = String(Math.max(0, (parseInt(el.textContent || '0') || 0) + diff));
         });
 
-        getSupabase().then(db => {
-          db.rpc('incrementar_likes_blog', { post_slug: slug }).then(({ error }) => {
-            if (error) console.error('Error al incrementar likes:', error);
-          });
-        });
+        // Cache local inmediata
+        const cur = getls(`wi_stats_${slug}`) || { vistas: 0, likes: 0 };
+        cur.likes = Math.max(0, (cur.likes || 0) + diff);
+        savels(`wi_stats_${slug}`, cur, 1);
+
+        // RPC Supabase atómica
+        if (diff > 0) {
+          getDb().then((db: any) => db.rpc('incrementar_likes_blog', { post_slug: slug }));
+        }
       });
     });
 
-    // 5. Copiar enlace del artículo
-    document.querySelectorAll('.po_copy').forEach(btn => {
-      btn.addEventListener('click', () => {
-        wicopy(window.location.href, btn as any, '¡Enlace copiado! 🔗');
-      });
+    // 4. Copiar enlace
+    document.querySelectorAll('.po_copy').forEach((btn: any) => {
+      btn.addEventListener('click', () => wicopy(window.location.href, btn, '¡Enlace copiado! 🔗'));
     });
 
-    // 6. Lightbox de video de YouTube por delegación y MutationObserver
+    // 5. YouTube lightbox por delegación
     handleYtClickRef = (e: any) => {
       const link = e.target?.closest?.('a');
       if (!link) return;
       const href = link.getAttribute('href') || '';
       const ytMatch = href.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/i);
       if (!ytMatch) return;
-
       e.preventDefault();
       const id = ytMatch[1];
-
       let modal = document.getElementById('wi_yt_modal');
       if (!modal) {
         modal = document.createElement('div');
         modal.id = 'wi_yt_modal';
         modal.className = 'wiModal';
-        modal.innerHTML = `
-          <div class="modalBody">
-            <button class="modalX wi_yt_close">&times;</button>
-            <div id="wi_yt_player"></div>
-          </div>`;
+        modal.innerHTML = `<div class="modalBody"><div id="wi_yt_player"></div></div>`;
         document.body.appendChild(modal);
-
-        // Limpiar el reproductor automáticamente si el modal pierde la clase "active"
         const obs = new MutationObserver(() => {
           if (!modal!.classList.contains('active')) {
-            const player = document.getElementById('wi_yt_player');
-            if (player) player.innerHTML = '';
+            const p = document.getElementById('wi_yt_player');
+            if (p) p.innerHTML = '';
           }
         });
         obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
       }
-
       const player = document.getElementById('wi_yt_player');
       if (player) {
         player.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
       }
-
-      import('../lib/widev.js').then(m => m.abrirModal('wi_yt_modal'));
+      import('../lib/widev.js').then((m: any) => m.abrirModal('wi_yt_modal'));
     };
     document.addEventListener('click', handleYtClickRef);
 
-    // 6. Carga inteligente con wiSmart para vistas, estadísticas y realtime
+    // 6. wiSmart → vistas + stats reales + Realtime WebSocket
     wiSmart({
       fn: [
         async () => {
-          const db = await getSupabase();
+          if (isPostCleanedUp) return;
+          try {
+            const db = await getDb();
+            if (isPostCleanedUp) return;
 
-          // Aumentar vistas (solo una vez por sesión del navegador)
-          if (!sessionStorage.getItem(`wi_view_${slug}`)) {
-            sessionStorage.setItem(`wi_view_${slug}`, '1');
-            db.rpc('incrementar_vistas_blog', { post_slug: slug }).then(({ error }) => {
-              if (error) console.error('Error al incrementar vistas:', error);
-            });
-          }
+            // Vistas: solo 1x por sesión (sessionStorage no persiste entre sesiones)
+            if (!sessionStorage.getItem(`wi_view_${slug}`)) {
+              sessionStorage.setItem(`wi_view_${slug}`, '1');
+              db.rpc('incrementar_vistas_blog', { post_slug: slug });
+            }
 
-          // Conexión pasiva a Supabase Realtime y estadísticas
-          if (postId) {
-            db.from('blog')
-              .select('likes, vistas')
-              .eq('id', postId)
-              .maybeSingle()
-              .then(({ data }) => {
-                if (data) {
-                  if (typeof data.likes === 'number') {
-                    document.querySelectorAll('.po_likes_count_text').forEach(el => {
-                      el.textContent = String(data.likes);
-                    });
-                  }
-                  if (typeof data.vistas === 'number') {
-                    document.querySelectorAll('.po_vistas_count_text').forEach(el => {
-                      el.textContent = String(data.vistas);
-                    });
-                  }
-                }
-              });
+            // Fetch stats reales desde Supabase
+            if (postId) {
+              const { data } = await db.from('blog').select('likes, vistas').eq('id', postId).maybeSingle();
+              if (isPostCleanedUp) return;
+              if (data) {
+                document.querySelectorAll('.po_likes_count_text').forEach((el: any)  => el.textContent = String(data.likes));
+                document.querySelectorAll('.po_vistas_count_text').forEach((el: any) => el.textContent = String(data.vistas));
+                savels(`wi_stats_${slug}`, { likes: data.likes, vistas: data.vistas }, 1);
+              }
 
-            realtimeChannel = db.channel(`stats_realtime_${postId}`)
-              .on(
-                'postgres_changes',
-                {
+              // Realtime WebSocket — actualizaciones tipo Facebook
+              if (isPostCleanedUp) return;
+              realtimeChannel = db.channel(`stats_${postId}`)
+                .on('postgres_changes', {
                   event: 'UPDATE',
                   schema: 'public',
                   table: 'blog',
-                  filter: `id=eq.${postId}`,
-                },
-                (payload: any) => {
-                  const { likes: nuevosLikes, vistas: nuevasVistas } = payload.new;
-                  if (typeof nuevosLikes === 'number') {
-                    document.querySelectorAll('.po_likes_count_text').forEach(el => {
-                      el.textContent = String(nuevosLikes);
-                    });
-                  }
-                  if (typeof nuevasVistas === 'number') {
-                    document.querySelectorAll('.po_vistas_count_text').forEach(el => {
-                      el.textContent = String(nuevasVistas);
-                    });
-                  }
-                }
-              )
-              .subscribe();
+                  filter: `id=eq.${postId}`
+                }, (payload: any) => {
+                  const { likes, vistas } = payload.new;
+                  if (typeof likes  === 'number') document.querySelectorAll('.po_likes_count_text').forEach((el: any)  => el.textContent = String(likes));
+                  if (typeof vistas === 'number') document.querySelectorAll('.po_vistas_count_text').forEach((el: any) => el.textContent = String(vistas));
+                })
+                .subscribe();
+
+              // Si se limpió mientras nos suscribíamos, remover inmediatamente
+              if (isPostCleanedUp && realtimeChannel) {
+                db.removeChannel(realtimeChannel);
+                realtimeChannel = null;
+              }
+            }
+          } catch (e: any) {
+            console.error('[slug] Supabase init:', e);
           }
         }
       ]
     });
 
-    // 7. Lanzar efectos de entrada
+    // 7. Efectos de entrada
     if (typeof herowi === 'function') herowi();
-    if (typeof showi === 'function') showi();
+    if (typeof showi  === 'function') showi();
   };
 
   const cleanupPost = () => {
-    if (scrollListener) {
-      window.removeEventListener('scroll', scrollListener);
-      scrollListener = null;
-    }
-    if (handleYtClickRef) {
-      document.removeEventListener('click', handleYtClickRef);
-      handleYtClickRef = null;
-    }
-    if (realtimeChannel) {
-      getSupabase().then(db => {
-        db.removeChannel(realtimeChannel);
-        realtimeChannel = null;
-      });
-    }
+    isPostCleanedUp = true;
+    if (scrollListener)   { window.removeEventListener('scroll', scrollListener); scrollListener = null; }
+    if (handleYtClickRef) { document.removeEventListener('click', handleYtClickRef); handleYtClickRef = null; }
+    if (realtimeChannel)  { getDb().then((db: any) => { if (realtimeChannel) { db.removeChannel(realtimeChannel); realtimeChannel = null; } }); }
   };
 
   document.addEventListener('astro:page-load', initPost);
   document.addEventListener('astro:before-preparation', cleanupPost);
+
 </script>
