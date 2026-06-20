@@ -702,7 +702,7 @@ import { app, id } from '../wii.js';
 <script>
   import { supabase } from '../lib/supabase.js';
   import { protegerRuta } from '../lib/auth.js';
-  import { wiSpin, Notificacion, Mensaje, getls, savels } from '../lib/widev.js';
+  import { wiSpin, Notificacion, Mensaje, getls, savels, minus } from '../lib/widev.js';
   import { linkweb } from '../wii.js';
   import { mdToHtml, wiSanihtml, countWords } from '../lib/blog/procesarmd.js';
 
@@ -948,8 +948,7 @@ import { app, id } from '../wii.js';
         const activeBtn = document.activeElement as HTMLButtonElement;
         const btnSelector = (activeBtn && activeBtn.id === 'nu_submit_btn_aside') ? '#nu_submit_btn_aside' : '#nu_submit';
         
-        let catVal = (document.getElementById('nu_cat_inp') as HTMLInputElement).value.trim();
-        if (catVal) catVal = catVal.charAt(0).toUpperCase() + catVal.slice(1).toLowerCase();
+        let catVal = (document.getElementById('nu_cat_inp') as HTMLInputElement).value.trim().toLowerCase();
 
         const titulo = (document.getElementById('nu_titulo') as HTMLInputElement).value.trim();
         const resumen = (document.getElementById('nu_resumen') as HTMLTextAreaElement).value.trim();
@@ -1315,6 +1314,7 @@ import { app, id } from '../wii.js';
 
     cargarSugerencias();
     setupEvents(u);
+    minus('#nu_cat_inp');
 
     // Rellenar formulario (Edición o Draft)
     if (isEdit && editSlug) {

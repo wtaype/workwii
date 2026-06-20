@@ -1,5 +1,6 @@
 const COMUN = [
-  { href: '/blog',   ico: 'fa-blog',  txt: 'Blog de Ayuda'},
+  { href: '/remotos', ico: 'fa-briefcase', txt: 'Trabajo Remoto' },
+  { href: '/blog',   ico: 'fa-blog',  txt: 'Blog Apoyo'},
   { href: '/acerca', ico: 'fa-circle-info', txt: 'Acerca' }
 ];
 

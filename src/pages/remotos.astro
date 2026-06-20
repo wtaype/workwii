@@ -1,0 +1,1740 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { seo } from '../lib/seo.js';
+
+// Top 10 Plataformas Curadas de Trabajo Remoto Seguro (Ordenado de mejor a peor)
+const plataformas = [
+  {
+    id: 'weworkremotely',
+    nombre: 'We Work Remotely',
+    url: 'https://weworkremotely.com',
+    logo: 'https://www.google.com/s2/favicons?sz=128&domain=weworkremotely.com',
+    categoria: 'tech',
+    categoriaLabel: 'Tech & Startups',
+    ingles: 'Intermedio - Avanzado',
+    paises: 'Mundial (Worldwide - Contrata en cualquier país)',
+    descripcion: 'La bolsa de trabajo remoto más grande del mundo. Altamente confiable y muy orientada al ecosistema tecnológico global.',
+    pros: [
+      'Acceso 100% gratuito para candidatos.',
+      'Las empresas pagan $299 por oferta publicada, lo que ahuyenta a los estafadores.',
+      'Gran volumen de vacantes en desarrollo de software y marketing.'
+    ],
+    contras: [
+      'Altísima competencia (cientos de aplicaciones por puesto).',
+      'El inglés conversacional fluido es obligatorio para la mayoría de roles.'
+    ],
+    requisitos: 'Tener portafolio online (GitHub, Behance, etc.) y enviar CV detallado en inglés.',
+    tipExperto: 'Postula en las primeras 24 horas de la publicación. Las ofertas de calidad se llenan rápido de aplicantes calificados.',
+    evitarEstafas: 'Ten cuidado si te redirigen a formularios de terceros no oficiales de la empresa que te piden número de seguridad social o datos bancarios en el primer paso.',
+    metrics: {
+      seguridad: 98,
+      vacantes: 96,
+      soporte: 90,
+      gratuito: 100
+    }
+  },
+  {
+    id: 'prosmarketplace',
+    nombre: 'Pros Marketplace',
+    url: 'https://prosmarketplace.com',
+    logo: 'https://www.google.com/s2/favicons?sz=128&domain=prosmarketplace.com',
+    categoria: 'latam',
+    categoriaLabel: 'LATAM Friendly',
+    ingles: 'Intermedio - Avanzado',
+    paises: 'América Latina (Exclusivo para talento de LATAM)',
+    descripcion: 'Mercado especializado en talento de Latinoamérica que conecta profesionales de forma directa con empresas de EE.UU.',
+    pros: [
+      'Vacantes adaptadas a la zona horaria de LATAM.',
+      'Pagos estables y directos en dólares.',
+      'Te guían y preparan para la entrevista final con el cliente.'
+    ],
+    contras: [
+      'Proceso de registro inicial estricto con videollamada obligatoria en inglés.',
+      'Vacantes concentradas en roles técnicos y de asistencia avanzada.'
+    ],
+    requisitos: 'Aprobar la entrevista inicial de inglés conversacional y verificación de identidad.',
+    tipExperto: 'Prepárate bien para el video de introducción. Un inglés fluido y una buena iluminación en tu video te aseguran entrevistas de inmediato.',
+    evitarEstafas: 'Pros Marketplace gestiona todo dentro de su plataforma segura; reporta si una empresa cliente te pide tus datos personales de contacto por fuera.',
+    metrics: {
+      seguridad: 98,
+      vacantes: 95,
+      soporte: 92,
+      gratuito: 100
+    }
+  },
+  {
+    id: 'flexjobs',
+    nombre: 'FlexJobs',
+    url: 'https://www.flexjobs.com',
+    logo: 'https://www.google.com/s2/favicons?sz=128&domain=flexjobs.com',
+    categoria: 'premium',
+    categoriaLabel: 'Hand-Screened Premium',
+    ingles: 'Básico - Avanzado',
+    paises: 'Mundial (Foco principal en empresas de EE.UU.)',
+    descripcion: 'Plataforma líder que verifica manualmente cada vacante para garantizar que sea 100% real, segura y libre de estafas.',
+    pros: [
+      'Listados 100% libres de estafas y publicidad molesta.',
+      'Soporte directo y revisión personalizada de perfiles.',
+      'Acceso a coaching laboral y tests de habilidades.'
+    ],
+    contras: [
+      'Requiere suscripción de pago para acceder a las ofertas.',
+      'Pocas ofertas exclusivas que no se encuentren en la web corporativa.'
+    ],
+    requisitos: 'Crear una cuenta, pagar la membresía y subir tu currículum optimizado.',
+    tipExperto: 'Es ideal si valoras tu tiempo y quieres evitar al 100% ofertas dudosas. Se enfoca fuertemente en corporaciones y multinacionales estadounidenses.',
+    evitarEstafas: 'Aunque FlexJobs filtra todo de forma manual, nunca aceptes propuestas de reclutadores que te contacten por fuera pidiéndote depósitos para herramientas.',
+    metrics: {
+      seguridad: 100,
+      vacantes: 100,
+      soporte: 95,
+      gratuito: 20
+    }
+  },
+  {
+    id: 'remote-co',
+    nombre: 'Remote.co',
+    url: 'https://remote.co',
+    logo: 'https://www.google.com/s2/favicons?sz=128&domain=remote.co',
+    categoria: 'general',
+    categoriaLabel: 'General Remoto',
+    ingles: 'Intermedio - Avanzado',
+    paises: 'Mundial (Filtra ofertas buscando "Worldwide")',
+    descripcion: 'Portal curado de ofertas remotas en diseño, servicio al cliente, redacción, desarrollo y asistencia virtual.',
+    pros: [
+      'Excelente segmentación por roles.',
+      'Solo listan empresas con una cultura de trabajo remoto consolidada.',
+      'Es completamente gratuita para postular.'
+    ],
+    contras: [
+      'Muchas vacantes se limitan únicamente a residentes fiscales en EE.UU.',
+      'El diseño de la web es sencillo pero a veces tiene ofertas repetidas.'
+    ],
+    requisitos: 'Subir currículum adaptado al mercado ATS internacional.',
+    tipExperto: 'Filtra siempre buscando el término "Worldwide" en la descripción de la oferta para asegurarte de que contratan talento en Latinoamérica.',
+    evitarEstafas: 'Desconfía si te ofrecen una entrevista por chat escrito (Telegram/WhatsApp). Las empresas en Remote.co siempre hacen videollamadas formales.',
+    metrics: {
+      seguridad: 95,
+      vacantes: 94,
+      soporte: 85,
+      gratuito: 100
+    }
+  },
+  {
+    id: 'dynamitejobs',
+    nombre: 'Dynamite Jobs',
+    url: 'https://dynamitejobs.com',
+    logo: 'https://www.google.com/s2/favicons?sz=128&domain=dynamitejobs.com',
+    categoria: 'general',
+    categoriaLabel: 'General Remoto',
+    ingles: 'Intermedio - Avanzado',
+    paises: 'Mundial (Foco en vacantes de EE.UU. y Europa)',
+    descripcion: 'Plataforma con un equipo humano detrás que verifica manualmente que cada oferta tenga una compensación económica clara.',
+    pros: [
+      'Verificación humana estricta de salarios y condiciones.',
+      'Excelente panel interactivo para el candidato.',
+      'Muchas ofertas en marketing y ventas.'
+    ],
+    contras: [
+      'La mayoría de puestos exigen disponibilidad en horarios de EE.UU.',
+      'El proceso de selección inicial de la plataforma puede ser algo lento.'
+    ],
+    requisitos: 'Completar tu perfil en la plataforma y subir un video corto de presentación (opcional pero sugerido).',
+    tipExperto: 'Rellena tu perfil de candidato al 100%. Los reclutadores suelen buscar en su base de datos interna antes de publicar la oferta al público.',
+    evitarEstafas: 'Nunca aceptes recibir pagos a través de cheques digitales para comprar equipo. Es la estafa más común de falsos reclutadores en internet.',
+    metrics: {
+      seguridad: 95,
+      vacantes: 92,
+      soporte: 85,
+      gratuito: 100
+    }
+  },
+  {
+    id: 'remotive',
+    nombre: 'Remotive',
+    url: 'https://remotive.com',
+    logo: 'https://www.google.com/s2/favicons?sz=128&domain=remotive.com',
+    categoria: 'tech',
+    categoriaLabel: 'Tech & Startups',
+    ingles: 'Intermedio - Avanzado',
+    paises: 'Mundial (Soporta huso horario de Latinoamérica)',
+    descripcion: 'Bolsa de trabajo enfocada en startups que destaca por mostrar de forma transparente los salarios en gran parte de sus anuncios.',
+    pros: [
+      'Transparencia salarial visible en muchas ofertas.',
+      'Filtros rápidos muy intuitivos por zona horaria compatible.',
+      'Comunidad activa y boletín con ofertas frescas.'
+    ],
+    contras: [
+      'Poca variedad en roles de administración tradicionales.',
+      'Enfoque predominantemente tecnológico.'
+    ],
+    requisitos: 'CV en PDF en inglés y perfil de LinkedIn actualizado.',
+    tipExperto: 'Utiliza su filtro de "Timezone" para seleccionar vacantes alineadas con el huso horario de Latinoamérica (EST/PST).',
+    evitarEstafas: 'Si una startup te ofrece contratarte inmediatamente sin una entrevista técnica detallada, retrocede; podría ser una estafa.',
+    metrics: {
+      seguridad: 94,
+      vacantes: 93,
+      soporte: 80,
+      gratuito: 100
+    }
+  },
+  {
+    id: 'torre',
+    nombre: 'Torre.ai',
+    url: 'https://torre.ai',
+    logo: 'https://www.google.com/s2/favicons?sz=128&domain=torre.ai',
+    categoria: 'latam',
+    categoriaLabel: 'LATAM Friendly',
+    ingles: 'Básico - Avanzado',
+    paises: 'América Latina y Global (Fuerte en vacantes hispanas)',
+    descripcion: 'Plataforma de emparejamiento inteligente que utiliza inteligencia artificial y un Genoma Profesional para conectarte con oportunidades remotas.',
+    pros: [
+      'Fuerte presencia en Latinoamérica y ofertas en español.',
+      'Algoritmo de emparejamiento automático por habilidades.',
+      'Es completamente gratuita para candidatos.'
+    ],
+    contras: [
+      'Crear y perfeccionar tu "Genoma Profesional" requiere bastante tiempo.',
+      'La interfaz puede resultar abrumadora por la gran cantidad de datos.'
+    ],
+    requisitos: 'Registrar tu perfil detallado (Genoma) y realizar tests rápidos de aptitudes.',
+    tipExperto: 'Participa en los tests de habilidades de Torre. Los perfiles con insignias de aptitudes aprobadas aparecen primero en las búsquedas de las empresas.',
+    evitarEstafas: 'Verifica la reputación de la empresa dentro de Torre. Si una compañía no tiene historial ni reseñas de otros candidatos, postula con cautela.',
+    metrics: {
+      seguridad: 92,
+      vacantes: 90,
+      soporte: 88,
+      gratuito: 100
+    }
+  },
+  {
+    id: 'workingnomads',
+    nombre: 'Working Nomads',
+    url: 'https://www.workingnomads.com/jobs',
+    logo: 'https://www.google.com/s2/favicons?sz=128&domain=workingnomads.com',
+    categoria: 'general',
+    categoriaLabel: 'General Remoto',
+    ingles: 'Intermedio - Avanzado',
+    paises: 'Mundial (Contratos B2B e independientes)',
+    descripcion: 'Un portal clásico curado enfocado en profesionales independientes y nómadas digitales que buscan contratos B2B.',
+    pros: [
+      'Categorización de ofertas sumamente limpia.',
+      'Excelente para perfiles no tecnológicos como redactores, traductores y soporte.',
+      'Sencilla de usar, sin registros obligatorios al inicio.'
+    ],
+    contras: [
+      'El volumen diario de nuevas ofertas es menor que en LinkedIn.',
+      'Muchas vacantes requieren experiencia remota previa demostrable.'
+    ],
+    requisitos: 'Enviar CV y portafolio adaptados a contratos por servicios internacionales.',
+    tipExperto: 'Explora la sección de "Writing" y "Customer Success" si buscas puestos sin experiencia en desarrollo.',
+    evitarEstafas: 'Si te piden descargar programas raros (.exe) o extensiones de navegador para realizar una "prueba técnica", cancélalo de inmediato.',
+    metrics: {
+      seguridad: 92,
+      vacantes: 90,
+      soporte: 75,
+      gratuito: 100
+    }
+  },
+  {
+    id: 'workana',
+    nombre: 'Workana',
+    url: 'https://www.workana.com',
+    logo: 'https://www.google.com/s2/favicons?sz=128&domain=workana.com',
+    categoria: 'latam',
+    categoriaLabel: 'LATAM Friendly',
+    ingles: 'Básico - Intermedio',
+    paises: 'América Latina y España (Trabajo por proyectos)',
+    descripcion: 'La plataforma líder de trabajo remoto y freelance en español. Excelente para ganar experiencia y construir reputación inicial.',
+    pros: [
+      'Soporte 100% en español.',
+      'Sistema de pago en garantía (Escrow): el cliente deposita y liberas al entregar.',
+      'Ideal para construir portafolio local rápido.'
+    ],
+    contras: [
+      'Cobran comisiones altas (hasta el 20% al inicio por proyecto).',
+      'Mucha competencia de precios bajos.'
+    ],
+    requisitos: 'Completar tu perfil con ejemplos de trabajos previos y pasar una prueba de políticas.',
+    tipExperto: 'Nunca envíes propuestas genéricas copiadas y pegadas. Lee bien lo que pide el cliente y explícale exactamente cómo vas a resolver su problema.',
+    evitarEstafas: 'Bajo ninguna circunstancia aceptes que un cliente te pague por fuera de Workana (como Western Union o transferencia directa) antes de entregar; podrías no cobrar.',
+    metrics: {
+      seguridad: 90,
+      vacantes: 88,
+      soporte: 85,
+      gratuito: 100
+    }
+  },
+  {
+    id: 'linkedin',
+    nombre: 'LinkedIn Jobs',
+    url: 'https://www.linkedin.com/jobs',
+    logo: 'https://www.google.com/s2/favicons?sz=128&domain=linkedin.com',
+    categoria: 'general',
+    categoriaLabel: 'General Remoto',
+    ingles: 'Básico - Avanzado',
+    paises: 'Local y Global (Filtros por país y región)',
+    descripcion: 'La sección de empleo de la red profesional más grande del mundo. Millones de ofertas pero requiere filtros de seguridad.',
+    pros: [
+      'El mayor volumen de ofertas remotas del mercado.',
+      'Permite contactar directamente al reclutador que publicó el puesto.',
+      'Alertas de empleo configurables en tiempo real.'
+    ],
+    contras: [
+      'Alto nivel de spam y ofertas fantasma (ghost jobs).',
+      'Es donde ocurren más intentos de estafas de suplantación de identidad.'
+    ],
+    requisitos: 'Perfil optimizado con palabras clave, foto profesional y portafolio en destacados.',
+    tipExperto: 'Cuando encuentres una vacante remota en LinkedIn, no uses "Solicitud Sencilla". Ve al sitio web oficial de la empresa y postula directamente desde allí.',
+    evitarEstafas: 'Desconfía de ofertas rápidas por Telegram, correos con dominios falsos (ej. @gmail en vez de @empresa.com) o cuestionarios escritos en Google Forms.',
+    metrics: {
+      seguridad: 75,
+      vacantes: 90,
+      soporte: 70,
+      gratuito: 100
+    }
+  }
+];
+
+// Helper functions for PageSpeed circular metrics
+const getScoreClass = (score: number) => {
+  if (score >= 90) return 'score-high';
+  if (score >= 60) return 'score-med';
+  return 'score-low';
+};
+
+const radius = 50;
+const circumference = 2 * Math.PI * radius; // ~314.16
+const getOffset = (score: number) => circumference - (circumference * score) / 100;
+---
+
+<style>
+/* ── ESTILOS DEL DASHBOARD DE EMPLEO REMOTO (TIPO PAGESPEED CARD - 100% ANCHO) ── */
+.remoto_ct {
+  width: 100%;
+  margin: 0 auto;
+  padding: 3vh 2vh 8vh;
+  font-family: var(--ff_P);
+  box-sizing: border-box;
+}
+
+/* 1. CABECERA INTEGRADA MINIMALISTA */
+.re_header_ct {
+  text-align: center;
+  margin-top: 4vh;
+  margin-bottom: 5vh;
+  padding: 0 4vw;
+}
+.re_header_ct h1 {
+  font-family: var(--ff_O);
+  font-size: var(--fz_x2);
+  font-weight: 950;
+  color: var(--tx1);
+  margin: 0 0 2vh;
+  letter-spacing: -1.5px;
+}
+.re_header_ct p {
+  font-family: var(--ff_P);
+  font-size: var(--fz_m2);
+  color: var(--tx2);
+  line-height: 1.7;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* 2. LAYOUT DIVIDIDO (SIDEBAR INDEX 25% | MAIN CONTENT 75%) */
+.remoto_layout {
+  display: flex;
+  gap: 2.5%;
+  align-items: flex-start;
+  width: 100%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* BARRA LATERAL INDEX */
+.remoto_sidebar {
+  width: 25%;
+  position: sticky;
+  top: 8vh;
+  flex-shrink: 0;
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 1.8vh;
+  padding: 2.2vh;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease, opacity 0.2s ease;
+}
+
+.sidebar_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2vh;
+  border-bottom: 1px solid var(--brd);
+  padding-bottom: 1.5vh;
+}
+.sidebar_title {
+  font-family: var(--ff_P);
+  font-size: var(--fz_m1);
+  font-weight: 800;
+  color: var(--tx1);
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+  white-space: nowrap;
+  transition: opacity 0.25s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.sidebar_title i {
+  color: var(--mco);
+}
+.btn_collapse {
+  background: color-mix(in srgb, var(--mco) 8%, var(--wb));
+  border: 1px solid color-mix(in srgb, var(--mco) 20%, var(--brd));
+  border-radius: 1vh;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--mco);
+  transition: all var(--tr_f);
+  flex-shrink: 0;
+}
+.btn_collapse:hover {
+  background: var(--mco);
+  color: var(--wb);
+  border-color: var(--mco);
+}
+
+.sidebar_nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+}
+.sidebar_item {
+  display: flex;
+  align-items: center;
+  gap: 1.2vh;
+  padding: 1.2vh 1.5vh;
+  border-radius: 1vh;
+  text-decoration: none;
+  color: var(--tx2);
+  font-weight: 600;
+  transition: all var(--tr_f);
+  border: .1vh solid var(--brd);
+  background: var(--wb);
+  position: relative;
+  overflow: hidden;
+}
+.sidebar_rank {
+  font-family: var(--ff_P);
+  font-size: var(--fz_s3);
+  font-weight: 900;
+  padding: 0.4vh 0.8vh;
+  border-radius: 0.6vh;
+  min-width: 35px;
+  text-align: center;
+  display: inline-block;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: transform var(--tr_f);
+  box-sizing: border-box;
+}
+.rank_1 {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%) !important;
+  color: #000 !important;
+}
+.rank_2 {
+  background: linear-gradient(135deg, #C0C0C0 0%, #909090 100%) !important;
+  color: #fff !important;
+}
+.rank_3 {
+  background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%) !important;
+  color: #fff !important;
+}
+.rank_other {
+  background: transparent;
+  color: var(--tx1);
+  border: 1px solid var(--brd);
+}
+.sidebar_name {
+  font-family: var(--ff_P);
+  font-size: var(--fz_s4);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.25s ease;
+  text-align: left;
+}
+.sidebar_tag {
+  font-family: var(--ff_P);
+  font-size: var(--fz_s1);
+  font-weight: 700;
+  text-transform: capitalize;
+  padding: 0.4vh 0.8vh;
+  border-radius: 0.5vh;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  margin-left: auto;
+  transition: opacity 0.25s ease;
+}
+.tag_tech    { background: color-mix(in srgb, var(--mco) 10%, transparent); color: var(--mco); }
+.tag_premium { background: color-mix(in srgb, var(--warning) 10%, transparent); color: var(--warning); }
+.tag_latam   { background: color-mix(in srgb, var(--success) 10%, transparent); color: var(--success); }
+.tag_general { background: color-mix(in srgb, var(--mco) 10%, transparent); color: var(--mco); }
+
+.sidebar_item:hover {
+  background: var(--bg4);
+  color: var(--tx1);
+  border-color: var(--cc);
+  transform: translateX(2px);
+}
+.sidebar_item:hover .sidebar_rank {
+  transform: scale(1.08) rotate(-3deg);
+}
+.sidebar_item.active {
+  background: color-mix(in srgb, var(--cc) 8%, var(--wb)) !important;
+  color: var(--cc) !important;
+  border: 1px solid var(--cc) !important;
+  border-left: 4.5px solid var(--cc) !important;
+  font-weight: 750;
+}
+.sidebar_item.active .sidebar_rank {
+  transform: scale(1.03);
+}
+
+.sidebar_divider {
+  border-top: 1.5px dashed color-mix(in srgb, var(--warning) 40%, var(--brd));
+  margin: 1vh 0;
+  width: 100%;
+}
+
+/* Special Advice Sidebar Item */
+.sidebar_advice_item {
+  border-radius: 1vh !important;
+}
+.rank_advice {
+  background: linear-gradient(135deg, #FFDA34 0%, #FF9800 100%) !important;
+  color: #000 !important;
+  box-shadow: 0 4px 10px rgba(255, 218, 52, 0.25);
+  border-radius: 50% !important;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.tag_advice {
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
+  color: var(--warning) !important;
+  border: 1px solid color-mix(in srgb, var(--warning) 20%, transparent);
+  margin-left: auto;
+}
+
+/* ESTADO COLAPSADO DEL LAYOUT Y SIDEBAR */
+.remoto_layout.sidebar-collapsed .remoto_sidebar {
+  width: 76px;
+  padding: 2.2vh 1vh;
+}
+.remoto_layout.sidebar-collapsed .sidebar_title,
+.remoto_layout.sidebar-collapsed .sidebar_name,
+.remoto_layout.sidebar-collapsed .sidebar_tag,
+.remoto_layout.sidebar-collapsed .sidebar_divider {
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+.remoto_layout.sidebar-collapsed #collapse-icon {
+  transform: rotate(180deg);
+}
+
+/* CONTENIDO PRINCIPAL (75%) */
+.remoto_content {
+  flex: 1;
+  min-width: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* BUSCADOR SUPERIOR */
+.re_search_wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.5vh;
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 1.5vh;
+  padding: 1.5vh 2.5vh;
+  margin-bottom: 4vh;
+  transition: all var(--tr_f);
+  box-sizing: border-box;
+}
+.re_search_wrap:focus-within {
+  border-color: var(--mco);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mco) 12%, transparent);
+}
+.re_search_ico {
+  color: var(--tx3);
+  font-size: var(--fz_m3);
+  flex-shrink: 0;
+}
+.re_search_wrap:focus-within .re_search_ico {
+  color: var(--mco);
+}
+.re_search {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: var(--fz_m2);
+  color: var(--tx1);
+  outline: none;
+  font-family: var(--ff_P);
+}
+.re_search::placeholder {
+  color: var(--tx3);
+}
+.re_search_count {
+  font-family: var(--ff_O);
+  font-size: var(--fz_s3);
+  color: var(--tx3);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.re_empty {
+  text-align: center;
+  padding: 8vh;
+  color: var(--tx3);
+  font-size: var(--fz_m3);
+  font-family: var(--ff_P);
+  background: var(--wb);
+  border: 1px dashed var(--brd);
+  border-radius: 1.8vh;
+}
+.re_empty i {
+  margin-right: 1vh;
+  color: var(--mco);
+}
+
+/* 3. LISTA VERTICAL DE PLATAFORMAS (TIPO PAGESPEED CARD - ALTERNADO) */
+.remoto_list_wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4vh;
+  width: 100%;
+}
+.remoto_horizontal_row {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 4vw;
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 2.5vh;
+  padding: 5vh;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+  box-sizing: border-box;
+  width: 100%;
+  transition: border-color var(--tr_f), box-shadow var(--tr_f);
+}
+.remoto_horizontal_row:hover {
+  border-color: var(--mco);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.02);
+}
+.remoto_horizontal_row.row-reversed {
+  grid-template-columns: 1fr 1.25fr;
+}
+.remoto_horizontal_row.hidden {
+  display: none !important;
+}
+
+/* COLUMNA IZQUIERDA: INFORMACIÓN DE PÁGINA, PROS, CONTRAS, PAÍSES */
+.remoto_row_left {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5vh;
+  order: 1;
+}
+.remoto_row_header {
+  display: flex;
+  align-items: center;
+  gap: 2vh;
+  flex-wrap: wrap;
+}
+
+/* Rank Badges Estilizados */
+.re_rank_badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ff_O);
+  font-size: var(--fz_s4);
+  font-weight: 900;
+  padding: 0.6vh 1.4vh;
+  border-radius: 1vh;
+  line-height: 1;
+}
+.rank_1 {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  color: #000;
+  box-shadow: 0 4px 10px rgba(255, 215, 0, 0.25);
+}
+.rank_2 {
+  background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(192, 192, 192, 0.2);
+}
+.rank_3 {
+  background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(205, 127, 50, 0.2);
+}
+.rank_other {
+  background: var(--bg4);
+  color: var(--tx2);
+  border: 1px solid var(--brd);
+}
+
+.remoto_row_header h3 {
+  font-family: var(--ff_O);
+  font-size: var(--fz_l1);
+  font-weight: 800;
+  color: var(--tx1);
+  margin: 0;
+}
+.re_title_link {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--tr_f);
+}
+.re_title_link:hover {
+  color: var(--mco);
+}
+
+.re_badge {
+  font-family: var(--ff_O);
+  font-size: var(--fz_s3);
+  font-weight: 800;
+  padding: 0.6vh 1.2vh;
+  border-radius: 2vh;
+  text-transform: uppercase;
+}
+.badge_tech    { background: color-mix(in srgb, var(--mco) 10%, transparent); color: var(--mco); }
+.badge_premium { background: color-mix(in srgb, var(--warning) 10%, transparent); color: var(--warning); }
+.badge_latam   { background: color-mix(in srgb, var(--success) 10%, transparent); color: var(--success); }
+.badge_general { background: color-mix(in srgb, var(--tx3) 10%, transparent); color: var(--tx2); }
+
+.remoto_row_desc {
+  font-family: var(--ff_P);
+  font-size: var(--fz_m2);
+  color: var(--tx2);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.re_pros_cons_list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3vh;
+}
+.re_list_group strong {
+  display: flex;
+  align-items: center;
+  gap: 0.8vh;
+  font-family: var(--ff_O);
+  font-size: var(--fz_s3);
+  font-weight: 800;
+  margin-bottom: 1.5vh;
+}
+.re_list_group strong.pros_title {
+  color: var(--success);
+}
+.re_list_group strong.contras_title {
+  color: var(--error);
+}
+.re_list_group ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+}
+.re_list_group li {
+  font-family: var(--ff_P);
+  font-size: var(--fz_s3);
+  color: var(--tx2);
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2vh;
+}
+.re_list_group li .list-icon {
+  margin-top: 0.3vh;
+  flex-shrink: 0;
+  font-size: var(--fz_s4);
+}
+
+.text-success {
+    color: var(--success);
+}
+.text-error {
+    color: var(--error);
+}
+
+.re_location_line {
+  font-family: var(--ff_P);
+  font-size: var(--fz_s3);
+  color: var(--tx2);
+  line-height: 1.5;
+  border-top: 1px solid var(--brd);
+  padding-top: 2.5vh;
+  display: flex;
+  align-items: center;
+  gap: 1.2vh;
+}
+.re_location_line i {
+  color: var(--mco);
+  font-size: var(--fz_m2);
+}
+.re_requirements {
+  font-family: var(--ff_P);
+  font-size: var(--fz_s3);
+  color: var(--tx2);
+  line-height: 1.5;
+  background: var(--bg4);
+  padding: 2vh;
+  border-radius: 1vh;
+  border: 1px dashed var(--brd);
+}
+.re_requirements strong {
+  color: var(--tx1);
+  font-family: var(--ff_O);
+}
+
+/* COLUMNA DERECHA: CIRCULOS PAGESPEED Y DETALLES */
+.remoto_row_right {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5vh;
+  justify-content: space-between;
+  border-left: 1px solid var(--brd);
+  padding-left: 2vw;
+  order: 2;
+}
+
+/* Swapped / Alternating Column Positions */
+.remoto_horizontal_row.row-reversed .remoto_row_left {
+  order: 2;
+  border-left: 1px solid var(--brd);
+  border-right: none;
+  padding-left: 2vw;
+  padding-right: 0;
+}
+.remoto_horizontal_row.row-reversed .remoto_row_right {
+  order: 1;
+  border-left: none;
+  border-right: 1px solid var(--brd);
+  padding-left: 0;
+  padding-right: 2vw;
+}
+
+
+/* PageSpeed circular metrics layout */
+.re_metrics_box {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+  width: 100%;
+}
+.re_metrics_title {
+  font-family: var(--ff_O);
+  font-size: var(--fz_s3);
+  font-weight: 800;
+  color: var(--tx3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+.re_metrics_row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5vw;
+  width: 100%;
+  text-align: center;
+}
+.re_metric_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8vh;
+}
+.re_metric_item span {
+  font-family: var(--ff_O);
+  font-size: var(--fz_s3);
+  font-weight: 700;
+  color: var(--tx2);
+  line-height: 1.2;
+}
+
+/* SVGs circulares de PageSpeed - Thinner & Cleaner */
+.ps_circle_mini {
+  width: 70px;
+  height: 70px;
+  transition: transform var(--tr_m);
+}
+.ps_circle_mini:hover {
+  transform: scale(1.08);
+}
+.ps_circle_track {
+  fill: none;
+  stroke-width: 6;
+}
+.ps_circle_val {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 60px 60px;
+}
+.ps_circle_text {
+  font-family: var(--ff_O);
+  font-size: 32px;
+  font-weight: 800;
+}
+
+circle.score-high { stroke: var(--success); fill: none; }
+circle.score-med  { stroke: var(--warning); fill: none; }
+circle.score-low  { stroke: var(--error); fill: none; }
+
+text.score-high { fill: var(--success); stroke: none !important; }
+text.score-med  { fill: var(--warning); stroke: none !important; }
+text.score-low  { fill: var(--error); stroke: none !important; }
+
+.track_score-high {
+  stroke: color-mix(in srgb, var(--success) 15%, var(--wb));
+  fill: color-mix(in srgb, var(--success) 3%, var(--wb));
+}
+.track_score-med {
+  stroke: color-mix(in srgb, var(--warning) 15%, var(--wb));
+  fill: color-mix(in srgb, var(--warning) 3%, var(--wb));
+}
+.track_score-low {
+  stroke: color-mix(in srgb, var(--error) 15%, var(--wb));
+  fill: color-mix(in srgb, var(--error) 3%, var(--wb));
+}
+
+/* Vista Previa: Logo + Consejo del experto */
+.re_card_preview_box {
+  display: flex;
+  gap: 2.5vh;
+  align-items: flex-start;
+  background: var(--bg4);
+  border: 1px solid var(--brd);
+  border-radius: 1.5vh;
+  padding: 2.5vh;
+}
+.re_logo_container {
+  width: 75px;
+  height: 75px;
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 1.2vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.re_logo_container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.re_expert_opinion {
+  font-family: var(--ff_P);
+  font-size: var(--fz_s3);
+  color: var(--tx2);
+  line-height: 1.5;
+}
+.re_expert_opinion strong {
+  display: flex;
+  align-items: center;
+  gap: 0.8vh;
+  color: var(--tx1);
+  font-family: var(--ff_O);
+  margin-bottom: 0.8vh;
+}
+.re_expert_opinion p {
+  margin: 0;
+}
+
+.re_safety_tip {
+  font-family: var(--ff_P);
+  font-size: var(--fz_s3);
+  color: var(--tx2);
+  line-height: 1.5;
+  background: color-mix(in srgb, var(--error) 4%, var(--wb));
+  border: 1px solid color-mix(in srgb, var(--error) 15%, var(--brd));
+  border-radius: 1.5vh;
+  padding: 2vh 2.5vh;
+}
+.re_safety_tip strong {
+  display: flex;
+  align-items: center;
+  gap: 0.8vh;
+  color: var(--error);
+  font-family: var(--ff_O);
+  margin-bottom: 0.8vh;
+}
+.re_safety_tip p {
+  margin: 0;
+}
+
+.re_btn_visit_main {
+  width: 100%;
+  padding: 1.8vh;
+  background: var(--mco);
+  color: var(--txa);
+  border: none;
+  font-family: var(--ff_O);
+  font-size: var(--fz_s3);
+  font-weight: 800;
+  border-radius: 1.2vh;
+  cursor: pointer;
+  transition: all var(--tr_f);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1vh;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--mco) 15%, transparent);
+}
+.re_btn_visit_main:hover {
+  transform: translateY(-0.2vh);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--mco) 25%, transparent);
+  color: var(--txa);
+}
+
+/* 4. CENTRO DE SEGURIDAD */
+.re_security {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--error) 6%, transparent) 0%, color-mix(in srgb, var(--error) 2%, transparent) 100%);
+  border: 2px solid color-mix(in srgb, var(--error) 20%, transparent);
+  border-radius: 2vh;
+  padding: 4vh;
+  margin-top: 6vh;
+  margin-bottom: 4vh;
+}
+.re_security h2 {
+  font-family: var(--ff_O);
+  font-size: var(--fz_m4);
+  font-weight: 800;
+  color: var(--error);
+  margin: 0 0 1.5vh;
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+}
+.re_security p {
+  font-family: var(--ff_P);
+  font-size: var(--fz_s3);
+  color: var(--tx2);
+  line-height: 1.6;
+  margin: 0 0 3vh;
+}
+.re_sec_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 3vh;
+}
+.re_sec_item {
+  display: flex;
+  gap: 1.5vh;
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  padding: 2.5vh;
+  border-radius: 1vh;
+}
+.re_sec_item i {
+  color: var(--error);
+  font-size: var(--fz_m2);
+  margin-top: 0.3vh;
+}
+.re_sec_item strong {
+  display: block;
+  font-family: var(--ff_O);
+  font-size: var(--fz_s3);
+  color: var(--tx1);
+  margin-bottom: 0.5vh;
+}
+.re_sec_item p {
+  font-family: var(--ff_P);
+  font-size: var(--fz_s3);
+  color: var(--tx3);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* 5. SECCIÓN CONSEJO PERSONAL EMPÁTICO (PIE DE PÁGINA) */
+.re_advice_sec {
+  margin-top: 6vh;
+  margin-bottom: 4vh;
+  width: 100%;
+}
+.re_advice_card {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--mco) 4%, var(--wb)) 0%, color-mix(in srgb, var(--mco) 1%, var(--wb)) 100%);
+  border: 2px solid color-mix(in srgb, var(--mco) 15%, var(--brd));
+  border-radius: 2.5vh;
+  padding: 5vh;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+  box-sizing: border-box;
+}
+.re_advice_title {
+  font-family: var(--ff_O);
+  font-size: var(--fz_l2);
+  font-weight: 900;
+  color: var(--tx1);
+  margin: 0 0 2vh;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 1.5vh;
+  letter-spacing: -0.5px;
+}
+.re_advice_title i {
+  color: var(--warning);
+  flex-shrink: 0;
+}
+.re_advice_title .gradient_text {
+  background: linear-gradient(135deg, var(--tx1) 40%, var(--mco) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.re_advice_subtitle {
+  font-family: var(--ff_P);
+  font-size: var(--fz_m2);
+  color: var(--tx2);
+  line-height: 1.7;
+  margin-bottom: 4vh;
+}
+.re_advice_list {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5vh;
+  margin-bottom: 4vh;
+}
+.re_advice_item {
+  display: flex;
+  gap: 2.5vh;
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  padding: 3.5vh;
+  border-radius: 2vh;
+  transition: all var(--tr_f);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+}
+.re_advice_item:hover {
+  border-color: var(--mco);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--mco) 8%, transparent);
+}
+.re_advice_num {
+  font-family: var(--ff_O);
+  font-size: var(--fz_l1);
+  font-weight: 900;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.re_advice_item_content {
+  flex: 1;
+}
+.re_advice_item_title {
+  font-family: var(--ff_O);
+  font-size: var(--fz_m4);
+  font-weight: 800;
+  color: var(--tx1);
+  margin: 0 0 1vh;
+}
+.re_advice_reason {
+  font-family: var(--ff_P);
+  font-size: var(--fz_s3);
+  color: var(--tx2);
+  line-height: 1.6;
+  margin: 0 0 1.5vh 0;
+}
+.re_advice_gold_tip {
+  margin: 0;
+  padding: 1.5vh 2vh;
+  background: var(--bg4);
+  border-radius: 1vh;
+  border-left: 3px solid var(--warning);
+  font-family: var(--ff_P);
+  font-size: var(--fz_s3);
+  color: var(--tx2);
+  line-height: 1.6;
+}
+.re_advice_gold_tip strong {
+  font-family: var(--ff_O);
+  color: var(--tx1);
+}
+.re_advice_closing {
+  font-family: var(--ff_P);
+  font-size: var(--fz_m2);
+  color: var(--tx2);
+  line-height: 1.7;
+  text-align: center;
+  background: var(--wb);
+  border: 1px dashed var(--brd);
+  padding: 3vh;
+  border-radius: 1.5vh;
+  margin: 0;
+  font-style: italic;
+}
+
+
+@media (max-width: 992px) {
+  .remoto_layout {
+    flex-direction: column;
+    gap: 3vh;
+  }
+  .remoto_sidebar {
+    width: 100% !important;
+    position: static;
+    max-height: none;
+    padding: 2vh;
+  }
+  .remoto_layout.sidebar-collapsed .remoto_sidebar {
+    width: 100% !important;
+    padding: 2vh;
+  }
+  .remoto_layout.sidebar-collapsed .sidebar_title,
+  .remoto_layout.sidebar-collapsed .sidebar_name,
+  .remoto_layout.sidebar-collapsed .sidebar_tag {
+    opacity: 1;
+    display: inline-block;
+    pointer-events: auto;
+  }
+  .remoto_layout.sidebar-collapsed .sidebar_header {
+    justify-content: space-between;
+  }
+  .remoto_layout.sidebar-collapsed .sidebar_item {
+    justify-content: flex-start;
+  }
+  .btn_collapse {
+    display: none; /* Ocultar botón collapse en versión móvil */
+  }
+  
+  .sidebar_header {
+    margin-bottom: 1.5vh;
+  }
+  .sidebar_nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 1vh;
+    scrollbar-width: none;
+    gap: 1.2vh;
+  }
+  .sidebar_nav::-webkit-scrollbar {
+    display: none;
+  }
+  .sidebar_item {
+    padding: 1vh 1.8vh;
+    white-space: nowrap;
+    border-radius: 50px;
+    border: 1px solid var(--brd);
+    background: var(--wb);
+  }
+  .sidebar_name {
+    overflow: visible;
+  }
+  .sidebar_tag {
+    display: none !important; /* Ocultar tag en móvil para ahorrar espacio */
+  }
+  .sidebar_advice_item {
+    margin-top: 0 !important;
+    padding: 1vh 1.8vh !important;
+    border-radius: 50px !important;
+  }
+  .sidebar_item.active::before {
+    display: none; /* Ocultar línea vertical en activo móvil */
+  }
+  .sidebar_item.active {
+    background: color-mix(in srgb, var(--cc) 12%, var(--wb)) !important;
+    color: var(--cc) !important;
+    border-color: var(--cc) !important;
+    font-weight: 700;
+  }
+  
+  .remoto_horizontal_row, .remoto_horizontal_row.row-reversed, .ps_card {
+    grid-template-columns: 1fr;
+    padding: 4vh;
+  }
+  .remoto_row_left, .remoto_row_right,
+  .remoto_horizontal_row.row-reversed .remoto_row_left,
+  .remoto_horizontal_row.row-reversed .remoto_row_right {
+    order: unset;
+    border-left: none;
+    border-right: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .remoto_row_right {
+    border-top: 1px solid var(--brd);
+    padding-top: 4vh;
+  }
+  .ps_right {
+    margin-top: 4vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .ps_metrics_grid { grid-template-columns: repeat(2, 1fr); gap: 4vw; }
+  .re_pros_cons_list { grid-template-columns: 1fr; }
+  .re_metrics_row { grid-template-columns: repeat(2, 1fr); gap: 4vw; }
+}
+</style>
+
+<Layout {...seo.remotos}>
+  <div class="remoto_ct">
+    
+    <!-- Cabecera Integrada y Minimalista -->
+    <header class="re_header_ct">
+      <h1>Trabajos Remotos Seguros</h1>
+      <p>
+        Encontrar empleo remoto no debería ser una ruleta rusa de estafas virtuales. Analizamos de forma honesta las mejores plataformas reales en 2026 para que postules de manera inteligente y segura.
+      </p>
+    </header>
+
+    <!-- Layout de Dos Columnas (25% Sidebar Collapsible | 75% Contenido) -->
+    <div class="remoto_layout" id="remoto-layout">
+      
+      <!-- BARRA LATERAL: Selector e Índice Top 10 -->
+      <aside class="remoto_sidebar" id="remoto-sidebar" aria-label="Índice de portales">
+        <div class="sidebar_header">
+          <span class="sidebar_title"><i class="fas fa-star"></i> Los más recomendados</span>
+          <button id="toggle-sidebar" class="btn_collapse" aria-label="Contraer barra lateral" title="Contraer/Expandir barra lateral">
+            <i class="fas fa-chevron-left" id="collapse-icon"></i>
+          </button>
+        </div>
+        
+        <nav class="sidebar_nav">
+          {plataformas.map((p, idx) => {
+            const rank = idx + 1;
+            let rankClass = 'rank_other';
+            if (rank === 1) rankClass = 'rank_1';
+            else if (rank === 2) rankClass = 'rank_2';
+            else if (rank === 3) rankClass = 'rank_3';
+            
+            let categoryColor = 'var(--mco)';
+            if (p.categoria === 'latam') categoryColor = 'var(--success)';
+            else if (p.categoria === 'premium') categoryColor = 'var(--warning)';
+            else if (p.categoria === 'general') categoryColor = 'var(--info)';
+            
+            return (
+              <a href={`#platform-${p.id}`} class="sidebar_item" data-id={p.id} data-cat={p.categoria} style={`--cc: ${categoryColor};`}>
+                <span class={`sidebar_rank ${rankClass}`}>#{rank}</span>
+                <span class="sidebar_name">{p.nombre}</span>
+                <span class={`sidebar_tag tag_${p.categoria}`}>{p.categoriaLabel}</span>
+              </a>
+            );
+          })}
+          
+          <div class="sidebar_divider"></div>
+          
+          <a href="#advice-section" class="sidebar_item sidebar_advice_item" data-id="advice-section" style="--cc: var(--warning);">
+            <span class="sidebar_rank rank_advice"><i class="fas fa-lightbulb"></i></span>
+            <span class="sidebar_name">¿Qué haría en tu lugar?</span>
+            <span class="sidebar_tag tag_advice">Consejo</span>
+          </a>
+        </nav>
+
+
+      </aside>
+
+      <!-- COLUMNA PRINCIPAL DE CONTENIDO -->
+      <div class="remoto_content" id="remoto-content">
+        
+        <!-- Buscador Superior -->
+        <div class="re_search_wrap">
+          <i class="fas fa-search re_search_ico"></i>
+          <input id="re-search" class="re_search" type="text" placeholder="Buscar plataforma por nombre, categoría o descripción..." autocomplete="off">
+          <span class="re_search_count">{plataformas.length} plataformas</span>
+        </div>
+        
+        <p class="re_empty" id="re-empty-msg" style="display:none"><i class="fas fa-search"></i> Sin resultados para tu búsqueda</p>
+
+        <!-- Lista de Tarjetas (PageSpeed Cards) -->
+        <section class="remoto_list_wrap" id="remoto-list-wrap">
+          {plataformas.map((p, idx) => {
+            const isReversed = idx % 2 === 1;
+            const rank = idx + 1;
+            let rankClass = 'rank_other';
+            if (rank === 1) rankClass = 'rank_1';
+            else if (rank === 2) rankClass = 'rank_2';
+            else if (rank === 3) rankClass = 'rank_3';
+
+            return (
+              <article class={`remoto_horizontal_row ${isReversed ? 'row-reversed' : ''}`} id={`platform-${p.id}`} data-cat={p.categoria} data-id={p.id}>
+                
+                <!-- Columna Izquierda: Contenido e Información Directa -->
+                <div class="remoto_row_left">
+                  <div class="remoto_row_header">
+                    <span class={`re_rank_badge ${rankClass}`}>#{rank}</span>
+                    <h3>
+                      <a href={p.url} target="_blank" rel="noopener noreferrer" class="re_title_link" title={`Visitar sitio oficial de ${p.nombre}`}>
+                        {p.nombre}
+                      </a>
+                    </h3>
+                    <span class={`re_badge badge_${p.categoria}`}>{p.categoriaLabel}</span>
+                  </div>
+                  
+                  <p class="remoto_row_desc">{p.descripcion}</p>
+                  
+                  <div class="re_pros_cons_list">
+                    <div class="re_list_group">
+                      <strong class="pros_title"><i class="fas fa-circle-check"></i> Pros</strong>
+                      <ul>
+                        {p.pros.map(pro => (
+                          <li>
+                            <i class="fas fa-circle-check text-success list-icon"></i>
+                            <span>{pro}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div class="re_list_group">
+                      <strong class="contras_title"><i class="fas fa-circle-xmark"></i> Contras</strong>
+                      <ul>
+                        {p.contras.map(con => (
+                          <li>
+                            <i class="fas fa-circle-xmark text-error list-icon"></i>
+                            <span>{con}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+
+                  <!-- Países Disponibles (Ubicación) -->
+                  <div class="re_location_line">
+                    <i class="fas fa-earth-americas"></i>
+                    <div>
+                      <strong>Países Disponibles:</strong> {p.paises}
+                    </div>
+                  </div>
+
+                  <div class="re_requirements">
+                    <strong><i class="fas fa-clipboard-list"></i> Requisitos de Postulación:</strong> {p.requisitos}
+                  </div>
+                </div>
+
+                <!-- Columna Derecha: Círculos PageSpeed y Detalles de Soporte -->
+                <div class="remoto_row_right">
+                  
+                  <!-- Fila de Puntuaciones al estilo PageSpeed de arriba -->
+                  <div class="re_metrics_box">
+                    <h4 class="re_metrics_title">Métricas de Evaluación</h4>
+                    <div class="re_metrics_row">
+                      <div class="re_metric_item">
+                        <svg class="ps_circle_mini" viewBox="0 0 120 120">
+                          <circle class={`ps_circle_track track_${getScoreClass(p.metrics.seguridad)}`} cx="60" cy="60" r="50" />
+                          <circle class={`ps_circle_val ${getScoreClass(p.metrics.seguridad)}`} cx="60" cy="60" r="50" style={`stroke-dasharray: ${circumference}; stroke-dashoffset: ${getOffset(p.metrics.seguridad)};`} />
+                          <text class={`ps_circle_text ${getScoreClass(p.metrics.seguridad)}`} x="60" y="60" dominant-baseline="middle" text-anchor="middle">{p.metrics.seguridad}</text>
+                        </svg>
+                        <span>Seguridad</span>
+                      </div>
+                      
+                      <div class="re_metric_item">
+                        <svg class="ps_circle_mini" viewBox="0 0 120 120">
+                          <circle class={`ps_circle_track track_${getScoreClass(p.metrics.vacantes)}`} cx="60" cy="60" r="50" />
+                          <circle class={`ps_circle_val ${getScoreClass(p.metrics.vacantes)}`} cx="60" cy="60" r="50" style={`stroke-dasharray: ${circumference}; stroke-dashoffset: ${getOffset(p.metrics.vacantes)};`} />
+                          <text class={`ps_circle_text ${getScoreClass(p.metrics.vacantes)}`} x="60" y="60" dominant-baseline="middle" text-anchor="middle">{p.metrics.vacantes}</text>
+                        </svg>
+                        <span>Vacantes</span>
+                      </div>
+                      
+                      <div class="re_metric_item">
+                        <svg class="ps_circle_mini" viewBox="0 0 120 120">
+                          <circle class={`ps_circle_track track_${getScoreClass(p.metrics.soporte)}`} cx="60" cy="60" r="50" />
+                          <circle class={`ps_circle_val ${getScoreClass(p.metrics.soporte)}`} cx="60" cy="60" r="50" style={`stroke-dasharray: ${circumference}; stroke-dashoffset: ${getOffset(p.metrics.soporte)};`} />
+                          <text class={`ps_circle_text ${getScoreClass(p.metrics.soporte)}`} x="60" y="60" dominant-baseline="middle" text-anchor="middle">{p.metrics.soporte}</text>
+                        </svg>
+                        <span>Soporte</span>
+                      </div>
+                      
+                      <div class="re_metric_item">
+                        <svg class="ps_circle_mini" viewBox="0 0 120 120">
+                          <circle class={`ps_circle_track track_${getScoreClass(p.metrics.gratuito)}`} cx="60" cy="60" r="50" />
+                          <circle class={`ps_circle_val ${getScoreClass(p.metrics.gratuito)}`} cx="60" cy="60" r="50" style={`stroke-dasharray: ${circumference}; stroke-dashoffset: ${getOffset(p.metrics.gratuito)};`} />
+                          <text class={`ps_circle_text ${getScoreClass(p.metrics.gratuito)}`} x="60" y="60" dominant-baseline="middle" text-anchor="middle">{p.metrics.gratuito}</text>
+                        </svg>
+                        <span>Gratis</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Caja Vista Previa: Logo real + Opinión del Experto -->
+                  <div class="re_card_preview_box">
+                    <div class="re_logo_container">
+                      <img src={p.logo} alt={p.nombre} />
+                    </div>
+                    <div class="re_expert_opinion">
+                      <strong><i class="fas fa-user-tie"></i> Opinión del Experto</strong>
+                      <p>{p.tipExperto}</p>
+                    </div>
+                  </div>
+
+                  {p.evitarEstafas && (
+                    <div class="re_safety_tip">
+                      <strong><i class="fas fa-triangle-exclamation"></i> Evitar Estafas</strong>
+                      <p>{p.evitarEstafas}</p>
+                    </div>
+                  )}
+
+                  <div class="re_actions_row">
+                    <a href={p.url} target="_blank" rel="noopener noreferrer" class="re_btn_visit_main" title={`Ir al sitio oficial de ${p.nombre}`}>
+                      <i class="fas fa-external-link-alt"></i> Visitar Sitio de {p.nombre}
+                    </a>
+                  </div>
+                </div>
+
+              </article>
+            );
+          })}
+        </section>
+
+        <!-- Centro de Seguridad (Anti-Estafas) -->
+        <section class="re_security">
+          <h2><i class="fas fa-circle-exclamation"></i> Centro de Seguridad Anti-Fraude (Vigente 2026)</h2>
+          <p>
+            Las estafas de empleo remoto han crecido mucho en los últimos años. Utiliza esta lista rápida de comprobación para identificar ofertas fraudulentas antes de enviar tus datos personales:
+          </p>
+          
+          <div class="re_sec_grid">
+            <div class="re_sec_item">
+              <i class="fas fa-sack-xmark"></i>
+              <div>
+                <strong>Nunca pagues por trabajar</strong>
+                <p>Ninguna empresa legítima te pedirá dinero para "certificaciones", "trámites de ingreso" o para "enviarte las herramientas de trabajo". Si te piden pagar, es estafa.</p>
+              </div>
+            </div>
+
+            <div class="re_sec_item">
+              <i class="fas fa-envelope-open-text"></i>
+              <div>
+                <strong>Dominios de correo sospechosos</strong>
+                <p>Los reclutadores de empresas serias te escribirán desde correos corporativos (ej. @google.com). Desconfía si te contactan desde @gmail.com o @outlook.com.</p>
+              </div>
+            </div>
+
+            <div class="re_sec_item">
+              <i class="fas fa-comments"></i>
+              <div>
+                <strong>Entrevistas solo por chat</strong>
+                <p>Si la "entrevista" consiste en responder preguntas escritas por WhatsApp, Telegram o cuestionarios de Google Forms sin videollamada, no continúes.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sección de Consejo Personal Empático (Reemplaza a PageSpeed 100/100) -->
+        <section class="re_advice_sec" id="advice-section" data-id="advice-section">
+          <div class="re_advice_card">
+            <h2 class="re_advice_title">
+              <i class="fas fa-heart-circle-check"></i>
+              <span class="gradient_text">Si llegaste hasta aquí: esto es lo que yo haría en tu lugar</span>
+            </h2>
+            <p class="re_advice_subtitle">
+              Buscar empleo remoto puede ser agotador y confuso en 2026. Si yo estuviera en tu posición buscando trabajo hoy mismo, no gastaría mi energía postulando a ciegas en las diez plataformas a la vez. Sería estratégico y enfocaría mi tiempo en estas 3 opciones clave:
+            </p>
+
+            <div class="re_advice_list">
+              <!-- Item 1: We Work Remotely -->
+              <div class="re_advice_item">
+                <div class="re_advice_num" style="background: linear-gradient(135deg, var(--mco) 0%, color-mix(in srgb, var(--mco) 70%, #000) 100%); color: #fff;">1</div>
+                <div class="re_advice_item_content">
+                  <h3 class="re_advice_item_title">We Work Remotely (Nuestra recomendada #1)</h3>
+                  <p class="re_advice_reason">
+                    Es la bolsa de trabajo gratuito más confiable del mundo para candidatos. Como las empresas pagan $299 por publicar, te aseguras de que no existen ofertas falsas ni estafas. Es el lugar ideal para programadores, diseñadores y perfiles digitales.
+                  </p>
+                  <p class="re_advice_gold_tip">
+                    <strong>Consejo de Oro:</strong> Las ofertas de calidad reciben cientos de aplicantes en horas. Entra todos los días a la misma hora, filtra por "Worldwide" y postula únicamente a los listados que tengan menos de 24 horas de publicados.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Item 2: Pros Marketplace -->
+              <div class="re_advice_item">
+                <div class="re_advice_num" style="background: linear-gradient(135deg, var(--success) 0%, color-mix(in srgb, var(--success) 70%, #000) 100%); color: #fff;">2</div>
+                <div class="re_advice_item_content">
+                  <h3 class="re_advice_item_title">Pros Marketplace (Ideal para Latinoamérica)</h3>
+                  <p class="re_advice_reason">
+                    Si resides en LATAM, esta plataforma es un puente directo a empresas en Estados Unidos. Lo mejor de todo es que te guían en el proceso y te aseguran contratos B2B estables pagados directamente en dólares, adaptándose a tu zona horaria local.
+                  </p>
+                  <p class="re_advice_gold_tip">
+                    <strong>Consejo de Oro:</strong> Tómate muy en serio la grabación de tu video de introducción de un minuto. Una buena iluminación y un inglés conversacional fluido te conseguirán entrevistas automáticas antes de que lean tu currículum.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Item 3: FlexJobs -->
+              <div class="re_advice_item">
+                <div class="re_advice_num" style="background: linear-gradient(135deg, var(--warning) 0%, color-mix(in srgb, var(--warning) 70%, #000) 100%); color: #000; font-weight: 900;">3</div>
+                <div class="re_advice_item_content">
+                  <h3 class="re_advice_item_title">FlexJobs (La mejor opción de pago)</h3>
+                  <p class="re_advice_reason">
+                    Aunque requiere una suscripción mensual, vale totalmente la pena si quieres evitar al 100% ofertas basura o dudosas. Cada oferta es revisada manualmente por un equipo de personas reales para garantizar tu seguridad.
+                  </p>
+                  <p class="re_advice_gold_tip">
+                    <strong>Consejo de Oro:</strong> Contrata su suscripción de prueba de una semana (es muy económica), descarga las vacantes directas de las páginas corporativas y ponte en contacto con los reclutadores directamente en LinkedIn.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <p class="re_advice_closing">
+              "La clave del éxito en el trabajo remoto no es postular de forma masiva, sino la especificidad. Elige tus batallas, optimiza tu CV con IA para pasar los filtros ATS de estas plataformas, y sé de los primeros en enviar tu solicitud. ¡Tú puedes, mucho éxito en tu camino!"
+            </p>
+          </div>
+        </section>
+
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Script de Interactividad (Buscador, Collapse y ScrollSpy Reactivo) -->
+  <script is:inline>
+    const initPage = () => {
+      const toggleBtn = document.getElementById('toggle-sidebar');
+      const layout = document.getElementById('remoto-layout');
+      const searchInput = document.getElementById('re-search');
+      const cards = document.querySelectorAll('.remoto_horizontal_row');
+      const spyTargets = document.querySelectorAll('.remoto_horizontal_row, .re_advice_sec');
+      const sidebarItems = document.querySelectorAll('.sidebar_item');
+      const searchCount = document.querySelector('.re_search_count');
+      const emptyMsg = document.getElementById('re-empty-msg');
+
+
+      // 1. Sidebar Collapse (Persistente con localStorage)
+      if (toggleBtn && layout) {
+        const isCollapsed = localStorage.getItem('wiRemotosSidebarCollapsed') === 'true';
+        if (isCollapsed) {
+          layout.classList.add('sidebar-collapsed');
+        }
+
+        toggleBtn.addEventListener('click', () => {
+          layout.classList.toggle('sidebar-collapsed');
+          const nowCollapsed = layout.classList.contains('sidebar-collapsed');
+          localStorage.setItem('wiRemotosSidebarCollapsed', nowCollapsed.toString());
+        });
+      }
+
+      // 2. Buscador Reactivo en Tiempo Real
+      if (searchInput) {
+        searchInput.addEventListener('input', () => {
+          const q = searchInput.value.toLowerCase().trim();
+          let vis = 0;
+
+          cards.forEach(card => {
+            const nom = card.getAttribute('data-id').toLowerCase();
+            const cat = card.getAttribute('data-cat').toLowerCase();
+            const title = card.querySelector('h3').textContent.toLowerCase();
+            const desc = card.querySelector('.remoto_row_desc').textContent.toLowerCase();
+            
+            const match = !q || title.includes(q) || desc.includes(q) || cat.includes(q) || nom.includes(q);
+            
+            if (match) {
+              card.classList.remove('hidden');
+              vis++;
+            } else {
+              card.classList.add('hidden');
+            }
+
+            // Filtrar también el índice de la barra lateral
+            const id = card.getAttribute('data-id');
+            const sideItem = document.querySelector(`.sidebar_item[data-id="${id}"]`);
+            if (sideItem) {
+              if (match) {
+                sideItem.style.display = '';
+              } else {
+                sideItem.style.display = 'none';
+              }
+            }
+          });
+
+          if (searchCount) {
+            searchCount.textContent = `${vis} plataforma${vis !== 1 ? 's' : ''}`;
+          }
+
+          if (emptyMsg) {
+            emptyMsg.style.display = vis === 0 ? 'block' : 'none';
+          }
+        });
+      }
+
+      // 3. ScrollSpy con IntersectionObserver (Alto Rendimiento)
+      const spyOptions = {
+        root: null,
+        rootMargin: '-15% 0px -70% 0px',
+        threshold: 0
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('data-id');
+            sidebarItems.forEach(item => {
+              item.classList.toggle('active', item.getAttribute('data-id') === id);
+            });
+          }
+        });
+      }, spyOptions);
+
+      spyTargets.forEach(target => observer.observe(target));
+
+      // Sincronizar ScrollSpy al llegar al final de la página (para viewports altos)
+      window.addEventListener('scroll', () => {
+        if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 60) {
+          sidebarItems.forEach(item => {
+            item.classList.toggle('active', item.getAttribute('data-id') === 'advice-section');
+          });
+        }
+      });
+
+
+      // 4. Scroll Suave al hacer clic en ítems del índice
+      sidebarItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = item.getAttribute('href');
+          const targetEl = document.querySelector(targetId);
+          if (targetEl) {
+            const headerOffset = 90; // Evita solapamiento con el header fijo
+            const elementPosition = targetEl.getBoundingClientRect().top + window.scrollY;
+            const offsetPosition = elementPosition - headerOffset;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+    };
+
+    // Inicializar en carga y tras cambios de página por Astro transitions
+    initPage();
+    document.addEventListener('astro:after-swap', initPage);
+  </script>
+</Layout>

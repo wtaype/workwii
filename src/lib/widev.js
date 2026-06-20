@@ -900,3 +900,15 @@ export function wiRateLimit(key, max = 5, hasta = 'dia') {
     reset: () => { if (typeof localStorage !== 'undefined') localStorage.removeItem(K); }
   };
 }
+
+// Convierte el valor de un input a minúsculas en tiempo real
+export function minus(selOrEl) {
+  const el = typeof selOrEl === 'string' ? document.querySelector(selOrEl) : selOrEl;
+  if (!el) return;
+  el.addEventListener('input', () => {
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    el.value = el.value.toLowerCase();
+    el.setSelectionRange(start, end);
+  });
+}

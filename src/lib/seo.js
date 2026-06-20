@@ -1,3 +1,4 @@
+// --- [Metadatos SEO] titulo = 47 caracteres, descripcion = 150 caracteres, keywords = 5 palabras -> no eliminar esta linea. 
 import { app, descri } from '../wii.js';
 
 export const seo = {
@@ -154,5 +155,19 @@ export const seo = {
     ],
     audience: ['candidatos', 'usuarios activos'],
     intent: 'dejar feedback'
+  },
+  remotos: {
+    title: "Trabajos Remotos Seguros | Portales Reales 2026",
+    description: "Encuentra trabajo remoto seguro en 2026. Analizamos las mejores plataformas con pros y contras para que postules con éxito y evites estafas en la red.",
+    path: '/remotos',
+    keywords: [
+      'trabajo remoto',
+      'empleo remoto seguro',
+      'mejores plataformas',
+      'evitar estafas',
+      'workwii'
+    ],
+    audience: ['candidatos', 'profesionales', 'desempleados', 'estudiantes'],
+    intent: 'encontrar trabajo remoto seguro y evitar estafas'
   }
 };
