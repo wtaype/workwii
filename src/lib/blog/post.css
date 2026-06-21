@@ -1,4 +1,4 @@
-/* src/lib/blog/post.css */
+﻿/* src/lib/blog/post.css */
 .po_contenido *:not(i):not(.fa):not(.fas):not(.far):not(.fab):not([class*="fa-"]):not(.po_titulo) {
   font-family: var(--ff_O);
 }
@@ -224,7 +224,7 @@
 
 .po_contenido strong { color: var(--tx1); }
 
-/* ── 5. HEADER ───────────────────────────────────── */
+/* â”€â”€ 5. HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .po_header { padding-top: 2.5vh; }
 
 .po_titulo {
@@ -310,3 +310,33 @@
 
 .po_alert_caution { border-left-color: var(--error); background: color-mix(in srgb, var(--error) 8%, var(--wb)); }
 .po_alert_caution .po_alert_title { color: var(--error); }
+
+/* â”€â”€ YOUTUBE LIGHTBOX (movido desde slug.astro) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+#wi_yt_modal .modalBody {
+  background: rgba(0,0,0,0.85);
+  padding: 0;
+  border-radius: 1.5vh;
+  overflow: hidden;
+  width: 95%;
+  max-width: 65vw;
+  border: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(16px);
+}
+#wi_yt_player {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: transparent;
+}
+
+/* â”€â”€ CURSOR ZOOM EN IMÃGENES DEL ARTÃCULO (artÃ­culo, no modal) â”€â”€â”€ */
+/* Los estilos del modal estÃ¡n autocontenidos en modalimgs.js         */
+.wi_img_clickable { cursor: zoom-in; }
+.wi_img_clickable:hover {
+  transform: scale(1.012) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.14) !important;
+}
+
+/* Responsive YouTube */
+@media (max-width: 768px) {
+  #wi_yt_modal .modalBody { max-width: 98vw; }
+}

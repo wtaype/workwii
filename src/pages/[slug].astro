@@ -633,23 +633,6 @@ const keywords = seoMeta.keywords || '';
   background: color-mix(in srgb, #fe0149 12%, transparent) !important;
 }
 
-/* ── YOUTUBE LIGHTBOX / MODAL ───────────────────── */
-#wi_yt_modal .modalBody {
-  background: #000;
-  padding: 0;
-  border-radius: 1.5vh;
-  overflow: hidden;
-  width: 95%;
-  max-width: 65vw;
-  border: 1px solid rgba(255,255,255,.1);
-}
-
-#wi_yt_player {
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: #000;
-}
-
 .po_ad_fallback_text {
   text-align: center;
   color: var(--tx3);
@@ -673,9 +656,10 @@ const keywords = seoMeta.keywords || '';
 
 <script>
   import { wicopy, showi, herowi, wiImgs, getls, savels, wiSmart } from '../lib/widev.js';
+  import { initYtModal,   cleanupYtModal   } from '../lib/blog/modalyt.js';
+  import { initModalImgs, cleanupModalImgs } from '../lib/blog/modalimgs.js';
 
   let scrollListener: any  = null;
-  let handleYtClickRef: any = null;
   let realtimeChannel: any  = null;
   let isPostCleanedUp = false;
 
@@ -747,37 +731,9 @@ const keywords = seoMeta.keywords || '';
       btn.addEventListener('click', () => wicopy(window.location.href, btn, '¡Enlace copiado! 🔗'));
     });
 
-    // 5. YouTube lightbox por delegación
-    handleYtClickRef = (e: any) => {
-      const link = e.target?.closest?.('a');
-      if (!link) return;
-      const href = link.getAttribute('href') || '';
-      const ytMatch = href.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/i);
-      if (!ytMatch) return;
-      e.preventDefault();
-      const id = ytMatch[1];
-      let modal = document.getElementById('wi_yt_modal');
-      if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'wi_yt_modal';
-        modal.className = 'wiModal';
-        modal.innerHTML = `<div class="modalBody"><div id="wi_yt_player"></div></div>`;
-        document.body.appendChild(modal);
-        const obs = new MutationObserver(() => {
-          if (!modal!.classList.contains('active')) {
-            const p = document.getElementById('wi_yt_player');
-            if (p) p.innerHTML = '';
-          }
-        });
-        obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
-      }
-      const player = document.getElementById('wi_yt_player');
-      if (player) {
-        player.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-      }
-      import('../lib/widev.js').then((m: any) => m.abrirModal('wi_yt_modal'));
-    };
-    document.addEventListener('click', handleYtClickRef);
+    // 5. Modales: YouTube lightbox + Galería de imágenes estilo Picasa
+    initYtModal();
+    initModalImgs('.po_contenido');
 
     // 6. wiSmart → vistas + stats reales + Realtime WebSocket
     wiSmart({
@@ -860,9 +816,10 @@ const keywords = seoMeta.keywords || '';
 
   const cleanupPost = () => {
     isPostCleanedUp = true;
-    if (scrollListener)   { window.removeEventListener('scroll', scrollListener); scrollListener = null; }
-    if (handleYtClickRef) { document.removeEventListener('click', handleYtClickRef); handleYtClickRef = null; }
-    if (realtimeChannel)  { getDb().then((db: any) => { if (realtimeChannel) { db.removeChannel(realtimeChannel); realtimeChannel = null; } }); }
+    if (scrollListener)  { window.removeEventListener('scroll', scrollListener); scrollListener = null; }
+    if (realtimeChannel) { getDb().then((db: any) => { if (realtimeChannel) { db.removeChannel(realtimeChannel); realtimeChannel = null; } }); }
+    cleanupYtModal();
+    cleanupModalImgs();
   };
 
   document.addEventListener('astro:page-load', initPost);
