@@ -14,6 +14,7 @@ const plataformas = [
     ingles: 'Intermedio - Avanzado',
     paises: 'Mundial (Worldwide - Contrata en cualquier país)',
     descripcion: 'La bolsa de trabajo remoto más grande del mundo. Altamente confiable y muy orientada al ecosistema tecnológico global.',
+    guiaUrl: '/como-postular-a-we-work-remotely',
     pros: [
       'Acceso 100% gratuito para candidatos.',
       'Las empresas pagan $299 por oferta publicada, lo que ahuyenta a los estafadores.',
@@ -43,6 +44,7 @@ const plataformas = [
     ingles: 'Intermedio - Avanzado',
     paises: 'América Latina (Exclusivo para talento de LATAM)',
     descripcion: 'Mercado especializado en talento de Latinoamérica que conecta profesionales de forma directa con empresas de EE.UU.',
+    guiaUrl: '/como-postular-a-we-work-remotely',
     pros: [
       'Vacantes adaptadas a la zona horaria de LATAM.',
       'Pagos estables y directos en dólares.',
@@ -992,12 +994,16 @@ text.score-low  { fill: var(--error); stroke: none !important; }
   margin: 0;
 }
 
-.re_btn_visit_main {
+
+.re_actions_row {
+  display: flex;
+  gap: 1.5vh;
+  width: 100%;
+}
+.re_btn_visit_main, .re_btn_guide_main {
+  flex: 1;
   width: 100%;
   padding: 1.8vh;
-  background: var(--mco);
-  color: var(--txa);
-  border: none;
   font-family: var(--ff_O);
   font-size: var(--fz_s3);
   font-weight: 800;
@@ -1009,12 +1015,34 @@ text.score-low  { fill: var(--error); stroke: none !important; }
   align-items: center;
   justify-content: center;
   gap: 1vh;
+}
+.re_btn_visit_main {
+  background: var(--mco);
+  color: var(--txa);
+  border: none;
   box-shadow: 0 4px 12px color-mix(in srgb, var(--mco) 15%, transparent);
 }
 .re_btn_visit_main:hover {
   transform: translateY(-0.2vh);
   box-shadow: 0 6px 18px color-mix(in srgb, var(--mco) 25%, transparent);
   color: var(--txa);
+}
+.re_btn_guide_main {
+  background: transparent;
+  color: var(--tx1);
+  border: 2px solid var(--mco);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+.re_btn_guide_main:hover {
+  transform: translateY(-0.2vh);
+  background: color-mix(in srgb, var(--mco) 8%, transparent);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--mco) 15%, transparent);
+  color: var(--mco);
+}
+@media (max-width: 480px) {
+  .re_actions_row {
+    flex-direction: column;
+  }
 }
 
 /* 4. CENTRO DE SEGURIDAD */
@@ -1501,9 +1529,20 @@ text.score-low  { fill: var(--error); stroke: none !important; }
                   )}
 
                   <div class="re_actions_row">
-                    <a href={p.url} target="_blank" rel="noopener noreferrer" class="re_btn_visit_main" title={`Ir al sitio oficial de ${p.nombre}`}>
-                      <i class="fas fa-external-link-alt"></i> Visitar Sitio de {p.nombre}
-                    </a>
+                    {p.guiaUrl ? (
+                      <>
+                        <a href={p.guiaUrl} class="re_btn_guide_main" title="Ver guía paso a paso de cómo postular">
+                          <i class="fas fa-book-open"></i> Cómo Postular
+                        </a>
+                        <a href={p.url} target="_blank" rel="noopener noreferrer" class="re_btn_visit_main" title={`Ir al sitio oficial de ${p.nombre}`}>
+                          <i class="fas fa-external-link-alt"></i> Sitio Web
+                        </a>
+                      </>
+                    ) : (
+                      <a href={p.url} target="_blank" rel="noopener noreferrer" class="re_btn_visit_main" title={`Ir al sitio oficial de ${p.nombre}`}>
+                        <i class="fas fa-external-link-alt"></i> Visitar Sitio de {p.nombre}
+                      </a>
+                    )}
                   </div>
                 </div>
 
