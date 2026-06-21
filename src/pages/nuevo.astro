@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { app, id } from '../wii.js';
+const wipost = true;
 ---
 
 <style is:global>
@@ -15,11 +16,17 @@ import { app, id } from '../wii.js';
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2vh;
+  margin-bottom: 2.5vh;
   padding-bottom: 1.5vh;
   border-bottom: 1px solid var(--brd);
   flex-wrap: wrap;
   gap: 1vh;
+  position: sticky;
+  top: 5vh;
+  background: var(--bg);
+  z-index: 99;
+  padding-top: 1vh;
+  box-shadow: 0 10px 15px -15px rgba(0, 0, 0, 0.1);
 }
 .nu_head_left h1 {
   font-size: var(--fz_l2);
@@ -551,6 +558,11 @@ import { app, id } from '../wii.js';
         <p id="nu_edit_info"></p>
       </div>
       <div class="nu_head_right">
+        {wipost && (
+          <button type="button" id="nu_load_draft_btn" class="nu_btn_outline" title="Sincronizar con articulo.md local">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+        )}
         <a href="/blog" id="nu_view_post_btn" class="nu_btn_outline dpn" title="Ver post"><i class="fas fa-eye"></i> Ver</a>
         <button type="submit" form="nu_form" id="nu_submit" class="nu_btn_submit"><i class="fas fa-paper-plane"></i> <span id="nu_btn_lbl">Publicar</span></button>
       </div>
@@ -848,6 +860,35 @@ import { app, id } from '../wii.js';
     const titleInp = document.getElementById('nu_titulo') as HTMLInputElement;
     const resumenInp = document.getElementById('nu_resumen') as HTMLTextAreaElement;
     const keywordsInp = document.getElementById('nu_keywords') as HTMLTextAreaElement;
+
+    const actualizandoPost = async () => {
+      try {
+        const btn = document.getElementById('nu_load_draft_btn');
+        const icon = btn?.querySelector('i');
+        if (icon) icon.className = 'fas fa-spinner fa-spin';
+        const res = await fetch('http://localhost:3001/');
+        const data = await res.json();
+        const ta = document.getElementById('nu_contenido') as HTMLTextAreaElement;
+        if (ta && data.content) {
+          ta.value = data.content;
+          updCount();
+          saveDraft();
+          const prev = document.getElementById('nu_prev_html');
+          if (prev && !prev.classList.contains('dpn')) {
+            prev.innerHTML = wiSanihtml(mdToHtml(ta.value));
+          }
+          Notificacion('¡Artículo sincronizado con éxito!', 'success');
+        }
+      } catch (e) {
+        Notificacion('No se pudo conectar con cargar.js', 'error');
+      } finally {
+        const icon = document.querySelector('#nu_load_draft_btn i');
+        if (icon) icon.className = 'fas fa-sync-alt';
+      }
+    };
+
+    const loadDraftBtn = document.getElementById('nu_load_draft_btn');
+    if (loadDraftBtn) listen(loadDraftBtn, 'click', actualizandoPost);
 
     const updateTituloCounter = () => {
       const cnt = document.getElementById('nu_titulo_cnt');

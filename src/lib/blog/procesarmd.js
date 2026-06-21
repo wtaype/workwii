@@ -26,7 +26,11 @@ export const CUSTOM_ICONS = {
   'dove': '<i class="fas fa-dove po_ico_cyan"></i>',
   'alerta': '<i class="fas fa-triangle-exclamation po_ico_warning"></i>',
   'warning': '<i class="fas fa-triangle-exclamation po_ico_warning"></i>',
-  'info': '<i class="fas fa-circle-info po_ico_cyan"></i>'
+  'info': '<i class="fas fa-circle-info po_ico_cyan"></i>',
+  'herramienta': '<i class="fas fa-screwdriver-wrench po_ico_mco"></i>',
+  'tool': '<i class="fas fa-screwdriver-wrench po_ico_mco"></i>',
+  'enlace': '<i class="fas fa-link po_ico_cyan"></i>',
+  'link': '<i class="fas fa-link po_ico_cyan"></i>'
 };
 
 export const wiSanihtml = (html) => {
@@ -64,13 +68,21 @@ export const mdToHtml = (md) => {
     .replace(/^### (.*?)(?:\s*\{\#([a-zA-Z0-9_-]+)\})?\s*$/gim, (match, title, id) => {
       return id ? `<h3 id="${id}">${title.trim()}</h3>` : `<h3>${title.trim()}</h3>`;
     })
-    .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
+    .replace(/^#### (.*?)(?:\s*\{\#([a-zA-Z0-9_-]+)\})?\s*$/gim, (match, title, id) => {
+      return id ? `<h4 id="${id}">${title.trim()}</h4>` : `<h4>${title.trim()}</h4>`;
+    })
     .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/gim, '<em>$1</em>')
     .replace(/~~(.*?)~~/gim, '<del>$1</del>')
     .replace(/`([^`]+)`/gim, '<code>$1</code>')
     .replace(/!\[(.*?)\]\((.*?)\)/gim, '<figure class="po_figure"><img alt="$1" src="$2" /><figcaption class="po_figcaption">$1</figcaption></figure>')
-    .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+    .replace(/\[(.*?)\]\((.*?)\)/gim, (match, text, url) => {
+      if ((url.includes('youtube.com') || url.includes('youtu.be')) && (url.includes('#normal') || url.includes('?normal=1'))) {
+        const cleanUrl = url.replace(/(?:#|\?)normal$/, '');
+        return `<a href="${cleanUrl}" class="yt_link_normal" target="_blank" rel="noopener noreferrer">${text}</a>`;
+      }
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+    })
     .replace(/^---/gim, '<hr class="po_hr"/>');
 
   // Reemplazar iconos personalizados con estilos
@@ -89,9 +101,46 @@ export const mdToHtml = (md) => {
   const result = [];
   let inList = false;
   let inTable = false;
+  let inQuote = false;
+  let quoteLines = [];
+
+  const flushQuote = () => {
+    if (quoteLines.length === 0) return;
+    const firstLine = quoteLines[0].trim();
+    const alertMatch = firstLine.match(/^\[!(NOTE|TIP|WARNING|IMPORTANT|CAUTION)\]$/i);
+    
+    if (alertMatch) {
+      const type = alertMatch[1].toUpperCase();
+      let icon = 'fas fa-info-circle';
+      let title = 'Nota';
+      if (type === 'TIP') { icon = 'fas fa-lightbulb'; title = 'Consejo'; }
+      else if (type === 'WARNING') { icon = 'fas fa-triangle-exclamation'; title = 'Advertencia'; }
+      else if (type === 'IMPORTANT') { icon = 'fas fa-circle-exclamation'; title = 'Importante'; }
+      else if (type === 'CAUTION') { icon = 'fas fa-ban'; title = 'Precaución'; }
+      
+      const content = quoteLines.slice(1).join('<br/>');
+      result.push(`<div class="po_alert po_alert_${type.toLowerCase()}"><div class="po_alert_title"><i class="${icon}"></i> ${title}</div><p>${content}</p></div>`);
+    } else {
+      result.push(`<blockquote>${quoteLines.join('<br/>')}</blockquote>`);
+    }
+    quoteLines = [];
+  };
 
   lines.forEach(line => {
     const trimLine = line.trim();
+
+    // Blockquote parsing
+    const quoteMatch = line.match(/^>\s*(.*)$/);
+    if (quoteMatch) {
+      if (inList) { result.push('</ul>'); inList = false; }
+      if (inTable) { result.push('</table></div>'); inTable = false; }
+      inQuote = true;
+      quoteLines.push(quoteMatch[1]);
+      return;
+    } else if (inQuote) {
+      flushQuote();
+      inQuote = false;
+    }
 
     // Table parsing logic
     if (trimLine.startsWith('|') && trimLine.endsWith('|')) {
@@ -122,7 +171,7 @@ export const mdToHtml = (md) => {
     } else {
       if (inList) { result.push('</ul>'); inList = false; }
       if (trimLine === '') return;
-      if (!line.match(/^<(h2|h3|ul|ol|li|blockquote|img|hr|div|table|tr|th|td|figure|figcaption)/)) {
+      if (!line.match(/^<(h[1-6]|ul|ol|li|blockquote|img|hr|div|table|tr|th|td|figure|figcaption)/)) {
         result.push(`<p>${line}</p>`);
       } else {
         result.push(line);
@@ -132,6 +181,7 @@ export const mdToHtml = (md) => {
 
   if (inTable) result.push('</table></div>');
   if (inList) result.push('</ul>');
+  if (inQuote) flushQuote();
   
   const finalHtml = result.join('\n');
 
@@ -155,6 +205,16 @@ export const procesarHtml = (html) => {
   mod = mod.replace(/<button[^>]*?class="po_yt_btn"[^>]*?data-yt="([a-zA-Z0-9_-]+)"[^>]*>([\s\S]*?)<\/button>/gi, (match, ytId, innerHtml) => {
     const cleanInner = innerHtml.replace(/<i\s+class=(['"])(.*?)\1\s+style=(['"])[^>]*?\3/gi, '<i class="$2 po_ico_youtube"');
     return `<a href="https://www.youtube.com/watch?v=${ytId}" target="_blank" rel="noopener noreferrer" class="po_yt_link">${cleanInner}</a>`;
+  });
+
+  // 1b. Normalizar enlaces de YouTube que tengan la marca #normal o ?normal=1
+  mod = mod.replace(/<a\s+([^>]*?)href=(['"])(https?:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)\/[^'"]*?)(?:#|\?)normal\2([^>]*?)>/gi, (match, before, quote, cleanUrl, after) => {
+    const rest = (before + ' ' + after).trim();
+    if (rest.includes('class=')) {
+      return `<a href="${cleanUrl}" ${rest.replace(/class=(['"])(.*?)\1/gi, 'class=$1$2 yt_link_normal$1')}>`;
+    } else {
+      return `<a href="${cleanUrl}" class="yt_link_normal" ${rest}>`;
+    }
   });
 
   // 2. Limpiar estilos inline de hr y checklists
