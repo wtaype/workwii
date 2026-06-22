@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { Saludar } from '../lib/widev.js';
+import { Saludar, imgwii, getls, savels } from '../lib/widev.js';
 import { app } from '../wii.js';
 import { seo } from '../lib/seo.js';
 import { supabase } from '../lib/supabase.js';
@@ -445,13 +445,18 @@ color: var(--tx);
   border-color: var(--mco);
 }
 
-.ib_img {
-  aspect-ratio: 16/9;
-  background-size: cover;
-  background-position: center;
-  background-color: var(--bg4);
+.ib_img_wrap {
   position: relative;
+  aspect-ratio: 16/9;
   flex-shrink: 0;
+  overflow: hidden;
+  background-color: var(--bg4);
+}
+.ib_img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .ib_cat {
   position: absolute;
@@ -603,8 +608,9 @@ color: var(--tx);
             const c = catColors[p.categoria as keyof typeof catColors] ?? 'var(--mco)';
             const formattedDate = p.creado ? new Date(p.creado).toLocaleDateString('es-PE', { day:'numeric', month:'short', year:'numeric' }) : '';
             return (
-              <a href={`/${p.slug || p.id || ''}`} class="ib_card">
-                <div class="ib_img wi_skeleton" data-bg={p.imagen || '/poster.webp'}>
+              <a href={`/${p.slug || p.id || ''}`} class="ib_card" data-slug={p.slug || p.id}>
+                <div class="ib_img_wrap">
+                  <img src={imgwii.svg} data-src={p.imagen || '/poster.webp'} alt={p.titulo || 'Artículo'} class="ib_img wi_skeleton img_fade" />
                   <span class="ib_cat" style={`background:color-mix(in srgb,${c} 20%,transparent);color:${c}`}>{p.categoria || 'Blog'}</span>
                 </div>
                 <div class="ib_body">
@@ -697,7 +703,7 @@ color: var(--tx);
 </Layout>
 
 <script>
-  import { herowi, imgwii } from '../lib/widev.js';
+  import { herowi, imgwii, getls, savels } from '../lib/widev.js';
 
   /** @type {ReturnType<typeof setInterval>|null} */
   let roleInterval: any = null;
@@ -717,6 +723,55 @@ color: var(--tx);
         btnCta.removeAttribute('data-target-url');
         btnCta.classList.add('bt_auth', 'registrar');
       }
+    }
+  };
+
+  const updateDOMWithCache = (cached: any[]) => {
+    cached.slice(0, 16).forEach(p => {
+      const card = document.querySelector(`.ib_card[data-slug="${p.slug || p.id}"]`);
+      if (!card) return;
+      const meta = card.querySelector('.ib_meta');
+      if (meta) {
+        meta.innerHTML = `
+          <span><i class="fas fa-calendar-alt"></i> ${p.creado ? new Date(p.creado).toLocaleDateString('es-PE', { day:'numeric', month:'short', year:'numeric' }) : ''}</span>
+          <span><i class="fas fa-eye"></i> ${p.vistas || 0}</span>
+          <span><i class="fas fa-heart" style="color:#fe0149"></i> ${p.likes || 0}</span>
+        `;
+      }
+    });
+  };
+
+  const syncCache = async () => {
+    let cached = getls('ultimosposts');
+    if (cached && Array.isArray(cached) && cached.length) {
+      updateDOMWithCache(cached);
+      return;
+    }
+    try {
+      const { supabase } = await import('../lib/supabase.js');
+      const { data } = await supabase
+        .from('blog')
+        .select('id, slug, titulo, descripcion, categoria, creado, imagen, vistas, likes')
+        .eq('activo', true)
+        .order('creado', { ascending: false })
+        .limit(16);
+      if (data) {
+        const mapped = data.map(p => ({
+          id: p.id,
+          slug: p.slug,
+          titulo: p.titulo,
+          resumen: p.descripcion || '',
+          categoria: p.categoria,
+          creado: p.creado,
+          imagen: p.imagen || '/poster.webp',
+          vistas: p.vistas || 0,
+          likes: p.likes || 0
+        }));
+        savels('ultimosposts', mapped, 24);
+        updateDOMWithCache(mapped);
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -746,6 +801,7 @@ color: var(--tx);
       });
     }
 
+    syncCache();
     herowi();
     imgwii.ver('#sec_blog');
   };

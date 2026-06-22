@@ -314,6 +314,7 @@ export const imgwii = (() => {
     return obs;
   };
 
+  /** @param {string | HTMLElement | Document} [scopeOrEl] */
   const ver = (scopeOrEl = document) => {
     subirCSS();
     const scope = typeof scopeOrEl === 'string' ? document.querySelector(scopeOrEl) ?? document : scopeOrEl;
