@@ -7,9 +7,9 @@ const defaultRight = NAV_CONFIG.todos.right;
 ---
 <header class="wiheader">
   <div class="nv_left">
-    <h1 class="wilogo">
+    <div class="wilogo">
       <a href="/"><i class={`fa-solid ${icon}`}></i> {app}</a>
-    </h1>
+    </div>
     <nav class="winav" id="header-nav-left">
       {defaultLeft.map(i => (
         <a href={i.href} class="nv_item" data-page={i.href === '/' ? 'inicio' : i.href.slice(1)}>

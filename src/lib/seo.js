@@ -3,8 +3,8 @@ import { app, descri } from '../wii.js';
 
 export const seo = {
   inicio: {
-    title: `${app} | Crear CV con IA y simulador de empleo`,
-    description: "Crea tu CV profesional con IA, optimízalo para superar filtros ATS y simula entrevistas reales. Mejora hoy tus opciones de conseguir tu empleo ideal.",
+    title: `Workwii | Creador de CV con IA y simulador de entrevistas`,
+    description: "Crea tu CV profesional con IA, supera filtros ATS y entrena entrevistas reales. Workwii te ayuda a asegurar tu empleo ideal con herramientas modernas.",
     path: '/',
     keywords: [
       'crear cv con ia',

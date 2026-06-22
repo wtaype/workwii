@@ -525,6 +525,74 @@ color: var(--tx);
 @media (max-width: 1100px) { .ib_grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 750px)  { .ib_grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 480px)  { .ib_grid { grid-template-columns: 1fr; } }
+
+/* ══════════════════ TESTIMONIOS ══════════════════ */
+.sec_testimonios {
+  padding: 8vh 0;
+}
+.test_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 3.5vh;
+  margin-top: 5vh;
+}
+.test_card {
+  background: var(--wb, #fff);
+  border: 1px solid var(--brd, #eaeaea);
+  border-radius: 2vh;
+  padding: 3vh;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s ease;
+}
+.test_card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+  border-color: var(--mco);
+}
+.test_header {
+  display: flex;
+  align-items: center;
+  gap: 2vh;
+  margin-bottom: 2vh;
+}
+.test_avatar {
+  width: 6vh;
+  height: 6vh;
+  min-width: 45px;
+  min-height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fz_m4);
+}
+.test_user {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3vh;
+}
+.test_user strong {
+  font-size: var(--fz_m2);
+  color: var(--tx);
+  font-family: var(--ff_O);
+}
+.test_user span {
+  font-size: var(--fz_s2);
+  color: var(--tx2);
+}
+.test_stars {
+  color: #FFB800;
+  font-size: var(--fz_s2);
+  margin-bottom: 2vh;
+  display: flex;
+  gap: 0.5vh;
+}
+.test_comment {
+  font-size: var(--fz_m1);
+  color: var(--tx);
+  line-height: 1.6;
+  font-style: italic;
+}
 </style>
 
 <Layout {...seo.inicio}>
@@ -532,15 +600,15 @@ color: var(--tx);
     <section class="hero">
       <div class="hero_txt">
         <div class="hero_saludo">
-          <span>{Saludar()} Candidat@</span><span class="hero_wave">👋</span>
+          <span>{Saludar()} Campeon@</span><span class="hero_wave"><i class="fa-regular fa-hand"></i></span>
         </div>
-        <h2 class="font_o mainh">Impulsa tu carrera</h2>
+        <h1 class="font_o mainh">Impulsa tu carrera</h1>
         <span class="gradiente hero_sub_tit font_o">Consigue tu trabajo ideal con IA</span>
         <div class="hero_roles">
-          <span class="role active">Optimiza tu CV 🚀</span>
-          <span class="role">Vence los Filtros ATS 🤖</span>
-          <span class="role">Entrena Entrevistas 🗣️</span>
-          <span class="role">Destaca en LinkedIn 💼</span>
+          <span class="role active">Optimiza tu CV <i class="fas fa-rocket"></i></span>
+          <span class="role">Vence los Filtros ATS <i class="fas fa-robot"></i></span>
+          <span class="role">Entrena Entrevistas <i class="fas fa-comments"></i></span>
+          <span class="role">Destaca en LinkedIn <i class="fab fa-linkedin"></i></span>
         </div>
         <div class="hero_oracion font_o">
           <p style="font-weight: 700; color: var(--tx); font-size: var(--fz_m4);">¿Sientes que tu currículum desaparece en un agujero negro sin respuestas?</p>
@@ -587,9 +655,9 @@ color: var(--tx);
               </div>
             </div>
             <div class="mock_badges">
-              <span class="m_badge active">✓ Legible para Reclutadores</span>
-              <span class="m_badge active">✓ Formato PDF</span>
-              <span class="m_badge warn">⚠ Sin Enlace a GitHub</span>
+              <span class="m_badge active"><i class="fas fa-check"></i> Legible para Reclutadores</span>
+              <span class="m_badge active"><i class="fas fa-check"></i> Formato PDF</span>
+              <span class="m_badge warn"><i class="fas fa-exclamation-triangle"></i> Sin Enlace a GitHub</span>
             </div>
           </div>
         </div>
@@ -599,7 +667,7 @@ color: var(--tx);
     </section>
 
     <section class="sec_ib" id="sec_blog">
-      <h1 class="mainh1"><i class="fas fa-graduation-cap"></i> Consejos y Estrategias Profesionales</h1>
+      <h2 class="mainh1"><i class="fas fa-graduation-cap"></i> Consejos y Estrategias Profesionales</h2>
       <p class="sec_desc">Aprende a destacar tu perfil, redactar tu trayectoria y triunfar en entrevistas</p>
       <div class="ib_grid" id="ib_grid" data-herowi="100">
         {posts.length > 0 ? (
@@ -666,6 +734,69 @@ color: var(--tx);
             <p class="font_o" style="font-style: normal; color: var(--tx2); line-height: 1.6; margin-bottom: 0;">{b[2]}</p>
           </div>
         ))}
+      </div>
+    </section>
+
+    <!-- Nueva Sección de Testimonios Latam -->
+    <section class="sec_testimonios" id="testimonios">
+      <h2 class="mainh1"><i class="fas fa-star" style="color: #FFB800;"></i> Casos de Éxito en Latinoamérica</h2>
+      <p class="sec_desc">Profesionales que superaron los filtros ATS y consiguieron trabajo en su área</p>
+      <div class="test_grid" data-herowi="120">
+        <div class="test_card">
+          <div class="test_header">
+            <div class="test_avatar" style="background: #E8F5E9; color: #2E7D32;"><i class="fas fa-user-tie"></i></div>
+            <div class="test_user">
+              <strong>Valeria Rojas</strong>
+              <span>Bogotá, Colombia</span>
+            </div>
+          </div>
+          <div class="test_stars">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          </div>
+          <p class="test_comment">"El simulador de entrevistas con IA me salvó. Practiqué mis respuestas difíciles y obtuve retroalimentación al instante. ¡Me dio la confianza para conseguir mi puesto actual!"</p>
+        </div>
+
+        <div class="test_card">
+          <div class="test_header">
+            <div class="test_avatar" style="background: #E0F7FA; color: #00838F;"><i class="fas fa-user-ninja"></i></div>
+            <div class="test_user">
+              <strong>Mateo Silva</strong>
+              <span>Santiago, Chile</span>
+            </div>
+          </div>
+          <div class="test_stars">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          </div>
+          <p class="test_comment">"Estuve tres meses postulando en Santiago sin respuestas. Usé el optimizador ATS de Workwii y en una semana me llamaron para tres entrevistas en grandes empresas."</p>
+        </div>
+
+        <div class="test_card">
+          <div class="test_header">
+            <div class="test_avatar" style="background: #FFF3E0; color: #EF6C00;"><i class="fas fa-user-astronaut"></i></div>
+            <div class="test_user">
+              <strong>Carlos Pineda</strong>
+              <span>CDMX, México</span>
+            </div>
+          </div>
+          <div class="test_stars">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          </div>
+          <p class="test_comment">"El creador de CV con IA es muy intuitivo y los resultados son súper profesionales. Logré destacar en las postulaciones y hoy trabajo en remoto para una multinacional."</p>
+        </div>
+
+        <div class="test_card">
+          <div class="test_header">
+            <div class="test_avatar" style="background: #F3E5F5; color: #7B1FA2;"><i class="fas fa-graduation-cap"></i></div>
+            <div class="test_user">
+              <strong>Gabriela Loli</strong>
+              <span>Lima, Perú</span>
+            </div>
+          </div>
+          <div class="test_stars">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          </div>
+          <p class="test_comment">"Como reclutadora en Lima, veo cientos de currículums mal estructurados. Recomiendo Workwii porque alinea los CVs exactamente con lo que buscan los filtros automáticos."</p>
+        </div>
       </div>
     </section>
 
