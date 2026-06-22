@@ -1,18 +1,12 @@
 // --- [Metadatos SEO] titulo = 47 caracteres, descripcion = 150 caracteres, keywords = 5 palabras -> no eliminar esta linea. 
-import { app, descri } from '../wii.js';
+import { app, titulo, descri, keywii } from '../wii.js';
 
 export const seo = {
   inicio: {
-    title: `Workwii | Creador de CV con IA y simulador de entrevistas`,
-    description: "Crea tu CV profesional con IA, supera filtros ATS y entrena entrevistas reales. Workwii te ayuda a asegurar tu empleo ideal con herramientas modernas.",
+    title: titulo,
+    description: descri,
     path: '/',
-    keywords: [
-      'crear cv con ia',
-      'optimizar curriculum ats',
-      'simulador de entrevistas',
-      'buscar empleo ia',
-      'workwii'
-    ],
+    keywords: keywii,
     audience: ['candidatos', 'profesionales', 'desempleados', 'reclutadores', 'estudiantes'],
     intent: 'optimizar curriculum y buscar trabajo con IA'
   },

@@ -2,9 +2,9 @@
 export let id = 'workwii';
 export let app = 'Workwii';
 export let icon = 'fa-briefcase';
-export let titulo = 'Optimizar CV con IA y superar filtros | Workwii';
+export let titulo = 'Workwii | Creador de CV con IA y simulador de entrevistas';
 export let keywii = 'crear cv, optimizar curriculum, filtros ats, entrevistas de trabajo, ia empleo';
-export let descri = 'Crea tu currículum profesional con IA, optimízalo para superar filtros ATS y simula entrevistas reales. Aumenta tus opciones de encontrar trabajo hoy.';
+export let descri = 'Optimiza tu CV con IA y supera filtros ATS fácilmente. Workwii te ayuda a conseguir el empleo de tus sueños con herramientas de vanguardia y precisión';
 export let linkweb = 'https://workwii.app'; // Sin slash (/), al final
 export let lanzamiento = 2026;
 export let by = '@wilder.taype';
