@@ -387,7 +387,7 @@ const getCatInfo = (c: string) => SERVER_CATS.find(x => x.id.toLowerCase() === c
 <Layout {...seo.blog}>
   <div class="bl_wrap">
     <div class="bl_hero" data-herowi="100">
-      <h1 class="bl_hero_tit">Consejos y <span class="bl_grad">Estrategias</span> 💼</h1>
+      <h1 class="bl_hero_tit">Blog de <span class="bl_grad">Empleo, IA y Estrategias Laborales</span></h1>
       <p class="bl_hero_sub">Aprende a destacar tu perfil, optimizar tu CV y triunfar en procesos de selección</p>
     </div>
     
@@ -944,6 +944,8 @@ const getCatInfo = (c: string) => SERVER_CATS.find(x => x.id.toLowerCase() === c
     // Solo consultar a la base de datos si el servidor no cargó datos
     if (lista.length === 0) {
       await cargar(false, false);
+    } else {
+      imgwii.ver('#bl_grid');
     }
   };
 
