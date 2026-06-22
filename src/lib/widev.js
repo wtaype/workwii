@@ -264,8 +264,8 @@ export const wiSmart = (() => {
 })();
 
 
-// CARGA DIFERIDA DE IMÁGENES v3 — IntersectionObserver Optimizado + Placeholder SVG _____________
-export const wiImgs = (() => {
+// CARGA DIFERIDA DE IMÁGENES v7 — Objeto imgwii (Placeholder SVG + Observer) _____________________
+export const imgwii = (() => {
   let obs = null;
 
   const subirCSS = (() => {
@@ -275,7 +275,7 @@ export const wiImgs = (() => {
       done = true;
       const s = document.createElement('style');
       s.textContent = `
-        .wi_skeleton { background: var(--wb2, #BDBDBD) !important; transition: background 0.3s ease !important; }
+        .wi_skeleton { background: var(--wb2, #bdbdbd) !important; transition: background 0.3s ease !important; }
         .wi_skeleton.wi_loaded { background: transparent !important; }
         img[data-src] { opacity: 0.99; }
       `;
@@ -314,7 +314,7 @@ export const wiImgs = (() => {
     return obs;
   };
 
-  return (scopeOrEl = document) => {
+  const ver = (scopeOrEl = document) => {
     subirCSS();
     const scope = typeof scopeOrEl === 'string' ? document.querySelector(scopeOrEl) ?? document : scopeOrEl;
     const root = scope instanceof HTMLElement ? scope : document;
@@ -323,12 +323,17 @@ export const wiImgs = (() => {
 
     root.querySelectorAll('img[data-src]').forEach(el => {
       if (!el.getAttribute('src')) {
-        el.setAttribute('src', "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E");
+        el.setAttribute('src', imgwii.svg);
       }
       observer.observe(el);
     });
 
     root.querySelectorAll('[data-bg]').forEach(el => observer.observe(el));
+  };
+
+  return {
+    svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E",
+    ver
   };
 })();
 

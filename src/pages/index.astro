@@ -697,7 +697,7 @@ color: var(--tx);
 </Layout>
 
 <script>
-  import { herowi, wiImgs } from '../lib/widev.js';
+  import { herowi, imgwii } from '../lib/widev.js';
 
   /** @type {ReturnType<typeof setInterval>|null} */
   let roleInterval: any = null;
@@ -747,7 +747,7 @@ color: var(--tx);
     }
 
     herowi();
-    wiImgs('#sec_blog');
+    imgwii.ver('#sec_blog');
   };
 
   document.addEventListener('astro:page-load', init);

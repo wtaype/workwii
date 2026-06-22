@@ -473,7 +473,7 @@ const getCatInfo = (c) => SERVER_CATS.find(x => x.id.toLowerCase() === c.toLower
 
 <script>
   import { supabase } from '../lib/supabase.js';
-  import { savels, getls, Notificacion, wiImgs } from '../lib/widev.js';
+  import { savels, getls, Notificacion, imgwii } from '../lib/widev.js';
 
   const PAG_INI = 16, PAG_MAS = 8;
   
@@ -517,7 +517,7 @@ const getCatInfo = (c) => SERVER_CATS.find(x => x.id.toLowerCase() === c.toLower
     return `
       <a href="/${p.slug || p.id}" class="bl_card">
         <div class="bl_card_img">
-          <img data-src="${p.imagen || '/poster.webp'}" alt="${p.imagenAlt || p.titulo}" class="wi_skeleton img_fade" />
+          <img src="${imgwii.svg}" data-src="${p.imagen || '/poster.webp'}" alt="${p.imagenAlt || p.titulo}" class="wi_skeleton img_fade" />
           <div class="bl_card_over">
             <span class="bl_card_cat" style="--cc:${c.color}"><i class="fas ${c.icon}"></i> ${p.categoria || '—'}</span>
             ${p.pin ? `<span class="bl_card_dest" data-witip="Destacada"><i class="fas fa-thumbtack"></i></span>` : ''}
@@ -677,7 +677,7 @@ const getCatInfo = (c) => SERVER_CATS.find(x => x.id.toLowerCase() === c.toLower
     if (typeof (window as any).herowi === 'function') {
       (window as any).herowi();
     }
-    wiImgs('#bl_grid');
+    imgwii.ver('#bl_grid');
     
     if (masWrapEl) {
       masWrapEl.style.display = (newItems.length && newItems !== lista) ? 'none' : (hasMore ? 'flex' : 'none');

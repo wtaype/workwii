@@ -1,3 +1,5 @@
+import { imgwii } from '../widev.js';
+
 export const CUSTOM_ICONS = {
   'corazon': '<i class="fas fa-heart po_ico_red"></i>',
   'heart': '<i class="fas fa-heart po_ico_red"></i>',
@@ -240,10 +242,11 @@ export const procesarHtml = (html) => {
   mod = mod.replace(/<img\s+([^>]*?)src=(['"])(.*?)\2([^>]*?)>/gi, (match, before, quote, src, after) => {
     const rest = (before + ' ' + after).trim();
     if (rest.includes('data-src=')) return match;
+    const svg = `src="${imgwii.svg}"`;
     if (rest.includes('class=')) {
-      return `<img data-src="${src}" ${rest.replace(/class=(['"])(.*?)\1/gi, 'class=$1$2 wi_skeleton img_fade$1')}>`;
+      return `<img ${svg} data-src="${src}" ${rest.replace(/class=(['"])(.*?)\1/gi, 'class=$1$2 wi_skeleton img_fade$1')}>`;
     } else {
-      return `<img data-src="${src}" class="wi_skeleton img_fade" ${rest}>`;
+      return `<img ${svg} data-src="${src}" class="wi_skeleton img_fade" ${rest}>`;
     }
   });
 

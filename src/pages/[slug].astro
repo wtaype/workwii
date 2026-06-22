@@ -655,7 +655,7 @@ const keywords = seoMeta.keywords || '';
 </Layout>
 
 <script>
-  import { wicopy, showi, herowi, wiImgs, getls, savels, wiSmart } from '../lib/widev.js';
+  import { wicopy, showi, herowi, imgwii, getls, savels, wiSmart } from '../lib/widev.js';
   import { initYtModal,   cleanupYtModal   } from '../lib/blog/modalyt.js';
   import { initModalImgs, cleanupModalImgs } from '../lib/blog/modalimgs.js';
 
@@ -670,7 +670,7 @@ const keywords = seoMeta.keywords || '';
     const postEl = document.querySelector('.po_wrap') as HTMLElement;
     if (!postEl) return;
 
-    wiImgs('.po_wrap');
+    imgwii.ver('.po_wrap');
 
     const slug   = postEl.dataset.slug;
     const postId = postEl.dataset.id;
