@@ -163,5 +163,19 @@ export const seo = {
     ],
     audience: ['candidatos', 'profesionales', 'desempleados', 'estudiantes'],
     intent: 'encontrar trabajo remoto seguro y evitar estafas'
+  },
+  convertirAts: {
+    title: `Convertir CV a Formato ATS con IA | ${app}`,
+    description: "Convierte tu currículum de PDF o Word a un formato optimizado para ATS con nuestra Inteligencia Artificial. Pasa los filtros de contratación en 2026.",
+    path: '/convertir-ats',
+    keywords: [
+      'convertir cv a ats',
+      'cv compatible con ats',
+      'optimizar curriculum ia',
+      'formato cv ats gratis',
+      'pasar filtros de contratacion'
+    ],
+    audience: ['candidatos', 'profesionales', 'desempleados', 'estudiantes'],
+    intent: 'convertir curriculum vitae a formato ats'
   }
 };

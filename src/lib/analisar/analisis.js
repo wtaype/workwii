@@ -1,14 +1,7 @@
-import { AI_CONFIG } from './config.js';
+import { llamarGemini } from '../api/gemini.js';
 
 export const analizarCvConGemini = async (cvData, jobDesc, type) => {
-  const apiKey = AI_CONFIG.GEMINI_KEY;
-  if (!apiKey) {
-    throw new Error('La clave API de Gemini no está configurada.');
-  }
-
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${AI_CONFIG.MODEL}:generateContent?key=${apiKey}`;
-
-  const systemPrompt = `Eres un experto en Selección de Personal y filtros de contratación automatizados ATS (Applicant Tracking Systems). Tu tarea es evaluar el Currículum Vitae (CV) proporcionado contra la Descripción de la Vacante de Empleo.
+  const systemInstruction = `Eres un experto en Selección de Personal y filtros de contratación automatizados ATS (Applicant Tracking Systems). Tu tarea es evaluar el Currículum Vitae (CV) proporcionado contra la Descripción de la Vacante de Empleo.
 
 Genera un informe detallado y estructurado en formato JSON. El formato JSON devuelto debe cumplir EXACTAMENTE con esta estructura, sin textos adicionales markdown ni explicaciones fuera del JSON (devuelve solo el JSON puro):
 {
@@ -39,7 +32,7 @@ Genera un informe detallado y estructurado en formato JSON. El formato JSON devu
             }
           },
           {
-            text: `${systemPrompt}\n\nPor favor, lee el archivo PDF adjunto que representa el currículum del candidato, compáralo con la oferta de empleo siguiente y genera el reporte JSON.\n\nOFERTA DE EMPLEO:\n${jobDesc}`
+            text: `Por favor, lee el archivo PDF adjunto que representa el currículum del candidato, compáralo con la oferta de empleo siguiente y genera el reporte JSON.\n\nOFERTA DE EMPLEO:\n${jobDesc}`
           }
         ]
       }
@@ -50,35 +43,19 @@ Genera un informe detallado y estructurado en formato JSON. El formato JSON devu
       {
         parts: [
           {
-            text: `${systemPrompt}\n\nCURRÍCULUM DEL CANDIDATO:\n"""\n${cvData}\n"""\n\nOFERTA DE EMPLEO:\n"""\n${jobDesc}\n"""`
+            text: `CURRÍCULUM DEL CANDIDATO:\n"""\n${cvData}\n"""\n\nOFERTA DE EMPLEO:\n"""\n${jobDesc}\n"""`
           }
         ]
       }
     ];
   }
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      contents,
-      generationConfig: {
-        responseMimeType: 'application/json',
-        temperature: AI_CONFIG.TEMPERATURE
-      }
-    })
+  const cleanJsonStr = await llamarGemini({
+    contents,
+    systemInstruction,
+    responseMimeType: 'application/json'
   });
 
-  if (!response.ok) {
-    throw new Error(`Error en el servicio de IA: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  
-  // Limpiar posibles tags markdown de JSON sobrantes en la respuesta
-  const cleanJsonStr = rawText.trim().replace(/^```json\s*/i, '').replace(/```$/, '');
   return JSON.parse(cleanJsonStr);
 };
+

@@ -1,4 +1,5 @@
 const COMUN = [
+  { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles', txt: 'Convertir a ATS' },
   { href: '/remotos', ico: 'fa-briefcase', txt: 'Trabajo Remoto' },
   { href: '/blog',   ico: 'fa-blog',  txt: 'Blog Apoyo'},
   { href: '/acerca', ico: 'fa-circle-info', txt: 'Acerca' }

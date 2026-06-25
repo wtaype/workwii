@@ -1,4 +1,4 @@
-import { AI_CONFIG } from './config.js';
+import { llamarGemini } from '../api/gemini.js';
 import { wiRateLimit, Notificacion } from '../widev.js';
 
 let activeTextarea = null;
@@ -8,10 +8,6 @@ let onApply = null;
  * Llama a la API de Gemini para optimizar el logro de experiencia del candidato.
  */
 export const optimizarLogroConGemini = async (textoOriginal, puesto, empresa) => {
-  const apiKey = AI_CONFIG.GEMINI_KEY;
-  const model = AI_CONFIG.MODEL || 'gemini-3.1-flash-lite-preview';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
   const prompt = `Eres un experto redactor de currículums y optimización de perfiles para superar filtros ATS internacionales. 
 Toma la siguiente descripción de logros o funciones del puesto de "${puesto || 'Profesional'}" en la empresa "${empresa || 'Empresa'}", y reescríbela de forma impecable y profesional en español.
 
@@ -26,22 +22,20 @@ Texto original del candidato:
 ${textoOriginal}
 """`;
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: AI_CONFIG.TEMPERATURE || 0.25 }
-    })
+  const contents = [
+    {
+      parts: [
+        {
+          text: prompt
+        }
+      ]
+    }
+  ];
+
+  return await llamarGemini({
+    contents,
+    temperature: 0.25
   });
-
-  if (!response.ok) {
-    throw new Error(`Error en el servicio de Gemini: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  return text.trim().replace(/^```[a-z]*\s*/i, '').replace(/```$/, '');
 };
 
 /**
