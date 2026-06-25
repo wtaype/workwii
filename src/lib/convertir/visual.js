@@ -147,13 +147,13 @@ const renderFormContent = () => {
                 ${convertedCvData.fotoBase64 ? `<img src="${convertedCvData.fotoBase64}" class="conv_avatar_img" />` : '<i class="fas fa-user-circle"></i>'}
               </div>
               <div class="conv_photo_actions">
-                <input type="file" id="in_fotoFile" accept="image/png, image/jpeg" style="display:none;" />
+                <input type="file" id="in_fotoFile" accept="image/png, image/jpeg" class="dpn" />
                 <button type="button" class="conv_btn_small" id="btnSelectFoto"><i class="fas fa-upload"></i> Subir Foto</button>
                 <span class="conv_small_help">Formatos: PNG/JPG. Máx: 2MB.</span>
               </div>
             </div>
-            <div class="conv_warning_badge" id="photoWarningBtn">
-              <i class="fas fa-exclamation-triangle"></i> La foto puede reducir la compatibilidad ATS. Haz click para saber por qué.
+            <div class="conv_warning_badge" id="photoWarningBtn" data-witip="Muchos filtros ATS automáticos de reclutamiento no procesan imágenes y pueden descartar o corromper tu CV al intentar leerlo. Se recomienda no usar foto para vacantes internacionales o tecnológicas." data-wtipo="warning" data-wtiempo="6000">
+              <i class="fas fa-exclamation-triangle"></i> La foto puede reducir la compatibilidad ATS. Pasa el cursor para saber por qué.
             </div>
           </div>
         </div>
@@ -199,11 +199,7 @@ const renderFormContent = () => {
       }
     });
 
-    if (warningBtn) {
-      warningBtn.addEventListener('click', () => {
-        wiTip(warningBtn, 'Muchos filtros ATS automáticos de reclutamiento no procesan imágenes y pueden descartar o corromper tu CV al intentar leerlo. Se recomienda no usar foto para vacantes internacionales o tecnológicas.', 'warning', 6000);
-      });
-    }
+    // Tooltip autogestionado por data-witip en el HTML
 
     // Bind text fields
     ['nombre', 'titulo', 'email', 'telefono', 'ubicacion', 'linkedin', 'web'].forEach(field => {
@@ -243,7 +239,7 @@ const renderFormContent = () => {
         <label>Habilidades (Separadas por comas) *</label>
         <input type="text" id="in_skills" value="${convertedCvData.skills || ''}" placeholder="Ej: React, Node.js, SQL, Trabajo en equipo, Liderazgo" required />
       </div>
-      <div class="conv_field full_width" style="margin-top: 4vh;">
+      <div class="conv_field full_width conv_section_spacer">
         <div class="conv_header_row">
           <label>Idiomas</label>
           <button type="button" class="conv_btn_small" id="btnAddLanguage"><i class="fas fa-plus"></i> Agregar Idioma</button>
@@ -272,7 +268,7 @@ const renderFormContent = () => {
 
 const renderExperienciasForm = (container) => {
   container.innerHTML = `
-    <div class="conv_header_row" style="margin-bottom: 2.5vh;">
+    <div class="conv_header_row conv_form_header_row">
       <h3>Historial Profesional</h3>
       <button type="button" class="conv_btn_small" id="btnAddExp"><i class="fas fa-plus"></i> Añadir Trabajo</button>
     </div>
@@ -363,7 +359,7 @@ const renderExperienciasForm = (container) => {
 
 const renderEducacionForm = (container) => {
   container.innerHTML = `
-    <div class="conv_header_row" style="margin-bottom: 2.5vh;">
+    <div class="conv_header_row conv_form_header_row">
       <h3>Historial Educativo</h3>
       <button type="button" class="conv_btn_small" id="btnAddEdu"><i class="fas fa-plus"></i> Añadir Estudio</button>
     </div>
@@ -555,7 +551,7 @@ export const updateA4Preview = () => {
           <span>${convertedCvData.skills}</span>
         </div>
         ${convertedCvData.idiomas.length > 0 ? `
-          <div style="margin-top: 0.8vh;">
+          <div class="cr_cv_skills_subrow">
             <strong>Idiomas:</strong>
             <span>${convertedCvData.idiomas.filter(Boolean).join(', ')}</span>
           </div>
@@ -616,13 +612,7 @@ export const updateA4Preview = () => {
 };
 
 const setupGlobalListeners = () => {
-  // Configurar wiTip en el encabezado de Vista Previa para explicar por qué no hay foto por defecto
-  const tipFotoBtn = document.getElementById('convPreviewTipFoto');
-  if (tipFotoBtn) {
-    tipFotoBtn.addEventListener('click', () => {
-      wiTip(tipFotoBtn, 'Esta plantilla está diseñada sin foto por defecto porque los filtros de contratación automáticos ATS en EE.UU. y Europa penalizan o no leen currículums con imágenes. Te recomendamos descargar el CV sin foto.', 'info', 6000);
-    });
-  }
+  // Tooltip autogestionado por data-witip en el HTML en convertir-ats.astro
 
   // Configurar wiTip en el botón de Guardar PDF
   const printBtn = document.getElementById('convBtnPrint');

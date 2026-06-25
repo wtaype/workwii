@@ -12,19 +12,24 @@ import { seo } from '../lib/seo.js';
        ========================================================================= */
     .conv_wrap {
       width: 100%;
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 4vh 2vw 8vh;
+      padding: 2vh 2vw 8vh;
       font-family: var(--ff_P);
       color: var(--tx);
+      box-sizing: border-box;
     }
     
     .conv_header {
       text-align: center;
-      margin-bottom: 5vh;
+      margin-bottom: 2vh;
     }
+
+    #convTextareaContainer label {
+        font-size: var(--fz_m);
+        text-align: center;
+    }
+
     .conv_header h1 {
-      font-size: clamp(2rem, 5vw, 3rem);
+      font-size: var(--fz_l2);
       font-weight: 800;
       color: var(--tx1);
       letter-spacing: -0.5px;
@@ -77,7 +82,7 @@ import { seo } from '../lib/seo.js';
       transform: scale(0.99);
     }
     .conv_dropzone i {
-      font-size: 3rem;
+      font-size: var(--fz_x1);
       color: var(--mco);
       opacity: 0.85;
       transition: transform 0.3s ease;
@@ -107,7 +112,7 @@ import { seo } from '../lib/seo.js';
       animation: conv_fade_in 0.4s ease;
     }
     .file_preview i.file_icon {
-      font-size: 2.2rem;
+      font-size: var(--fz_l2);
       color: var(--mco);
     }
     .file_info {
@@ -132,7 +137,7 @@ import { seo } from '../lib/seo.js';
     .file_remove {
       background: none;
       border: none;
-      font-size: 1.8rem;
+      font-size: var(--fz_l1);
       cursor: pointer;
       color: var(--tx3);
       transition: color 0.2s;
@@ -174,11 +179,13 @@ import { seo } from '../lib/seo.js';
       display: flex;
       flex-direction: column;
       gap: 1vh;
+      align-items: center;
     }
     .conv_field label {
       font-weight: 700;
-      font-size: var(--fz_s2);
+      font-size: var(--fz_m3);
       color: var(--tx2);
+      text-align: center;
     }
     .conv_field input[type="text"], .conv_field input[type="email"], .conv_field input[type="tel"], .conv_field input[type="url"], .conv_field textarea {
       padding: 1.8vh 2vh;
@@ -204,10 +211,12 @@ import { seo } from '../lib/seo.js';
       animation: conv_fade_in 0.4s ease;
     }
     .conv_raw_textarea {
-      font-family: monospace;
-      font-size: var(--fz_s1) !important;
-      resize: vertical;
-      min-height: 200px;
+    font-size: var(--fz_m);
+    resize: vertical;
+    min-height: 24vh;
+    line-height: 1.8;
+    background: var(--bg8);
+    font-family: var(--ff_O);
     }
     .conv_textarea_counter {
       text-align: right;
@@ -288,7 +297,7 @@ import { seo } from '../lib/seo.js';
     .conv_workspace_split {
       display: none;
       grid-template-columns: 1.1fr 0.9fr;
-      gap: 4vh 2.5vw;
+      gap: 4vh 2vh;
       align-items: start;
       animation: conv_fade_in 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -304,11 +313,37 @@ import { seo } from '../lib/seo.js';
       background: var(--wb);
       border: 1px solid var(--brd);
       border-radius: 24px;
-      padding: 3vh 2.5vw 4vh;
+      padding: 3vh 1.5vw 4vh;
       box-shadow: 0 10px 30px rgba(0,0,0,0.01);
       display: flex;
       flex-direction: column;
       gap: 3vh;
+      
+      /* Panel de edición Sticky con scroll interno premium */
+      position: sticky;
+      top: 2vh;
+      max-height: 88vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--brd2) transparent;
+    }
+    .conv_left_pane::-webkit-scrollbar {
+      width: 6px;
+    }
+    .conv_left_pane::-webkit-scrollbar-thumb {
+      background-color: var(--brd2);
+      border-radius: 99px;
+    }
+    
+    /* Clases de espaciado y márgenes */
+    .conv_section_spacer {
+      margin-top: 4vh;
+    }
+    .conv_form_header_row {
+      margin-bottom: 2.5vh;
+    }
+    .cr_cv_skills_subrow {
+      margin-top: 0.8vh;
     }
 
     /* Cabecera de Pestañas */
@@ -320,9 +355,9 @@ import { seo } from '../lib/seo.js';
       padding-bottom: 1.5vh;
     }
     .conv_tab_btn {
-      padding: 1.2vh 1.8vh;
+      padding: 1.2vh 1vh;
       border: 1px solid transparent;
-      border-radius: 12px;
+      border-radius: 1vh;
       background: none;
       color: var(--tx3);
       font-size: var(--fz_s2);
@@ -332,6 +367,7 @@ import { seo } from '../lib/seo.js';
       align-items: center;
       gap: 1vh;
       transition: all 0.25s ease;
+      font-size: var(--fz_m2);
     }
     .conv_tab_btn:hover {
       color: var(--mco);
@@ -564,7 +600,7 @@ import { seo } from '../lib/seo.js';
       justify-content: center;
       background: var(--wb);
       overflow: hidden;
-      font-size: 2.2rem;
+      font-size: var(--fz_l2);
       color: var(--tx3);
     }
     .conv_avatar_img {
@@ -606,6 +642,10 @@ import { seo } from '../lib/seo.js';
       gap: 2.5vh;
       position: sticky;
       top: 20px;
+    }
+    #convBtnPrint {
+      padding: 1.2vh 2.5vh !important;
+      font-size: var(--fz_s2) !important;
     }
     .conv_preview_tools {
       background: var(--wb);
@@ -906,7 +946,7 @@ import { seo } from '../lib/seo.js';
     <!-- Encabezado general -->
     <header class="conv_header">
       <h1>Convertidor de CV a <span>Formato ATS</span></h1>
-      <p>Sube tu currículum actual en PDF o Word. Nuestra Inteligencia Artificial leerá el documento, optimizará la redacción de logros y lo estructurará en un formato 100% amigable para filtros de reclutamiento.</p>
+      <p>Sube tu currículum en PDF o Word y nuestra IA lo optimizará y estructurará al instante para superar los filtros de selección.</p>
     </header>
 
     <!-- PASO 1: SUBIR / PEGAR -->
@@ -919,7 +959,7 @@ import { seo } from '../lib/seo.js';
           <i class="fas fa-cloud-arrow-up"></i>
           <span class="conv_dz_tit">Arrastra tu archivo aquí o haz clic</span>
           <span class="conv_dz_sub">Admite formatos PDF y Word (.docx) — Máximo 4MB</span>
-          <input type="file" id="convFileInput" accept=".pdf,.docx" style="display: none;">
+          <input type="file" id="convFileInput" accept=".pdf,.docx" class="dpn">
         </div>
 
         <!-- Progreso de lectura -->
@@ -934,7 +974,7 @@ import { seo } from '../lib/seo.js';
         </div>
 
         <!-- Preview de archivo cargado -->
-        <div id="convPreviewContainer" style="display: none;"></div>
+        <div id="convPreviewContainer" class="dpn"></div>
       </div>
 
       <!-- Textarea de revisión de texto extraído bruto -->
@@ -960,7 +1000,7 @@ import { seo } from '../lib/seo.js';
     <section class="conv_loader" id="convLoader">
       <div class="conv_loader_spinner"></div>
       <h3 id="convLoaderMsg">Analizando currículum...</h3>
-      <p>Gemini está reescribiendo tus logros de trabajo con verbos de acción fuertes y estructurando tus datos. Esto tomará de 3 a 5 segundos.</p>
+      <p>Nuestra Inteligencia Artificial está estructurando tu información y optimizando tus logros para superar los filtros de contratación. Esto tomará unos segundos.</p>
     </section>
 
     <!-- PASO 3: EDITAR Y PREVISUALIZAR (Split workspace) -->
@@ -986,13 +1026,13 @@ import { seo } from '../lib/seo.js';
         <div class="conv_preview_tools">
           <div class="conv_preview_tools_left">
             <span><i class="fas fa-circle-check"></i> Vista Previa ATS</span>
-            <button class="conv_tip_btn_icon" id="convPreviewTipFoto" title="Consejo de foto">
+            <button class="conv_tip_btn_icon" id="convPreviewTipFoto" title="Consejo de foto" data-witip="Esta plantilla está diseñada sin foto por defecto porque los filtros de contratación automáticos ATS en EE.UU. y Europa penalizan o no leen currículums con imágenes. Te recomendamos descargar el CV sin foto." data-wtipo="info" data-wtiempo="6000">
               <i class="fas fa-circle-info"></i>
             </button>
           </div>
           <div class="conv_preview_actions">
             <button class="conv_btn_sec" id="convBtnReset"><i class="fas fa-rotate-left"></i> Subir otro</button>
-            <button class="conv_btn" id="convBtnPrint" style="padding: 1.2vh 2.5vh; font-size: var(--fz_s2);"><i class="fas fa-print"></i> Guardar PDF</button>
+            <button class="conv_btn" id="convBtnPrint"><i class="fas fa-print"></i> Guardar PDF</button>
           </div>
         </div>
 
@@ -1109,7 +1149,7 @@ import { seo } from '../lib/seo.js';
       const textToConvert = rawTextarea.value.trim();
       const targetRole = targetRoleInp ? targetRoleInp.value.trim() : '';
 
-      // Llamada a Gemini
+      // Llamada a la IA de Workwii
       const structuredCv = await estructurarCvConIA(textToConvert, targetRole);
 
       // Guardar el consumo exitoso en el navegador
