@@ -1,10 +1,24 @@
 /**
- * Genera y descarga el currículum en formato Microsoft Word (.doc) utilizando una plantilla HTML estructurada.
- * Utiliza etiquetas de control XML de Office para abrir por defecto en "Diseño de Impresión" (Print Layout) con márgenes correctos de 1 pulgada.
+ * Genera y descarga el currículum en formato Microsoft Word (.docx) nativo.
+ * Utiliza la librería docx.js desde CDN para crear un archivo binario válido.
+ * Garantiza tablas sin bordes ni cuadrículas para una presentación ATS limpia.
  * 
  * @param {object} cv - Objeto con los datos estructurados del currículum.
  */
-export const descargarDocx = (cv) => {
+export const descargarDocx = async (cv) => {
+  if (!window.docx) {
+    // Carga dinámica de docx.js desde jsDelivr
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, BorderStyle, WidthType, AlignmentType } = window.docx;
+
   const isEn = cv.idioma === 'en';
 
   // Cabeceras de sección dinámicas según el idioma
@@ -16,180 +30,393 @@ export const descargarDocx = (cv) => {
   const textIdiomasLabel = isEn ? 'Languages' : 'Idiomas';
   const textPresente = isEn ? 'Present' : 'Presente';
 
-  // Construir una plantilla HTML compatible con Microsoft Word y sus vistas
-  const html = `
-    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/1999/xhtml'>
-    <head>
-      <meta charset="utf-8">
-      <title>${cv.nombre || 'Currículum Vitae'}</title>
-      <!--[if gte mso 9]>
-      <xml>
-        <w:WordDocument>
-          <w:View>Print</w:View>
-          <w:Zoom>100</w:Zoom>
-          <w:DoNotOptimizeForBrowser/>
-        </w:WordDocument>
-      </xml>
-      <![endif]-->
-      <style>
-        @page WordSection1 {
-          size: 8.5in 11.0in;
-          margin: 1.0in 1.0in 1.0in 1.0in;
-          mso-header-margin: .5in;
-          mso-footer-margin: .5in;
-          mso-paper-source: 0;
-        }
-        div.WordSection1 {
-          page: WordSection1;
-        }
-        body {
-          font-family: Arial, sans-serif;
-          font-size: 11pt;
-          line-height: 1.45;
-          color: #333333;
-        }
-        h1 {
-          font-size: 21pt;
-          color: #111111;
-          text-align: center;
-          margin-top: 0;
-          margin-bottom: 3pt;
-          font-weight: bold;
-        }
-        .subtitle {
-          font-size: 11.5pt;
-          color: #444444;
-          text-align: center;
-          text-transform: uppercase;
-          font-weight: bold;
-          margin-bottom: 6pt;
-          letter-spacing: 0.5px;
-        }
-        .contact-info {
-          text-align: center;
-          font-size: 9.5pt;
-          color: #555555;
-          margin-bottom: 18pt;
-        }
-        h2 {
-          font-size: 11pt;
-          color: #111111;
-          text-transform: uppercase;
-          border-bottom: 1.5px solid #222222;
-          padding-bottom: 2pt;
-          margin-top: 18pt;
-          margin-bottom: 8pt;
-          font-weight: bold;
-          letter-spacing: 0.8px;
-        }
-        .item {
-          margin-bottom: 12pt;
-        }
-        .item-desc {
-          margin-top: 3pt;
-          margin-left: 15pt;
-        }
-        ul {
-          margin: 0;
-          padding-left: 15pt;
-        }
-        li {
-          margin-bottom: 2pt;
-          text-align: justify;
-        }
-        .skills-section {
-          margin-top: 4pt;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="WordSection1">
-        <h1>${cv.nombre || 'Nombre Completo'}</h1>
-        ${cv.titulo ? `<div class="subtitle">${cv.titulo}</div>` : ''}
-        
-        <div class="contact-info">
-          Email: ${cv.email || ''} 
-          ${cv.telefono ? ` &bull; Teléfono: ${cv.telefono}` : ''} 
-          ${cv.ubicacion ? ` &bull; Ubicación: ${cv.ubicacion}` : ''}
-          ${cv.linkedin ? `<br>LinkedIn: ${cv.linkedin}` : ''}
-          ${cv.web ? ` &bull; Web: ${cv.web}` : ''}
-        </div>
+  // Colección de elementos del documento
+  const docElements = [];
 
-        ${cv.resumen ? `
-          <h2>${textPerfil}</h2>
-          <div style="text-align: justify;">${cv.resumen}</div>
-        ` : ''}
+  // 1. Nombre (Centrado, Grande, Negrita)
+  docElements.push(
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: 0, after: 60 },
+      children: [
+        new TextRun({
+          text: cv.nombre || 'Currículum Vitae',
+          bold: true,
+          size: 40, // 20pt
+          font: 'Arial',
+          color: '111111'
+        })
+      ]
+    })
+  );
 
-        ${cv.experiencias && cv.experiencias.length > 0 ? `
-          <h2>${textExperiencia}</h2>
-          ${cv.experiencias.map(exp => `
-            <div class="item" style="page-break-inside: avoid; break-inside: avoid;">
-              <table style="width: 100%; border: none; margin-bottom: 2pt;">
-                <tr>
-                  <td style="font-weight: bold; font-size: 10.5pt; text-align: left;">${exp.puesto.toUpperCase()}</td>
-                  <td style="text-align: right; font-weight: bold; font-size: 10.5pt;">${exp.inicio} - ${exp.fin || textPresente}</td>
-                </tr>
-                <tr>
-                  <td style="font-style: italic; color: #444444; text-align: left;">${exp.empresa}</td>
-                  <td style="text-align: right; font-style: italic; color: #444444;">${exp.ubicacion || ''}</td>
-                </tr>
-              </table>
-              ${exp.logros ? `
-                <div class="item-desc">
-                  <ul>
-                    ${exp.logros.split('\n').map(l => {
-                      const clean = l.trim().replace(/^-\s*/, '');
-                      return clean ? `<li>${clean}</li>` : '';
-                    }).filter(Boolean).join('')}
-                  </ul>
-                </div>
-              ` : ''}
-            </div>
-          `).join('')}
-        ` : ''}
+  // 2. Cargo / Título Profesional
+  if (cv.titulo) {
+    docElements.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { before: 0, after: 120 },
+        children: [
+          new TextRun({
+            text: cv.titulo.toUpperCase(),
+            bold: true,
+            size: 23, // 11.5pt
+            font: 'Arial',
+            color: '444444'
+          })
+        ]
+      })
+    );
+  }
 
-        ${cv.educacion && cv.educacion.length > 0 ? `
-          <h2>${textEducacion}</h2>
-          ${cv.educacion.map(edu => `
-            <div class="item" style="page-break-inside: avoid; break-inside: avoid;">
-              <table style="width: 100%; border: none; margin-bottom: 2pt;">
-                <tr>
-                  <td style="font-weight: bold; font-size: 10.5pt; text-align: left;">${edu.grado}</td>
-                  <td style="text-align: right; font-weight: bold; font-size: 10.5pt;">${edu.inicio} - ${edu.fin}</td>
-                </tr>
-                <tr>
-                  <td style="font-style: italic; color: #444444; text-align: left;">${edu.institucion}</td>
-                  <td style="text-align: right; font-style: italic; color: #444444;">${edu.ubicacion || ''}</td>
-                </tr>
-              </table>
-            </div>
-          `).join('')}
-        ` : ''}
+  // 3. Información de Contacto (Centrada, separada por barras)
+  const contactParts = [];
+  if (cv.email) contactParts.push(cv.email);
+  if (cv.telefono) contactParts.push(cv.telefono);
+  if (cv.ubicacion) contactParts.push(cv.ubicacion);
+  if (cv.linkedin) contactParts.push(cv.linkedin);
+  if (cv.web) contactParts.push(cv.web);
 
-        ${cv.skills ? `
-          <h2>${textSkills}</h2>
-          <div class="skills-section">
-            <strong>${textSkillsLabel}:</strong> ${cv.skills}
-          </div>
-          ${cv.idiomas && cv.idiomas.length > 0 ? `
-            <div style="margin-top: 5pt;">
-              <strong>${textIdiomasLabel}:</strong> ${cv.idiomas.filter(Boolean).join(', ')}
-            </div>
-          ` : ''}
-        ` : ''}
-      </div>
-    </body>
-    </html>
-  `;
+  docElements.push(
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: 0, after: 360 }, // Espacio mayor antes del perfil
+      children: [
+        new TextRun({
+          text: contactParts.join('   |   '),
+          size: 19, // 9.5pt
+          font: 'Arial',
+          color: '555555'
+        })
+      ]
+    })
+  );
 
-  // MimeType para abrir como documento editable en Word
-  const blob = new Blob(['\ufeff' + html], { type: 'application/msword;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${(cv.nombre || 'CV_ATS').replace(/\s+/g, '_')}_CV_ATS.doc`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  // Helper para generar títulos de secciones con borde inferior sólido (línea divisoria)
+  const createSectionHeading = (titleText) => {
+    return new Paragraph({
+      spacing: { before: 360, after: 160 },
+      border: {
+        bottom: {
+          color: '222222',
+          space: 4,
+          style: BorderStyle.SINGLE,
+          size: 12 // 1.5 pt
+        }
+      },
+      children: [
+        new TextRun({
+          text: titleText.toUpperCase(),
+          bold: true,
+          size: 22, // 11pt
+          font: 'Arial',
+          color: '111111'
+        })
+      ]
+    });
+  };
+
+  // 4. Perfil Profesional
+  if (cv.resumen) {
+    docElements.push(createSectionHeading(textPerfil));
+    docElements.push(
+      new Paragraph({
+        alignment: AlignmentType.JUSTIFY,
+        spacing: { before: 0, after: 120, line: 288 }, // 1.2 interlineado
+        children: [
+          new TextRun({
+            text: cv.resumen,
+            size: 21, // 10.5pt
+            font: 'Arial',
+            color: '333333'
+          })
+        ]
+      })
+    );
+  }
+
+  // Helper para generar celdas sin bordes (Para evitar gridlines raros en Word)
+  const getBorderlessCell = (contentParagraph, widthPct) => {
+    return new TableCell({
+      width: { size: widthPct, type: WidthType.PERCENTAGE },
+      borders: {
+        top: { style: BorderStyle.NONE },
+        bottom: { style: BorderStyle.NONE },
+        left: { style: BorderStyle.NONE },
+        right: { style: BorderStyle.NONE }
+      },
+      children: [contentParagraph]
+    });
+  };
+
+  // 5. Experiencia Laboral
+  if (cv.experiencias && cv.experiencias.length > 0) {
+    docElements.push(createSectionHeading(textExperiencia));
+
+    cv.experiencias.forEach((exp) => {
+      // Tabla invisible de 2 filas y 2 columnas para alinear Cargo y Fechas perfectamente
+      const expTable = new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        borders: {
+          top: { style: BorderStyle.NONE },
+          bottom: { style: BorderStyle.NONE },
+          left: { style: BorderStyle.NONE },
+          right: { style: BorderStyle.NONE },
+          insideHorizontal: { style: BorderStyle.NONE },
+          insideVertical: { style: BorderStyle.NONE }
+        },
+        rows: [
+          new TableRow({
+            children: [
+              getBorderlessCell(
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: exp.puesto.toUpperCase(),
+                      bold: true,
+                      size: 21, // 10.5pt
+                      font: 'Arial',
+                      color: '111111'
+                    })
+                  ]
+                }),
+                60
+              ),
+              getBorderlessCell(
+                new Paragraph({
+                  alignment: AlignmentType.RIGHT,
+                  children: [
+                    new TextRun({
+                      text: `${exp.inicio} - ${exp.fin || textPresente}`,
+                      bold: true,
+                      size: 21,
+                      font: 'Arial',
+                      color: '111111'
+                    })
+                  ]
+                }),
+                40
+              )
+            ]
+          }),
+          new TableRow({
+            children: [
+              getBorderlessCell(
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: exp.empresa,
+                      italic: true,
+                      size: 20, // 10pt
+                      font: 'Arial',
+                      color: '444444'
+                    })
+                  ]
+                }),
+                60
+              ),
+              getBorderlessCell(
+                new Paragraph({
+                  alignment: AlignmentType.RIGHT,
+                  children: [
+                    new TextRun({
+                      text: exp.ubicacion || '',
+                      italic: true,
+                      size: 20,
+                      font: 'Arial',
+                      color: '444444'
+                    })
+                  ]
+                }),
+                40
+              )
+            ]
+          })
+        ]
+      });
+
+      docElements.push(expTable);
+
+      // Viñetas nativas de logros (Sangría de logros)
+      if (exp.logros) {
+        exp.logros.split('\n').forEach((logro) => {
+          const cleanLogro = logro.trim().replace(/^[-\*\•\s]+/, '');
+          if (cleanLogro) {
+            docElements.push(
+              new Paragraph({
+                bullet: { level: 0 },
+                spacing: { before: 60, after: 60, line: 240 },
+                children: [
+                  new TextRun({
+                    text: cleanLogro,
+                    size: 20, // 10pt
+                    font: 'Arial',
+                    color: '333333'
+                  })
+                ]
+              })
+            );
+          }
+        });
+      }
+
+      // Espaciador entre trabajos
+      docElements.push(new Paragraph({ spacing: { before: 0, after: 120 } }));
+    });
+  }
+
+  // 6. Educación
+  if (cv.educacion && cv.educacion.length > 0) {
+    docElements.push(createSectionHeading(textEducacion));
+
+    cv.educacion.forEach((edu) => {
+      const eduTable = new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        borders: {
+          top: { style: BorderStyle.NONE },
+          bottom: { style: BorderStyle.NONE },
+          left: { style: BorderStyle.NONE },
+          right: { style: BorderStyle.NONE },
+          insideHorizontal: { style: BorderStyle.NONE },
+          insideVertical: { style: BorderStyle.NONE }
+        },
+        rows: [
+          new TableRow({
+            children: [
+              getBorderlessCell(
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: edu.grado,
+                      bold: true,
+                      size: 21,
+                      font: 'Arial',
+                      color: '111111'
+                    })
+                  ]
+                }),
+                60
+              ),
+              getBorderlessCell(
+                new Paragraph({
+                  alignment: AlignmentType.RIGHT,
+                  children: [
+                    new TextRun({
+                      text: `${edu.inicio} - ${edu.fin || ''}`,
+                      bold: true,
+                      size: 21,
+                      font: 'Arial',
+                      color: '111111'
+                    })
+                  ]
+                }),
+                40
+              )
+            ]
+          }),
+          new TableRow({
+            children: [
+              getBorderlessCell(
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: edu.institucion,
+                      italic: true,
+                      size: 20,
+                      font: 'Arial',
+                      color: '444444'
+                    })
+                  ]
+                }),
+                60
+              ),
+              getBorderlessCell(
+                new Paragraph({
+                  alignment: AlignmentType.RIGHT,
+                  children: [
+                    new TextRun({
+                      text: edu.ubicacion || '',
+                      italic: true,
+                      size: 20,
+                      font: 'Arial',
+                      color: '444444'
+                    })
+                  ]
+                }),
+                40
+              )
+            ]
+          })
+        ]
+      });
+
+      docElements.push(eduTable);
+      docElements.push(new Paragraph({ spacing: { before: 0, after: 120 } }));
+    });
+  }
+
+  // 7. Habilidades e Idiomas
+  if (cv.skills) {
+    docElements.push(createSectionHeading(textSkills));
+
+    const skillRuns = [
+      new TextRun({ text: `${textSkillsLabel}: `, bold: true, size: 20, font: 'Arial', color: '111111' }),
+      new TextRun({ text: cv.skills, size: 20, font: 'Arial', color: '333333' })
+    ];
+
+    docElements.push(
+      new Paragraph({
+        spacing: { before: 60, after: 60, line: 240 },
+        children: skillRuns
+      })
+    );
+
+    if (cv.idiomas && cv.idiomas.length > 0) {
+      const languageRuns = [
+        new TextRun({ text: `${textIdiomasLabel}: `, bold: true, size: 20, font: 'Arial', color: '111111' }),
+        new TextRun({ text: cv.idiomas.filter(Boolean).join(', '), size: 20, font: 'Arial', color: '333333' })
+      ];
+
+      docElements.push(
+        new Paragraph({
+          spacing: { before: 60, after: 60, line: 240 },
+          children: languageRuns
+        })
+      );
+    }
+  }
+
+  // Documento principal estructurado en secciones con márgenes de 1 pulgada
+  const doc = new Document({
+    sections: [
+      {
+        properties: {
+          page: {
+            margin: {
+              top: 1440, // 1 pulgada en twips
+              bottom: 1440,
+              left: 1440,
+              right: 1440
+            }
+          }
+        },
+        children: docElements
+      }
+    ]
+  });
+
+  // Empaquetado y descarga del archivo .docx binario real
+  Packer.toBlob(doc).then((blob) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${(cv.nombre || 'CV_ATS').replace(/\s+/g, '_')}_CV_ATS.docx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }).catch((err) => {
+    console.error('Error al empaquetar .docx nativo:', err);
+    Notificacion('No se pudo generar el archivo Word nativo.', 'error');
+  });
 };

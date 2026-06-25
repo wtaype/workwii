@@ -7,6 +7,11 @@ import { seo } from '../lib/seo.js';
 
 <Layout {...seo.convertirAts}>
   <style is:global>
+    /* Ocultar el selector de temas flotante de widev.js en esta página */
+    #wiTema {
+      display: none !important;
+    }
+
     /* =========================================================================
        CONVERTIR.CSS — Estilos Premium del Convertidor de CV a ATS
        ========================================================================= */
@@ -717,20 +722,32 @@ import { seo } from '../lib/seo.js';
     }
     
     .cr_cv_document {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 15px !important;
       background: #fff !important;
       color: #333 !important;
-      padding: 6vh 4vw !important;
+      padding: 38px 45px !important;
       border: none !important;
       box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
-      min-height: 29.7cm;
-      width: 21cm;
+      height: 1120px !important;
+      width: 794px !important;
       max-width: 100%;
-      margin: 0 auto;
+      margin: 0 auto 20px !important;
       font-family: 'Times New Roman', Times, Georgia, serif !important;
       font-size: 11pt !important;
       line-height: 1.45 !important;
       box-sizing: border-box;
       text-align: left;
+      position: relative !important;
+    }
+
+    .html2pdf-container .cr_cv_document {
+      height: 1114px !important;
+      padding: 38px 45px !important;
+      box-shadow: none !important;
+      background-image: none !important;
+      margin: 0 !important;
     }
 
     .cr_cv_header {
@@ -875,7 +892,7 @@ import { seo } from '../lib/seo.js';
     .cr_cv_item_desc ul {
       margin: 0;
       padding-left: 0;
-      list-style-type: square;
+      list-style-type: disc !important;
     }
     .cr_cv_item_desc li {
       margin-bottom: 0.3vh;
@@ -1098,11 +1115,17 @@ import { seo } from '../lib/seo.js';
         overflow: visible !important;
       }
       .cr_cv_document {
-        width: 100% !important;
-        min-height: 0 !important;
+        width: 21cm !important;
+        height: 29.7cm !important;
         box-shadow: none !important;
-        padding: 20mm 20mm 20mm 20mm !important;
+        padding: 10mm 12mm !important;
         margin: 0 !important;
+        background: #fff !important;
+        background-image: none !important;
+      }
+      .cr_cv_page_next {
+        page-break-before: always !important;
+        break-before: page !important;
       }
     }
   </style>
@@ -1216,7 +1239,8 @@ import { seo } from '../lib/seo.js';
               </button>
               <div class="conv_dropdown_menu" id="convDownloadMenu">
                 <button class="conv_dropdown_item" id="convBtnPrintNative"><i class="fas fa-print"></i> Imprimir PDF (Recomendado ATS)</button>
-                <button class="conv_dropdown_item" id="convBtnDownloadDocx"><i class="fas fa-file-word"></i> Descargar Word (.doc)</button>
+                <button class="conv_dropdown_item" id="convBtnDownloadPdfDirect"><i class="fas fa-file-pdf"></i> Descargar PDF (Exportación Directa)</button>
+                <button class="conv_dropdown_item" id="convBtnDownloadDocx"><i class="fas fa-file-word"></i> Descargar Word (.docx)</button>
                 <button class="conv_dropdown_item" id="convBtnDownloadTxt"><i class="fas fa-file-alt"></i> Descargar Texto (.txt)</button>
                 <button class="conv_dropdown_item" id="convBtnDownloadMd"><i class="fab fa-markdown"></i> Descargar Markdown (.md)</button>
                 <button class="conv_dropdown_item" id="convBtnDownloadJson"><i class="fas fa-file-code"></i> Respaldar datos (.json)</button>

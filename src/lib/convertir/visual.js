@@ -15,14 +15,177 @@ export let convertedCvData = {
   skills: '',
   idiomas: [],
   incluirFoto: false,
-  fotoBase64: ''
+  fotoBase64: '',
+  idioma: 'es' // Idioma por defecto
 };
 
 let activeTab = 'contacto';
 
+// Diccionario de traducción dinámico para el panel de control del currículum
+const locales = {
+  es: {
+    tabs: {
+      contacto: 'Contacto',
+      perfil: 'Perfil',
+      experiencia: 'Experiencia',
+      educacion: 'Educación',
+      skills: 'Habilidades'
+    },
+    contacto: {
+      nombre: 'Nombre Completo *',
+      titulo: 'Título Profesional *',
+      email: 'Correo Electrónico *',
+      telefono: 'Teléfono *',
+      ubicacion: 'Ubicación (Ciudad, País) *',
+      linkedin: 'Enlace LinkedIn',
+      web: 'Sitio Web o Portafolio',
+      idioma: 'Idioma del CV *',
+      incluirFoto: '¿Incluir foto en el CV?',
+      subirFoto: 'Subir Foto',
+      fotoHelp: 'Formatos: PNG/JPG. Máx: 2MB.',
+      fotoWarning: 'La foto puede reducir la compatibilidad ATS. Pasa el cursor para saber por qué.',
+      placeholderNombre: 'Ej: Wilder Taype',
+      placeholderTitulo: 'Ej: Desarrollador Backend',
+      placeholderEmail: 'Ej: wilder@example.com',
+      placeholderTelefono: 'Ej: +51 999 888 777',
+      placeholderUbicacion: 'Ej: Lima, Perú',
+      placeholderLinkedin: 'Ej: https://linkedin.com/in/usuario',
+      placeholderWeb: 'Ej: https://miportafolio.com'
+    },
+    perfil: {
+      titulo: 'Resumen / Perfil Profesional *',
+      placeholder: 'Redacta tu propuesta de valor, principales logros e industrias en las que te especializas...',
+      caracteres: 'caracteres'
+    },
+    experiencia: {
+      titulo: 'Historial Profesional',
+      agregar: 'Añadir Trabajo',
+      puestoNum: 'Puesto',
+      eliminar: 'Eliminar',
+      cargo: 'Cargo / Puesto *',
+      empresa: 'Empresa *',
+      ubicacion: 'Ubicación',
+      inicio: 'Fecha de Inicio *',
+      fin: 'Fecha de Fin *',
+      logros: 'Logros y Funciones (Una viñeta por línea) *',
+      placeholderCargo: 'Ej: Desarrollador Backend',
+      placeholderEmpresa: 'Ej: Tech Solutions',
+      placeholderUbicacion: 'Ej: Remoto / Madrid, España',
+      placeholderInicio: 'Ej: Ene 2023',
+      placeholderFin: 'Ej: Presente o Dic 2024',
+      placeholderLogros: '- Lideré el desarrollo de la API rest...'
+    },
+    educacion: {
+      titulo: 'Historial Educativo',
+      agregar: 'Añadir Estudio',
+      estudioNum: 'Estudio',
+      eliminar: 'Eliminar',
+      institucion: 'Institución Educativa *',
+      grado: 'Grado / Carrera / Certificación *',
+      ubicacion: 'Ubicación',
+      inicio: 'Fecha de Inicio *',
+      fin: 'Fecha de Fin *',
+      placeholderInstitucion: 'Ej: Universidad Nacional',
+      placeholderGrado: 'Ej: Lic. en Administración',
+      placeholderUbicacion: 'Ej: Lima, Perú',
+      placeholderInicio: 'Ej: Mar 2018',
+      placeholderFin: 'Ej: Dic 2022 o En Curso'
+    },
+    skills: {
+      titulo: 'Habilidades (Separadas por comas) *',
+      placeholder: 'Ej: React, Node.js, SQL, Trabajo en equipo, Liderazgo',
+      idiomas: 'Idiomas',
+      agregarIdioma: 'Agregar Idioma',
+      placeholderIdioma: 'Ej: Inglés - Avanzado (C1)',
+      noIdiomas: 'No has añadido ningún idioma aún.'
+    }
+  },
+  en: {
+    tabs: {
+      contacto: 'Contact Info',
+      perfil: 'Summary',
+      experiencia: 'Experience',
+      educacion: 'Education',
+      skills: 'Skills'
+    },
+    contacto: {
+      nombre: 'Full Name *',
+      titulo: 'Professional Title *',
+      email: 'Email Address *',
+      telefono: 'Phone Number *',
+      ubicacion: 'Location (City, Country) *',
+      linkedin: 'LinkedIn Link',
+      web: 'Website or Portfolio',
+      idioma: 'CV Language *',
+      incluirFoto: 'Include photo in CV?',
+      subirFoto: 'Upload Photo',
+      fotoHelp: 'Formats: PNG/JPG. Max: 2MB.',
+      fotoWarning: 'A photo may reduce ATS compatibility. Hover to learn why.',
+      placeholderNombre: 'e.g., Wilder Taype',
+      placeholderTitulo: 'e.g., Backend Developer',
+      placeholderEmail: 'e.g., wilder@example.com',
+      placeholderTelefono: 'e.g., +51 999 888 777',
+      placeholderUbicacion: 'e.g., Lima, Peru',
+      placeholderLinkedin: 'e.g., https://linkedin.com/in/username',
+      placeholderWeb: 'e.g., https://myportfolio.com'
+    },
+    perfil: {
+      titulo: 'Professional Summary *',
+      placeholder: 'Write your value proposition, core achievements, and industries you specialize in...',
+      caracteres: 'characters'
+    },
+    experiencia: {
+      titulo: 'Work History',
+      agregar: 'Add Work Experience',
+      puestoNum: 'Job',
+      eliminar: 'Delete',
+      cargo: 'Job Title / Position *',
+      empresa: 'Company *',
+      ubicacion: 'Location',
+      inicio: 'Start Date *',
+      fin: 'End Date *',
+      logros: 'Key Achievements & Responsibilities (One bullet per line) *',
+      placeholderCargo: 'e.g., Backend Developer',
+      placeholderEmpresa: 'e.g., Tech Solutions',
+      placeholderUbicacion: 'e.g., Remote / Madrid, Spain',
+      placeholderInicio: 'e.g., Jan 2023',
+      placeholderFin: 'e.g., Present or Dec 2024',
+      placeholderLogros: '- Led the development of the REST API...'
+    },
+    educacion: {
+      titulo: 'Education History',
+      agregar: 'Add Education',
+      estudioNum: 'Education',
+      eliminar: 'Delete',
+      institucion: 'School / University *',
+      grado: 'Degree / Major / Certification *',
+      ubicacion: 'Location',
+      inicio: 'Start Date *',
+      fin: 'End Date *',
+      placeholderInstitucion: 'e.g., State University',
+      placeholderGrado: 'e.g., B.S. in Business Administration',
+      placeholderUbicacion: 'e.g., Lima, Peru',
+      placeholderInicio: 'e.g., Mar 2018',
+      placeholderFin: 'e.g., Dec 2022 or Ongoing'
+    },
+    skills: {
+      titulo: 'Skills (Separated by commas) *',
+      placeholder: 'e.g., React, Node.js, SQL, Teamwork, Leadership',
+      idiomas: 'Languages',
+      agregarIdioma: 'Add Language',
+      placeholderIdioma: 'e.g., English - Fluent (C1)',
+      noIdiomas: 'You haven\'t added any languages yet.'
+    }
+  }
+};
+
 export const initVisual = (initialData) => {
   convertedCvData = { ...convertedCvData, ...initialData };
   
+  if (!convertedCvData.idioma) {
+    convertedCvData.idioma = 'es';
+  }
+
   // Set default empty lists if none exist
   if (!convertedCvData.experiencias || convertedCvData.experiencias.length === 0) {
     convertedCvData.experiencias = [crearEstructuraExp()];
@@ -64,12 +227,15 @@ const renderTabs = () => {
   const container = document.getElementById('convTabsHeader');
   if (!container) return;
 
+  const isEn = convertedCvData.idioma === 'en';
+  const tabLang = isEn ? locales.en.tabs : locales.es.tabs;
+
   const tabs = [
-    { id: 'contacto', label: 'Contacto', icon: 'fa-address-card' },
-    { id: 'perfil', label: 'Perfil', icon: 'fa-user' },
-    { id: 'experiencia', label: 'Experiencia', icon: 'fa-briefcase' },
-    { id: 'educacion', label: 'Educación', icon: 'fa-graduation-cap' },
-    { id: 'skills', label: 'Habilidades', icon: 'fa-sliders-h' }
+    { id: 'contacto', label: tabLang.contacto, icon: 'fa-address-card' },
+    { id: 'perfil', label: tabLang.perfil, icon: 'fa-user' },
+    { id: 'experiencia', label: tabLang.experiencia, icon: 'fa-briefcase' },
+    { id: 'educacion', label: tabLang.educacion, icon: 'fa-graduation-cap' },
+    { id: 'skills', label: tabLang.skills, icon: 'fa-sliders-h' }
   ];
 
   container.innerHTML = tabs.map(tab => `
@@ -96,45 +262,55 @@ const renderFormContent = () => {
   const container = document.getElementById('convFormContent');
   if (!container) return;
 
+  const isEn = convertedCvData.idioma === 'en';
+  const lang = isEn ? locales.en : locales.es;
+
   container.innerHTML = '';
 
   if (activeTab === 'contacto') {
     container.innerHTML = `
       <div class="conv_form_grid">
         <div class="conv_field">
-          <label>Nombre Completo *</label>
-          <input type="text" id="in_nombre" value="${convertedCvData.nombre || ''}" placeholder="Ej: Wilder Taype" required />
+          <label>${lang.contacto.nombre}</label>
+          <input type="text" id="in_nombre" value="${convertedCvData.nombre || ''}" placeholder="${lang.contacto.placeholderNombre}" required />
         </div>
         <div class="conv_field">
-          <label>Título Profesional *</label>
-          <input type="text" id="in_titulo" value="${convertedCvData.titulo || ''}" placeholder="Ej: Desarrollador Backend" required />
+          <label>${lang.contacto.titulo}</label>
+          <input type="text" id="in_titulo" value="${convertedCvData.titulo || ''}" placeholder="${lang.contacto.placeholderTitulo}" required />
         </div>
         <div class="conv_field">
-          <label>Correo Electrónico *</label>
-          <input type="email" id="in_email" value="${convertedCvData.email || ''}" placeholder="Ej: wilder@example.com" required />
+          <label>${lang.contacto.email}</label>
+          <input type="email" id="in_email" value="${convertedCvData.email || ''}" placeholder="${lang.contacto.placeholderEmail}" required />
         </div>
         <div class="conv_field">
-          <label>Teléfono *</label>
-          <input type="tel" id="in_telefono" value="${convertedCvData.telefono || ''}" placeholder="Ej: +51 999 888 777" required />
+          <label>${lang.contacto.telefono}</label>
+          <input type="tel" id="in_telefono" value="${convertedCvData.telefono || ''}" placeholder="${lang.contacto.placeholderTelefono}" required />
         </div>
         <div class="conv_field">
-          <label>Ubicación (Ciudad, País) *</label>
-          <input type="text" id="in_ubicacion" value="${convertedCvData.ubicacion || ''}" placeholder="Ej: Lima, Perú" required />
+          <label>${lang.contacto.ubicacion}</label>
+          <input type="text" id="in_ubicacion" value="${convertedCvData.ubicacion || ''}" placeholder="${lang.contacto.placeholderUbicacion}" required />
         </div>
         <div class="conv_field">
-          <label>Enlace LinkedIn</label>
-          <input type="url" id="in_linkedin" value="${convertedCvData.linkedin || ''}" placeholder="Ej: https://linkedin.com/in/usuario" />
+          <label>${lang.contacto.linkedin}</label>
+          <input type="url" id="in_linkedin" value="${convertedCvData.linkedin || ''}" placeholder="${lang.contacto.placeholderLinkedin}" />
         </div>
-        <div class="conv_field full_width">
-          <label>Sitio Web o Portafolio</label>
-          <input type="url" id="in_web" value="${convertedCvData.web || ''}" placeholder="Ej: https://miportafolio.com" />
+        <div class="conv_field">
+          <label>${lang.contacto.web}</label>
+          <input type="url" id="in_web" value="${convertedCvData.web || ''}" placeholder="${lang.contacto.placeholderWeb}" />
+        </div>
+        <div class="conv_field">
+          <label>${lang.contacto.idioma}</label>
+          <select id="in_idioma" class="conv_select">
+            <option value="es" ${convertedCvData.idioma === 'es' ? 'selected' : ''}>Español</option>
+            <option value="en" ${convertedCvData.idioma === 'en' ? 'selected' : ''}>English</option>
+          </select>
         </div>
         
         <!-- Sección de Foto -->
         <div class="conv_field full_width conv_photo_section">
           <div class="conv_toggle_row">
             <span class="conv_toggle_label">
-              <i class="fas fa-camera"></i> ¿Incluir foto en el CV?
+              <i class="fas fa-camera"></i> ${lang.contacto.incluirFoto}
             </span>
             <label class="conv_switch">
               <input type="checkbox" id="in_incluirFoto" ${convertedCvData.incluirFoto ? 'checked' : ''} />
@@ -149,12 +325,12 @@ const renderFormContent = () => {
               </div>
               <div class="conv_photo_actions">
                 <input type="file" id="in_fotoFile" accept="image/png, image/jpeg" class="dpn" />
-                <button type="button" class="conv_btn_small" id="btnSelectFoto"><i class="fas fa-upload"></i> Subir Foto</button>
-                <span class="conv_small_help">Formatos: PNG/JPG. Máx: 2MB.</span>
+                <button type="button" class="conv_btn_small" id="btnSelectFoto"><i class="fas fa-upload"></i> ${lang.contacto.subirFoto}</button>
+                <span class="conv_small_help">${lang.contacto.fotoHelp}</span>
               </div>
             </div>
             <div class="conv_warning_badge" id="photoWarningBtn" data-witip="Muchos filtros ATS automáticos de reclutamiento no procesan imágenes y pueden descartar o corromper tu CV al intentar leerlo. Se recomienda no usar foto para vacantes internacionales o tecnológicas." data-wtipo="warning" data-wtiempo="6000">
-              <i class="fas fa-exclamation-triangle"></i> La foto puede reducir la compatibilidad ATS. Pasa el cursor para saber por qué.
+              <i class="fas fa-exclamation-triangle"></i> ${lang.contacto.fotoWarning}
             </div>
           </div>
         </div>
@@ -166,7 +342,6 @@ const renderFormContent = () => {
     const uploadArea = document.getElementById('convPhotoUploadArea');
     const fotoFileInput = document.getElementById('in_fotoFile');
     const selectFotoBtn = document.getElementById('btnSelectFoto');
-    const warningBtn = document.getElementById('photoWarningBtn');
 
     toggle?.addEventListener('change', (e) => {
       convertedCvData.incluirFoto = e.target.checked;
@@ -200,8 +375,6 @@ const renderFormContent = () => {
       }
     });
 
-    // Tooltip autogestionado por data-witip en el HTML
-
     // Bind text fields
     ['nombre', 'titulo', 'email', 'telefono', 'ubicacion', 'linkedin', 'web'].forEach(field => {
       const input = document.getElementById(`in_${field}`);
@@ -211,12 +384,21 @@ const renderFormContent = () => {
       });
     });
 
+    // Bind idioma select
+    const idiomaSelect = document.getElementById('in_idioma');
+    idiomaSelect?.addEventListener('change', () => {
+      convertedCvData.idioma = idiomaSelect.value;
+      renderTabs();
+      renderFormContent();
+      updateA4Preview();
+    });
+
   } else if (activeTab === 'perfil') {
     container.innerHTML = `
       <div class="conv_field full_width">
-        <label>Resumen / Perfil Profesional *</label>
-        <textarea id="in_resumen" rows="8" placeholder="Redacta tu propuesta de valor, principales logros e industrias en las que te especializas..." required>${convertedCvData.resumen || ''}</textarea>
-        <span class="conv_char_counter" id="lbl_resumen_counter">${(convertedCvData.resumen || '').length} caracteres</span>
+        <label>${lang.perfil.titulo}</label>
+        <textarea id="in_resumen" rows="8" placeholder="${lang.perfil.placeholder}" required>${convertedCvData.resumen || ''}</textarea>
+        <span class="conv_char_counter" id="lbl_resumen_counter">${(convertedCvData.resumen || '').length} ${lang.perfil.caracteres}</span>
       </div>
     `;
 
@@ -224,7 +406,7 @@ const renderFormContent = () => {
     txt?.addEventListener('input', () => {
       convertedCvData.resumen = txt.value;
       const counter = document.getElementById('lbl_resumen_counter');
-      if (counter) counter.textContent = `${txt.value.length} caracteres`;
+      if (counter) counter.textContent = `${txt.value.length} ${lang.perfil.caracteres}`;
       updateA4Preview();
     });
 
@@ -237,13 +419,13 @@ const renderFormContent = () => {
   } else if (activeTab === 'skills') {
     container.innerHTML = `
       <div class="conv_field full_width">
-        <label>Habilidades (Separadas por comas) *</label>
-        <input type="text" id="in_skills" value="${convertedCvData.skills || ''}" placeholder="Ej: React, Node.js, SQL, Trabajo en equipo, Liderazgo" required />
+        <label>${lang.skills.titulo}</label>
+        <input type="text" id="in_skills" value="${convertedCvData.skills || ''}" placeholder="${lang.skills.placeholder}" required />
       </div>
       <div class="conv_field full_width conv_section_spacer">
         <div class="conv_header_row">
-          <label>Idiomas</label>
-          <button type="button" class="conv_btn_small" id="btnAddLanguage"><i class="fas fa-plus"></i> Agregar Idioma</button>
+          <label>${lang.skills.idiomas}</label>
+          <button type="button" class="conv_btn_small" id="btnAddLanguage"><i class="fas fa-plus"></i> ${lang.skills.agregarIdioma}</button>
         </div>
         <div class="conv_languages_list" id="convLanguagesList">
           <!-- Render dynamic languages -->
@@ -260,7 +442,7 @@ const renderFormContent = () => {
     renderLanguages();
 
     document.getElementById('btnAddLanguage')?.addEventListener('click', () => {
-      convertedCvData.idiomas.push('Idioma - Nivel');
+      convertedCvData.idiomas.push(isEn ? 'Language - Level' : 'Idioma - Nivel');
       renderLanguages();
       updateA4Preview();
     });
@@ -271,10 +453,13 @@ const renderFormContent = () => {
 };
 
 const renderExperienciasForm = (container) => {
+  const isEn = convertedCvData.idioma === 'en';
+  const lang = isEn ? locales.en.experiencia : locales.es.experiencia;
+
   container.innerHTML = `
     <div class="conv_header_row conv_form_header_row">
-      <h3>Historial Profesional</h3>
-      <button type="button" class="conv_btn_small" id="btnAddExp"><i class="fas fa-plus"></i> Añadir Trabajo</button>
+      <h3>${lang.titulo}</h3>
+      <button type="button" class="conv_btn_small" id="btnAddExp"><i class="fas fa-plus"></i> ${lang.agregar}</button>
     </div>
     <div class="conv_list_items" id="convExpList">
       <!-- render experiences here -->
@@ -292,33 +477,33 @@ const renderExperienciasForm = (container) => {
       card.dataset.id = exp.id;
       card.innerHTML = `
         <div class="conv_item_card_header">
-          <h4>Puesto #${idx + 1}</h4>
-          ${convertedCvData.experiencias.length > 1 ? `<button class="conv_btn_danger_small btn_del_exp" data-id="${exp.id}"><i class="fas fa-trash"></i> Eliminar</button>` : ''}
+          <h4>${lang.puestoNum} #${idx + 1}</h4>
+          ${convertedCvData.experiencias.length > 1 ? `<button class="conv_btn_danger_small btn_del_exp" data-id="${exp.id}"><i class="fas fa-trash"></i> ${lang.eliminar}</button>` : ''}
         </div>
         <div class="conv_form_grid">
           <div class="conv_field">
-            <label>Cargo / Puesto *</label>
-            <input type="text" class="exp_puesto" value="${exp.puesto || ''}" placeholder="Ej: Desarrollador Backend" required />
+            <label>${lang.cargo}</label>
+            <input type="text" class="exp_puesto" value="${exp.puesto || ''}" placeholder="${lang.placeholderCargo}" required />
           </div>
           <div class="conv_field">
-            <label>Empresa *</label>
-            <input type="text" class="exp_empresa" value="${exp.empresa || ''}" placeholder="Ej: Tech Solutions" required />
+            <label>${lang.empresa}</label>
+            <input type="text" class="exp_empresa" value="${exp.empresa || ''}" placeholder="${lang.placeholderEmpresa}" required />
           </div>
           <div class="conv_field">
-            <label>Ubicación</label>
-            <input type="text" class="exp_ubicacion" value="${exp.ubicacion || ''}" placeholder="Ej: Remoto / Madrid, España" />
+            <label>${lang.ubicacion}</label>
+            <input type="text" class="exp_ubicacion" value="${exp.ubicacion || ''}" placeholder="${lang.placeholderUbicacion}" />
           </div>
           <div class="conv_field">
-            <label>Fecha de Inicio *</label>
-            <input type="text" class="exp_inicio" value="${exp.inicio || ''}" placeholder="Ej: Ene 2023" required />
+            <label>${lang.inicio}</label>
+            <input type="text" class="exp_inicio" value="${exp.inicio || ''}" placeholder="${lang.placeholderInicio}" required />
           </div>
           <div class="conv_field">
-            <label>Fecha de Fin *</label>
-            <input type="text" class="exp_fin" value="${exp.fin || ''}" placeholder="Ej: Presente o Dic 2024" required />
+            <label>${lang.fin}</label>
+            <input type="text" class="exp_fin" value="${exp.fin || ''}" placeholder="${lang.placeholderFin}" required />
           </div>
           <div class="conv_field full_width">
-            <label>Logros y Funciones (Una viñeta por línea) *</label>
-            <textarea class="exp_logros" rows="4" placeholder="- Lideré el desarrollo de la API rest..." required>${exp.logros || ''}</textarea>
+            <label>${lang.logros}</label>
+            <textarea class="exp_logros" rows="4" placeholder="${lang.placeholderLogros}" required>${exp.logros || ''}</textarea>
           </div>
         </div>
       `;
@@ -362,10 +547,13 @@ const renderExperienciasForm = (container) => {
 };
 
 const renderEducacionForm = (container) => {
+  const isEn = convertedCvData.idioma === 'en';
+  const lang = isEn ? locales.en.educacion : locales.es.educacion;
+
   container.innerHTML = `
     <div class="conv_header_row conv_form_header_row">
-      <h3>Historial Educativo</h3>
-      <button type="button" class="conv_btn_small" id="btnAddEdu"><i class="fas fa-plus"></i> Añadir Estudio</button>
+      <h3>${lang.titulo}</h3>
+      <button type="button" class="conv_btn_small" id="btnAddEdu"><i class="fas fa-plus"></i> ${lang.agregar}</button>
     </div>
     <div class="conv_list_items" id="convEduList">
       <!-- render education here -->
@@ -383,29 +571,29 @@ const renderEducacionForm = (container) => {
       card.dataset.id = edu.id;
       card.innerHTML = `
         <div class="conv_item_card_header">
-          <h4>Estudio #${idx + 1}</h4>
-          ${convertedCvData.educacion.length > 1 ? `<button class="conv_btn_danger_small btn_del_edu" data-id="${edu.id}"><i class="fas fa-trash"></i> Eliminar</button>` : ''}
+          <h4>${lang.estudioNum} #${idx + 1}</h4>
+          ${convertedCvData.educacion.length > 1 ? `<button class="conv_btn_danger_small btn_del_edu" data-id="${edu.id}"><i class="fas fa-trash"></i> ${lang.eliminar}</button>` : ''}
         </div>
         <div class="conv_form_grid">
           <div class="conv_field">
-            <label>Institución Educativa *</label>
-            <input type="text" class="edu_institucion" value="${edu.institucion || ''}" placeholder="Ej: Universidad Nacional" required />
+            <label>${lang.institucion}</label>
+            <input type="text" class="edu_institucion" value="${edu.institucion || ''}" placeholder="${lang.placeholderInstitucion}" required />
           </div>
           <div class="conv_field">
-            <label>Grado / Carrera / Certificación *</label>
-            <input type="text" class="edu_grado" value="${edu.grado || ''}" placeholder="Ej: Lic. en Administración" required />
+            <label>${lang.grado}</label>
+            <input type="text" class="edu_grado" value="${edu.grado || ''}" placeholder="${lang.placeholderGrado}" required />
           </div>
           <div class="conv_field">
-            <label>Ubicación</label>
-            <input type="text" class="edu_ubicacion" value="${edu.ubicacion || ''}" placeholder="Ej: Lima, Perú" />
+            <label>${lang.ubicacion}</label>
+            <input type="text" class="edu_ubicacion" value="${edu.ubicacion || ''}" placeholder="${lang.placeholderUbicacion}" />
           </div>
           <div class="conv_field">
-            <label>Fecha de Inicio *</label>
-            <input type="text" class="edu_inicio" value="${edu.inicio || ''}" placeholder="Ej: Mar 2018" required />
+            <label>${lang.inicio}</label>
+            <input type="text" class="edu_inicio" value="${edu.inicio || ''}" placeholder="${lang.placeholderInicio}" required />
           </div>
           <div class="conv_field">
-            <label>Fecha de Fin *</label>
-            <input type="text" class="edu_fin" value="${edu.fin || ''}" placeholder="Ej: Dic 2022 o En Curso" required />
+            <label>${lang.fin}</label>
+            <input type="text" class="edu_fin" value="${edu.fin || ''}" placeholder="${lang.placeholderFin}" required />
           </div>
         </div>
       `;
@@ -452,17 +640,20 @@ const renderLanguages = () => {
   const container = document.getElementById('convLanguagesList');
   if (!container) return;
 
+  const isEn = convertedCvData.idioma === 'en';
+  const lang = isEn ? locales.en.skills : locales.es.skills;
+
   container.innerHTML = '';
   if (convertedCvData.idiomas.length === 0) {
-    container.innerHTML = '<span class="conv_small_help">No has añadido ningún idioma aún.</span>';
+    container.innerHTML = `<span class="conv_small_help">${lang.noIdiomas}</span>`;
     return;
   }
 
-  convertedCvData.idiomas.forEach((lang, idx) => {
+  convertedCvData.idiomas.forEach((langVal, idx) => {
     const row = document.createElement('div');
     row.className = 'conv_lang_row';
     row.innerHTML = `
-      <input type="text" class="in_lang_value" value="${lang || ''}" placeholder="Ej: Inglés - Avanzado (C1)" />
+      <input type="text" class="in_lang_value" value="${langVal || ''}" placeholder="${lang.placeholderIdioma}" />
       <button type="button" class="conv_btn_icon_danger btn_del_lang" data-idx="${idx}"><i class="fas fa-trash-can"></i></button>
     `;
     container.appendChild(row);
@@ -640,121 +831,209 @@ export const updateA4Preview = () => {
 
   const contactsHTML = contacts.join(' &bull; ');
 
-  // Render Experiences
-  const experiencesHTML = convertedCvData.experiencias.map(exp => {
-    if (!exp.puesto && !exp.empresa) return '';
-    
-    // Parse achievements bullet list
-    const achievements = (exp.logros || '')
-      .split('\n')
-      .map(line => line.trim())
-      .filter(line => line.length > 0)
-      .map(line => {
-        const cleanLine = line.replace(/^[-\*\•\s]+/, '').trim();
-        return `<li>${cleanLine}</li>`;
-      })
-      .join('');
-
-    return `
-      <div class="cr_cv_item">
-        <div class="cr_cv_item_row">
-          <strong>${exp.puesto || 'Puesto / Cargo'}</strong>
-          <span>${exp.inicio || ''} – ${exp.fin === 'Presente' || !exp.fin ? textPresente : exp.fin}</span>
-        </div>
-        <div class="cr_cv_item_subrow">
-          <span>${exp.empresa || 'Empresa'}</span>
-          <span>${exp.ubicacion || ''}</span>
-        </div>
-        ${achievements ? `<div class="cr_cv_item_desc"><ul>${achievements}</ul></div>` : ''}
+  // 1. Header Block
+  const headerHTML = `
+    <div class="cr_cv_header ${convertedCvData.incluirFoto && convertedCvData.fotoBase64 ? 'has_avatar' : ''}">
+      <div class="cr_cv_header_text">
+        <h1 class="cr_cv_name">${convertedCvData.nombre || 'Nombre Completo'}</h1>
+        <div class="cr_cv_title">${convertedCvData.titulo || 'Título o Profesión'}</div>
+        <div class="cr_cv_contact">${contactsHTML || 'Email &bull; Teléfono &bull; Ubicación'}</div>
       </div>
-    `;
-  }).join('');
-
-  // Render Education
-  const educationHTML = convertedCvData.educacion.map(edu => {
-    if (!edu.grado && !edu.institucion) return '';
-    return `
-      <div class="cr_cv_item">
-        <div class="cr_cv_item_row">
-          <strong>${edu.grado || 'Grado obtenido / Estudio'}</strong>
-          <span>${edu.inicio || ''} – ${edu.fin || ''}</span>
+      ${convertedCvData.incluirFoto && convertedCvData.fotoBase64 ? `
+        <div class="ats_a4_avatar">
+          <img src="${convertedCvData.fotoBase64}" />
         </div>
-        <div class="cr_cv_item_subrow">
-          <span>${edu.institucion || 'Institución'}</span>
-          <span>${edu.ubicacion || ''}</span>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  // Render Skills e Idiomas
-  const skillsSectionHTML = convertedCvData.skills ? `
-    <div class="cr_cv_section">
-      <h2 class="cr_cv_section_title">${textSkills}</h2>
-      <div class="cr_cv_skills_grid">
-        <div>
-          <strong>${textSkillsLabel}:</strong>
-          <span>${convertedCvData.skills}</span>
-        </div>
-        ${convertedCvData.idiomas.length > 0 ? `
-          <div class="cr_cv_skills_subrow">
-            <strong>${textIdiomasLabel}:</strong>
-            <span>${convertedCvData.idiomas.filter(Boolean).join(', ')}</span>
-          </div>
-        ` : ''}
-      </div>
-    </div>
-  ` : '';
-
-  // Render HTML Completo del Documento A4 ATS (Clases idénticas a crear.astro)
-  printableArea.innerHTML = `
-    <div class="cr_cv_document">
-      
-      <!-- Contenedor del Encabezado (Foto opcional + Info de Contacto) -->
-      <div class="cr_cv_header ${convertedCvData.incluirFoto && convertedCvData.fotoBase64 ? 'has_avatar' : ''}">
-        <div class="cr_cv_header_text">
-          <h1 class="cr_cv_name">${convertedCvData.nombre || 'Nombre Completo'}</h1>
-          <div class="cr_cv_title">${convertedCvData.titulo || 'Título o Profesión'}</div>
-          <div class="cr_cv_contact">${contactsHTML || 'Email &bull; Teléfono &bull; Ubicación'}</div>
-        </div>
-        ${convertedCvData.incluirFoto && convertedCvData.fotoBase64 ? `
-          <div class="ats_a4_avatar">
-            <img src="${convertedCvData.fotoBase64}" />
-          </div>
-        ` : ''}
-      </div>
-
-      <div class="cr_cv_body">
-        <!-- Resumen Profesional -->
-        ${convertedCvData.resumen ? `
-          <div class="cr_cv_section">
-            <h2 class="cr_cv_section_title">${textPerfil}</h2>
-            <p class="cr_cv_text">${convertedCvData.resumen}</p>
-          </div>
-        ` : ''}
-
-        <!-- Experiencia Laboral -->
-        ${experiencesHTML ? `
-          <div class="cr_cv_section">
-            <h2 class="cr_cv_section_title">${textExperiencia}</h2>
-            <div class="cr_cv_list_items">${experiencesHTML}</div>
-          </div>
-        ` : ''}
-
-        <!-- Educación -->
-        ${educationHTML ? `
-          <div class="cr_cv_section">
-            <h2 class="cr_cv_section_title">${textEducacion}</h2>
-            <div class="cr_cv_list_items">${educationHTML}</div>
-          </div>
-        ` : ''}
-
-        <!-- Habilidades -->
-        ${skillsSectionHTML}
-      </div>
-      
+      ` : ''}
     </div>
   `;
+
+  const blocks = [{ html: headerHTML, type: 'header' }];
+
+  // 2. Summary Block
+  if (convertedCvData.resumen) {
+    const summaryHTML = `
+      <div class="cr_cv_section">
+        <h2 class="cr_cv_section_title">${textPerfil}</h2>
+        <p class="cr_cv_text">${convertedCvData.resumen}</p>
+      </div>
+    `;
+    blocks.push({ html: summaryHTML, type: 'summary' });
+  }
+
+  // 3. Experience Blocks
+  const hasExp = convertedCvData.experiencias && convertedCvData.experiencias.some(exp => exp.puesto || exp.empresa);
+  if (hasExp) {
+    const expTitleHTML = `
+      <h2 class="cr_cv_section_title" style="margin-bottom: 8px !important;">${textExperiencia}</h2>
+    `;
+    blocks.push({ html: expTitleHTML, type: 'section_title' });
+
+    convertedCvData.experiencias.forEach(exp => {
+      if (!exp.puesto && !exp.empresa) return;
+
+      const achievements = (exp.logros || '')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .map(line => {
+          const cleanLine = line.replace(/^[-\*\•\s]+/, '').trim();
+          return `<li>${cleanLine}</li>`;
+        })
+        .join('');
+
+      const itemHTML = `
+        <div class="cr_cv_item">
+          <div class="cr_cv_item_row">
+            <strong>${exp.puesto || 'Puesto / Cargo'}</strong>
+            <span>${exp.inicio || ''} – ${exp.fin === 'Presente' || !exp.fin ? textPresente : exp.fin}</span>
+          </div>
+          <div class="cr_cv_item_subrow">
+            <span>${exp.empresa || 'Empresa'}</span>
+            <span>${exp.ubicacion || ''}</span>
+          </div>
+          ${achievements ? `<div class="cr_cv_item_desc"><ul>${achievements}</ul></div>` : ''}
+        </div>
+      `;
+      blocks.push({ html: itemHTML, type: 'item' });
+    });
+  }
+
+  // 4. Education Blocks
+  const hasEdu = convertedCvData.educacion && convertedCvData.educacion.some(edu => edu.grado || edu.institucion);
+  if (hasEdu) {
+    const eduTitleHTML = `
+      <h2 class="cr_cv_section_title" style="margin-bottom: 8px !important;">${textEducacion}</h2>
+    `;
+    blocks.push({ html: eduTitleHTML, type: 'section_title' });
+
+    convertedCvData.educacion.forEach(edu => {
+      if (!edu.grado && !edu.institucion) return;
+
+      const itemHTML = `
+        <div class="cr_cv_item">
+          <div class="cr_cv_item_row">
+            <strong>${edu.grado || 'Grado obtenido / Estudio'}</strong>
+            <span>${edu.inicio || ''} – ${edu.fin || ''}</span>
+          </div>
+          <div class="cr_cv_item_subrow">
+            <span>${edu.institucion || 'Institución'}</span>
+            <span>${edu.ubicacion || ''}</span>
+          </div>
+        </div>
+      `;
+      blocks.push({ html: itemHTML, type: 'item' });
+    });
+  }
+
+  // 5. Skills Block
+  if (convertedCvData.skills) {
+    const skillsHTML = `
+      <div class="cr_cv_section">
+        <h2 class="cr_cv_section_title">${textSkills}</h2>
+        <div class="cr_cv_skills_grid">
+          <div>
+            <strong>${textSkillsLabel}:</strong>
+            <span>${convertedCvData.skills}</span>
+          </div>
+          ${convertedCvData.idiomas.length > 0 ? `
+            <div class="cr_cv_skills_subrow">
+              <strong>${textIdiomasLabel}:</strong>
+              <span>${convertedCvData.idiomas.filter(Boolean).join(', ')}</span>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+    blocks.push({ html: skillsHTML, type: 'skills' });
+  }
+
+  // Setup/get temporary measurer to compute exact block heights
+  let tempDiv = document.getElementById('convTempMeasurer');
+  if (!tempDiv) {
+    tempDiv = document.createElement('div');
+    tempDiv.id = 'convTempMeasurer';
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.visibility = 'hidden';
+    tempDiv.style.top = '-9999px';
+    tempDiv.style.left = '-9999px';
+    tempDiv.style.width = '794px'; // Matches page pixel width
+    document.body.appendChild(tempDiv);
+  }
+  tempDiv.innerHTML = `<div class="cr_cv_document" style="width: 794px !important; padding: 38px 45px !important; box-sizing: border-box; height: auto !important; box-shadow: none; border: none; display: flex; flex-direction: column; gap: 15px;"></div>`;
+  const tempDoc = tempDiv.firstChild;
+
+  const measureBlock = (html) => {
+    const wrapper = document.createElement('div');
+    wrapper.style.display = 'flex';
+    wrapper.style.flexDirection = 'column';
+    wrapper.style.gap = '15px';
+    wrapper.innerHTML = html;
+    tempDoc.appendChild(wrapper);
+    const h = wrapper.offsetHeight;
+    tempDoc.removeChild(wrapper);
+    return h;
+  };
+
+  // Paginate blocks dynamically
+  const pages = [[]];
+  let currentPageHeight = 0;
+  const MAX_CONTENT_HEIGHT = 1040; // 1122.5px - 76px padding (38px * 2)
+
+  blocks.forEach((block) => {
+    const blockHeight = measureBlock(block.html);
+    let newHeight = currentPageHeight;
+    if (currentPageHeight > 0) {
+      newHeight += 15 + blockHeight; // Add flex gap of 15px
+    } else {
+      newHeight = blockHeight;
+    }
+
+    if (newHeight <= MAX_CONTENT_HEIGHT || currentPageHeight === 0) {
+      pages[pages.length - 1].push(block);
+      currentPageHeight = newHeight;
+    } else {
+      // Prevent orphaned section titles
+      const currentPageBlocks = pages[pages.length - 1];
+      if (currentPageBlocks.length > 0 && currentPageBlocks[currentPageBlocks.length - 1].type === 'section_title') {
+        const orphanedTitle = currentPageBlocks.pop();
+        // Recalculate remaining page height
+        currentPageHeight = 0;
+        currentPageBlocks.forEach((b, idx) => {
+          const h = measureBlock(b.html);
+          if (idx > 0) currentPageHeight += 15 + h;
+          else currentPageHeight = h;
+        });
+
+        // Start new page with orphaned title + current block
+        pages.push([orphanedTitle, block]);
+        const titleHeight = measureBlock(orphanedTitle.html);
+        currentPageHeight = titleHeight + 15 + blockHeight;
+      } else {
+        // Normal split, start new page
+        pages.push([block]);
+        currentPageHeight = blockHeight;
+      }
+    }
+  });
+
+  // Render pages physically into preview pane
+  let pagesHTML = '';
+  pages.forEach((pageBlocks, index) => {
+    const isFirst = index === 0;
+    const pageClass = isFirst ? 'cr_cv_document cr_cv_page' : 'cr_cv_document cr_cv_page cr_cv_page_next';
+    const pageContentHTML = pageBlocks.map(b => b.html).join('\n');
+
+    pagesHTML += `
+      <div class="${pageClass}">
+        ${pageContentHTML}
+        <div class="cr_page_number" style="position: absolute; bottom: 5mm; right: 12mm; font-size: 8pt; color: #aaa; font-family: Arial, Helvetica, sans-serif;">
+          ${isEn ? 'Page' : 'Página'} ${index + 1} / ${pages.length}
+        </div>
+      </div>
+    `;
+  });
+
+  printableArea.innerHTML = pagesHTML;
 
   // Guardar en la caché local persistente única del CV activo
   guardarEnCache();
@@ -763,31 +1042,48 @@ export const updateA4Preview = () => {
   validarFormularios();
 };
 
+const closeDropdown = () => {
+  const downloadMenu = document.getElementById('convDownloadMenu');
+  const dropdownToggle = document.getElementById('convBtnDownloadToggle');
+  if (downloadMenu) downloadMenu.classList.remove('show');
+  if (dropdownToggle) dropdownToggle.setAttribute('aria-expanded', 'false');
+};
+
+const addSafeListener = (id, event, callback) => {
+  const el = document.getElementById(id);
+  if (el) {
+    if (el.dataset.listenerAttached === 'true') {
+      return;
+    }
+    el.dataset.listenerAttached = 'true';
+    el.addEventListener(event, callback);
+  }
+};
+
 const setupGlobalListeners = () => {
   // Configurar botón principal de PDF (Descargar directamente)
-  const printBtn = document.getElementById('convBtnPrint');
-  printBtn?.addEventListener('click', () => {
+  addSafeListener('convBtnPrint', 'click', () => {
     descargarPdfDirecto(convertedCvData);
   });
 
+  // Botón de descarga directa en el dropdown
+  addSafeListener('convBtnDownloadPdfDirect', 'click', () => {
+    descargarPdfDirecto(convertedCvData);
+    closeDropdown();
+  });
+
   // Botón de impresión nativa en el dropdown (Recomendado ATS)
-  document.getElementById('convBtnPrintNative')?.addEventListener('click', () => {
+  addSafeListener('convBtnPrintNative', 'click', () => {
     imprimirPdf();
     closeDropdown();
   });
 
   // Alternar el menú desplegable de descargas
-  const dropdownToggle = document.getElementById('convBtnDownloadToggle');
-  const downloadMenu = document.getElementById('convDownloadMenu');
-
-  const closeDropdown = () => {
-    if (downloadMenu) downloadMenu.classList.remove('show');
-    if (dropdownToggle) dropdownToggle.setAttribute('aria-expanded', 'false');
-  };
-
-  dropdownToggle?.addEventListener('click', (e) => {
+  addSafeListener('convBtnDownloadToggle', 'click', (e) => {
     e.stopPropagation();
-    if (downloadMenu) {
+    const downloadMenu = document.getElementById('convDownloadMenu');
+    const dropdownToggle = document.getElementById('convBtnDownloadToggle');
+    if (downloadMenu && dropdownToggle) {
       const isShown = downloadMenu.classList.contains('show');
       if (!isShown) {
         downloadMenu.classList.add('show');
@@ -799,34 +1095,37 @@ const setupGlobalListeners = () => {
   });
 
   // Conectar acciones de descarga
-  document.getElementById('convBtnDownloadDocx')?.addEventListener('click', () => {
+  addSafeListener('convBtnDownloadDocx', 'click', () => {
     descargarDocx(convertedCvData);
     closeDropdown();
   });
 
-  document.getElementById('convBtnDownloadTxt')?.addEventListener('click', () => {
+  addSafeListener('convBtnDownloadTxt', 'click', () => {
     descargarTxt(convertedCvData);
     closeDropdown();
   });
 
-  document.getElementById('convBtnDownloadMd')?.addEventListener('click', () => {
+  addSafeListener('convBtnDownloadMd', 'click', () => {
     descargarMd(convertedCvData);
     closeDropdown();
   });
 
-  document.getElementById('convBtnDownloadJson')?.addEventListener('click', () => {
+  addSafeListener('convBtnDownloadJson', 'click', () => {
     descargarJson(convertedCvData);
     closeDropdown();
   });
 
   // Cerrar menú al hacer clic fuera del dropdown
-  document.addEventListener('click', (e) => {
-    const target = e.target;
-    if (target instanceof Element) {
-      const isInsideDropdown = target.closest('.conv_download_dropdown');
-      if (!isInsideDropdown) {
-        closeDropdown();
+  if (!document._hasDropdownCloseListener) {
+    document._hasDropdownCloseListener = true;
+    document.addEventListener('click', (e) => {
+      const target = e.target;
+      if (target instanceof Element) {
+        const isInsideDropdown = target.closest('.conv_download_dropdown');
+        if (!isInsideDropdown) {
+          closeDropdown();
+        }
       }
-    }
-  });
+    });
+  }
 };
