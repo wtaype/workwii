@@ -1,16 +1,1155 @@
 ---
+// src/pages/convertir-ats.astro
 import Layout from '../layouts/Layout.astro';
+import { app } from '../wii.js';
 import { seo } from '../lib/seo.js';
 ---
 
-<style is:global>
+<Layout {...seo.convertirAts}>
+  <style is:global>
+    /* =========================================================================
+       CONVERTIR.CSS — Estilos Premium del Convertidor de CV a ATS
+       ========================================================================= */
+    .conv_wrap {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 4vh 2vw 8vh;
+      font-family: var(--ff_P);
+      color: var(--tx);
+    }
+    
+    .conv_header {
+      text-align: center;
+      margin-bottom: 5vh;
+    }
+    .conv_header h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      color: var(--tx1);
+      letter-spacing: -0.5px;
+      margin: 0 0 1.5vh;
+    }
+    .conv_header h1 span {
+      background: linear-gradient(135deg, var(--mco), #7000FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .conv_header p {
+      font-size: var(--fz_m2);
+      color: var(--tx3);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
 
-</style>
+    /* ══════════════════ PASO 1: SUBIDA ══════════════════ */
+    .conv_step_card {
+      background: var(--wb);
+      border: 1px solid var(--brd);
+      border-radius: 24px;
+      padding: 4vh 4vw;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3.5vh;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
 
-<Layout {...seo.acerca}>
-    <!-- Esto es una pagina de empleo listo para nuevo proyectos  -->
+    .conv_dropzone {
+      border: 2px dashed var(--brd2);
+      border-radius: 18px;
+      padding: 6vh 2vw;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2vh;
+      background: color-mix(in srgb, var(--bg4) 30%, transparent);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .conv_dropzone:hover, .conv_dropzone.dragover {
+      border-color: var(--mco);
+      background: color-mix(in srgb, var(--mco) 4%, transparent);
+      transform: scale(0.99);
+    }
+    .conv_dropzone i {
+      font-size: 3rem;
+      color: var(--mco);
+      opacity: 0.85;
+      transition: transform 0.3s ease;
+    }
+    .conv_dropzone:hover i {
+      transform: translateY(-5px);
+    }
+    .conv_dz_tit {
+      font-weight: 700;
+      font-size: var(--fz_m3);
+      color: var(--tx1);
+    }
+    .conv_dz_sub {
+      font-size: var(--fz_s3);
+      color: var(--tx3);
+    }
 
-    <h1> por eso yo amo a mi Dios siempre, porque el es bueno todo el tiempo.</h1>
+    /* Vista previa del archivo */
+    .file_preview {
+      display: flex;
+      align-items: center;
+      gap: 2vh;
+      padding: 2vh 2.5vw;
+      border: 1px solid var(--brd);
+      border-radius: 16px;
+      background: var(--bg4);
+      animation: conv_fade_in 0.4s ease;
+    }
+    .file_preview i.file_icon {
+      font-size: 2.2rem;
+      color: var(--mco);
+    }
+    .file_info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4vh;
+      min-width: 0;
+    }
+    .file_name {
+      font-weight: 700;
+      font-size: var(--fz_m1);
+      color: var(--tx1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file_size {
+      font-size: var(--fz_s4);
+      color: var(--tx3);
+    }
+    .file_remove {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: var(--tx3);
+      transition: color 0.2s;
+      padding: 0.5vh;
+      line-height: 1;
+    }
+    .file_remove:hover {
+      color: var(--error);
+    }
+
+    /* Barra de progreso visual */
+    .upload_progress_container {
+      display: none;
+      padding: 2vh 0;
+    }
+    .upload_progress_header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1vh;
+      font-size: var(--fz_s2);
+      font-weight: 600;
+    }
+    .upload_progress_bar_bg {
+      height: 8px;
+      background: var(--brd);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .upload_progress_bar_fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--mco), #7000FF);
+      border-radius: 99px;
+      transition: width 0.1s linear;
+    }
+
+    /* Campo Opcional de Puesto */
+    .conv_field {
+      display: flex;
+      flex-direction: column;
+      gap: 1vh;
+    }
+    .conv_field label {
+      font-weight: 700;
+      font-size: var(--fz_s2);
+      color: var(--tx2);
+    }
+    .conv_field input[type="text"], .conv_field input[type="email"], .conv_field input[type="tel"], .conv_field input[type="url"], .conv_field textarea {
+      padding: 1.8vh 2vh;
+      border: 1px solid var(--brd);
+      border-radius: 12px;
+      background: var(--wb);
+      color: var(--tx);
+      font-family: inherit;
+      font-size: var(--fz_m1);
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .conv_field input:focus, .conv_field textarea:focus {
+      border-color: var(--mco);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--mco) 15%, transparent);
+      outline: none;
+    }
+
+    /* Textarea de texto bruto extraído */
+    .conv_textarea_container {
+      display: none;
+      flex-direction: column;
+      gap: 1vh;
+      animation: conv_fade_in 0.4s ease;
+    }
+    .conv_raw_textarea {
+      font-family: monospace;
+      font-size: var(--fz_s1) !important;
+      resize: vertical;
+      min-height: 200px;
+    }
+    .conv_textarea_counter {
+      text-align: right;
+      font-size: var(--fz_s4);
+      color: var(--tx3);
+      font-weight: 500;
+    }
+
+    /* Botón principal */
+    .conv_btn {
+      width: 100%;
+      padding: 2vh 3vw;
+      font-size: var(--fz_m2);
+      font-weight: 700;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5vh;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border: none;
+      background: linear-gradient(135deg, var(--mco), #7000FF);
+      color: #fff;
+      box-shadow: 0 6px 20px color-mix(in srgb, var(--mco) 25%, transparent);
+    }
+    .conv_btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px color-mix(in srgb, var(--mco) 45%, transparent);
+    }
+    .conv_btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    .conv_btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* ══════════════════ PASO 2: CARGANDO ══════════════════ */
+    .conv_loader {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8vh 4vw;
+      background: var(--wb);
+      border: 1px solid var(--brd);
+      border-radius: 24px;
+      max-width: 550px;
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.01);
+    }
+    .conv_loader_spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid var(--brd);
+      border-top-color: var(--mco);
+      border-radius: 50%;
+      animation: conv_spin 1s linear infinite;
+      margin-bottom: 4vh;
+    }
+    .conv_loader h3 {
+      font-size: var(--fz_m5);
+      font-weight: 800;
+      color: var(--tx1);
+      margin: 0 0 1.5vh;
+    }
+    .conv_loader p {
+      font-size: var(--fz_m1);
+      color: var(--tx3);
+      max-width: 400px;
+      line-height: 1.5;
+    }
+
+    /* ══════════════════ PASO 3: EDITAR Y PREVISUALIZAR ══════════════════ */
+    .conv_workspace_split {
+      display: none;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 4vh 2.5vw;
+      align-items: start;
+      animation: conv_fade_in 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (max-width: 1024px) {
+      .conv_workspace_split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Panel Izquierdo: Formularios */
+    .conv_left_pane {
+      background: var(--wb);
+      border: 1px solid var(--brd);
+      border-radius: 24px;
+      padding: 3vh 2.5vw 4vh;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.01);
+      display: flex;
+      flex-direction: column;
+      gap: 3vh;
+    }
+
+    /* Cabecera de Pestañas */
+    .conv_tabs_header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1vh;
+      border-bottom: 1px solid var(--brd);
+      padding-bottom: 1.5vh;
+    }
+    .conv_tab_btn {
+      padding: 1.2vh 1.8vh;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: none;
+      color: var(--tx3);
+      font-size: var(--fz_s2);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 1vh;
+      transition: all 0.25s ease;
+    }
+    .conv_tab_btn:hover {
+      color: var(--mco);
+      background: color-mix(in srgb, var(--mco) 6%, transparent);
+    }
+    .conv_tab_btn.active {
+      color: var(--tx1);
+      background: color-mix(in srgb, var(--mco) 10%, transparent);
+      border-color: color-mix(in srgb, var(--mco) 20%, transparent);
+    }
+
+    /* Cuadrícula del formulario */
+    .conv_form_grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2.5vh 1.5vw;
+    }
+    @media (max-width: 600px) {
+      .conv_form_grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .conv_field.full_width {
+      grid-column: span 2;
+    }
+    @media (max-width: 600px) {
+      .conv_field.full_width {
+        grid-column: span 1;
+      }
+    }
+
+    .conv_char_counter {
+      text-align: right;
+      font-size: var(--fz_s4);
+      color: var(--tx3);
+      margin-top: 0.5vh;
+    }
+
+    /* Componentes de Listas (Experiencia y Educación) */
+    .conv_header_row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2vh;
+    }
+    .conv_header_row h3 {
+      font-size: var(--fz_m3);
+      font-weight: 800;
+      margin: 0;
+    }
+    .conv_btn_small {
+      padding: 1vh 1.5vh;
+      font-size: var(--fz_s3);
+      font-weight: 700;
+      border: 1px solid var(--mco);
+      color: var(--mco);
+      background: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8vh;
+    }
+    .conv_btn_small:hover {
+      background: var(--mco);
+      color: #fff;
+    }
+
+    .conv_list_items {
+      display: flex;
+      flex-direction: column;
+      gap: 3vh;
+    }
+    .conv_item_card {
+      background: var(--bg4);
+      border: 1px solid var(--brd);
+      border-radius: 16px;
+      padding: 2.5vh 2vw;
+      position: relative;
+    }
+    .conv_item_card_header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2vh;
+      border-bottom: 1px solid var(--brd);
+      padding-bottom: 1vh;
+    }
+    .conv_item_card_header h4 {
+      margin: 0;
+      font-size: var(--fz_s1);
+      color: var(--tx2);
+    }
+    .conv_btn_danger_small {
+      background: none;
+      border: 1px solid var(--error);
+      color: var(--error);
+      font-size: var(--fz_s4);
+      font-weight: 700;
+      padding: 0.6vh 1.2vh;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .conv_btn_danger_small:hover {
+      background: var(--error);
+      color: #fff;
+    }
+
+    /* Idiomas */
+    .conv_languages_list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5vh;
+      margin-top: 1.5vh;
+    }
+    .conv_lang_row {
+      display: flex;
+      align-items: center;
+      gap: 1.5vh;
+    }
+    .conv_lang_row input {
+      flex: 1;
+    }
+    .conv_btn_icon_danger {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      border: 1px solid var(--brd);
+      background: var(--wb);
+      color: var(--tx3);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .conv_btn_icon_danger:hover {
+      border-color: var(--error);
+      color: var(--error);
+      background: color-mix(in srgb, var(--error) 4%, transparent);
+    }
+
+    /* Foto Toggle Switch */
+    .conv_toggle_row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--brd);
+      padding: 1.8vh 2vh;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--bg4) 40%, transparent);
+    }
+    .conv_toggle_label {
+      font-weight: 700;
+      font-size: var(--fz_s2);
+      display: flex;
+      align-items: center;
+      gap: 1.2vh;
+    }
+    .conv_toggle_label i {
+      color: var(--mco);
+    }
+    
+    .conv_switch {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 24px;
+    }
+    .conv_switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .conv_slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--brd2);
+      transition: .3s;
+      border-radius: 34px;
+    }
+    .conv_slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #fff;
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    input:checked + .conv_slider {
+      background-color: var(--mco);
+    }
+    input:checked + .conv_slider:before {
+      transform: translateX(22px);
+    }
+
+    .conv_photo_upload_area {
+      display: none;
+      flex-direction: column;
+      gap: 2vh;
+      margin-top: 2vh;
+      padding: 2vh 2vw;
+      border: 1px solid var(--brd);
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--bg4) 30%, transparent);
+      animation: conv_fade_in 0.3s ease;
+    }
+    .conv_photo_upload_area.active {
+      display: flex;
+    }
+    .conv_photo_flex {
+      display: flex;
+      align-items: center;
+      gap: 2.5vh;
+    }
+    .conv_photo_preview_box {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      border: 1px solid var(--brd2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--wb);
+      overflow: hidden;
+      font-size: 2.2rem;
+      color: var(--tx3);
+    }
+    .conv_avatar_img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .conv_photo_actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5vh;
+    }
+    .conv_small_help {
+      font-size: var(--fz_s4);
+      color: var(--tx3);
+    }
+    .conv_warning_badge {
+      display: flex;
+      align-items: center;
+      gap: 1vh;
+      font-size: var(--fz_s3);
+      color: var(--warning);
+      font-weight: 600;
+      cursor: pointer;
+      background: color-mix(in srgb, var(--warning) 10%, transparent);
+      padding: 1vh 1.5vh;
+      border-radius: 8px;
+      border: 1px solid color-mix(in srgb, var(--warning) 15%, transparent);
+      transition: background 0.2s;
+    }
+    .conv_warning_badge:hover {
+      background: color-mix(in srgb, var(--warning) 15%, transparent);
+    }
+
+    /* Panel Derecho: Vista Previa A4 */
+    .conv_right_pane {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5vh;
+      position: sticky;
+      top: 20px;
+    }
+    .conv_preview_tools {
+      background: var(--wb);
+      border: 1px solid var(--brd);
+      border-radius: 16px;
+      padding: 1.5vh 2vw;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+    }
+    .conv_preview_tools_left {
+      display: flex;
+      align-items: center;
+      gap: 1vh;
+      font-weight: 700;
+      color: var(--tx1);
+      font-size: var(--fz_s1);
+    }
+    .conv_preview_tools_left span i {
+      color: var(--mco);
+    }
+    .conv_tip_btn_icon {
+      background: none;
+      border: none;
+      color: var(--tx3);
+      cursor: pointer;
+      font-size: var(--fz_s1);
+      padding: 0.5vh;
+      transition: color 0.2s;
+    }
+    .conv_tip_btn_icon:hover {
+      color: var(--mco);
+    }
+
+    .conv_preview_actions {
+      display: flex;
+      gap: 1.5vh;
+    }
+    .conv_btn_sec {
+      background: var(--bg4);
+      border: 1px solid var(--brd2);
+      color: var(--tx2);
+      padding: 1.2vh 2vh;
+      font-size: var(--fz_s2);
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8vh;
+    }
+    .conv_btn_sec:hover {
+      background: var(--brd);
+      color: var(--tx1);
+    }
+
+    /* Contenedor de Hoja A4 Fiel a crear.astro */
+    .conv_a4_wrapper {
+      width: 100%;
+      border-radius: 12px;
+      overflow-x: auto;
+      border: 1px solid var(--brd);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.04);
+      background: #555; /* Fondo gris oscuro simulando escritorio de PDF */
+      padding: 4vh 2vw;
+      box-sizing: border-box;
+    }
+    
+    .cr_cv_document {
+      background: #fff !important;
+      color: #333 !important;
+      padding: 6vh 4vw !important;
+      border: none !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+      min-height: 29.7cm;
+      width: 21cm;
+      max-width: 100%;
+      margin: 0 auto;
+      font-family: 'Times New Roman', Times, Georgia, serif !important;
+      font-size: 11pt !important;
+      line-height: 1.45 !important;
+      box-sizing: border-box;
+      text-align: left;
+    }
+
+    .cr_cv_header {
+      text-align: center;
+      margin-bottom: 3.5vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1vh;
+      width: 100%;
+    }
+    .cr_cv_header.has_avatar {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+      align-items: center;
+    }
+    .cr_cv_header.has_avatar .cr_cv_header_text {
+      flex: 1;
+    }
+    .cr_cv_header.has_avatar .cr_cv_contact {
+      justify-content: flex-start;
+    }
+    
+    .cr_cv_name {
+      font-size: 20pt !important;
+      font-weight: 700 !important;
+      color: #111 !important;
+      margin: 0 0 0.5vh !important;
+      letter-spacing: -0.5px !important;
+      font-family: Arial, Helvetica, sans-serif !important;
+    }
+    
+    .cr_cv_title {
+      font-size: 11.5pt !important;
+      font-weight: 600 !important;
+      color: #444 !important;
+      margin-bottom: 1.5vh !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+      font-family: Arial, Helvetica, sans-serif !important;
+    }
+    
+    .cr_cv_contact {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1vh 1.5vw;
+      font-size: 9.5pt !important;
+      color: #555 !important;
+      font-family: Arial, Helvetica, sans-serif !important;
+    }
+    
+    .cr_cv_contact span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6vh;
+    }
+    .cr_cv_contact span i {
+      display: none; /* Ocultar iconos en ATS para lectura de texto pura */
+    }
+    
+    .ats_a4_avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #ddd;
+    }
+    .ats_a4_avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cr_cv_body {
+      display: flex;
+      flex-direction: column;
+      gap: 3.5vh;
+    }
+    
+    .cr_cv_section {
+      width: 100%;
+    }
+    
+    .cr_cv_section_title {
+      font-size: 11pt !important;
+      font-weight: 700 !important;
+      color: #111 !important;
+      text-transform: uppercase !important;
+      margin: 0 0 0.8vh !important;
+      letter-spacing: 0.8px !important;
+      font-family: Arial, Helvetica, sans-serif !important;
+      border-bottom: 1.5px solid #222 !important;
+      padding-bottom: 0.3vh !important;
+    }
+    
+    .cr_cv_text {
+      font-size: 10pt !important;
+      color: #333 !important;
+      margin: 0 !important;
+      text-align: justify !important;
+      white-space: pre-wrap !important;
+    }
+    
+    .cr_cv_list_items {
+      display: flex;
+      flex-direction: column;
+      gap: 2.2vh;
+    }
+    
+    .cr_cv_item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5vh;
+    }
+    
+    .cr_cv_item_row {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      color: #111;
+      font-size: 10.5pt !important;
+      font-family: Arial, Helvetica, sans-serif !important;
+    }
+    
+    .cr_cv_item_subrow {
+      display: flex;
+      justify-content: space-between;
+      font-style: italic;
+      color: #444;
+      font-size: 9.5pt !important;
+    }
+    
+    .cr_cv_item_desc {
+      margin: 0.4vh 0 0;
+      padding-left: 2.5vh;
+      font-size: 10pt !important;
+      color: #333;
+    }
+    .cr_cv_item_desc ul {
+      margin: 0;
+      padding-left: 0;
+      list-style-type: square;
+    }
+    .cr_cv_item_desc li {
+      margin-bottom: 0.3vh;
+      text-align: justify;
+    }
+
+    .cr_cv_skills_grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5vh;
+      font-size: 10pt !important;
+      color: #333;
+    }
+
+    /* Animaciones generales */
+    @keyframes conv_spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes conv_fade_in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════ REGLAS DE IMPRESIÓN EXCLUSIVAS (PDF) ══════════════════ */
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+      }
+      /* Ocultar elementos de la web */
+      header, footer, nav, #notificationsContainer, .conv_header, .conv_left_pane, .conv_preview_tools {
+        display: none !important;
+      }
+      .conv_wrap {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+      }
+      .conv_workspace_split {
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+        margin: 0 !important;
+      }
+      .conv_right_pane {
+        position: static !important;
+        width: 100% !important;
+        top: 0 !important;
+      }
+      .conv_a4_wrapper {
+        background: none !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+      }
+      .cr_cv_document {
+        width: 100% !important;
+        min-height: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+    }
+  </style>
+
+  <div class="conv_wrap">
+    
+    <!-- Encabezado general -->
+    <header class="conv_header">
+      <h1>Convertidor de CV a <span>Formato ATS</span></h1>
+      <p>Sube tu currículum actual en PDF o Word. Nuestra Inteligencia Artificial leerá el documento, optimizará la redacción de logros y lo estructurará en un formato 100% amigable para filtros de reclutamiento.</p>
+    </header>
+
+    <!-- PASO 1: SUBIR / PEGAR -->
+    <section class="conv_step_card" id="convStep1">
+      <div class="conv_field">
+        <label>Arrastra tu currículum existente</label>
+        
+        <!-- Dropzone de archivo -->
+        <div class="conv_dropzone" id="convDropzone">
+          <i class="fas fa-cloud-arrow-up"></i>
+          <span class="conv_dz_tit">Arrastra tu archivo aquí o haz clic</span>
+          <span class="conv_dz_sub">Admite formatos PDF y Word (.docx) — Máximo 4MB</span>
+          <input type="file" id="convFileInput" accept=".pdf,.docx" style="display: none;">
+        </div>
+
+        <!-- Progreso de lectura -->
+        <div id="convProgressContainer" class="upload_progress_container">
+          <div class="upload_progress_header">
+            <span><i class="fas fa-spinner fa-spin"></i> Leyendo contenido...</span>
+            <span id="convProgressPercent">0%</span>
+          </div>
+          <div class="upload_progress_bar_bg">
+            <div id="convProgressBar" class="upload_progress_bar_fill"></div>
+          </div>
+        </div>
+
+        <!-- Preview de archivo cargado -->
+        <div id="convPreviewContainer" style="display: none;"></div>
+      </div>
+
+      <!-- Textarea de revisión de texto extraído bruto -->
+      <div class="conv_textarea_container" id="convTextareaContainer">
+        <label for="convTextarea">Texto extraído del documento (Verifica o edita si es necesario):</label>
+        <textarea id="convTextarea" class="conv_field conv_raw_textarea" placeholder="Aquí aparecerá el texto de tu currículum al subir el archivo..."></textarea>
+      </div>
+
+      <!-- Campo de Puesto Deseado -->
+      <div class="conv_field">
+        <label for="convTargetRole">Puesto o Área de trabajo al que postulas (Opcional)</label>
+        <input type="text" id="convTargetRole" placeholder="Ej: Desarrollador React, Especialista en Marketing, Asistente Administrativo" />
+        <span class="conv_small_help">La IA adaptará y orientará el vocabulario de tu CV hacia este rol específico.</span>
+      </div>
+
+      <!-- Botón de Envío -->
+      <button class="conv_btn" id="convBtnSubmit" disabled>
+        <i class="fas fa-wand-magic-sparkles"></i> Optimizar y Organizar con IA
+      </button>
+    </section>
+
+    <!-- PASO 2: CARGANDO -->
+    <section class="conv_loader" id="convLoader">
+      <div class="conv_loader_spinner"></div>
+      <h3 id="convLoaderMsg">Analizando currículum...</h3>
+      <p>Gemini está reescribiendo tus logros de trabajo con verbos de acción fuertes y estructurando tus datos. Esto tomará de 3 a 5 segundos.</p>
+    </section>
+
+    <!-- PASO 3: EDITAR Y PREVISUALIZAR (Split workspace) -->
+    <main class="conv_workspace_split" id="convWorkspace">
+      
+      <!-- Panel Izquierdo: Formularios -->
+      <section class="conv_left_pane">
+        <!-- Navegación interna de pestañas -->
+        <div class="conv_tabs_header" id="convTabsHeader">
+          <!-- Renderizado dinámico desde visual.js -->
+        </div>
+
+        <!-- Contenido dinámico del formulario -->
+        <form id="convFormContent" onsubmit="return false;">
+          <!-- Renderizado dinámico desde visual.js -->
+        </form>
+      </section>
+
+      <!-- Panel Derecho: Vista previa y herramientas -->
+      <section class="conv_right_pane">
+        
+        <!-- Barra de Herramientas -->
+        <div class="conv_preview_tools">
+          <div class="conv_preview_tools_left">
+            <span><i class="fas fa-circle-check"></i> Vista Previa ATS</span>
+            <button class="conv_tip_btn_icon" id="convPreviewTipFoto" title="Consejo de foto">
+              <i class="fas fa-circle-info"></i>
+            </button>
+          </div>
+          <div class="conv_preview_actions">
+            <button class="conv_btn_sec" id="convBtnReset"><i class="fas fa-rotate-left"></i> Subir otro</button>
+            <button class="conv_btn" id="convBtnPrint" style="padding: 1.2vh 2.5vh; font-size: var(--fz_s2);"><i class="fas fa-print"></i> Guardar PDF</button>
+          </div>
+        </div>
+
+        <!-- Escritorio de Vista Previa -->
+        <div class="conv_a4_wrapper">
+          <div id="convPreviewA4">
+            <!-- La hoja A4 se inyecta desde visual.js -->
+          </div>
+        </div>
+
+      </section>
+      
+    </main>
+
+  </div>
 </Layout>
 
-<script is:inline> </script>
+<script>
+  import { initEntrada, removeFile } from '../lib/convertir/entrada.js';
+  import { estructurarCvConIA } from '../lib/convertir/convertidor.js';
+  import { initVisual } from '../lib/convertir/visual.js';
+  import { Notificacion, wiRateLimit } from '../lib/widev.js';
+
+  // Referencias a los pasos
+  let step1: HTMLElement | null;
+  let step2: HTMLElement | null;
+  let step3: HTMLElement | null;
+  
+  let btnSubmit: HTMLButtonElement | null;
+  let loaderMsg: HTMLElement | null;
+
+  const init = () => {
+    step1 = document.getElementById('convStep1');
+    step2 = document.getElementById('convLoader');
+    step3 = document.getElementById('convWorkspace');
+    btnSubmit = document.getElementById('convBtnSubmit') as HTMLButtonElement;
+    loaderMsg = document.getElementById('convLoaderMsg');
+
+    // Inicializar lógica de lectura de archivos
+    initEntrada(
+      // Callback de extracción
+      (text: string) => {
+        const textareaContainer = document.getElementById('convTextareaContainer');
+        if (textareaContainer) textareaContainer.style.display = 'flex';
+        
+        if (btnSubmit) {
+          btnSubmit.disabled = !text.trim();
+        }
+      },
+      // Callback de reset
+      () => {
+        const textareaContainer = document.getElementById('convTextareaContainer');
+        if (textareaContainer) textareaContainer.style.display = 'none';
+        if (btnSubmit) btnSubmit.disabled = true;
+      }
+    );
+
+    // Eventos de botones
+    btnSubmit?.addEventListener('click', procesarConversionConIA);
+    document.getElementById('convBtnReset')?.addEventListener('click', reiniciarFlujo);
+  };
+
+  const procesarConversionConIA = async () => {
+    const rawTextarea = document.getElementById('convTextarea') as HTMLTextAreaElement;
+    const targetRoleInp = document.getElementById('convTargetRole') as HTMLInputElement;
+
+    if (!rawTextarea || !rawTextarea.value.trim()) {
+      Notificacion('Por favor, ingresa el texto de tu currículum.', 'warning');
+      return;
+    }
+
+    // Control de límite de uso contra abusos
+    const isLogged = localStorage.getItem('wiSmile');
+    let rate = null;
+
+    if (!isLogged) {
+      rate = wiRateLimit('guest_ats_cv_conversion', 5, 315360000000 as any);
+      if (!rate.ok) {
+        Notificacion('Has alcanzado el límite de 5 conversiones de prueba. Regístrate gratis para continuar sin límites.', 'warning', 6000);
+        const { abrirLogin } = await import('../lib/login.js');
+        abrirLogin('registrar');
+        return;
+      }
+    } else {
+      rate = wiRateLimit('ats_cv_conversion', 5, 'dia');
+      if (!rate.ok) {
+        Notificacion(`Límite diario alcanzado (5 conversiones). Regresa en ${rate.min} minutos.`, 'warning', 5000);
+        return;
+      }
+    }
+
+    // Transicionar al Paso 2: Loader
+    if (step1) step1.style.display = 'none';
+    if (step2) step2.style.display = 'flex';
+
+    // Rotación de mensajes del cargador
+    const messages = [
+      'Leyendo estructura del CV...',
+      'Estructurando datos en formato ATS estándar...',
+      'Buscando secciones de experiencia...',
+      'Optimizando logros con verbos de acción fuertes...',
+      'Alineando habilidades técnicas...',
+      'Asegurando legibilidad del formato para robots...'
+    ];
+    let msgIdx = 0;
+    const timer = setInterval(() => {
+      if (loaderMsg) {
+        loaderMsg.textContent = messages[msgIdx];
+        msgIdx = (msgIdx + 1) % messages.length;
+      }
+    }, 2000);
+
+    try {
+      const textToConvert = rawTextarea.value.trim();
+      const targetRole = targetRoleInp ? targetRoleInp.value.trim() : '';
+
+      // Llamada a Gemini
+      const structuredCv = await estructurarCvConIA(textToConvert, targetRole);
+
+      // Guardar el consumo exitoso en el navegador
+      if (rate) rate.fail();
+
+      clearInterval(timer);
+      
+      // Ocultar Loader
+      if (step2) step2.style.display = 'none';
+
+      // Inicializar y mostrar el Paso 3: Workspace
+      if (step3) step3.style.display = 'grid';
+      initVisual(structuredCv);
+
+      Notificacion('¡CV estructurado y optimizado con éxito! Revisa la vista previa.', 'success', 4000);
+    } catch (err: any) {
+      console.error(err);
+      clearInterval(timer);
+      
+      if (step2) step2.style.display = 'none';
+      if (step1) step1.style.display = 'flex';
+      
+      Notificacion(err.message || 'No se pudo completar la estructuración con la IA.', 'error');
+    }
+  };
+
+  const reiniciarFlujo = () => {
+    // Resetear archivos
+    removeFile();
+    
+    // Limpiar input del puesto
+    const targetRoleInp = document.getElementById('convTargetRole') as HTMLInputElement;
+    if (targetRoleInp) targetRoleInp.value = '';
+
+    // Volver a mostrar pantalla de subida
+    if (step3) step3.style.display = 'none';
+    if (step2) step2.style.display = 'none';
+    if (step1) step1.style.display = 'flex';
+  };
+
+  // Escuchar Astro page-load hooks
+  document.addEventListener('astro:page-load', init);
+</script>
