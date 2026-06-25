@@ -1,4 +1,5 @@
 import { wiTip, Notificacion } from '../widev.js';
+import { descargarPdfDirecto, imprimirPdf, descargarDocx, descargarTxt, descargarMd, descargarJson } from './descarga/descargas.js';
 
 export let convertedCvData = {
   nombre: '',
@@ -264,6 +265,9 @@ const renderFormContent = () => {
       updateA4Preview();
     });
   }
+
+  // Ejecutar validación visual al cargar cada pestaña
+  validarFormularios();
 };
 
 const renderExperienciasForm = (container) => {
@@ -480,9 +484,151 @@ const renderLanguages = () => {
   });
 };
 
+const guardarEnCache = () => {
+  try {
+    const activeKey = localStorage.getItem('convertir_ats_active_key');
+    if (activeKey) {
+      localStorage.setItem(activeKey, JSON.stringify(convertedCvData));
+    }
+  } catch (e) {
+    console.error('Error al guardar en caché local:', e);
+  }
+};
+
+const validarFormularios = () => {
+  // Validar Nombre
+  const inNombre = document.getElementById('in_nombre');
+  if (inNombre) {
+    const val = inNombre.value.trim();
+    inNombre.className = '';
+    if (!val) {
+      inNombre.classList.add('val_error');
+    } else {
+      inNombre.classList.add('val_success');
+    }
+  }
+
+  // Validar Cargo/Título
+  const inTitulo = document.getElementById('in_titulo');
+  if (inTitulo) {
+    const val = inTitulo.value.trim();
+    inTitulo.className = '';
+    if (!val) {
+      inTitulo.classList.add('val_warning');
+    } else {
+      inTitulo.classList.add('val_success');
+    }
+  }
+
+  // Validar Correo
+  const inEmail = document.getElementById('in_email');
+  if (inEmail) {
+    const val = inEmail.value.trim();
+    inEmail.className = '';
+    if (!val) {
+      inEmail.classList.add('val_error');
+    } else {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (re.test(val)) {
+        inEmail.classList.add('val_success');
+      } else {
+        inEmail.classList.add('val_error');
+      }
+    }
+  }
+
+  // Validar Teléfono
+  const inTelefono = document.getElementById('in_telefono');
+  if (inTelefono) {
+    const val = inTelefono.value.trim();
+    inTelefono.className = '';
+    if (!val) {
+      inTelefono.classList.add('val_warning');
+    } else {
+      inTelefono.classList.add('val_success');
+    }
+  }
+
+  // Validar Ubicación
+  const inUbicacion = document.getElementById('in_ubicacion');
+  if (inUbicacion) {
+    const val = inUbicacion.value.trim();
+    inUbicacion.className = '';
+    if (!val) {
+      inUbicacion.classList.add('val_warning');
+    } else {
+      inUbicacion.classList.add('val_success');
+    }
+  }
+
+  // Validar LinkedIn
+  const inLinkedin = document.getElementById('in_linkedin');
+  if (inLinkedin) {
+    const val = inLinkedin.value.trim();
+    inLinkedin.className = '';
+    if (val) {
+      if (val.startsWith('https://linkedin.com/') || val.startsWith('https://www.linkedin.com/')) {
+        inLinkedin.classList.add('val_success');
+      } else {
+        inLinkedin.classList.add('val_warning');
+      }
+    }
+  }
+
+  // Validar Sitio Web
+  const inWeb = document.getElementById('in_web');
+  if (inWeb) {
+    const val = inWeb.value.trim();
+    inWeb.className = '';
+    if (val) {
+      if (val.startsWith('http://') || val.startsWith('https://')) {
+        inWeb.classList.add('val_success');
+      } else {
+        inWeb.classList.add('val_warning');
+      }
+    }
+  }
+
+  // Validar Resumen / Perfil
+  const inResumen = document.getElementById('in_resumen');
+  if (inResumen) {
+    const val = inResumen.value.trim();
+    inResumen.className = 'conv_field conv_raw_textarea';
+    if (!val) {
+      inResumen.classList.add('val_error');
+    } else if (val.length < 50) {
+      inResumen.classList.add('val_warning');
+    } else {
+      inResumen.classList.add('val_success');
+    }
+  }
+
+  // Validar Habilidades
+  const inSkills = document.getElementById('in_skills');
+  if (inSkills) {
+    const val = inSkills.value.trim();
+    inSkills.className = '';
+    if (!val) {
+      inSkills.classList.add('val_error');
+    } else {
+      inSkills.classList.add('val_success');
+    }
+  }
+};
+
 export const updateA4Preview = () => {
   const printableArea = document.getElementById('convPreviewA4');
   if (!printableArea) return;
+
+  const isEn = convertedCvData.idioma === 'en';
+
+  const textPerfil = isEn ? 'Professional Summary' : 'Perfil Profesional';
+  const textExperiencia = isEn ? 'Work Experience' : 'Experiencia Laboral';
+  const textEducacion = isEn ? 'Education' : 'Educación';
+  const textSkills = isEn ? 'Skills & Languages' : 'Habilidades e Idiomas';
+  const textSkillsLabel = isEn ? 'Skills' : 'Habilidades';
+  const textIdiomasLabel = isEn ? 'Languages' : 'Idiomas';
+  const textPresente = isEn ? 'Present' : 'Presente';
 
   // Header Contact Section
   const contacts = [];
@@ -513,7 +659,7 @@ export const updateA4Preview = () => {
       <div class="cr_cv_item">
         <div class="cr_cv_item_row">
           <strong>${exp.puesto || 'Puesto / Cargo'}</strong>
-          <span>${exp.inicio || ''} – ${exp.fin || ''}</span>
+          <span>${exp.inicio || ''} – ${exp.fin === 'Presente' || !exp.fin ? textPresente : exp.fin}</span>
         </div>
         <div class="cr_cv_item_subrow">
           <span>${exp.empresa || 'Empresa'}</span>
@@ -544,15 +690,15 @@ export const updateA4Preview = () => {
   // Render Skills e Idiomas
   const skillsSectionHTML = convertedCvData.skills ? `
     <div class="cr_cv_section">
-      <h2 class="cr_cv_section_title">Habilidades e Idiomas</h2>
+      <h2 class="cr_cv_section_title">${textSkills}</h2>
       <div class="cr_cv_skills_grid">
         <div>
-          <strong>Habilidades:</strong>
+          <strong>${textSkillsLabel}:</strong>
           <span>${convertedCvData.skills}</span>
         </div>
         ${convertedCvData.idiomas.length > 0 ? `
           <div class="cr_cv_skills_subrow">
-            <strong>Idiomas:</strong>
+            <strong>${textIdiomasLabel}:</strong>
             <span>${convertedCvData.idiomas.filter(Boolean).join(', ')}</span>
           </div>
         ` : ''}
@@ -582,7 +728,7 @@ export const updateA4Preview = () => {
         <!-- Resumen Profesional -->
         ${convertedCvData.resumen ? `
           <div class="cr_cv_section">
-            <h2 class="cr_cv_section_title">Perfil Profesional</h2>
+            <h2 class="cr_cv_section_title">${textPerfil}</h2>
             <p class="cr_cv_text">${convertedCvData.resumen}</p>
           </div>
         ` : ''}
@@ -590,7 +736,7 @@ export const updateA4Preview = () => {
         <!-- Experiencia Laboral -->
         ${experiencesHTML ? `
           <div class="cr_cv_section">
-            <h2 class="cr_cv_section_title">Experiencia Laboral</h2>
+            <h2 class="cr_cv_section_title">${textExperiencia}</h2>
             <div class="cr_cv_list_items">${experiencesHTML}</div>
           </div>
         ` : ''}
@@ -598,7 +744,7 @@ export const updateA4Preview = () => {
         <!-- Educación -->
         ${educationHTML ? `
           <div class="cr_cv_section">
-            <h2 class="cr_cv_section_title">Educación</h2>
+            <h2 class="cr_cv_section_title">${textEducacion}</h2>
             <div class="cr_cv_list_items">${educationHTML}</div>
           </div>
         ` : ''}
@@ -609,14 +755,78 @@ export const updateA4Preview = () => {
       
     </div>
   `;
+
+  // Guardar en la caché local persistente única del CV activo
+  guardarEnCache();
+
+  // Validar visualmente los campos del formulario en tiempo real
+  validarFormularios();
 };
 
 const setupGlobalListeners = () => {
-  // Tooltip autogestionado por data-witip en el HTML en convertir-ats.astro
-
-  // Configurar wiTip en el botón de Guardar PDF
+  // Configurar botón principal de PDF (Descargar directamente)
   const printBtn = document.getElementById('convBtnPrint');
   printBtn?.addEventListener('click', () => {
-    window.print();
+    descargarPdfDirecto(convertedCvData);
+  });
+
+  // Botón de impresión nativa en el dropdown (Recomendado ATS)
+  document.getElementById('convBtnPrintNative')?.addEventListener('click', () => {
+    imprimirPdf();
+    closeDropdown();
+  });
+
+  // Alternar el menú desplegable de descargas
+  const dropdownToggle = document.getElementById('convBtnDownloadToggle');
+  const downloadMenu = document.getElementById('convDownloadMenu');
+
+  const closeDropdown = () => {
+    if (downloadMenu) downloadMenu.classList.remove('show');
+    if (dropdownToggle) dropdownToggle.setAttribute('aria-expanded', 'false');
+  };
+
+  dropdownToggle?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (downloadMenu) {
+      const isShown = downloadMenu.classList.contains('show');
+      if (!isShown) {
+        downloadMenu.classList.add('show');
+        dropdownToggle.setAttribute('aria-expanded', 'true');
+      } else {
+        closeDropdown();
+      }
+    }
+  });
+
+  // Conectar acciones de descarga
+  document.getElementById('convBtnDownloadDocx')?.addEventListener('click', () => {
+    descargarDocx(convertedCvData);
+    closeDropdown();
+  });
+
+  document.getElementById('convBtnDownloadTxt')?.addEventListener('click', () => {
+    descargarTxt(convertedCvData);
+    closeDropdown();
+  });
+
+  document.getElementById('convBtnDownloadMd')?.addEventListener('click', () => {
+    descargarMd(convertedCvData);
+    closeDropdown();
+  });
+
+  document.getElementById('convBtnDownloadJson')?.addEventListener('click', () => {
+    descargarJson(convertedCvData);
+    closeDropdown();
+  });
+
+  // Cerrar menú al hacer clic fuera del dropdown
+  document.addEventListener('click', (e) => {
+    const target = e.target;
+    if (target instanceof Element) {
+      const isInsideDropdown = target.closest('.conv_download_dropdown');
+      if (!isInsideDropdown) {
+        closeDropdown();
+      }
+    }
   });
 };

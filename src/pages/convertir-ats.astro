@@ -55,7 +55,7 @@ import { seo } from '../lib/seo.js';
       border-radius: 24px;
       padding: 4vh 4vw;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
-      max-width: 760px;
+      max-width: 68vw;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
@@ -66,7 +66,7 @@ import { seo } from '../lib/seo.js';
     .conv_dropzone {
       border: 2px dashed var(--brd2);
       border-radius: 18px;
-      padding: 6vh 2vw;
+      padding: 6vh 45vh;
       text-align: center;
       cursor: pointer;
       display: flex;
@@ -899,15 +899,181 @@ import { seo } from '../lib/seo.js';
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Fila paralela para Puesto e Idioma */
+    .conv_row_fields {
+      display: flex;
+      gap: 2vw;
+      width: 100%;
+      text-align: left;
+    }
+    .conv_row_fields .conv_field {
+      align-items: stretch;
+      text-align: left;
+      flex: 1;
+    }
+    .conv_row_fields .conv_field label {
+      text-align: left;
+    }
+    .flex_2 {
+      flex: 2 !important;
+    }
+    .flex_1 {
+      flex: 1 !important;
+    }
+    .conv_select {
+      padding: 1.8vh 2vh;
+      border: 1px solid var(--brd);
+      border-radius: 12px;
+      background: var(--wb);
+      color: var(--tx);
+      font-family: inherit;
+      font-size: var(--fz_m1);
+      transition: border-color 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+      background-repeat: no-repeat;
+      background-position: right 1.5vh center;
+      background-size: 1.2rem;
+      padding-right: 4.5vh;
+    }
+    .conv_select:focus {
+      border-color: var(--mco);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--mco) 15%, transparent);
+      outline: none;
+    }
+    @media (max-width: 600px) {
+      .conv_row_fields {
+        flex-direction: column;
+        gap: 2.5vh;
+      }
+    }
+
+    /* Contenedor del Botón Dividido */
+    .conv_download_dropdown {
+      position: relative;
+      display: inline-flex;
+      border-radius: 10px;
+      overflow: visible;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    #convBtnPrint {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      margin-right: 0 !important;
+    }
+    
+    .conv_btn_dropdown_toggle {
+      background: var(--mco);
+      border: 1px solid var(--mco);
+      color: #fff;
+      padding: 0 1.5vh;
+      font-size: var(--fz_s2);
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, opacity 0.2s;
+      border-left: 1px solid color-mix(in srgb, #fff 20%, transparent);
+    }
+    
+    .conv_btn_dropdown_toggle:hover {
+      opacity: 0.9;
+    }
+    
+    /* Menú flotante del Dropdown */
+    .conv_dropdown_menu {
+      position: absolute;
+      bottom: 110%;
+      right: 0;
+      background: var(--wb);
+      border: 1px solid var(--brd);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      min-width: 240px;
+      z-index: 100;
+      display: none; /* Oculto por defecto */
+      flex-direction: column;
+      padding: 1vh;
+      animation: conv_fade_in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .conv_dropdown_menu.show {
+      display: flex; /* Se muestra como flex al estar activo */
+    }
+
+    /* Clases de Validación Visual */
+    .val_success {
+      border-color: var(--success) !important;
+    }
+    .val_success:focus {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 15%, transparent) !important;
+    }
+    .val_warning {
+      border-color: var(--warning) !important;
+    }
+    .val_warning:focus {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--warning) 15%, transparent) !important;
+    }
+    .val_error {
+      border-color: var(--error) !important;
+    }
+    .val_error:focus {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--error) 15%, transparent) !important;
+    }
+    
+    .conv_dropdown_item {
+      background: none;
+      border: none;
+      color: var(--tx2);
+      padding: 1.2vh 1.5vh;
+      font-size: var(--fz_s2);
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 1.2vh;
+      text-align: left;
+      transition: background 0.2s, color 0.2s;
+      width: 100%;
+    }
+    
+    .conv_dropdown_item:hover {
+      background: var(--bg4);
+      color: var(--tx1);
+    }
+    
+    .conv_dropdown_item i {
+      color: var(--tx3);
+      width: 16px;
+      text-align: center;
+    }
+    
+    .conv_dropdown_item:hover i {
+      color: var(--mco);
+    }
+
     /* ══════════════════ REGLAS DE IMPRESIÓN EXCLUSIVAS (PDF) ══════════════════ */
     @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0; /* Hides headers/footers completely */
+      }
       body {
         background: #fff !important;
         color: #000 !important;
       }
       /* Ocultar elementos de la web */
-      header, footer, nav, #notificationsContainer, .conv_header, .conv_left_pane, .conv_preview_tools {
+      header, footer, nav, #notificationsContainer, #wiTema, .conv_header, .conv_left_pane, .conv_preview_tools {
         display: none !important;
+      }
+      /* Evitar saltos de página en medio de las experiencias o secciones */
+      .cr_cv_section, .cr_cv_item {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
       }
       .conv_wrap {
         padding: 0 !important;
@@ -935,7 +1101,7 @@ import { seo } from '../lib/seo.js';
         width: 100% !important;
         min-height: 0 !important;
         box-shadow: none !important;
-        padding: 0 !important;
+        padding: 20mm 20mm 20mm 20mm !important;
         margin: 0 !important;
       }
     }
@@ -983,11 +1149,21 @@ import { seo } from '../lib/seo.js';
         <textarea id="convTextarea" class="conv_field conv_raw_textarea" placeholder="Aquí aparecerá el texto de tu currículum al subir el archivo..."></textarea>
       </div>
 
-      <!-- Campo de Puesto Deseado -->
-      <div class="conv_field">
-        <label for="convTargetRole">Puesto o Área de trabajo al que postulas (Opcional)</label>
-        <input type="text" id="convTargetRole" placeholder="Ej: Desarrollador React, Especialista en Marketing, Asistente Administrativo" />
-        <span class="conv_small_help">La IA adaptará y orientará el vocabulario de tu CV hacia este rol específico.</span>
+      <!-- Fila de Puesto Deseado e Idioma de Optimización -->
+      <div class="conv_row_fields">
+        <div class="conv_field flex_2">
+          <label for="convTargetRole">Puesto o Área al que postulas (Opcional)</label>
+          <input type="text" id="convTargetRole" placeholder="Ej: Desarrollador React, Especialista en Marketing, Asistente Administrativo" />
+          <span class="conv_small_help">La IA orientará el vocabulario de tu CV hacia este rol específico.</span>
+        </div>
+        <div class="conv_field flex_1">
+          <label for="convTargetLang">Idioma de optimización</label>
+          <select id="convTargetLang" class="conv_select">
+            <option value="es" selected>Español Latinoamericano</option>
+            <option value="en">Inglés (English)</option>
+          </select>
+          <span class="conv_small_help">La IA traducirá y redactará todo tu CV en este idioma.</span>
+        </div>
       </div>
 
       <!-- Botón de Envío -->
@@ -1031,8 +1207,21 @@ import { seo } from '../lib/seo.js';
             </button>
           </div>
           <div class="conv_preview_actions">
-            <button class="conv_btn_sec" id="convBtnReset"><i class="fas fa-rotate-left"></i> Subir otro</button>
-            <button class="conv_btn" id="convBtnPrint"><i class="fas fa-print"></i> Guardar PDF</button>
+            <button class="conv_btn_sec" id="convBtnReset"><i class="fas fa-rotate-left"></i> Convertir otro</button>
+            
+            <div class="conv_download_dropdown">
+              <button class="conv_btn" id="convBtnPrint"><i class="fas fa-download"></i> Descargar CV</button>
+              <button class="conv_btn_dropdown_toggle" id="convBtnDownloadToggle" aria-haspopup="true" aria-expanded="false" title="Más formatos de descarga">
+                <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="conv_dropdown_menu" id="convDownloadMenu">
+                <button class="conv_dropdown_item" id="convBtnPrintNative"><i class="fas fa-print"></i> Imprimir PDF (Recomendado ATS)</button>
+                <button class="conv_dropdown_item" id="convBtnDownloadDocx"><i class="fas fa-file-word"></i> Descargar Word (.doc)</button>
+                <button class="conv_dropdown_item" id="convBtnDownloadTxt"><i class="fas fa-file-alt"></i> Descargar Texto (.txt)</button>
+                <button class="conv_dropdown_item" id="convBtnDownloadMd"><i class="fab fa-markdown"></i> Descargar Markdown (.md)</button>
+                <button class="conv_dropdown_item" id="convBtnDownloadJson"><i class="fas fa-file-code"></i> Respaldar datos (.json)</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1093,6 +1282,23 @@ import { seo } from '../lib/seo.js';
     // Eventos de botones
     btnSubmit?.addEventListener('click', procesarConversionConIA);
     document.getElementById('convBtnReset')?.addEventListener('click', reiniciarFlujo);
+
+    // Cargar caché local de CV activo (F5) - Se ejecuta al final para que los event listeners ya estén registrados
+    const activeKey = localStorage.getItem('convertir_ats_active_key');
+    if (activeKey) {
+      const cached = localStorage.getItem(activeKey);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (step1) step1.style.display = 'none';
+          if (step3) step3.style.display = 'grid';
+          initVisual(parsed);
+          return;
+        } catch (e) {
+          console.error('Error al cargar caché local:', e);
+        }
+      }
+    }
   };
 
   const procesarConversionConIA = async () => {
@@ -1148,9 +1354,16 @@ import { seo } from '../lib/seo.js';
     try {
       const textToConvert = rawTextarea.value.trim();
       const targetRole = targetRoleInp ? targetRoleInp.value.trim() : '';
+      const targetLangSelect = document.getElementById('convTargetLang') as HTMLSelectElement;
+      const targetLang = targetLangSelect ? targetLangSelect.value : 'es';
 
       // Llamada a la IA de Workwii
-      const structuredCv = await estructurarCvConIA(textToConvert, targetRole);
+      const structuredCv = await estructurarCvConIA(textToConvert, targetRole, targetLang);
+
+      // Guardar en caché local persistente única
+      const cacheKey = `convertir_ats_${Date.now()}`;
+      localStorage.setItem(cacheKey, JSON.stringify(structuredCv));
+      localStorage.setItem('convertir_ats_active_key', cacheKey);
 
       // Guardar el consumo exitoso en el navegador
       if (rate) rate.fail();
@@ -1177,12 +1390,18 @@ import { seo } from '../lib/seo.js';
   };
 
   const reiniciarFlujo = () => {
+    // Limpiar caché activa
+    localStorage.removeItem('convertir_ats_active_key');
+
     // Resetear archivos
     removeFile();
     
-    // Limpiar input del puesto
+    // Limpiar input del puesto e idioma
     const targetRoleInp = document.getElementById('convTargetRole') as HTMLInputElement;
     if (targetRoleInp) targetRoleInp.value = '';
+
+    const targetLangSelect = document.getElementById('convTargetLang') as HTMLSelectElement;
+    if (targetLangSelect) targetLangSelect.value = 'es';
 
     // Volver a mostrar pantalla de subida
     if (step3) step3.style.display = 'none';

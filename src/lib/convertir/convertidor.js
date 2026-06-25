@@ -7,7 +7,14 @@ import { llamarGemini } from '../api/gemini.js';
  * @param {string} puestoDeseado - El puesto o área al que aspira el candidato (para orientar el CV).
  * @returns {Promise<object>} Objeto JSON estructurado listo para inyectarse en los formularios.
  */
-export const estructurarCvConIA = async (textoCv, puestoDeseado = '') => {
+export const estructurarCvConIA = async (textoCv, puestoDeseado = '', idiomaDestino = 'es') => {
+  let idiomaPrompt = '';
+  if (idiomaDestino === 'en') {
+    idiomaPrompt = `IMPORTANTE: Traduce y redacta TODO el contenido del currículum al inglés (English). El JSON resultante debe tener todos los textos (incluyendo títulos de puestos, nombres de empresas si aplica traducirlas, resúmenes, descripciones de logros, nombres de habilidades e idiomas) redactados profesionalmente en inglés.`;
+  } else {
+    idiomaPrompt = `IMPORTANTE: Redacta todo el contenido del currículum en español latinoamericano.`;
+  }
+
   const systemInstruction = `Eres un experto redactor de currículums y optimización de perfiles para superar filtros ATS (Applicant Tracking Systems) internacionales.
 Tu tarea es tomar el texto bruto de un currículum provisto por el usuario, extraer toda su información relevante y estructurarla en el formato JSON especificado.
 
@@ -19,6 +26,8 @@ Debes aplicar estas reglas de optimización durante la conversión:
    - Enfócate en resultados cuantificables. Si el texto original no contiene métricas, estima cifras lógicas o mantén la redacción orientada a logros de impacto.
 3. Habilidades (Skills): Extrae una lista de palabras clave técnicas y blandas relevantes, y devuélvelas como un string separado por comas (ej: "React, Node.js, Git, Liderazgo, Agile"). Máximo 20 habilidades.
 4. Idiomas: Identifica idiomas y sus niveles. Devuélvelos como un array de strings (ej: ["Español (Nativo)", "Inglés (C1 - Avanzado)"]).
+
+${idiomaPrompt}
 
 Devuelve ÚNICAMENTE el reporte JSON que cumpla EXACTAMENTE con esta estructura (no incluyas texto markdown \`\`\` ni explicaciones adicionales fuera del JSON):
 {
@@ -59,8 +68,8 @@ ${textoCv}
 """
 
 ${puestoDeseado ? `PUESTO O ÁREA DESEADA AL QUE POSTULA:\n"${puestoDeseado}"` : ''}
-
-Por favor, estructura y optimiza este currículum en el formato JSON requerido.`;
+${idiomaDestino === 'en' ? 'IDIOMA DE DESTINO: Inglés (English)\n' : 'IDIOMA DE DESTINO: Español\n'}
+Por favor, estructura, traduce (si el idioma de destino es inglés) y optimiza este currículum en el formato JSON requerido.`;
 
   const contents = [
     {
@@ -81,6 +90,7 @@ Por favor, estructura y optimiza este currículum en el formato JSON requerido.`
     });
 
     const parsedJson = JSON.parse(rawResponse);
+    parsedJson.idioma = idiomaDestino;
     
     // Asegurar compatibilidad agregando IDs únicos a experiencias y educación para el renderizado del editor
     if (parsedJson.experiencias && Array.isArray(parsedJson.experiencias)) {
