@@ -20,7 +20,7 @@ export const descargarPdfDirecto = async (cv) => {
   if (!element) return;
 
   const opt = {
-    margin:       0,
+    margin:       [10, 12, 10, 12],
     filename:     `${(cv.nombre || 'CV_ATS').replace(/\s+/g, '_')}_CV_ATS.pdf`,
     image:        { type: 'jpeg', quality: 0.98 },
     html2canvas:  { scale: 2.5, useCORS: true, logging: false, backgroundColor: '#ffffff' },
