@@ -152,7 +152,8 @@ export const showi = (() => {
 
 // CARGANDO V10.2_________________________________
 export const wiSpin = (btn, act = true, txt = '') => {
-  const el = typeof btn === 'string' ? document.querySelector(btn) : btn;
+  let el = typeof btn === 'string' ? document.querySelector(btn) : btn;
+  if (el && el.jquery) el = el[0];
   if (!el) return;
   if (act) {
     const texto = txt || el.textContent?.trim() || '';
@@ -450,27 +451,46 @@ export function wiTip(elmOrTxt, txt, tipo = 'top', tiempo = 1800) {
   if (!wiTip.CSS) {
     const style = document.createElement('style');
     style.id = 'wiTip-css';
-    style.textContent = '.wiTip{position:fixed;color:var(--txa);z-index:99999;padding:.8vh 1.2vh;border-radius:.6vh;font-size:var(--fz_s4);font-weight:500;max-width:25vh;box-shadow:0 .4vh 1.2vh rgba(0,0,0,.2);opacity:0;transform:translateY(-.3vh);transition:all .2s cubic-bezier(.4,0,.2,1);pointer-events:none;backdrop-filter:blur(.4vh)}.wiTip.show{opacity:1;transform:translateY(0)}.wiTip::after{content:"";position:absolute;top:100%;left:50%;margin-left:-.6vh;border:.6vh solid transparent;border-top-color:inherit}';
+    style.textContent = '.wiTip{position:fixed;color:var(--txa);z-index:99999;padding:.8vh 1.2vh;border-radius:.6vh;font-size:var(--fz_s4);font-weight:500;max-width:25vh;box-shadow:0 .4vh 1.2vh rgba(0,0,0,.2);opacity:0;transform:translateY(-.3vh);transition:all .2s cubic-bezier(.4,0,.2,1);pointer-events:auto;backdrop-filter:blur(.4vh)}.wiTip.show{opacity:1;transform:translateY(0)}.wiTip::after{content:"";position:absolute;top:100%;left:50%;margin-left:-.6vh;border:.6vh solid transparent;border-top-color:inherit}';
     document.head.appendChild(style);
 
     let t;
-    document.addEventListener('mouseenter', (e) => {
-      const target = e.target.closest?.('[data-witip]');
-      if (target) {
-        clearTimeout(t);
-        wiTip.ver(target, target.getAttribute('data-witip') || '', target.getAttribute('data-wtipo') || 'top', Number(target.getAttribute('data-wtiempo')) || 1800);
-      }
-    }, true);
+    const hide = () => {
+      wiTip.activeTarget = null;
+      const tips = document.querySelectorAll('.wiTip');
+      tips.forEach(tip => tip.classList.remove('show'));
+      clearTimeout(t);
+      t = setTimeout(() => tips.forEach(tip => tip.remove()), 200);
+    };
 
-    document.addEventListener('mouseleave', (e) => {
+    document.addEventListener('mouseover', (e) => {
       const target = e.target.closest?.('[data-witip]');
       if (target) {
-        const tips = document.querySelectorAll('.wiTip');
-        tips.forEach(tip => tip.classList.remove('show'));
         clearTimeout(t);
-        t = setTimeout(() => tips.forEach(tip => tip.remove()), 200);
+        if (wiTip.activeTarget !== target) {
+          wiTip.activeTarget = target;
+          wiTip.ver(target, target.getAttribute('data-witip') || '', target.getAttribute('data-wtipo') || 'top', 0);
+        }
       }
-    }, true);
+    });
+
+    document.addEventListener('mouseout', (e) => {
+      const related = e.relatedTarget;
+      const isOverTip = related?.closest?.('.wiTip');
+      const isOverTarget = related && wiTip.activeTarget && (wiTip.activeTarget === related || wiTip.activeTarget.contains(related));
+
+      // 1. Si salimos del disparador del tooltip
+      const target = e.target.closest?.('[data-witip]');
+      if (target && !target.contains(related) && !isOverTip) {
+        hide();
+      }
+
+      // 2. Si salimos del cuerpo del tooltip
+      const tip = e.target.closest?.('.wiTip');
+      if (tip && !tip.contains(related) && !isOverTarget) {
+        hide();
+      }
+    });
 
     wiTip.CSS = true;
   }
@@ -511,10 +531,15 @@ wiTip.ver = (elm, txt, tipo, tiempo) => {
   });
 };
 wiTip.CSS = false;
+// Auto-inicialización global de wiTip
+if (typeof window !== 'undefined') {
+  setTimeout(() => { try { wiTip(); } catch(e) {} }, 0);
+}
+
 
 // SISTEMA IP V10.1_________________________________
 export const wiIp = (geo) => {
-  return fetch('https://ipinfo.io/json?token='+import.meta.env.PUBLIC_WIIP)
+  return fetch('https://ipinfo.io/json?token='+import.meta.env.VITE_WIIP)
     .then(r => r.json())
     .then(data => {
       const ua = navigator.userAgent;
