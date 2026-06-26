@@ -10,7 +10,7 @@ export let lanzamiento = 2026;
 export let by = '@wilder.taype';
 export let linkme = 'https://wtaype.github.io/';
 export let version = 'v15';
-export let dtema = 'oro|#FFC107'; // [TEMA] Cambiar aquí el tema por defecto de la aplicación (Formato: 'nombre|#Hex')
+export let dtema = 'mora'; // [TEMA] Cambiar aquí el tema por defecto de la aplicación (Solo el nombre)
 
 /** ACTUALIZAR AL TAG POR SEGURIDAD [TAG NUEVO] (1)
 git tag v15 -m "Version v15" ; git push origin v15

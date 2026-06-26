@@ -892,3 +892,50 @@ export function minus(selOrEl) {
     el.setSelectionRange(start, end);
   });
 }
+
+// Mapa de colores oficiales para meta theme-color
+export const witemas = {
+  cielo: '#0EBEFF',
+  dulce: '#FF5C69',
+  paz: '#29C72E',
+  oro: '#FFC107',
+  mora: '#7000FF',
+  futuro: '#21273B'
+};
+
+// Inicializador de interactividad de temas
+export function witema(dtema) {
+  const getTheme = () => {
+    try {
+      return JSON.parse(localStorage.getItem('wiSmile') || '{}').value?.tema || localStorage.wiTema || dtema;
+    } catch {
+      return localStorage.wiTema || dtema;
+    }
+  };
+
+  const applyTheme = (name) => {
+    if (!name) return;
+    const color = witemas[name] || '#FFC107';
+    document.documentElement.dataset.theme = name;
+    (document.querySelector('meta[name="theme-color"]') ||
+      document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'theme-color' }))
+    ).content = color;
+    localStorage.wiTema = name;
+    document.querySelectorAll('.tema').forEach(x => x.classList.toggle('mtha', x.dataset.ths === name));
+  };
+
+  document.addEventListener('click', e => {
+    const el = e.target.closest('.tema');
+    if (!el) return;
+    const name = el.dataset.ths;
+    applyTheme(name);
+    try {
+      const u = JSON.parse(localStorage.getItem('wiSmile') || '{}').value;
+      if (u?.id) import('./supabase.js').then(({ supabase }) =>
+        supabase.from('smiles').update({ tema: name, actualizado: new Date().toISOString() }).eq('id', u.id)
+      );
+    } catch {}
+  });
+
+  document.addEventListener('astro:page-load', () => applyTheme(getTheme()));
+}

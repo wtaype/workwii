@@ -1,6 +1,6 @@
 import './login.css';
 import { supabase } from './supabase.js';
-import { wiTip, Mensaje, savels, getls, wiSpin, wiAuth, abrirModal, cerrarTodos, wiRateLimit } from './widev.js';
+import { wiTip, Mensaje, savels, getls, wiSpin, wiAuth, abrirModal, cerrarTodos, wiRateLimit, witemas } from './widev.js';
 import { app, dtema } from '../wii.js';
 
 // ── CONFIG ───────────────────────────────────────────────────────────────────
@@ -170,12 +170,12 @@ const swap = v => esModal() ? toggleModal(v) : mostrar(v);
 // ── HELPERS & VALIDATION ENGINE ──────────────────────────────────────────────
 const val     = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
 const esModal = ()  => document.querySelector('#wilg_modal.active') !== null;
-const tema    = t   => {
-  if (!t) return;
-  const [n, c] = t.split('|');
-  document.documentElement.dataset.theme = n;
+const tema    = name => {
+  if (!name) return;
+  const color = witemas[name] || '#FFC107';
+  document.documentElement.dataset.theme = name;
   const meta = document.querySelector('meta[name="theme-color"]') || document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'theme-color' }));
-  meta.setAttribute('content', c);
+  meta.setAttribute('content', color);
 };
 
 const entrar = wi => {
@@ -524,7 +524,7 @@ if (typeof window !== 'undefined') {
             .update({ tema: t, actualizado: new Date().toISOString() })
             .eq('id', wi.id);
           savels('wiSmile', { ...wi, tema: t }, 7);
-          Mensaje(`Tema ${t.split('|')[0]} guardado <i class="fas fa-check-circle"></i>`, 'success');
+          Mensaje(`Tema ${t} guardado <i class="fas fa-check-circle"></i>`, 'success');
         } catch (errCode) { console.error('tema:', errCode); }
       }, 0);
       return;
