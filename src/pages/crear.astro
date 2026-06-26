@@ -6,300 +6,223 @@ import { app } from '../wii.js';
 import { seo } from '../lib/seo.js';
 ---
 
-
-
 <Layout {...seo.crear}>
   <style is:global>
     /* =========================================================================
        CREAR.CSS — Estilos Premium del Creador de CV ATS
        ========================================================================= */
-    .cr_wrap {
+    .conv_wrap {
       width: 100%;
-      margin: 0 auto;
-      padding: 3vh 1.5vh 6vh;
+      padding: 2vh 2vw 8vh;
       font-family: var(--ff_P);
       color: var(--tx);
+      box-sizing: border-box;
     }
-    .cr_header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 3vh;
-      margin-bottom: 4vh;
+    
+    .conv_header {
+      margin-bottom: 3vh;
       border-bottom: 1px solid var(--brd);
-      padding-bottom: 3vh;
+      padding-bottom: 2.5vh;
     }
-    .cr_header_left h1 {
-      font-size: var(--fz_l1);
-      font-weight: 800;
-      color: var(--tx1);
-      letter-spacing: -0.5px;
-      display: flex;
-      align-items: center;
-      gap: 1.5vh;
-      margin: 0;
-    }
-    .cr_header_left h1 span {
-      background: linear-gradient(135deg, var(--mco), var(--hva));
+
+    .conv_header h1 span {
+      background: linear-gradient(135deg, var(--mco), #7000FF);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .cr_header_left p {
-      font-size: var(--fz_m1);
-      color: var(--tx3);
-      margin-top: 0.8vh;
-      margin-bottom: 0;
-    }
-    .cr_progress_bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-      margin-bottom: 5vh;
-      padding: 0 4vw;
-    }
-    .cr_progress_line {
-      position: absolute;
-      top: 50%;
-      left: 8vw;
-      right: 8vw;
-      height: 3px;
-      background: var(--brd);
-      transform: translateY(-50%);
-      z-index: 0;
-    }
-    .cr_progress_fill {
-      height: 100%;
-      width: 0%;
-      background: var(--mco);
-      transition: width 0.4s ease;
-    }
-    .cr_step_node {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1vh;
-      cursor: pointer;
-    }
-    .cr_step_circle {
-      width: 5vh;
-      height: 5vh;
-      border-radius: 50%;
-      background: var(--wb);
-      border: 2px solid var(--brd);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: var(--tx3);
-      transition: all 0.3s ease;
-    }
-    .cr_step_label {
-      font-size: var(--fz_s3);
-      font-weight: 600;
-      color: var(--tx3);
-      transition: all 0.3s ease;
-    }
-    .cr_step_node.active .cr_step_circle {
-      border-color: var(--mco);
-      background: var(--mco);
-      color: #fff;
-      box-shadow: 0 0 12px color-mix(in srgb, var(--mco) 40%, transparent);
-    }
-    .cr_step_node.active .cr_step_label {
-      color: var(--mco);
-      font-weight: 700;
-    }
-    .cr_step_node.completed .cr_step_circle {
-      border-color: var(--mco);
-      background: color-mix(in srgb, var(--mco) 10%, var(--wb));
-      color: var(--mco);
-    }
-    .cr_step_node.completed .cr_step_label {
-      color: var(--tx1);
-    }
-    .cr_main_grid {
+
+    /* ══════════════════ SPLIT WORKSPACE ══════════════════ */
+    .conv_workspace_split {
       display: grid;
       grid-template-columns: 1.1fr 0.9fr;
-      gap: 4vw;
+      gap: 4vh 2vh;
       align-items: start;
+      animation: conv_fade_in 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .cr_editor_panel {
+
+    @media (max-width: 1024px) {
+      .conv_workspace_split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Panel Izquierdo: Formularios */
+    .conv_left_pane {
       background: var(--wb);
       border: 1px solid var(--brd);
-      border-radius: 2.2vh;
-      padding: 4vh;
-      box-shadow: var(--bs_l);
-    }
-    .cr_form_step {
-      display: none;
-      animation: cr_fadeIn 0.4s ease both;
-    }
-    .cr_form_step.active {
-      display: block;
-    }
-    @keyframes cr_fadeIn {
-      0% { opacity: 0; transform: translateY(10px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    .cr_step_title {
-      font-size: var(--fz_l1);
-      font-weight: 800;
-      color: var(--tx1);
-      margin-top: 0;
-      margin-bottom: 3vh;
-      display: flex;
-      align-items: center;
-      gap: 1.2vh;
-      letter-spacing: -0.3px;
-    }
-    .cr_step_title i {
-      color: var(--mco);
-    }
-    .cr_step_subtitle {
-      font-size: var(--fz_m4);
-      font-weight: 700;
-      color: var(--tx1);
-      margin: 0;
-    }
-    .cr_step_header_action {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 3vh;
-    }
-    .cr_form_group_grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2.5vh 2vw;
-    }
-    .cr_form_group {
-      display: flex;
-      flex-direction: column;
-      gap: 1vh;
-    }
-    .cr_form_group.full_width {
-      grid-column: span 2;
-    }
-    .cr_form_group label {
-      font-size: var(--fz_s2);
-      font-weight: 700;
-      color: var(--tx2);
-    }
-    .cr_form_group input,
-    .cr_form_group textarea,
-    .cr_form_group select {
-      width: 100%;
-      padding: 1.5vh 2vh;
-      border-radius: 1.2vh;
-      border: 1px solid var(--brd);
-      background: var(--bg);
-      color: var(--tx);
-      font-family: inherit;
-      font-size: var(--fz_m1);
-      transition: all 0.3s ease;
-    }
-    .cr_form_group input:focus,
-    .cr_form_group textarea:focus,
-    .cr_form_group select:focus {
-      border-color: var(--mco);
-      background: var(--wb);
-      outline: none;
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--mco) 10%, transparent);
-    }
-    .cr_help_text {
-      font-size: var(--fz_s3);
-      color: var(--tx3);
-      line-height: 1.35;
-    }
-    .cr_btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1vh;
-      padding: 1.5vh 3vh;
-      border-radius: 1.4vh;
-      font-weight: 700;
-      font-size: var(--fz_m1);
-      cursor: pointer;
-      transition: all 0.25s ease;
-      border: 1px solid transparent;
-      text-decoration: none;
-    }
-    .cr_btn.primary {
-      background: var(--mco);
-      color: #fff;
-    }
-    .cr_btn.primary:hover {
-      background: var(--hva);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px color-mix(in srgb, var(--mco) 30%, transparent);
-    }
-    .cr_btn.secondary {
-      background: var(--bg);
-      border-color: var(--brd);
-      color: var(--tx1);
-    }
-    .cr_btn.secondary:hover {
-      background: var(--wb);
-      border-color: var(--mco);
-      color: var(--mco);
-    }
-    .cr_btn.outline {
-      background: transparent;
-      border-color: var(--brd);
-      color: var(--tx2);
-    }
-    .cr_btn.outline:hover {
-      background: var(--bg);
-      color: var(--tx1);
-    }
-    .cr_btn.small {
-      padding: 1vh 2vh;
-      font-size: var(--fz_s2);
-      border-radius: 1vh;
-    }
-    .cr_btn.large {
-      padding: 2vh 4vh;
-      font-size: var(--fz_m3);
-      border-radius: 1.8vh;
-    }
-    .cr_btn.danger {
-      background: color-mix(in srgb, var(--warning) 10%, var(--wb));
-      color: var(--warning);
-      border-color: color-mix(in srgb, var(--warning) 20%, transparent);
-    }
-    .cr_btn.danger:hover {
-      background: var(--warning);
-      color: #fff;
-    }
-    .cr_btn.disabled,
-    .cr_btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none !important;
-      box-shadow: none !important;
-    }
-    .cr_dynamic_list {
+      border-radius: 24px;
+      padding: 3vh 1.5vw 4vh;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.01);
       display: flex;
       flex-direction: column;
       gap: 3vh;
+      position: sticky;
+      top: 2vh;
+      max-height: 88vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--brd2) transparent;
     }
-    .cr_list_item_card {
+    .conv_left_pane::-webkit-scrollbar {
+      width: 6px;
+    }
+    .conv_left_pane::-webkit-scrollbar-thumb {
+      background-color: var(--brd2);
+      border-radius: 99px;
+    }
+    
+    /* Pestañas */
+    .conv_tabs_header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5vh;
+      border-bottom: 1px solid var(--brd);
+      padding-bottom: 1.5vh;
+    }
+    .conv_tab_btn {
+      padding: 1.2vh 1.5vh;
+      border: 1px solid transparent;
+      border-radius: 1vh;
+      background: none;
+      color: var(--tx3);
+      font-size: var(--fz_m1);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 1vh;
+      transition: all 0.25s ease;
+    }
+    .conv_tab_btn:hover {
+      color: var(--mco);
+      background: color-mix(in srgb, var(--mco) 6%, transparent);
+    }
+    .conv_tab_btn.active {
+      color: var(--tx1);
+      background: color-mix(in srgb, var(--mco) 10%, transparent);
+      border-color: color-mix(in srgb, var(--mco) 20%, transparent);
+    }
+
+    /* Formulario */
+    .conv_form_grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2.5vh 1.5vw;
+    }
+    @media (max-width: 600px) {
+      .conv_form_grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .conv_field {
+      display: flex;
+      flex-direction: column;
+      gap: 1vh;
+    }
+    .conv_field label {
+      font-weight: 700;
+      font-size: var(--fz_s2);
+      color: var(--tx2);
+      display: flex;
+      align-items: center;
+    }
+    .conv_field input[type="text"], 
+    .conv_field input[type="email"], 
+    .conv_field input[type="tel"], 
+    .conv_field input[type="url"], 
+    .conv_field textarea {
+      padding: 1.5vh 2vh;
       border: 1px solid var(--brd);
-      border-radius: 1.6vh;
-      padding: 3vh;
-      background: var(--bg5);
+      border-radius: 12px;
+      background: var(--inp);
+      color: var(--tx);
+      font-family: inherit;
+      font-size: var(--fz_m1);
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .conv_field input:focus, .conv_field textarea:focus {
+      border-color: var(--mco);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--mco) 15%, transparent);
+      outline: none;
+      background: var(--wb);
+    }
+    .conv_field.full_width {
+      grid-column: span 2;
+    }
+    @media (max-width: 600px) {
+      .conv_field.full_width {
+        grid-column: span 1;
+      }
+    }
+    
+    .cr_help_tip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--tx3);
+      cursor: help;
+      margin-left: 0.8vh;
+      font-size: 0.9em;
+      transition: color 0.2s;
+    }
+    .cr_help_tip:hover {
+      color: var(--mco);
+    }
+
+    .conv_char_counter {
+      text-align: right;
+      font-size: var(--fz_s4);
+      color: var(--tx3);
+      margin-top: 0.5vh;
+    }
+
+    /* Listas dinámicas */
+    .conv_header_row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2vh;
+    }
+    .conv_header_row h3 {
+      font-size: var(--fz_m3);
+      font-weight: 800;
+      margin: 0;
+      color: var(--tx1);
+    }
+    .conv_btn_small {
+      padding: 1vh 1.8vh;
+      font-size: var(--fz_s3);
+      font-weight: 700;
+      border: 1px solid var(--mco);
+      color: var(--mco);
+      background: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8vh;
+    }
+    .conv_btn_small:hover {
+      background: var(--mco);
+      color: #fff;
+    }
+
+    .conv_list_items {
+      display: flex;
+      flex-direction: column;
+      gap: 3vh;
+      margin-top: 2vh;
+    }
+    .conv_item_card {
+      background: color-mix(in srgb, var(--bg4) 15%, var(--wb));
+      border: 1px solid var(--brd);
+      border-radius: 16px;
+      padding: 2.5vh 2vw;
       position: relative;
-      animation: cr_cardSlide 0.3s ease;
+      animation: conv_fade_in 0.3s ease;
     }
-    @keyframes cr_cardSlide {
-      0% { opacity: 0; transform: translateY(15px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    .cr_item_card_header {
+    .conv_item_card_header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -307,16 +230,11 @@ import { seo } from '../lib/seo.js';
       border-bottom: 1px dashed var(--brd);
       padding-bottom: 1.5vh;
     }
-    .cr_item_card_header h4 {
-      font-size: var(--fz_m2);
-      font-weight: 700;
-      color: var(--tx2);
+    .conv_item_card_header h4 {
       margin: 0;
-    }
-    .cr_ai_opt_trigger_bar {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 1vh;
+      font-size: var(--fz_m2);
+      color: var(--tx2);
+      font-weight: 700;
     }
     .cr_btn_opt_ai {
       background: linear-gradient(135deg, color-mix(in srgb, var(--mco) 8%, var(--wb)), color-mix(in srgb, var(--hva) 8%, var(--wb)));
@@ -338,221 +256,763 @@ import { seo } from '../lib/seo.js';
       transform: translateY(-1px);
       box-shadow: 0 4px 10px color-mix(in srgb, var(--mco) 20%, transparent);
     }
-    .cr_btn_opt_ai i {
-      animation: cr_sparkle 2s infinite ease-in-out;
-    }
-    @keyframes cr_sparkle {
-      0%, 100% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(1.2) rotate(15deg); opacity: 1; }
-    }
-    .cr_navigation_actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 4vh;
-      border-top: 1px solid var(--brd);
-      padding-top: 3vh;
-    }
-    .cr_preview_panel {
-      background: var(--wb);
-      border: 1px solid var(--brd);
-      border-radius: 2.2vh;
-      padding: 3vh;
-      position: sticky;
-      top: 4vh;
-      box-shadow: var(--bs_l);
-    }
-    .cr_preview_header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--brd);
-      padding-bottom: 2vh;
-      margin-bottom: 3vh;
-      font-size: var(--fz_s2);
+    .conv_btn_danger_small {
+      background: none;
+      border: 1px solid var(--error);
+      color: var(--error);
+      font-size: var(--fz_s3);
       font-weight: 700;
+      padding: 0.6vh 1.5vh;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .conv_btn_danger_small:hover {
+      background: var(--error);
+      color: #fff;
+    }
+
+    /* Idiomas */
+    .conv_languages_list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5vh;
+      margin-top: 1.5vh;
+    }
+    .conv_lang_row {
+      display: flex;
+      align-items: center;
+      gap: 1.5vh;
+    }
+    .conv_lang_row input {
+      flex: 1;
+    }
+    .conv_btn_icon_danger {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      border: 1px solid var(--brd);
+      background: var(--wb);
+      color: var(--tx3);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .conv_btn_icon_danger:hover {
+      border-color: var(--error);
+      color: var(--error);
+      background: color-mix(in srgb, var(--error) 4%, transparent);
+    }
+
+    /* Foto switch */
+    .conv_toggle_row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--brd);
+      padding: 1.8vh 2vh;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--bg4) 40%, transparent);
+    }
+    .conv_toggle_label {
+      font-weight: 700;
+      font-size: var(--fz_s2);
+      display: flex;
+      align-items: center;
+      gap: 1.2vh;
+    }
+    .conv_toggle_label i {
+      color: var(--mco);
+    }
+    .conv_switch {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 24px;
+    }
+    .conv_switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .conv_slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      transition: .3s;
+      border-radius: 34px;
+      background: var(--bg5);
+    }
+    .conv_slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #fff;
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    input:checked + .conv_slider {
+      background-color: var(--mco);
+    }
+    input:checked + .conv_slider:before {
+      transform: translateX(22px);
+    }
+    .conv_photo_upload_area {
+      display: none;
+      flex-direction: column;
+      gap: 2vh;
+      margin-top: 2vh;
+      padding: 2vh 2vw;
+      border: 1px solid var(--brd);
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--bg4) 30%, transparent);
+      animation: conv_fade_in 0.3s ease;
+    }
+    .conv_photo_upload_area.active {
+      display: flex;
+    }
+    .conv_photo_flex {
+      display: flex;
+      align-items: center;
+      gap: 2.5vh;
+    }
+    .conv_photo_preview_box {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      border: 1px solid var(--brd2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--wb);
+      overflow: hidden;
+      font-size: var(--fz_l2);
       color: var(--tx3);
     }
-    .cr_preview_header span {
+    .conv_avatar_img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .conv_warning_badge {
       display: flex;
       align-items: center;
       gap: 1vh;
+      font-size: var(--fz_s3);
+      color: var(--warning);
+      font-weight: 600;
+      cursor: pointer;
+      background: color-mix(in srgb, var(--warning) 10%, transparent);
+      padding: 1vh 1.5vh;
+      border-radius: 8px;
+      border: 1px solid color-mix(in srgb, var(--warning) 15%, transparent);
+      transition: background 0.2s;
     }
-    #cr_btn_toggle_mobile {
-      display: none;
+    .conv_warning_badge:hover {
+      background: color-mix(in srgb, var(--warning) 15%, transparent);
+    }
+
+    /* Panel Derecho: Vista previa */
+    .conv_right_pane {
+      position: sticky;
+      top: 2vh;
+    }
+
+    /* Botones y dropdown */
+    .conv_btn {
+      padding: 1.5vh 3vh;
+      font-size: var(--fz_m1);
+      font-weight: 700;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5vh;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border: none;
+      background: linear-gradient(135deg, var(--mco), #7000FF);
+      color: #fff;
+      box-shadow: 0 6px 20px color-mix(in srgb, var(--mco) 25%, transparent);
+      text-decoration: none;
+    }
+    .conv_btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px color-mix(in srgb, var(--mco) 45%, transparent);
+    }
+    .conv_btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    .conv_btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .conv_btn_sec {
+      background: var(--bg);
+      border: 1px solid var(--brd);
+      color: var(--tx1);
+      padding: 1.2vh 2.5vh;
+      font-size: var(--fz_m1);
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 1vh;
+    }
+    .conv_btn_sec:hover {
+      background: var(--wb);
+      border-color: var(--mco);
+      color: var(--mco);
+    }
+
+    .conv_select {
+      padding: 1.5vh 2vh;
+      border: 1px solid var(--brd);
+      border-radius: 12px;
+      background: var(--inp);
+      color: var(--tx);
+      font-family: inherit;
+      font-size: var(--fz_m1);
+      transition: border-color 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+    }
+
+    /* Selector de idioma premium para subida */
+    .cr_upload_lang_container {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      height: 48px;
+    }
+    .cr_upload_lang_select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background: var(--bg4);
+      border: 1px solid var(--brd);
+      color: var(--tx2);
+      border-radius: 12px;
+      padding: 0 4.5vh 0 2.5vh;
+      font-size: var(--fz_m1);
+      font-weight: 600;
+      font-family: var(--ff_P);
+      cursor: pointer;
+      outline: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      height: 100%;
+      min-width: 170px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+    .cr_upload_lang_select:hover {
+      background: var(--bg5);
+      border-color: var(--mco);
+      color: var(--tx1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .cr_upload_lang_select:focus {
+      border-color: var(--mco);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--mco) 15%, transparent);
+    }
+    .cr_upload_lang_arrow {
+      position: absolute;
+      right: 2vh;
+      pointer-events: none;
+      color: var(--tx3);
+      font-size: var(--fz_s1);
+      transition: all 0.25s ease;
+    }
+    .cr_upload_lang_container:hover .cr_upload_lang_arrow {
+      color: var(--mco);
+    }
+
+    .conv_download_dropdown {
+      position: relative;
+      display: inline-flex;
+      border-radius: 14px;
+      overflow: visible;
     }
     
-    /* Estilos del Documento A4 Estándar ATS */
-    .cr_cv_document {
-      background: #fff;
-      color: #333;
-      padding: 4vh;
-      border: 1px solid #ddd;
-      border-radius: 1vh;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      min-height: 29.7cm;
-      max-width: 100%;
-      margin: 0 auto;
-      font-family: 'Times New Roman', Times, Georgia, serif;
-      font-size: 11pt;
-      line-height: 1.45;
+    #cr_btn_download_final {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      margin-right: 0 !important;
     }
+    
+    .conv_btn_dropdown_toggle {
+      background: var(--mco);
+      border: 1px solid var(--mco);
+      color: #fff;
+      padding: 0 1.5vh;
+      font-size: var(--fz_s2);
+      border-top-right-radius: 14px;
+      border-bottom-right-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, opacity 0.2s;
+      border-left: 1px solid color-mix(in srgb, #fff 20%, transparent);
+    }
+    
+    .conv_btn_dropdown_toggle:hover {
+      opacity: 0.9;
+    }
+    
+    .conv_dropdown_menu {
+      position: absolute;
+      top: 110%;
+      right: 0;
+      background: var(--wb);
+      border: 1px solid var(--brd);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      min-width: 250px;
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      padding: 1vh;
+      animation: conv_fade_in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .conv_dropdown_menu.show {
+      display: flex;
+    }
+
+    .conv_dropdown_item {
+      background: none;
+      border: none;
+      color: var(--tx2);
+      padding: 1.2vh 1.5vh;
+      font-size: var(--fz_s2);
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 1.2vh;
+      text-align: left;
+      transition: background 0.2s, color 0.2s;
+      width: 100%;
+    }
+    
+    .conv_dropdown_item:hover {
+      background: var(--bg4);
+      color: var(--tx1);
+    }
+    
+    .conv_dropdown_item i {
+      color: var(--tx3);
+      width: 16px;
+      text-align: center;
+    }
+    
+    .conv_dropdown_item:hover i {
+      color: var(--mco);
+    }
+
+    /* Checklist de auditoría ATS */
+    .cr_checklist_item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.2vh;
+      padding: 1.2vh 1.5vh;
+      border-radius: 10px;
+      line-height: 1.4;
+      font-size: var(--fz_s3);
+      font-weight: 500;
+    }
+    .cr_checklist_item.danger {
+      background: color-mix(in srgb, var(--error) 8%, var(--wb));
+      color: var(--error);
+      border: 1px solid color-mix(in srgb, var(--error) 15%, transparent);
+    }
+    .cr_checklist_item.warning {
+      background: color-mix(in srgb, var(--warning) 8%, var(--wb));
+      color: var(--warning);
+      border: 1px solid color-mix(in srgb, var(--warning) 15%, transparent);
+    }
+    .cr_checklist_item.info {
+      background: color-mix(in srgb, var(--info) 8%, var(--wb));
+      color: var(--info);
+      border: 1px solid color-mix(in srgb, var(--info) 15%, transparent);
+    }
+    .cr_check_success_box {
+      display: flex;
+      align-items: center;
+      gap: 1.2vh;
+      padding: 1.5vh 2vh;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--success) 10%, var(--wb));
+      color: var(--success);
+      font-weight: 700;
+      border: 1px solid color-mix(in srgb, var(--success) 20%, transparent);
+    }
+    /* Alerta especial: PDF con tablas/escaneado */
+    .cr_pdf_warning_block {
+      padding: 1.5vh 1.8vh;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--warning) 8%, var(--wb));
+      border: 1px solid color-mix(in srgb, var(--warning) 25%, transparent);
+      border-left: 4px solid var(--warning);
+      display: flex;
+      flex-direction: column;
+      gap: 0.8vh;
+      margin-bottom: 0.8vh;
+    }
+    .cr_pdf_warning_header {
+      display: flex;
+      align-items: center;
+      gap: 0.8vh;
+      color: var(--warning);
+      font-size: var(--fz_s2);
+      font-weight: 700;
+    }
+    .cr_pdf_warning_header i {
+      font-size: var(--fz_m1);
+    }
+    .cr_pdf_warning_block p {
+      color: color-mix(in srgb, var(--warning) 80%, var(--tx1));
+      font-size: var(--fz_s3);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* Escritorio A4 */
+    .conv_a4_wrapper {
+      width: 100%;
+      border-radius: 16px;
+      overflow-x: auto;
+      border: 1px solid var(--brd);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.04);
+      background: #555;
+      padding: 4vh 2vw;
+      box-sizing: border-box;
+    }
+
+    /* Contenedor de páginas A4 */
+    .cr_cv_document {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 15px !important;
+      background: #fff !important;
+      color: #333 !important;
+      padding: 38px 45px !important;
+      border: none !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+      height: auto !important;
+      min-height: 1122px !important;
+      width: 794px !important;
+      max-width: 100%;
+      margin: 0 auto !important;
+      font-family: 'Times New Roman', Times, Georgia, serif !important;
+      font-size: 11pt !important;
+      line-height: 1.45 !important;
+      box-sizing: border-box;
+      text-align: left;
+      position: relative !important;
+    }
+    /* Páginas individuales del preview */
+    .cr_cv_page {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 15px !important;
+      background: #fff !important;
+      color: #333 !important;
+      padding: 38px 45px !important;
+      border: none !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+      height: 1122px !important;
+      width: 794px !important;
+      max-width: 100%;
+      margin: 0 auto !important;
+      font-family: 'Times New Roman', Times, Georgia, serif !important;
+      font-size: 11pt !important;
+      line-height: 1.45 !important;
+      box-sizing: border-box;
+      text-align: left;
+      position: relative !important;
+      overflow: hidden !important;
+    }
+    .cr_cv_page_next {
+      margin-top: 24px !important;
+    }
+    /* Número de página */
+    .cr_page_number {
+      position: absolute !important;
+      bottom: 5mm !important;
+      right: 12mm !important;
+      font-size: 8pt !important;
+      color: #aaa !important;
+      font-family: Arial, Helvetica, sans-serif !important;
+    }
+
+    /* Estilos específicos para la generación de PDF con html2pdf.js */
+    .html2pdf__container .cr_cv_document,
+    .html2pdf__container .cr_cv_page {
+      height: 1040px !important;
+      min-height: 1040px !important;
+      width: 703px !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+      background-image: none !important;
+      margin: 0 !important;
+    }
+
+    .html2pdf__container .cr_cv_page_next {
+      margin-top: 0 !important;
+      padding-top: 24px !important;
+    }
+
+    .html2pdf__container .cr_page_number {
+      bottom: 0 !important;
+      right: 0 !important;
+    }
+
+    .html2pdf__container .cr_cv_header {
+      display: block !important;
+      text-align: center !important;
+      width: 100% !important;
+    }
+    .html2pdf__container .cr_cv_name {
+      text-align: center !important;
+      display: block !important;
+      width: 100% !important;
+    }
+    .html2pdf__container .cr_cv_title {
+      text-align: center !important;
+      display: block !important;
+      width: 100% !important;
+    }
+    .html2pdf__container .cr_cv_header.has_avatar {
+      display: flex !important;
+      text-align: left !important;
+    }
+    .html2pdf__container .cr_cv_header.has_avatar .cr_cv_name,
+    .html2pdf__container .cr_cv_header.has_avatar .cr_cv_title {
+      text-align: left !important;
+    }
+
+    /* Contenedor externo de todas las páginas */
+    .cr_printable_pages_container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      width: 100%;
+    }
+
     .cr_cv_header {
       text-align: center;
-      margin-bottom: 3vh;
+      margin-bottom: 3.5vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1vh;
+      width: 100%;
     }
+    .cr_cv_header.has_avatar {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+      align-items: center;
+    }
+    .cr_cv_header.has_avatar .cr_cv_header_text {
+      flex: 1;
+    }
+    .cr_cv_header.has_avatar .cr_cv_contact {
+      justify-content: flex-start;
+    }
+    .cr_cv_header.has_avatar .cr_cv_name {
+      text-align: left !important;
+    }
+    .cr_cv_header.has_avatar .cr_cv_title {
+      text-align: left !important;
+    }
+    
     .cr_cv_name {
-      font-size: 20pt;
-      font-weight: 700;
-      color: #111;
-      margin: 0 0 0.5vh;
-      letter-spacing: -0.5px;
-      font-family: Arial, Helvetica, sans-serif;
+      font-size: 20pt !important;
+      font-weight: 700 !important;
+      color: #111 !important;
+      margin: 0 0 0.5vh !important;
+      letter-spacing: -0.5px !important;
+      font-family: Arial, Helvetica, sans-serif !important;
+      text-align: center !important;
+      width: 100% !important;
     }
+    
     .cr_cv_title {
-      font-size: 12pt;
-      font-weight: 600;
-      color: #444;
-      margin-bottom: 1.5vh;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11.5pt !important;
+      font-weight: 600 !important;
+      color: #444 !important;
+      margin-bottom: 1.5vh !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+      font-family: Arial, Helvetica, sans-serif !important;
+      text-align: center !important;
+      width: 100% !important;
     }
+    
     .cr_cv_contact {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 1.5vw;
-      font-size: 9.5pt;
-      color: #555;
-      font-family: Arial, Helvetica, sans-serif;
+      gap: 1vh 1.5vw;
+      font-size: 9.5pt !important;
+      color: #555 !important;
+      font-family: Arial, Helvetica, sans-serif !important;
     }
+    
     .cr_cv_contact span {
       display: inline-flex;
       align-items: center;
       gap: 0.6vh;
     }
+    
+    .cr_cv_contact span i {
+      display: none;
+    }
+    
+    .ats_a4_avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #ddd;
+    }
+    .ats_a4_avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     .cr_cv_body {
       display: flex;
       flex-direction: column;
       gap: 3.5vh;
     }
+    
     .cr_cv_section {
       width: 100%;
     }
+    
     .cr_cv_section_title {
-      font-size: 12pt;
-      font-weight: 700;
-      color: #111;
-      text-transform: uppercase;
-      margin: 0 0 0.8vh;
-      letter-spacing: 0.8px;
-      font-family: Arial, Helvetica, sans-serif;
-      border-bottom: 1.5px solid #222;
-      padding-bottom: 0.3vh;
+      font-size: 11pt !important;
+      font-weight: 700 !important;
+      color: #111 !important;
+      text-transform: uppercase !important;
+      margin: 0 0 0.8vh !important;
+      letter-spacing: 0.8px !important;
+      font-family: Arial, Helvetica, sans-serif !important;
+      border-bottom: 1.5px solid #222 !important;
+      padding-bottom: 0.3vh !important;
     }
+    
     .cr_cv_text {
-      font-size: 10.5pt;
-      color: #333;
-      margin: 0;
-      text-align: justify;
-      white-space: pre-wrap;
+      font-size: 10pt !important;
+      color: #333 !important;
+      margin: 0 !important;
+      text-align: justify !important;
+      white-space: pre-wrap !important;
     }
+    
     .cr_cv_list_items {
       display: flex;
       flex-direction: column;
-      gap: 2.5vh;
+      gap: 2.2vh;
     }
+    
     .cr_cv_item {
       display: flex;
       flex-direction: column;
       gap: 0.5vh;
     }
+    
     .cr_cv_item_row {
       display: flex;
       justify-content: space-between;
       font-weight: 700;
       color: #111;
-      font-size: 11pt;
-      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10.5pt !important;
+      font-family: Arial, Helvetica, sans-serif !important;
     }
+    
     .cr_cv_item_subrow {
       display: flex;
       justify-content: space-between;
       font-style: italic;
       color: #444;
-      font-size: 10pt;
+      font-size: 9.5pt !important;
+      font-family: Arial, Helvetica, sans-serif !important;
     }
+    
     .cr_cv_item_desc {
-      margin: 0.6vh 0 0;
+      margin: 0.4vh 0 0;
       padding-left: 2.5vh;
-      font-size: 10.5pt;
+      font-size: 10pt !important;
       color: #333;
     }
     .cr_cv_item_desc ul {
       margin: 0;
-      padding-left: 0;
-      list-style-type: square;
+      padding-left: 0 !important;
+      list-style-type: none !important;
     }
     .cr_cv_item_desc li {
-      margin-bottom: 0.4vh;
+      margin-bottom: 0.3vh;
       text-align: justify;
+      position: relative;
+      padding-left: 18px !important;
     }
+    .cr_cv_item_desc li::before {
+      content: "•" !important;
+      position: absolute !important;
+      left: 0 !important;
+      top: 0 !important;
+      color: #333 !important;
+      font-size: 10pt !important;
+    }
+
     .cr_cv_skills_grid {
       display: flex;
       flex-direction: column;
-      gap: 1vh;
-      font-size: 10.5pt;
+      gap: 0.5vh;
+      font-size: 10pt !important;
+      color: #333;
     }
-    .cr_cv_skills_grid div {
-      display: flex;
-      gap: 1vh;
+    .cr_cv_skills_subrow {
+      margin-top: 0.8vh;
     }
-    .cr_cv_skills_grid strong {
-      font-family: Arial, Helvetica, sans-serif;
-      color: #111;
-      min-width: 110px;
+
+    /* Clases de Validación Visual */
+    .val_success {
+      border-color: var(--success) !important;
     }
-    .cr_divider {
-      height: 1px;
-      background: var(--brd);
-      margin: 3.5vh 0;
+    .val_success:focus {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 15%, transparent) !important;
     }
-    .cr_finish_message {
-      text-align: center;
-      padding: 4vh 2vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2vh;
+    .val_warning {
+      border-color: var(--warning) !important;
     }
-    .cr_success_icon {
-      font-size: 7vh;
-      color: var(--success);
+    .val_warning:focus {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--warning) 15%, transparent) !important;
     }
-    .cr_finish_message h3 {
-      font-size: var(--fz_l3);
-      font-weight: 800;
-      color: var(--tx1);
-      margin: 0;
+    .val_error {
+      border-color: var(--error) !important;
     }
-    .cr_finish_message p {
-      font-size: var(--fz_m1);
-      color: var(--tx3);
-      max-width: 500px;
-      line-height: 1.5;
-      margin: 0;
+    .val_error:focus {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--error) 15%, transparent) !important;
     }
-    .cr_tip_text {
-      background: var(--bg5);
-      border: 1px solid var(--brd);
-      border-radius: 1.5vh;
-      padding: 2vh;
-      font-size: var(--fz_s2) !important;
-      text-align: left;
-    }
-    
-    /* Estilos del Modal IA */
+
+    /* Modal de IA */
     .cr_modal {
       position: fixed;
       inset: 0;
@@ -573,7 +1033,7 @@ import { seo } from '../lib/seo.js';
     .cr_modal_content {
       background: var(--wb);
       border: 1px solid var(--brd);
-      border-radius: 2.2vh;
+      border-radius: 24px;
       width: 90%;
       max-width: 900px;
       max-height: 90vh;
@@ -627,6 +1087,11 @@ import { seo } from '../lib/seo.js';
       gap: 3vh;
       margin-top: 2vh;
     }
+    @media (max-width: 600px) {
+      .cr_ai_diff_grid {
+        grid-template-columns: 1fr;
+      }
+    }
     .cr_ai_diff_card {
       display: flex;
       flex-direction: column;
@@ -642,7 +1107,7 @@ import { seo } from '../lib/seo.js';
     }
     .cr_ai_text_box {
       border: 1px solid var(--brd);
-      border-radius: 1.5vh;
+      border-radius: 15px;
       padding: 2.5vh;
       background: var(--bg);
       min-height: 200px;
@@ -689,31 +1154,62 @@ import { seo } from '../lib/seo.js';
       margin: 0;
     }
 
-    @media (max-width: 1024px) {
-      .cr_main_grid {
-        grid-template-columns: 1fr;
-      }
-      .cr_preview_panel {
-        position: static;
-        box-shadow: none;
-        display: none;
-      }
-      .cr_preview_panel.active_mobile {
-        display: block;
-      }
-      .cr_editor_panel.hide_mobile {
-        display: none;
-      }
-      #cr_btn_toggle_mobile {
-        display: inline-flex;
-      }
-      .cr_progress_bar {
-        padding: 0;
-      }
-      .cr_progress_line {
-        left: 10vw;
-        right: 10vw;
-      }
+    /* Loader global para la subida de CV */
+    .cr_loader_overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      animation: conv_fade_in 0.3s ease;
+    }
+    
+    .conv_loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6vh 4vw;
+      background: var(--wb);
+      border: 1px solid var(--brd);
+      border-radius: 24px;
+      max-width: 550px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    .conv_loader_spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid var(--brd);
+      border-top-color: var(--mco);
+      border-radius: 50%;
+      animation: conv_spin 1s linear infinite;
+      margin-bottom: 4vh;
+    }
+    .conv_loader h3 {
+      font-size: var(--fz_m5);
+      font-weight: 800;
+      color: var(--tx1);
+      margin: 0 0 1.5vh;
+    }
+    .conv_loader p {
+      font-size: var(--fz_m1);
+      color: var(--tx3);
+      max-width: 400px;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    @keyframes conv_spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes conv_fade_in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .dpn {
@@ -728,254 +1224,446 @@ import { seo } from '../lib/seo.js';
         margin: 0 !important;
         padding: 0 !important;
       }
-      header, footer, nav, .cr_header, .cr_progress_bar, .cr_editor_panel, .cr_preview_header, .cr_navigation_actions, .cr_modal, #cr_btn_toggle_mobile, #cr_btn_print {
+      header, footer, nav, .conv_header, .conv_workspace_split, .cr_modal, #notificationsContainer {
         display: none !important;
       }
-      .cr_wrap {
+      .conv_wrap {
         padding: 0 !important;
         margin: 0 !important;
         max-width: 100% !important;
       }
-      .cr_main_grid {
-        display: block !important;
-      }
-      .cr_preview_panel {
-        display: block !important;
-        width: 100% !important;
-        padding: 0 !important;
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-      }
-      .cr_cv_document {
+      .cr_cv_document, .cr_cv_page {
         border: none !important;
         box-shadow: none !important;
         padding: 0 !important;
         margin: 0 !important;
         width: 100% !important;
+        height: auto !important;
         min-height: auto !important;
         color: #000 !important;
         font-family: 'Times New Roman', Times, Georgia, serif !important;
         font-size: 11pt !important;
+        page-break-after: always !important;
+      }
+      .cr_cv_page_next {
+        margin-top: 0 !important;
+      }
+      .cr_page_number {
+        display: none !important;
       }
       .cr_cv_section_title {
         border-bottom: 1.5px solid #000 !important;
         color: #000 !important;
       }
     }
+
+
+    /* Estilos del Header sin Inline CSS */
+    .cr_header_flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      flex-wrap: wrap;
+      gap: 2.5vh;
+    }
+    .cr_header_left {
+      text-align: left;
+    }
+    .cr_header_left h1 {
+      margin: 0;
+      font-size: var(--fz_l2);
+      font-weight: 800;
+      color: var(--tx1);
+    }
+    .cr_header_icon {
+      color: var(--mco);
+      margin-right: 1.5vh;
+    }
+    .cr_header_sub {
+      margin: 0.8vh 0 0;
+      font-size: var(--fz_m1);
+      color: var(--tx3);
+    }
+    .cr_header_right {
+      display: flex;
+      gap: 1.5vh;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .cr_btn_upload_dash {
+      border: 1px dashed var(--mco) !important;
+      background: color-mix(in srgb, var(--mco) 5%, transparent) !important;
+      color: var(--mco) !important;
+    }
+
+    /* Scorecard y Botwii Optimizer sin Inline CSS */
+    .cr_scorecard_bottom {
+      margin-top: 3vh;
+      border-top: 1px solid var(--brd);
+      padding-top: 3vh;
+      display: flex;
+      flex-direction: column;
+      gap: 2vh;
+    }
+    .cr_score_header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5vh;
+    }
+    .cr_score_title {
+      font-weight: 800;
+      font-size: var(--fz_m2);
+      color: var(--tx1);
+    }
+    .cr_score_actions {
+      display: flex;
+      align-items: center;
+      gap: 1.5vh;
+    }
+    .cr_score_badge {
+      background: var(--bg5);
+      padding: 0.8vh 1.8vh;
+      border-radius: 8px;
+      font-weight: 900;
+      font-size: var(--fz_m2);
+      color: var(--tx1);
+      border: 1px solid var(--brd);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .cr_btn_optimize_botwii {
+      background: linear-gradient(135deg, var(--mco), #7000FF);
+      color: #fff;
+      border: none;
+      padding: 0.8vh 1.8vh;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: var(--fz_s2);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8vh;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px color-mix(in srgb, var(--mco) 20%, transparent);
+    }
+    .cr_btn_optimize_botwii:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+      box-shadow: 0 6px 15px color-mix(in srgb, var(--mco) 35%, transparent);
+    }
+    .cr_btn_optimize_botwii:active {
+      transform: translateY(0);
+    }
+    .cr_btn_optimize_botwii:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .cr_score_bar_bg {
+      height: 10px;
+      width: 100%;
+      border-radius: 99px;
+      overflow: hidden;
+      background: var(--brd);
+    }
+    .cr_score_bar_bg .cr_progress_fill {
+      width: 0%;
+      height: 100%;
+      transition: width 0.4s ease;
+      background: var(--warning);
+    }
+    #cr_checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 1vh;
+      max-height: 25vh;
+      overflow-y: auto;
+    }
+
+    /* Estilos Premium de Modal de Confirmación */
+    .cr_confirm_modal_body {
+      background: var(--wb) !important;
+      border: 1px solid var(--brd) !important;
+      max-width: 480px !important;
+      border-radius: 16px !important;
+      padding: 4vh 3vh 3vh !important;
+      text-align: center;
+    }
+    .cr_confirm_content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2.2vh;
+    }
+    .cr_confirm_icon_wrapper {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--warning) 12%, transparent);
+      color: var(--warning);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+    .cr_confirm_content h3 {
+      margin: 0;
+      font-size: var(--fz_m3);
+      font-weight: 800;
+      color: var(--tx1);
+    }
+    .cr_confirm_content p {
+      margin: 0;
+      font-size: var(--fz_m1);
+      color: var(--tx3);
+      line-height: 1.5;
+    }
+    .cr_confirm_actions {
+      display: flex;
+      gap: 1.5vh;
+      width: 100%;
+      margin-top: 1.5vh;
+    }
+    .cr_btn_confirm_yes, .cr_btn_confirm_no {
+      flex: 1;
+      padding: 1.6vh 2.5vh;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: var(--fz_m1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    .cr_btn_confirm_yes {
+      background: var(--warning);
+      color: var(--txa);
+    }
+    .cr_btn_confirm_yes:hover {
+      filter: brightness(1.08);
+    }
+    .cr_btn_confirm_no {
+      background: var(--bg4);
+      color: var(--tx2);
+      border: 1px solid var(--brd);
+    }
+    .cr_btn_confirm_no:hover {
+      background: var(--bg5);
+      color: var(--tx1);
+    }
+
+    /* Estilos del Stepper de Carga Premium en Subida */
+    .cr_loader_overlay .conv_loader {
+      max-width: 480px !important;
+      padding: 4vh 3.5vh !important;
+      gap: 3vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .cr_loader_header_zone h3 {
+      margin: 0 0 1vh;
+      font-size: var(--fz_m4);
+      font-weight: 800;
+      color: var(--tx1);
+    }
+    .cr_loader_header_zone p {
+      margin: 0;
+      font-size: var(--fz_s2);
+      color: var(--tx3);
+      line-height: 1.4;
+    }
+    .cr_loader_progress_bar_bg {
+      width: 100%;
+      height: 8px;
+      background: var(--brd);
+      border-radius: 99px;
+      overflow: hidden;
+      margin: 1vh 0;
+    }
+    .cr_loader_progress_fill {
+      width: 10%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--mco), #7000FF);
+      transition: width 0.4s ease;
+      border-radius: 99px;
+    }
+    .cr_loader_steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5vh;
+      width: 100%;
+      text-align: left;
+    }
+    .cr_loader_step {
+      display: flex;
+      align-items: center;
+      gap: 1.8vh;
+      padding: 1.2vh 1.8vh;
+      border-radius: 12px;
+      border: 1px solid var(--brd);
+      background: var(--bg4);
+      opacity: 0.5;
+      transition: all 0.3s ease;
+    }
+    .cr_loader_step.active {
+      opacity: 1;
+      border-color: var(--mco);
+      background: color-mix(in srgb, var(--mco) 4%, var(--wb));
+    }
+    .cr_loader_step.done {
+      opacity: 0.8;
+      border-color: var(--success);
+      background: color-mix(in srgb, var(--success) 4%, var(--wb));
+    }
+    .cr_loader_step_icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--brd);
+      color: var(--tx3);
+      font-size: var(--fz_s3);
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+    .cr_loader_step.active .cr_loader_step_icon {
+      background: var(--mco);
+      color: #fff;
+      box-shadow: 0 0 10px color-mix(in srgb, var(--mco) 30%, transparent);
+    }
+    .cr_loader_step.done .cr_loader_step_icon {
+      background: var(--success);
+      color: #fff;
+    }
+    .cr_loader_step_text {
+      flex: 1;
+      font-size: var(--fz_s2);
+      font-weight: 700;
+      color: var(--tx2);
+    }
+    .cr_loader_step.active .cr_loader_step_text {
+      color: var(--tx1);
+    }
+    .cr_loader_step_check {
+      font-size: var(--fz_s2);
+      color: var(--success);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .cr_loader_step.done .cr_loader_step_check {
+      opacity: 1;
+    }
   </style>
 
-  <div class="cr_wrap">
+  <div class="conv_wrap">
     <!-- Header -->
-    <div class="cr_header">
-      <div class="cr_header_left">
-        <h1><i class="fas fa-file-signature"></i> Creador de CV ATS <span>con IA</span></h1>
-        <p>Diseña tu currículum optimizado paso a paso y supera los sistemas de filtrado de selección ATS.</p>
-      </div>
-      <div class="cr_header_right">
-        <button id="cr_btn_print" class="cr_btn primary"><i class="fas fa-print"></i> Imprimir / PDF</button>
-      </div>
-    </div>
-
-    <!-- Wizard Progress Bar -->
-    <div class="cr_progress_bar">
-      <div class="cr_progress_line"><div id="cr_progress_fill" class="cr_progress_fill"></div></div>
-      <div class="cr_step_node active" data-step="1">
-        <div class="cr_step_circle">1</div>
-        <div class="cr_step_label">Contacto</div>
-      </div>
-      <div class="cr_step_node" data-step="2">
-        <div class="cr_step_circle">2</div>
-        <div class="cr_step_label">Experiencia</div>
-      </div>
-      <div class="cr_step_node" data-step="3">
-        <div class="cr_step_circle">3</div>
-        <div class="cr_step_label">Educación</div>
-      </div>
-      <div class="cr_step_node" data-step="4">
-        <div class="cr_step_circle">4</div>
-        <div class="cr_step_label">Habilidades</div>
-      </div>
-      <div class="cr_step_node" data-step="5">
-        <div class="cr_step_circle">5</div>
-        <div class="cr_step_label">Descarga</div>
-      </div>
-    </div>
-
-    <!-- Main Content Grid -->
-    <div class="cr_main_grid">
-      <!-- Left: Editor Panel -->
-      <div class="cr_editor_panel" id="cr_editor_panel">
-        
-        <!-- Step 1: Datos de Contacto -->
-        <div class="cr_form_step active" id="cr_step_panel_1">
-          <h2 class="cr_step_title"><i class="fas fa-user"></i> Datos de Contacto</h2>
-          <div class="cr_form_group_grid">
-            <div class="cr_form_group">
-              <label for="cr_inp_nombre">Nombre Completo *</label>
-              <input type="text" id="cr_inp_nombre" placeholder="Ej: Juan Pérez Gómez" required>
-            </div>
-            <div class="cr_form_group">
-              <label for="cr_inp_titulo">Título Profesional *</label>
-              <input type="text" id="cr_inp_titulo" placeholder="Ej: Ingeniero de Software / Administrador" required>
-            </div>
-            <div class="cr_form_group">
-              <label for="cr_inp_email">Correo Electrónico *</label>
-              <input type="email" id="cr_inp_email" placeholder="Ej: juan.perez@email.com" required>
-            </div>
-            <div class="cr_form_group">
-              <label for="cr_inp_telefono">Teléfono *</label>
-              <input type="tel" id="cr_inp_telefono" placeholder="Ej: +34 600 000 000" required>
-            </div>
-            <div class="cr_form_group">
-              <label for="cr_inp_ubicacion">Ubicación *</label>
-              <input type="text" id="cr_inp_ubicacion" placeholder="Ej: Madrid, España" required>
-            </div>
-            <div class="cr_form_group">
-              <label for="cr_inp_linkedin">LinkedIn (URL)</label>
-              <input type="text" id="cr_inp_linkedin" placeholder="Ej: linkedin.com/in/juanperez">
-            </div>
-            <div class="cr_form_group full_width">
-              <label for="cr_inp_web">Portafolio o Web (URL)</label>
-              <input type="text" id="cr_inp_web" placeholder="Ej: github.com/juanperez">
-            </div>
-            <div class="cr_form_group full_width">
-              <label for="cr_inp_resumen">Perfil Profesional / Resumen</label>
-              <textarea id="cr_inp_resumen" rows="4" placeholder="Redacta un párrafo breve (3-4 líneas) que resuma tu experiencia, tecnologías y logros principales..."></textarea>
-            </div>
-          </div>
+    <header class="conv_header">
+      <div class="cr_header_flex">
+        <div class="cr_header_left">
+          <h1><i class="fas fa-file-signature cr_header_icon"></i>Creador de CV <span>ATS Profesional</span></h1>
+          <p class="cr_header_sub">Escribe y optimiza tu CV con inteligencia artificial para superar los algoritmos de selección.</p>
         </div>
-
-        <!-- Step 2: Experiencia Laboral -->
-        <div class="cr_form_step" id="cr_step_panel_2">
-          <div class="cr_step_header_action">
-            <h2 class="cr_step_title"><i class="fas fa-briefcase"></i> Experiencia Laboral</h2>
-            <button id="cr_btn_add_exp" class="cr_btn secondary small"><i class="fas fa-plus"></i> Añadir Experiencia</button>
-          </div>
-          <div id="cr_exp_list" class="cr_dynamic_list">
-            <!-- Dynamic items injected here -->
-          </div>
-        </div>
-
-        <!-- Step 3: Educación -->
-        <div class="cr_form_step" id="cr_step_panel_3">
-          <div class="cr_step_header_action">
-            <h2 class="cr_step_title"><i class="fas fa-graduation-cap"></i> Educación</h2>
-            <button id="cr_btn_add_edu" class="cr_btn secondary small"><i class="fas fa-plus"></i> Añadir Educación</button>
-          </div>
-          <div id="cr_edu_list" class="cr_dynamic_list">
-            <!-- Dynamic items injected here -->
-          </div>
-        </div>
-
-        <!-- Step 4: Habilidades e Idiomas -->
-        <div class="cr_form_step" id="cr_step_panel_4">
-          <h2 class="cr_step_title"><i class="fas fa-tags"></i> Habilidades e Idiomas</h2>
-          <div class="cr_form_group">
-            <label for="cr_inp_skills">Habilidades (Separadas por comas) *</label>
-            <textarea id="cr_inp_skills" rows="4" placeholder="Ej: React.js, Node.js, TypeScript, SQL, Git, Gestión de Equipos, Scrum, Metodologías Ágiles"></textarea>
-            <small class="cr_help_text">Consejo: Revisa la oferta de trabajo a la que postulas e incluye palabras clave exactas que ellos solicitan.</small>
-          </div>
-          <div class="cr_divider"></div>
-          <div class="cr_step_header_action">
-            <h3 class="cr_step_subtitle"><i class="fas fa-language"></i> Idiomas</h3>
-            <button id="cr_btn_add_lang" class="cr_btn secondary small"><i class="fas fa-plus"></i> Añadir Idioma</button>
-          </div>
-          <div id="cr_lang_list" class="cr_dynamic_list">
-            <!-- Dynamic items injected here -->
-          </div>
-        </div>
-
-        <!-- Step 5: Finalizar y Descargar -->
-        <div class="cr_form_step" id="cr_step_panel_5">
-          <h2 class="cr_step_title"><i class="fas fa-circle-check"></i> ¡Currículum Listo!</h2>
-          <div class="cr_finish_message">
-            <i class="fas fa-circle-check cr_success_icon"></i>
-            <h3>Tu CV ATS está formateado</h3>
-            <p>Hemos adaptado tu información bajo los estándares que requieren los algoritmos de escaneo de reclutadores.</p>
-            <p class="cr_tip_text">
-              <strong>💡 Recomendaciones de Impresión:</strong>
-              <br>1. Haz clic en el botón de abajo.
-              <br>2. En el menú de impresión, selecciona como destino <strong>"Guardar como PDF"</strong>.
-              <br>3. Desactiva la casilla <strong>"Cabeceras y pies de página"</strong> para evitar texto innecesario en los bordes.
-              <br>4. Activa <strong>"Gráficos de fondo"</strong> (si aplica).
-            </p>
-            <button id="cr_btn_download_final" class="cr_btn primary large"><i class="fas fa-print"></i> Guardar como PDF / Imprimir</button>
-          </div>
-        </div>
-
-        <!-- Navigation buttons -->
-        <div class="cr_navigation_actions">
-          <button id="cr_btn_back" class="cr_btn outline disabled" disabled><i class="fas fa-arrow-left"></i> Anterior</button>
-          <button id="cr_btn_next" class="cr_btn primary">Siguiente <i class="fas fa-arrow-right"></i></button>
-        </div>
-
-      </div>
-
-      <!-- Right: Live Preview Panel -->
-      <div class="cr_preview_panel" id="cr_preview_panel">
-        <div class="cr_preview_header">
-          <span><i class="fas fa-eye"></i> Vista Previa en Tiempo Real</span>
-          <button id="cr_btn_toggle_mobile" class="cr_btn outline small"><i class="fas fa-eye"></i> Ver Vista Previa</button>
-        </div>
-
-        <!-- CV Document (Times New Roman / Arial ATS Standard Layout) -->
-        <div class="cr_cv_document" id="cr_cv_printable_area">
+        <div class="cr_header_right">
+          <!-- Hidden file input for resume parser -->
+          <input type="file" id="cr_header_cv_file" accept=".pdf,.docx" class="dpn" />
           
-          <!-- Contact Block -->
-          <div class="cr_cv_header">
-            <h1 id="cr_preview_name" class="cr_cv_name">Nombre Completo</h1>
-            <div id="cr_preview_title" class="cr_cv_title">Título Profesional</div>
-            <div class="cr_cv_contact" id="cr_preview_contact_info">
-              <!-- Contact items will be updated dynamically -->
+          <!-- Selector de idioma premium para subida -->
+          <div class="cr_upload_lang_container" data-witip="Elige el idioma en el que deseas extraer y redactar tu currículum al subir el archivo antiguo.">
+            <select id="cr_upload_lang" class="cr_upload_lang_select">
+              <option value="es" selected>🇪🇸 Español Latino</option>
+              <option value="en">🇺🇸 Inglés EEUU</option>
+            </select>
+            <i class="fas fa-chevron-down cr_upload_lang_arrow"></i>
+          </div>
+          
+          <!-- Upload button -->
+          <button id="cr_btn_upload_cv" class="conv_btn_sec cr_btn_upload_dash" data-witip="¿Tienes un CV antiguo? Súbelo en PDF o Word y rellenaremos los campos automáticamente. ¡Es opcional, pero te ahorrará mucho tiempo!">
+            <i class="fas fa-magic"></i> Subir CV existente (Opcional)
+          </button>
+          
+          <!-- New CV button -->
+          <button id="cr_btn_reset_all" class="conv_btn_sec" data-witip="Esto borrará todo tu progreso actual en tu navegador para que puedas crear un currículum nuevo desde cero."><i class="fas fa-file-circle-plus"></i> Crear nuevo CV</button>
+          
+          <!-- Download dropdown -->
+          <div class="conv_download_dropdown">
+            <button class="conv_btn" id="cr_btn_download_final" data-witip="Descarga directa de tu currículum en formato PDF optimizado para ATS."><i class="fas fa-download"></i> Descargar CV</button>
+            <button class="conv_btn_dropdown_toggle" id="crBtnDownloadToggle" aria-haspopup="true" aria-expanded="false" title="Más formatos de descarga">
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="conv_dropdown_menu" id="crDownloadMenu">
+              <button class="conv_dropdown_item" id="cr_btn_print"><i class="fas fa-print"></i> Imprimir PDF (Recomendado ATS)</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_pdf"><i class="fas fa-file-pdf"></i> Descargar PDF (Exportación Directa)</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_docx"><i class="fas fa-file-word"></i> Descargar Word (.docx)</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_txt"><i class="fas fa-file-alt"></i> Descargar Texto (.txt)</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_md"><i class="fab fa-markdown"></i> Descargar Markdown (.md)</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_json"><i class="fas fa-file-code"></i> Respaldar datos (.json)</button>
             </div>
           </div>
-
-          <div class="cr_cv_body">
-            <!-- Perfil / Resumen -->
-            <div class="cr_cv_section" id="cr_preview_section_resumen">
-              <h2 class="cr_cv_section_title">Perfil Profesional</h2>
-              <p id="cr_preview_summary" class="cr_cv_text">Resumen profesional redactado...</p>
-            </div>
-
-            <!-- Experiencia -->
-            <div class="cr_cv_section" id="cr_preview_section_exp">
-              <h2 class="cr_cv_section_title">Experiencia Laboral</h2>
-              <div id="cr_preview_exp_list" class="cr_cv_list_items">
-                <!-- Experiences render here -->
-              </div>
-            </div>
-
-            <!-- Educación -->
-            <div class="cr_cv_section" id="cr_preview_section_edu">
-              <h2 class="cr_cv_section_title">Educación</h2>
-              <div id="cr_preview_edu_list" class="cr_cv_list_items">
-                <!-- Education render here -->
-              </div>
-            </div>
-
-            <!-- Habilidades e Idiomas -->
-            <div class="cr_cv_section" id="cr_preview_section_skills">
-              <h2 class="cr_cv_section_title">Habilidades e Idiomas</h2>
-              <div class="cr_cv_skills_grid">
-                <div id="cr_preview_skills_row">
-                  <strong>Habilidades:</strong>
-                  <span id="cr_preview_skills">Lista de habilidades...</span>
-                </div>
-                <div id="cr_preview_lang_row" class="dpn">
-                  <strong>Idiomas:</strong>
-                  <span id="cr_preview_languages">Lista de idiomas...</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
-    </div>
+    </header>
+
+    <!-- Main Workspace Split -->
+    <main class="conv_workspace_split" id="crearWorkspace">
+      
+      <!-- Panel Izquierdo: Formularios -->
+      <section class="conv_left_pane">
+        <!-- Navegación interna de pestañas (Renderizado dinámico) -->
+        <div class="conv_tabs_header" id="crTabsHeader">
+          <!-- Renderizado dinámico desde visual.js -->
+        </div>
+
+        <!-- Contenido dinámico del formulario -->
+        <form id="crFormContent" onsubmit="return false;">
+          <!-- Renderizado dinámico desde visual.js -->
+        </form>
+
+        <!-- Scorecard ATS al final del panel izquierdo -->
+        <div class="cr_scorecard_bottom">
+          <div class="cr_score_header">
+            <span class="cr_score_title">Compatibilidad ATS:</span>
+            <div class="cr_score_actions">
+              <button id="cr_btn_optimize_all" class="cr_btn_optimize_botwii" data-witip="Haz clic para que Botwii optimice automáticamente todo tu currículum: reescribirá tus logros con verbos fuertes, pulirá tu resumen e integrará mejoras ATS clave.">
+                <i class="fas fa-wand-magic-sparkles"></i> Optimizar con Botwii
+              </button>
+              <div class="cr_score_badge" data-witip="Tu porcentaje de compatibilidad ATS actual. Mientras más alto, más probabilidades tendrás de superar los filtros automáticos.">
+                <span id="cr_score_val">0</span>/100
+              </div>
+            </div>
+          </div>
+          <!-- Progress bar -->
+          <div class="cr_score_bar_bg">
+            <div id="cr_score_fill" class="cr_progress_fill"></div>
+          </div>
+          <!-- Checklist -->
+          <div id="cr_checklist">
+            <!-- Advertencias inyectadas por auditor.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel Derecho: Vista previa -->
+      <section class="conv_right_pane">
+        <!-- Escritorio de Vista Previa -->
+        <div class="conv_a4_wrapper" data-witip="Esta es una plantilla ATS clásica limpia. Los reclutadores prefieren este formato sobrio porque los robots de IA pueden leerlo sin errores.">
+          <div id="cr_cv_printable_area" class="cr_printable_pages_container">
+            <!-- Las páginas A4 se inyectan dinámicamente desde visual.js -->
+          </div>
+        </div>
+      </section>
+      
+    </main>
+
   </div>
 
-  <!-- Modal for AI suggestion optimization -->
+  <!-- Modal para la Optimización de Logros con IA -->
   <div id="cr_ai_modal" class="cr_modal">
     <div class="cr_modal_content">
       <div class="cr_modal_header">
@@ -1007,30 +1695,80 @@ import { seo } from '../lib/seo.js';
       </div>
     </div>
   </div>
+
+  <!-- Modal de confirmación para crear nuevo CV (Premium) -->
+  <div id="cr_reset_modal" class="wiModal">
+    <div class="modalBody cr_confirm_modal_body">
+      <button class="modalX" id="cr_btn_close_reset_modal">&times;</button>
+      <div class="cr_confirm_content">
+        <div class="cr_confirm_icon_wrapper">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3>¿Crear nuevo currículum?</h3>
+        <p>Esto borrará de forma permanente todo tu progreso actual en este navegador. ¿Estás seguro de que deseas empezar de cero?</p>
+        <div class="cr_confirm_actions">
+          <button id="cr_btn_confirm_reset" class="cr_btn_confirm_yes">Sí, crear nuevo</button>
+          <button id="cr_btn_cancel_reset" class="cr_btn_confirm_no">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </Layout>
 
 <script>
-  import { initIA } from '../lib/crear/creando.js';
-  import { initResultado, updatePreview, updateSteps } from '../lib/crear/resultado.js';
-  import { initEntrada } from '../lib/crear/entrada.js';
+  import { initVisual } from '../lib/crear/visual.js';
+  import { Notificacion } from '../lib/widev.js';
 
-  const init = async () => {
-    // 1. Inicializar Módulos de Entrada
-    initEntrada((cvData: any) => {
-      // Callback cada vez que cambian datos (guardado en caché local)
-      updatePreview(cvData);
+  const init = () => {
+    // 1. Inicializar Módulo Visual modularizado del Creador de CV
+    initVisual();
+
+    // 2. Controlar la interactividad del dropdown de descargas
+    const toggleBtn = document.getElementById('crBtnDownloadToggle');
+    const menu = document.getElementById('crDownloadMenu');
+    
+    if (toggleBtn && menu) {
+      const toggleMenu = (e: MouseEvent) => {
+        e.stopPropagation();
+        const isOpen = menu.classList.contains('show');
+        if (isOpen) {
+          menu.classList.remove('show');
+          toggleBtn.setAttribute('aria-expanded', 'false');
+        } else {
+          menu.classList.add('show');
+          toggleBtn.setAttribute('aria-expanded', 'true');
+        }
+      };
+
+      toggleBtn.addEventListener('click', toggleMenu);
+
+      // Cerrar al hacer clic fuera
+      document.addEventListener('click', () => {
+        menu.classList.remove('show');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    // 3. Notificación motivadora cuando el Score llega a 92+
+    let scoreNotified = false;
+    const scoreValObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          const score = parseInt(mutation.target.textContent || '0');
+          if (score >= 92 && !scoreNotified) {
+            Notificacion('¡Excelente compatibilidad ATS! Has superado el umbral recomendado para pasar los filtros de selección corporativos. 🌟', 'success', 5000);
+            scoreNotified = true;
+          } else if (score < 92) {
+            scoreNotified = false;
+          }
+        }
+      });
     });
 
-    // 3. Inicializar Módulos de Vista Previa y Pasos
-    initResultado((step: number) => {
-      // Callback opcional si deseamos registrar cambio de vista en el wizard
-    });
-
-    // 4. Inicializar modal y eventos de la Inteligencia Artificial
-    initIA();
-
-    // 5. Iniciar paso de visualización en el primer tab (Datos de Contacto)
-    updateSteps(1);
+    const scoreValEl = document.getElementById('cr_score_val');
+    if (scoreValEl) {
+      scoreValObserver.observe(scoreValEl, { childList: true });
+    }
   };
 
   document.addEventListener('astro:page-load', init);

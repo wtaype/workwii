@@ -1026,9 +1026,6 @@ export const updateA4Preview = () => {
     pagesHTML += `
       <div class="${pageClass}">
         ${pageContentHTML}
-        <div class="cr_page_number" style="position: absolute; bottom: 5mm; right: 12mm; font-size: 8pt; color: #aaa; font-family: Arial, Helvetica, sans-serif;">
-          ${isEn ? 'Page' : 'Página'} ${index + 1} / ${pages.length}
-        </div>
       </div>
     `;
   });

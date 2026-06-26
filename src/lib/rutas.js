@@ -10,7 +10,7 @@ export const NAV_CONFIG = {
     left: [
       { href: '/', ico: 'fa-house', txt: 'Inicio' },
       { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
-      { href: '/analisar', ico: 'fa-robot', txt: 'Analizar CV' },
+      { href: '/analisar', ico: 'fa-expand', txt: 'Analizar CV' },
       ...COMUN
     ],
     right: [
@@ -22,7 +22,7 @@ export const NAV_CONFIG = {
     left: [
       { href: '/smile', ico: 'fa-house', txt: 'Dashboard' },
       { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
-      { href: '/analisar', ico: 'fa-robot', txt: 'Analizar CV' },
+      { href: '/analisar', ico: 'fa-expand', txt: 'Analizar CV' },
       ...COMUN
     ],
     right: [
@@ -37,7 +37,7 @@ export const NAV_CONFIG = {
     left: [
       { href: '/editor', ico: 'fa-house', txt: 'Dashboard' },
       { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
-      { href: '/analisar', ico: 'fa-robot', txt: 'Analizar CV' },
+      { href: '/analisar', ico: 'fa-expand', txt: 'Analizar CV' },
       ...COMUN
     ],
     right: [
@@ -51,7 +51,7 @@ export const NAV_CONFIG = {
     left: [
       { href: '/gestor', ico: 'fa-house', txt: 'Dashboard' },
       { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
-      { href: '/analisar', ico: 'fa-robot', txt: 'Analizar CV' },
+      { href: '/analisar', ico: 'fa-expand', txt: 'Analizar CV' },
       ...COMUN
     ],
     right: [
@@ -66,7 +66,7 @@ export const NAV_CONFIG = {
       { href: '/admin', ico: 'fa-globe', txt: 'Plataforma' },
       { href: '/usuarios', ico: 'fa-users', txt: 'Usuarios' },
       { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
-      { href: '/analisar', ico: 'fa-robot', txt: 'Analizar CV' }
+      { href: '/analisar', ico: 'fa-expand', txt: 'Analizar CV' }
     ],
     right: [
       { href: '/mensajes', ico: 'fa-comments', txt: 'Mensajes' },
