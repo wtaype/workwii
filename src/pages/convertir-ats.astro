@@ -7,10 +7,7 @@ import { seo } from '../lib/seo.js';
 
 <Layout {...seo.convertirAts}>
   <style is:global>
-    /* Ocultar el selector de temas flotante de widev.js en esta página */
-    #wiTema {
-      display: none !important;
-    }
+
 
     /* =========================================================================
        CONVERTIR.CSS — Estilos Premium del Convertidor de CV a ATS
@@ -355,7 +352,7 @@ import { seo } from '../lib/seo.js';
     .conv_tabs_header {
       display: flex;
       flex-wrap: wrap;
-      gap: 1vh;
+      gap: .5vh;
       border-bottom: 1px solid var(--brd);
       padding-bottom: 1.5vh;
     }
@@ -464,7 +461,7 @@ import { seo } from '../lib/seo.js';
     }
     .conv_item_card_header h4 {
       margin: 0;
-      font-size: var(--fz_s1);
+      font-size: var(--fz_m4);
       color: var(--tx2);
     }
     .conv_btn_danger_small {
@@ -556,6 +553,7 @@ import { seo } from '../lib/seo.js';
       background-color: var(--brd2);
       transition: .3s;
       border-radius: 34px;
+      background: var(--bg5);
     }
     .conv_slider:before {
       position: absolute;
@@ -1083,61 +1081,7 @@ import { seo } from '../lib/seo.js';
       color: var(--mco);
     }
 
-    /* ══════════════════ REGLAS DE IMPRESIÓN EXCLUSIVAS (PDF) ══════════════════ */
-    @media print {
-      @page {
-        size: A4 portrait;
-        margin: 0; /* Hides headers/footers completely */
-      }
-      body {
-        background: #fff !important;
-        color: #000 !important;
-      }
-      /* Ocultar elementos de la web */
-      header, footer, nav, #notificationsContainer, #wiTema, .conv_header, .conv_left_pane, .conv_preview_tools {
-        display: none !important;
-      }
-      /* Evitar saltos de página en medio de las experiencias o secciones */
-      .cr_cv_section, .cr_cv_item {
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-      }
-      .conv_wrap {
-        padding: 0 !important;
-        margin: 0 !important;
-        max-width: 100% !important;
-      }
-      .conv_workspace_split {
-        grid-template-columns: 1fr !important;
-        gap: 0 !important;
-        margin: 0 !important;
-      }
-      .conv_right_pane {
-        position: static !important;
-        width: 100% !important;
-        top: 0 !important;
-      }
-      .conv_a4_wrapper {
-        background: none !important;
-        padding: 0 !important;
-        border: none !important;
-        box-shadow: none !important;
-        overflow: visible !important;
-      }
-      .cr_cv_document {
-        width: 21cm !important;
-        height: 29.7cm !important;
-        box-shadow: none !important;
-        padding: 10mm 12mm !important;
-        margin: 0 !important;
-        background: #fff !important;
-        background-image: none !important;
-      }
-      .cr_cv_page_next {
-        page-break-before: always !important;
-        break-before: page !important;
-      }
-    }
+
   </style>
 
   <div class="conv_wrap">
