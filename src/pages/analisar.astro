@@ -1274,6 +1274,52 @@ import { seo } from '../lib/seo.js';
       }
     }
 
+    @media (max-width: 768px) {
+      .ats_keyword_grid {
+        grid-template-columns: 1fr !important;
+        gap: 2.5vh !important;
+      }
+      .ats_card {
+        padding: 3vh 4vw !important;
+        border-radius: 16px !important;
+        max-width: 91vw !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 auto !important;
+      }
+      .ats_header {
+        padding: 3vh 4vw !important;
+        border-radius: 16px !important;
+        max-width: 91vw !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 auto !important;
+      }
+      .ats_loader {
+        padding: 4vh 4vw !important;
+        max-width: 91vw !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 auto !important;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .ats_row_fields {
+        flex-direction: column;
+        gap: 2.5vh;
+      }
+      .ats_action_row {
+        flex-direction: column;
+        width: 100%;
+        gap: 1.5vh;
+      }
+      .ats_action_row .ats_btn_optimize, .ats_action_row .ats_btn_sec {
+        width: 100%;
+        flex: none;
+      }
+    }
+
     /* Barra de progreso de subida */
     .upload_progress_container {
       display: none;

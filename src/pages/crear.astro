@@ -44,6 +44,48 @@ import { seo } from '../lib/seo.js';
       .conv_workspace_split {
         grid-template-columns: 1fr;
       }
+      .conv_left_pane, .conv_right_pane {
+        position: static !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+        height: auto !important;
+        max-width: 91vw !important;
+        margin: 0 auto !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .conv_left_pane {
+        padding: 3vh 4vw 4vh !important;
+        border-radius: 16px !important;
+      }
+      .conv_header {
+        max-width: 91vw !important;
+        margin: 0 auto 3vh !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .cr_header_flex {
+        justify-content: center;
+        text-align: center;
+        gap: 2.5vh;
+      }
+      .cr_header_left {
+        text-align: center;
+        width: 100%;
+      }
+      .cr_header_left h1 {
+        font-size: var(--fz_m5) !important;
+        text-align: center !important;
+      }
+      .cr_header_sub {
+        font-size: var(--fz_s3) !important;
+        text-align: center !important;
+      }
+      .cr_header_right {
+        justify-content: center;
+        width: 100%;
+        gap: 1.5vh 2vw;
+      }
     }
 
     /* Panel Izquierdo: Formularios */
@@ -1091,6 +1133,31 @@ import { seo } from '../lib/seo.js';
       .cr_ai_diff_grid {
         grid-template-columns: 1fr;
       }
+      .conv_a4_wrapper {
+        padding: 1.5vh 1.5vw !important;
+        border-radius: 10px !important;
+      }
+      .conv_left_pane, .conv_right_pane {
+        max-width: 91vw !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .conv_left_pane {
+        padding: 2.5vh 5vw !important;
+        border-radius: 12px !important;
+        gap: 2.5vh !important;
+      }
+      .conv_loader {
+        padding: 4vh 5vw !important;
+        border-radius: 16px !important;
+        max-width: 91vw !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .conv_tabs_header {
+        justify-content: center;
+        gap: 2vw;
+      }
     }
     .cr_ai_diff_card {
       display: flex;
@@ -1212,9 +1279,6 @@ import { seo } from '../lib/seo.js';
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .dpn {
-      display: none !important;
-    }
 
     /* Reglas de impresión limpias para PDF sin Header/Footer */
     @media print {
