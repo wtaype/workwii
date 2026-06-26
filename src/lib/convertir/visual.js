@@ -1,5 +1,6 @@
 import { wiTip, Notificacion } from '../widev.js';
 import { descargarPdfDirecto, imprimirPdf, descargarDocx, descargarTxt, descargarMd, descargarJson } from './descarga/descargas.js';
+import { initEditablePreview, isEditingPreview } from '../crear/preview/editarPreview.js';
 
 export let convertedCvData = {
   nombre: '',
@@ -452,6 +453,73 @@ const renderFormContent = () => {
   validarFormularios();
 };
 
+const renderAchievementsInputs = (container, exp, expIdx, renderList) => {
+  let achievements = (exp.logros || '')
+    .split('\n')
+    .map(line => line.replace(/^[-\*\•\s]+/, '').trim());
+
+  while (achievements.length < 3) {
+    achievements.push('');
+  }
+
+  container.innerHTML = `
+    <div class="cr_achievements_list" style="display:flex; flex-direction:column; gap:1vh; width:100%;">
+      ${achievements.map((ach, idx) => `
+        <div class="cr_achievement_item" style="display:flex; gap:1vh; align-items:center; width:100%;">
+          <span style="font-size:1.2rem; color:var(--tx2);">&bull;</span>
+          <input type="text" class="cr_achievement_input" value="${ach.replace(/"/g, '&quot;')}" placeholder="Logro o función #${idx + 1}" style="flex:1;" />
+          <button type="button" class="conv_btn_danger_small btn_del_achievement" data-idx="${idx}" style="padding:0.8vh 1vh;" title="Eliminar viñeta">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      `).join('')}
+      <button type="button" class="conv_btn_small btn_add_achievement" style="align-self:flex-start; margin-top:0.5vh;">
+        <i class="fas fa-plus"></i> Agregar logro
+      </button>
+    </div>
+  `;
+
+  const inputs = container.querySelectorAll('.cr_achievement_input');
+  const updateState = () => {
+    const newAchievements = [];
+    container.querySelectorAll('.cr_achievement_input').forEach(inp => {
+      newAchievements.push(inp.value.trim());
+    });
+    let cleanList = [...newAchievements];
+    while (cleanList.length > 0 && !cleanList[cleanList.length - 1]) {
+      cleanList.pop();
+    }
+    convertedCvData.experiencias[expIdx].logros = cleanList.join('\n');
+    updateA4Preview();
+  };
+
+  inputs.forEach(input => {
+    input.addEventListener('input', () => {
+      updateState();
+    });
+  });
+
+  container.querySelectorAll('.btn_del_achievement').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const deleteIdx = parseInt(btn.getAttribute('data-idx'));
+      achievements.splice(deleteIdx, 1);
+      while (achievements.length < 3) {
+        achievements.push('');
+      }
+      convertedCvData.experiencias[expIdx].logros = achievements.join('\n');
+      renderList();
+      updateA4Preview();
+    });
+  });
+
+  container.querySelector('.btn_add_achievement').addEventListener('click', () => {
+    achievements.push('');
+    convertedCvData.experiencias[expIdx].logros = achievements.join('\n');
+    renderList();
+    updateA4Preview();
+  });
+};
+
 const renderExperienciasForm = (container) => {
   const isEn = convertedCvData.idioma === 'en';
   const lang = isEn ? locales.en.experiencia : locales.es.experiencia;
@@ -502,12 +570,17 @@ const renderExperienciasForm = (container) => {
             <input type="text" class="exp_fin" value="${exp.fin || ''}" placeholder="${lang.placeholderFin}" required />
           </div>
           <div class="conv_field full_width">
-            <label>${lang.logros}</label>
-            <textarea class="exp_logros" rows="4" placeholder="${lang.placeholderLogros}" required>${exp.logros || ''}</textarea>
+            <label style="margin-bottom: 1vh; display: block;">${lang.logros}</label>
+            <div class="cr_logros_inputs_container" style="width: 100%;"></div>
           </div>
         </div>
       `;
       expListContainer.appendChild(card);
+
+      const logrosContainer = card.querySelector('.cr_logros_inputs_container');
+      if (logrosContainer) {
+        renderAchievementsInputs(logrosContainer, exp, idx, renderList);
+      }
     });
 
     // Bind fields dynamically
@@ -516,7 +589,7 @@ const renderExperienciasForm = (container) => {
       const index = convertedCvData.experiencias.findIndex(e => e.id === id);
       if (index === -1) return;
 
-      const fields = ['puesto', 'empresa', 'ubicacion', 'inicio', 'fin', 'logros'];
+      const fields = ['puesto', 'empresa', 'ubicacion', 'inicio', 'fin'];
       fields.forEach(field => {
         const element = card.querySelector(`.exp_${field}`);
         element?.addEventListener('input', () => {
@@ -833,10 +906,10 @@ export const updateA4Preview = () => {
 
   // 1. Header Block
   const headerHTML = `
-    <div class="cr_cv_header ${convertedCvData.incluirFoto && convertedCvData.fotoBase64 ? 'has_avatar' : ''}">
+    <div class="cr_cv_header ${convertedCvData.incluirFoto && convertedCvData.fotoBase64 ? 'has_avatar' : ''}" data-click-tab="contacto">
       <div class="cr_cv_header_text">
-        <h1 class="cr_cv_name">${convertedCvData.nombre || 'Nombre Completo'}</h1>
-        <div class="cr_cv_title">${convertedCvData.titulo || 'Título o Profesión'}</div>
+        <h1 class="cr_cv_name cr_prev_editable" data-edit-field="nombre">${convertedCvData.nombre || 'Nombre Completo'}</h1>
+        <div class="cr_cv_title cr_prev_editable" data-edit-field="titulo">${convertedCvData.titulo || 'Título o Profesión'}</div>
         <div class="cr_cv_contact">${contactsHTML || 'Email &bull; Teléfono &bull; Ubicación'}</div>
       </div>
       ${convertedCvData.incluirFoto && convertedCvData.fotoBase64 ? `
@@ -852,9 +925,9 @@ export const updateA4Preview = () => {
   // 2. Summary Block
   if (convertedCvData.resumen) {
     const summaryHTML = `
-      <div class="cr_cv_section">
+      <div class="cr_cv_section" data-click-tab="perfil">
         <h2 class="cr_cv_section_title">${textPerfil}</h2>
-        <p class="cr_cv_text">${convertedCvData.resumen}</p>
+        <p class="cr_cv_text cr_prev_editable" data-edit-field="resumen">${convertedCvData.resumen}</p>
       </div>
     `;
     blocks.push({ html: summaryHTML, type: 'summary' });
@@ -864,7 +937,7 @@ export const updateA4Preview = () => {
   const hasExp = convertedCvData.experiencias && convertedCvData.experiencias.some(exp => exp.puesto || exp.empresa);
   if (hasExp) {
     const expTitleHTML = `
-      <h2 class="cr_cv_section_title" style="margin-bottom: 8px !important;">${textExperiencia}</h2>
+      <h2 class="cr_cv_section_title" data-click-tab="experiencia" style="margin-bottom: 8px !important;">${textExperiencia}</h2>
     `;
     blocks.push({ html: expTitleHTML, type: 'section_title' });
 
@@ -875,21 +948,21 @@ export const updateA4Preview = () => {
         .split('\n')
         .map(line => line.trim())
         .filter(line => line.length > 0)
-        .map(line => {
+        .map((line, liIdx) => {
           const cleanLine = line.replace(/^[-\*\•\s]+/, '').trim();
-          return `<li>${cleanLine}</li>`;
+          return `<li class="cr_prev_editable" data-edit-field="exp_logro" data-exp-id="${exp.id}" data-logro-idx="${liIdx}">${cleanLine}</li>`;
         })
         .join('');
 
       const itemHTML = `
-        <div class="cr_cv_item">
+        <div class="cr_cv_item" data-click-tab="experiencia">
           <div class="cr_cv_item_row">
-            <strong>${exp.puesto || 'Puesto / Cargo'}</strong>
+            <strong class="cr_prev_editable" data-edit-field="exp_puesto" data-exp-id="${exp.id}">${exp.puesto || 'Puesto / Cargo'}</strong>
             <span>${exp.inicio || ''} – ${exp.fin === 'Presente' || !exp.fin ? textPresente : exp.fin}</span>
           </div>
           <div class="cr_cv_item_subrow">
-            <span>${exp.empresa || 'Empresa'}</span>
-            <span>${exp.ubicacion || ''}</span>
+            <span class="cr_prev_editable" data-edit-field="exp_empresa" data-exp-id="${exp.id}">${exp.empresa || 'Empresa'}</span>
+            <span class="cr_prev_editable" data-edit-field="exp_ubicacion" data-exp-id="${exp.id}">${exp.ubicacion || ''}</span>
           </div>
           ${achievements ? `<div class="cr_cv_item_desc"><ul>${achievements}</ul></div>` : ''}
         </div>
@@ -902,7 +975,7 @@ export const updateA4Preview = () => {
   const hasEdu = convertedCvData.educacion && convertedCvData.educacion.some(edu => edu.grado || edu.institucion);
   if (hasEdu) {
     const eduTitleHTML = `
-      <h2 class="cr_cv_section_title" style="margin-bottom: 8px !important;">${textEducacion}</h2>
+      <h2 class="cr_cv_section_title" data-click-tab="educacion" style="margin-bottom: 8px !important;">${textEducacion}</h2>
     `;
     blocks.push({ html: eduTitleHTML, type: 'section_title' });
 
@@ -910,14 +983,14 @@ export const updateA4Preview = () => {
       if (!edu.grado && !edu.institucion) return;
 
       const itemHTML = `
-        <div class="cr_cv_item">
+        <div class="cr_cv_item" data-click-tab="educacion">
           <div class="cr_cv_item_row">
-            <strong>${edu.grado || 'Grado obtenido / Estudio'}</strong>
+            <strong class="cr_prev_editable" data-edit-field="edu_grado" data-edu-id="${edu.id}">${edu.grado || 'Grado obtenido / Estudio'}</strong>
             <span>${edu.inicio || ''} – ${edu.fin || ''}</span>
           </div>
           <div class="cr_cv_item_subrow">
-            <span>${edu.institucion || 'Institución'}</span>
-            <span>${edu.ubicacion || ''}</span>
+            <span class="cr_prev_editable" data-edit-field="edu_institucion" data-edu-id="${edu.id}">${edu.institucion || 'Institución'}</span>
+            <span class="cr_prev_editable" data-edit-field="edu_ubicacion" data-edu-id="${edu.id}">${edu.ubicacion || ''}</span>
           </div>
         </div>
       `;
@@ -928,12 +1001,12 @@ export const updateA4Preview = () => {
   // 5. Skills Block
   if (convertedCvData.skills) {
     const skillsHTML = `
-      <div class="cr_cv_section">
+      <div class="cr_cv_section" data-click-tab="skills">
         <h2 class="cr_cv_section_title">${textSkills}</h2>
         <div class="cr_cv_skills_grid">
           <div>
             <strong>${textSkillsLabel}:</strong>
-            <span>${convertedCvData.skills}</span>
+            <span class="cr_prev_editable" data-edit-field="skills">${convertedCvData.skills}</span>
           </div>
           ${convertedCvData.idiomas.length > 0 ? `
             <div class="cr_cv_skills_subrow">
@@ -1032,6 +1105,15 @@ export const updateA4Preview = () => {
 
   printableArea.innerHTML = pagesHTML;
 
+  // Inicializar edición directa en el preview (WYSIWYG)
+  // Para convertir, getCvData y updateCvData trabajan sobre convertedCvData
+  initEditablePreview(
+    printableArea,
+    () => JSON.parse(JSON.stringify(convertedCvData)),
+    (data) => { Object.assign(convertedCvData, data); guardarEnCache(); },
+    () => validarFormularios()
+  );
+
   // Guardar en la caché local persistente única del CV activo
   guardarEnCache();
 
@@ -1121,6 +1203,22 @@ const setupGlobalListeners = () => {
         const isInsideDropdown = target.closest('.conv_download_dropdown');
         if (!isInsideDropdown) {
           closeDropdown();
+        }
+      }
+    });
+  }
+
+  // Sincronizar clics en la vista previa del CV con las pestañas del formulario
+  const printableArea = document.getElementById('convPreviewA4');
+  if (printableArea) {
+    printableArea.addEventListener('click', (event) => {
+      const target = event.target.closest('[data-click-tab]');
+      if (target) {
+        const tabId = target.getAttribute('data-click-tab');
+        if (tabId && tabId !== activeTab) {
+          activeTab = tabId;
+          renderTabs();
+          renderFormContent();
         }
       }
     });

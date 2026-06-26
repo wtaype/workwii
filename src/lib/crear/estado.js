@@ -65,7 +65,31 @@ export const saveToLocalStorage = () => {
 
 // Actualizar campos individuales o la estructura completa del CV
 export const updateCvData = (newData) => {
+  if (newData && newData.experiencias) {
+    newData.experiencias = newData.experiencias.map(exp => {
+      if (exp) {
+        if (Array.isArray(exp.logros)) {
+          exp.logros = exp.logros.join('\n');
+        } else if (typeof exp.logros !== 'string') {
+          exp.logros = '';
+        }
+      }
+      return exp;
+    });
+  }
   cvState = { ...cvState, ...newData };
+  if (cvState.experiencias) {
+    cvState.experiencias = cvState.experiencias.map(exp => {
+      if (exp) {
+        if (Array.isArray(exp.logros)) {
+          exp.logros = exp.logros.join('\n');
+        } else if (typeof exp.logros !== 'string') {
+          exp.logros = '';
+        }
+      }
+      return exp;
+    });
+  }
   
   // Guardado automático persistente
   saveToLocalStorage();
@@ -97,6 +121,19 @@ export const loadFromLocalStorage = () => {
       experiencias: [crearEstructuraExp()],
       educacion: [crearEstructuraEdu()]
     };
+  }
+  
+  if (cvState.experiencias) {
+    cvState.experiencias = cvState.experiencias.map(exp => {
+      if (exp) {
+        if (Array.isArray(exp.logros)) {
+          exp.logros = exp.logros.join('\n');
+        } else if (typeof exp.logros !== 'string') {
+          exp.logros = '';
+        }
+      }
+      return exp;
+    });
   }
   
   notifySubscribers();

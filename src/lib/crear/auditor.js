@@ -27,7 +27,6 @@ const ACTION_VERBS = new Set([...SPANISH_ACTION_VERBS, ...ENGLISH_ACTION_VERBS])
 const analizarLogrosATS = (experiencias) => {
   let totalBullets = 0;
   let bulletsWithVerbs = 0;
-  let isFormattedAsBullets = true;
 
   const validExps = experiencias.filter(e => e.puesto?.trim() || e.empresa?.trim());
   if (validExps.length === 0) {
@@ -37,40 +36,30 @@ const analizarLogrosATS = (experiencias) => {
   let hasAnyLogro = false;
 
   validExps.forEach(exp => {
-    if (!exp.logros || !exp.logros.trim()) {
-      isFormattedAsBullets = false;
-      return;
-    }
-    hasAnyLogro = true;
-    const lines = exp.logros.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    
+    const logrosStr = Array.isArray(exp.logros)
+      ? exp.logros.join('\n')
+      : (typeof exp.logros === 'string' ? exp.logros : '');
+
+    if (!logrosStr || !logrosStr.trim()) return;
+
+    // Los logros se guardan SIN viñeta (texto limpio — la viñeta es visual)
+    const lines = logrosStr.split('\n').map(l => l.replace(/^[-\*\•\s]+/, '').trim()).filter(l => l.length > 0);
+
+    if (lines.length > 0) hasAnyLogro = true;
+
     lines.forEach(line => {
       totalBullets++;
-      
-      // Verificar si empieza con viñeta estándar
-      if (!/^[-\*\•]/.test(line)) {
-        isFormattedAsBullets = false;
-      }
-      
-      // Limpiar viñeta y verificar verbo de acción
-      const cleanLine = line.replace(/^[-\*\•\s]+/, '').trim();
-      if (cleanLine.length > 0) {
-        const firstWord = cleanLine.split(/\s+/)[0]
-          .toLowerCase()
-          .replace(/[^a-záéíóúüñ]/g, '');
-        
-        if (ACTION_VERBS.has(firstWord)) {
-          bulletsWithVerbs++;
-        }
-      }
+      const firstWord = line.split(/\s+/)[0]
+        .toLowerCase()
+        .replace(/[^a-záéíóúüñ]/g, '');
+      if (ACTION_VERBS.has(firstWord)) bulletsWithVerbs++;
     });
   });
 
-  if (!hasAnyLogro) {
-    return { hasBullets: false, hasActionVerbs: false };
-  }
+  if (!hasAnyLogro) return { hasBullets: false, hasActionVerbs: false };
 
-  const hasBullets = isFormattedAsBullets && totalBullets > 0;
+  // hasBullets = true si hay al menos una línea de logro con contenido
+  const hasBullets = totalBullets > 0;
   const ratio = totalBullets > 0 ? (bulletsWithVerbs / totalBullets) : 0;
   const hasActionVerbs = ratio >= 0.5;
 
@@ -121,8 +110,18 @@ export const auditarCvAts = (cv) => {
   }
 
   // 2. ENLACES Y TITULO (Máx: 10 puntos)
-  if (cv.linkedin && cv.linkedin.trim().length > 5) {
+  const isLinkedinValid = cv.linkedin && cv.linkedin.trim().length > 5;
+  const isLinkedinPlaceholder = isLinkedinValid && (
+    cv.linkedin.toLowerCase().includes('/in/usuario') || 
+    cv.linkedin.toLowerCase().includes('linkedin.com/in/usuario') ||
+    cv.linkedin.toLowerCase() === 'https://linkedin.com/in/usuario' ||
+    cv.linkedin.toLowerCase() === 'usuario'
+  );
+
+  if (isLinkedinValid && !isLinkedinPlaceholder) {
     score += 5;
+  } else if (isLinkedinPlaceholder) {
+    checklist.push({ type: 'danger', text: 'Personaliza tu enlace de LinkedIn (actualmente contiene el valor de plantilla "/in/usuario").' });
   } else {
     checklist.push({ type: 'warning', text: 'Agrega tu enlace de LinkedIn para mejorar la visibilidad.' });
   }
