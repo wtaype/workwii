@@ -12,6 +12,15 @@ export default defineConfig({
   base: '/',
   compressHTML: true,
 
+  i18n: {
+    defaultLocale: 'es',
+    locales: ['es', 'en'],
+    routing: {
+      prefixDefaultLocale: false,
+      redirectToDefaultLocale: false
+    }
+  },
+
   //NAVEGACIÓN RÁPIDA (Prefetch inteligente al hacer hover para cargar la siguiente página en milisegundos) _____________
   prefetch: {
     defaultStrategy: 'hover',

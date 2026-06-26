@@ -3,26 +3,46 @@ import { app, titulo, descri, keywii } from '../wii.js';
 
 export const seo = {
   inicio: {
-    title: titulo,
-    description: descri,
-    path: '/',
-    keywords: keywii,
-    audience: ['candidatos', 'profesionales', 'desempleados', 'reclutadores', 'estudiantes'],
-    intent: 'optimizar curriculum y buscar trabajo con IA'
+    es: {
+      title: titulo,
+      description: descri,
+      path: '/',
+      keywords: keywii,
+      audience: ['candidatos', 'profesionales', 'desempleados', 'reclutadores', 'estudiantes'],
+      intent: 'optimizar curriculum y buscar trabajo con IA'
+    },
+    en: {
+      title: `ATS Resume Builder & Careers | ${app}`,
+      description: "Optimize your resume with AI to beat recruiters' ATS filters. Create a professional profile in minutes.",
+      path: '/en',
+      keywords: ['create resume free', 'ats resume templates', 'ai resume builder', 'professional profile'],
+      audience: ['candidates', 'professionals', 'students'],
+      intent: 'optimize resume and job search with AI'
+    }
   },
   crear: {
-    title: `Creador de CV con IA y Plantillas ATS | ${app}`,
-    description: "Diseña y escribe tu currículum optimizado para filtros ATS con nuestra inteligencia artificial. Crea un perfil profesional impecable en pocos minutos.",
-    path: '/crear',
-    keywords: [
-      'crear cv gratis',
-      'plantillas cv ats',
-      'curriculum con ia',
-      'creador curriculum',
-      'perfil profesional'
-    ],
-    audience: ['candidatos', 'profesionales', 'estudiantes'],
-    intent: 'crear curriculum vitae'
+    es: {
+      title: `Creador de CV con IA y Plantillas ATS | ${app}`,
+      description: "Diseña y escribe tu currículum optimizado para filtros ATS con nuestra inteligencia artificial. Crea un perfil profesional impecable en pocos minutos.",
+      path: '/crear',
+      keywords: [
+        'crear cv gratis',
+        'plantillas cv ats',
+        'curriculum con ia',
+        'creador curriculum',
+        'perfil profesional'
+      ],
+      audience: ['candidatos', 'profesionales', 'estudiantes'],
+      intent: 'crear curriculum vitae'
+    },
+    en: {
+      title: `Free AI Resume Builder & ATS Templates | ${app}`,
+      description: "Create and optimize your resume for ATS filters with our AI builder. Get a professional resume in minutes.",
+      path: '/en/crear',
+      keywords: ['create resume free', 'ats resume templates', 'ai resume builder', 'professional profile'],
+      audience: ['candidates', 'professionals', 'students'],
+      intent: 'create resume profile'
+    }
   },
   analisar: {
     title: `Analizar CV: Puntuación y Filtros ATS | ${app}`,
@@ -81,18 +101,22 @@ export const seo = {
     intent: 'descubrir herramientas de la plataforma'
   },
   contacto: {
-    title: `Contacto: Soporte y Dudas de Usuario | ${app}.`,
-    description: "¿Tienes alguna duda, reporte de error o sugerencia para mejorar nuestras herramientas? Ponte en contacto con el equipo de soporte técnico de Workwii.a",
-    path: '/contacto',
-    keywords: [
-      'contacto workwii',
-      'soporte tecnico cv',
-      'sugerencias de funciones',
-      'reportar error editor',
-      'ayuda al candidato'
-    ],
-    audience: ['candidatos', 'usuarios de la plataforma'],
-    intent: 'contactar soporte'
+    es: {
+      title: `Contacto: Soporte y Dudas de Usuario | ${app}.`,
+      description: "¿Tienes alguna duda, reporte de error o sugerencia para mejorar nuestras herramientas? Ponte en contacto con el equipo de soporte técnico de Workwii.a",
+      path: '/contacto',
+      keywords: ['contacto workwii', 'soporte tecnico cv', 'sugerencias de funciones', 'reportar error editor', 'ayuda al candidato'],
+      audience: ['candidatos', 'usuarios de la plataforma'],
+      intent: 'contactar soporte'
+    },
+    en: {
+      title: `Contact: User Support & Questions | ${app}.`,
+      description: "Do you have any questions, bug reports, or feature suggestions? Contact the Workwii support team.",
+      path: '/en/contacto',
+      keywords: ['contact workwii', 'cv support', 'feature suggestions', 'bug report', 'candidate help'],
+      audience: ['candidates', 'users'],
+      intent: 'contact support'
+    }
   },
   cookies: {
     title: `Política de Cookies de la Plataforma | ${app}.`,

@@ -1,29 +1,34 @@
 ---
 // src/components/Header.astro
-import { NAV_CONFIG } from '../lib/rutas.js';
+import { NAV_CONFIG, translateNav } from '../lib/rutas.js';
 import { app, icon } from '../wii.js';
-const defaultLeft = NAV_CONFIG.todos.left;
-const defaultRight = NAV_CONFIG.todos.right;
+
+const lang = Astro.currentLocale || 'es';
+const config = translateNav(NAV_CONFIG.todos, lang);
+const defaultLeft = config.left;
+const defaultRight = config.right;
 ---
 <header class="wiheader">
   <div class="nv_left">
     <div class="wilogo">
-      <a href="/"><i class={`fa-solid ${icon}`}></i> {app}</a>
+      <a href={lang === 'en' ? '/en' : '/'}><i class={`fa-solid ${icon}`}></i> {app}</a>
     </div>
     <nav class="winav" id="header-nav-left">
-      {defaultLeft.map(i => (
-        <a href={i.href} class="nv_item" data-page={i.href === '/' ? 'inicio' : i.href.slice(1)}>
+      {defaultLeft.map((i: any) => (
+        <a href={i.href} class="nv_item" data-page={i.href.replace(/^\/en/, '').replace(/\/$/, '') || 'inicio'}>
           <i class={`fa-solid ${i.ico}`}></i> <span>{i.txt}</span>
         </a>
       ))}
     </nav>
   </div>
-  <div class="nv_right" id="header-nav-right">
-    {defaultRight.map(i => (
-      <button class={i.cls}>
-        <i class={`fa-solid ${i.ico}`}></i> <span>{i.txt}</span>
-      </button>
-    ))}
+  <div class="nv_right" style="gap: 1.2vh;">
+    <div id="header-nav-right" style="display: flex; align-items: center; gap: .5vh;">
+      {defaultRight.map((i: any) => (
+        <button class={i.cls}>
+          <i class={`fa-solid ${i.ico}`}></i> <span>{i.txt}</span>
+        </button>
+      ))}
+    </div>
   </div>
   <button class="wimenu dpn" aria-label="Abrir menú móvil" id="mobile-menu-btn">
     <i class="fa-solid fa-bars"></i>
@@ -35,24 +40,36 @@ const defaultRight = NAV_CONFIG.todos.right;
 <nav class="movil_drawer" id="mobile-menu-drawer" role="navigation" aria-label="Menú móvil">
   <button class="movil_close" aria-label="Cerrar menú" id="mobile-menu-close"><i class="fa-solid fa-xmark"></i></button>
   <div class="movil_logo">
-    <a href="/"><i class={`fa-solid ${icon}`}></i> {app}</a>
+    <a href={lang === 'en' ? '/en' : '/'}><i class={`fa-solid ${icon}`}></i> {app}</a>
   </div>
   <div class="movil_nav" id="mobile-nav-links"></div>
+  
+
 </nav>
 
 <script>
   import { wiAuth, avatar } from '../lib/widev.js';
-  import { NAV_CONFIG } from '../lib/rutas.js';
+  import { NAV_CONFIG, translateNav } from '../lib/rutas.js';
 
   const initHeader = () => {
     const wi = wiAuth.user;
-    const config = (NAV_CONFIG as any)[wi?.rol] || NAV_CONFIG.todos;
+    const lang = document.documentElement.lang || 'es';
+    const baseConfig = (NAV_CONFIG as any)[wi?.rol] || NAV_CONFIG.todos;
+    const config = translateNav(baseConfig, lang);
 
     const buildNav = (items: any[]) => items.map(i => {
-      if (i.isPerfil) return `<a href="/perfil" class="nv_item" data-page="perfil">${wi?.avatar ? `<img src="${wi.avatar}" alt="${wi?.nombre || ''}">` : `<div class="nv_avatar_ini">${avatar(wi?.nombre || '')}</div>`}<span>${wi?.nombre || ''}</span></a>`;
-      if (i.isSalir) return `<button class="nv_item bt_salir"><i class="fa-solid fa-sign-out-alt"></i> <span>Salir</span></button>`;
-      if (i.isBtn) return `<button class="${i.cls}"><i class="fa-solid ${i.ico}"></i> <span>${i.txt}</span></button>`;
-      return `<a href="${i.href}" class="nv_item" data-page="${i.href === '/' ? 'inicio' : i.href.slice(1)}"><i class="fa-solid ${i.ico}"></i> <span>${i.txt}</span></a>`;
+      if (i.isPerfil) {
+        return `<a href="${lang === 'en' ? '/en/perfil' : '/perfil'}" class="nv_item" data-page="perfil">${wi?.avatar ? `<img src="${wi.avatar}" alt="${wi?.nombre || ''}">` : `<div class="nv_avatar_ini">${avatar(wi?.nombre || '')}</div>`}<span>${wi?.nombre || ''}</span></a>`;
+      }
+      if (i.isSalir) {
+        const salirLabel = lang === 'en' ? 'Logout' : 'Salir';
+        return `<button class="nv_item bt_salir"><i class="fa-solid fa-sign-out-alt"></i> <span>${salirLabel}</span></button>`;
+      }
+      if (i.isBtn) {
+        return `<button class="${i.cls}"><i class="fa-solid ${i.ico}"></i> <span>${i.txt}</span></button>`;
+      }
+      const pageKey = i.href.replace(/^\/en/, '').replace(/\/$/, '') || 'inicio';
+      return `<a href="${i.href}" class="nv_item" data-page="${pageKey}"><i class="fa-solid ${i.ico}"></i> <span>${i.txt}</span></a>`;
     }).join('');
 
     const el = (id: string) => document.getElementById(id);
@@ -62,10 +79,13 @@ const defaultRight = NAV_CONFIG.todos.right;
     if (mn) mn.innerHTML = buildNav([...config.left, ...config.right]);
 
     // Marcar enlace activo según la URL actual
-    const path = window.location.pathname.replace(/\/$/, '') || '/';
-    let cleanPath = path === '/' ? 'inicio' : path.slice(1);
+    const path = window.location.pathname;
+    const cleanPath = path.replace(/^\/en/, '').replace(/\/$/, '') || 'inicio';
 
-    document.querySelectorAll('.nv_item').forEach(el => el.classList.toggle('active', el.getAttribute('data-page') === cleanPath));
+    document.querySelectorAll('.nv_item').forEach(el => {
+      const dp = el.getAttribute('data-page');
+      el.classList.toggle('active', dp === cleanPath);
+    });
   };
 
   // Listeners globales delegados en el document
@@ -85,8 +105,9 @@ const defaultRight = NAV_CONFIG.todos.right;
     if (target.closest('.bt_salir')) {
       e.preventDefault();
       const { salir } = await import('../lib/login.js');
+      const lang = document.documentElement.lang || 'es';
       await salir(['wiTema','wiSmart', 'cookiesPrivacidad']);
-      window.location.href = '/';
+      window.location.href = lang === 'en' ? '/en' : '/';
       return;
     }
 

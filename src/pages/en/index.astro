@@ -1,0 +1,11 @@
+---
+// src/pages/en/index.astro
+// English Homepage Wrapper for Workwii
+import Layout from '../../layouts/Layout.astro';
+import Inicio from '../../lib/inicio/Inicio.astro';
+import { seo } from '../../lib/seo.js';
+---
+
+<Layout {...seo.inicio.en}>
+  <Inicio lang="en" />
+</Layout>

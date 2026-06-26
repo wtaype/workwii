@@ -1,6 +1,10 @@
 ---
 // src/components/Footer.astro
 import { app, lanzamiento, by, linkme, version, id } from '../wii.js';
+import { useTranslations, getRelativeLocaleUrl } from '../lib/i18n/utils.js';
+
+const lang = Astro.currentLocale || 'es';
+const lg = useTranslations(lang);
 
 const REDES = [
   { tit: 'YouTube',   ico: 'fab fa-youtube',   url: `https://www.youtube.com/@${id}`,   bg: '#ff0000' },
@@ -10,40 +14,53 @@ const REDES = [
 ];
 
 const ahora = new Date();
+
+// Calcular las URLs correspondientes de idioma para el path actual
+const path = Astro.url.pathname;
+const cleanPath = path.replace(/^\/en/, '').replace(/\/$/, '') || '/';
+const urlEs = cleanPath === '/' ? '/' : cleanPath;
+const urlEn = cleanPath === '/' ? '/en' : `/en${cleanPath}`;
 ---
 
 <footer class="foo">
   <div class="foo_inner">
     <div class="foo_left">
       <div class="foo_brand">
-        <span class="foo_app"><a href="/">{app}</a></span>
+        <span class="foo_app"><a href={getRelativeLocaleUrl(lang, '/')}>{app}</a></span>
         <span class="foo_ver">{version}</span>
       </div>
       <div class="foo_links">
-        <a href="/terminos"   class="foo_link nv_item" data-page="terminos"  ><i class="fas fa-file-contract"></i> Términos</a>
-        <a href="/cookies"    class="foo_link nv_item" data-page="cookies"   ><i class="fas fa-cookie-bite"></i> Cookies</a>
-        <a href="/privacidad" class="foo_link nv_item" data-page="privacidad"><i class="fas fa-lock"></i> Privacidad</a>
-        <a href="/feedback"   class="foo_link nv_item" data-page="feedback"  ><i class="fas fa-comment-dots"></i> Feedback</a>
-        <a href="/contacto"   class="foo_link nv_item" data-page="contacto"  ><i class="fas fa-envelope"></i> Contacto</a>
+        <a href={getRelativeLocaleUrl(lang, '/terminos')}   class="foo_link nv_item" data-page="terminos"  ><i class="fas fa-file-contract"></i> {lg('footer.terminos')}</a>
+        <a href={getRelativeLocaleUrl(lang, '/cookies')}    class="foo_link nv_item" data-page="cookies"   ><i class="fas fa-cookie-bite"></i> {lg('footer.cookies')}</a>
+        <a href={getRelativeLocaleUrl(lang, '/privacidad')} class="foo_link nv_item" data-page="privacidad"><i class="fas fa-lock"></i> {lg('footer.privacidad')}</a>
+        <a href={getRelativeLocaleUrl(lang, '/feedback')}   class="foo_link nv_item" data-page="feedback"  ><i class="fas fa-comment-dots"></i> {lg('footer.feedback')}</a>
+        <a href={getRelativeLocaleUrl(lang, '/contacto')}   class="foo_link nv_item" data-page="contacto"  ><i class="fas fa-envelope"></i> {lg('footer.contacto')}</a>
         {REDES.map(r => (
           <a href={r.url} class="redsscc" target="_blank" rel="noopener noreferrer" title={r.tit} style={`--rb:${r.bg}`}><i class={r.ico}></i></a>
         ))}
       </div>
     </div>
     <div class="foo_right">
-      <span>Creado con <i class="fas fa-heart" style="color:var(--mco);"></i> by <a href={linkme} target="_blank"><strong>{by}</strong></a> {lanzamiento} - {ahora.getFullYear()}</span>
+      <!-- Selector de idioma premium footer -->
+      <div class="nv_lang" id="footer-language-switcher">
+        <a href={urlEs} class={`lang_btn ${lang === 'es' ? 'active' : ''}`} data-lang="es">ES</a>
+        <span class="lang_divider">|</span>
+        <a href={urlEn} class={`lang_btn ${lang === 'en' ? 'active' : ''}`} data-lang="en">EN</a>
+      </div>
+
+      <span>{lg('footer.creadoCon')} <i class="fas fa-heart" style="color:var(--mco);"></i> {lg('footer.por')} <a href={linkme} target="_blank"><strong>{by}</strong></a> {lanzamiento} - {ahora.getFullYear()}</span>
     </div>
   </div>
 </footer>
 
-<div class="cookiess" id="cookiess" role="dialog" aria-live="polite" aria-label="Aviso de cookies" aria-describedby="cookiess-desc">
+<div class="cookiess" id="cookiess" role="dialog" aria-live="polite" aria-label={lg('cookies.mensaje')} aria-describedby="cookiess-desc">
   <p class="cookiess_txt" id="cookiess-desc"> <i class="fas fa-cookie-bite cookiess_ico"></i>
-    Usamos cookies para mejorar tu experiencia y mostrarte anuncios relevantes
-    <a href="/cookies" class="cookiess_link nv_item" data-page="cookies">más info.</a>
+    {lg('cookies.mensaje')}
+    <a href={getRelativeLocaleUrl(lang, '/cookies')} class="cookiess_link nv_item" data-page="cookies">{lg('cookies.masInfo')}</a>
   </p>
   <div class="cookiess_btns">
-    <button class="cookiess_aceptar" id="ck_aceptar"><i class="fas fa-check"></i> Aceptar</button>
-    <button class="cookiess_rechazar" id="ck_rechazar">Rechazar</button>
+    <button class="cookiess_aceptar" id="ck_aceptar"><i class="fas fa-check"></i> {lg('cookies.aceptar')}</button>
+    <button class="cookiess_rechazar" id="ck_rechazar">{lg('cookies.rechazar')}</button>
   </div>
 </div>
 
@@ -89,6 +106,33 @@ const ahora = new Date();
     }
   });
 
+  const initLangSwitcher = () => {
+    const switcher = document.getElementById('footer-language-switcher');
+    if (!switcher) return;
+
+    const lang = document.documentElement.lang || 'es';
+    const path = window.location.pathname;
+    const cleanPath = path.replace(/^\/en/, '').replace(/\/$/, '') || '/';
+
+    const btnEs = switcher.querySelectorAll('[data-lang="es"]');
+    const btnEn = switcher.querySelectorAll('[data-lang="en"]');
+
+    const esHref = cleanPath === '/' ? '/' : cleanPath;
+    const enHref = cleanPath === '/' ? '/en' : `/en${cleanPath}`;
+
+    btnEs.forEach(el => {
+      el.setAttribute('href', esHref);
+      el.classList.toggle('active', lang === 'es');
+    });
+    btnEn.forEach(el => {
+      el.setAttribute('href', enHref);
+      el.classList.toggle('active', lang === 'en');
+    });
+  };
+
   // Re-run every page-load since we use ClientRouter
-  document.addEventListener('astro:page-load', initCookiesBanner);
+  document.addEventListener('astro:page-load', () => {
+    initCookiesBanner();
+    initLangSwitcher();
+  });
 </script>
