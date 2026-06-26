@@ -60,7 +60,28 @@ export const llamarGemini = async ({
   }
 
   const data = await response.json();
-  const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+  // Detectar bloqueo por filtros de seguridad a nivel de prompt
+  if (data.promptFeedback?.blockReason) {
+    throw new Error(`Gemini bloqueó la solicitud: ${data.promptFeedback.blockReason}`);
+  }
+
+  // Detectar respuesta vacía o sin candidatos
+  const candidate = data.candidates?.[0];
+  if (!candidate) {
+    throw new Error('Gemini devolvió una respuesta vacía (sin candidatos). Intenta de nuevo.');
+  }
+
+  // Detectar candidato bloqueado por finishReason (SAFETY, RECITATION, etc.)
+  if (candidate.finishReason && candidate.finishReason !== 'STOP' && candidate.finishReason !== 'MAX_TOKENS') {
+    throw new Error(`Gemini rechazó la respuesta: finishReason="${candidate.finishReason}"`);
+  }
+
+  const rawText = candidate.content?.parts?.[0]?.text ?? '';
+
+  if (!rawText) {
+    throw new Error('Gemini devolvió un candidato sin texto. El modelo no generó contenido.');
+  }
 
   // Limpiar posibles bloques markdown del JSON si la respuesta los incluye de forma redundante
   return rawText.trim().replace(/^```[a-z]*\s*/i, '').replace(/```$/, '').trim();

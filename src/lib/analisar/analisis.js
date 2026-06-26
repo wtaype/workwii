@@ -1,27 +1,78 @@
 import { llamarGemini } from '../api/gemini.js';
 
-export const analizarCvConGemini = async (cvData, jobDesc, type) => {
-  const systemInstruction = `Eres un experto en Selección de Personal y filtros de contratación automatizados ATS (Applicant Tracking Systems). Tu tarea es evaluar el Currículum Vitae (CV) proporcionado contra la Descripción de la Vacante de Empleo.
+export const analizarCvConGemini = async (cvData, jobDesc, type, targetRole = '', language = 'es') => {
+  let langInstruction = '';
+  if (language === 'en') {
+    langInstruction = `
+IMPORTANT: All text values and descriptive fields in the returned JSON (including "summary", "matchedKeywords", "missingKeywords", "advice" inside recommendations, "atsWarnings", "detectedProfile", "actionVerbs", "tips") MUST be written in English. Maintain the exact JSON keys as specified.`;
+  } else {
+    langInstruction = `
+IMPORTANTE: Todos los textos y campos descriptivos del JSON de salida DEBEN estar escritos en Español. Mantén las claves JSON exactamente como se especifican.`;
+  }
 
-Genera un informe detallado y estructurado en formato JSON. El formato JSON devuelto debe cumplir EXACTAMENTE con esta estructura, sin textos adicionales markdown ni explicaciones fuera del JSON (devuelve solo el JSON puro):
+  let roleInstruction = '';
+  if (targetRole && targetRole.trim()) {
+    roleInstruction = `
+El candidato está aplicando específicamente para el puesto de: "${targetRole}".
+Evalúa el currículum poniendo especial foco en los requisitos típicos y palabras clave de esta posición.`;
+  }
+
+  const systemInstruction = `Eres un experto en Selección de Personal y filtros de contratación automatizados ATS (Applicant Tracking Systems). Tu tarea es evaluar el Currículum Vitae (CV) proporcionado.
+${roleInstruction}
+${langInstruction}
+
+Genera un informe detallado y estructurado en formato JSON. Devuelve SOLO el JSON puro sin markdown ni texto adicional:
 {
-  "score": 85, // número entero de 0 a 100 que representa la compatibilidad general
-  "summary": "Resumen ejecutivo del análisis (máximo 120 palabras)...",
-  "matchedKeywords": ["habilidad1", "habilidad2"], // palabras clave importantes del puesto encontradas en el CV (máximo 15)
-  "missingKeywords": ["habilidad3", "habilidad4"], // palabras clave importantes del puesto que FALTAN en el CV y son críticas (máximo 15)
+  "score": 85,
+  "breakdown": {
+    "contactInfo": 90,
+    "experience": 75,
+    "education": 80,
+    "skills": 65
+  },
+  "summary": "Resumen ejecutivo del análisis (máximo 120 palabras)",
+  "matchedKeywords": ["habilidad1", "habilidad2"],
+  "missingKeywords": ["habilidad3", "habilidad4"],
   "recommendations": [
     {
-      "section": "Experiencia Laboral" | "Habilidades" | "Educación" | "Formato y Visual",
-      "advice": "Explicación detallada y accionable de la mejora recomendada...",
-      "priority": "Alta" | "Media" | "Baja"
+      "section": "Experiencia Laboral",
+      "advice": "Explicación detallada y accionable",
+      "priority": "Alta",
+      "estimatedMinutes": 15,
+      "pointsGain": 8
     }
   ],
-  "atsWarnings": ["Advertencias de formato: por ejemplo, uso de tablas complejas, diseño de dos columnas, falta de datos de contacto legibles, fuentes no estándar, elementos visuales que confunden a los ATS, etc. Si el formato es limpio, dejar array vacío"]
+  "atsWarnings": ["Advertencia de formato 1"],
+  "detectedProfile": {
+    "fullName": "Juan Pérez López",
+    "email": "juan.perez@email.com",
+    "phone": "+52 55 1234 5678",
+    "linkedin": "linkedin.com/in/juanperez",
+    "currentTitle": "Desarrollador Full Stack",
+    "currentCompany": "TechCorp S.A.",
+    "estimatedYearsExp": 5,
+    "educationLevel": "Licenciatura en Ciencias Computacionales",
+    "totalWords": 450,
+    "estimatedPages": 1,
+    "sectionsFound": ["Experiencia", "Educación", "Habilidades"],
+    "atsParseable": true,
+    "parsingIssues": []
+  },
+  "languageQuality": {
+    "actionVerbsFound": ["desarrollé", "optimicé", "implementé"],
+    "actionVerbsMissing": ["lideré", "aumenté", "reduje"],
+    "quantifiedAchievements": 2,
+    "keywordDensity": "normal"
+  },
+  "benchmark": {
+    "sectorAverage": 61,
+    "topCandidates": 88,
+    "passThreshold": 75
+  }
 }`;
 
   let contents = [];
   if (type === 'pdf') {
-    // PDF Directo: Enviar como inlineData (multimodal)
     contents = [
       {
         parts: [
@@ -32,18 +83,17 @@ Genera un informe detallado y estructurado en formato JSON. El formato JSON devu
             }
           },
           {
-            text: `Por favor, lee el archivo PDF adjunto que representa el currículum del candidato, compáralo con la oferta de empleo siguiente y genera el reporte JSON.\n\nOFERTA DE EMPLEO:\n${jobDesc}`
+            text: `Lee el PDF adjunto (currículum del candidato) y genera el reporte JSON solicitado.\n\nPUESTO OBJETIVO: ${targetRole || 'No especificado'}`
           }
         ]
       }
     ];
   } else {
-    // Word o Texto Manual
     contents = [
       {
         parts: [
           {
-            text: `CURRÍCULUM DEL CANDIDATO:\n"""\n${cvData}\n"""\n\nOFERTA DE EMPLEO:\n"""\n${jobDesc}\n"""`
+            text: `CURRÍCULUM DEL CANDIDATO:\n"""\n${cvData}\n"""\n\nPUESTO OBJETIVO: ${targetRole || 'No especificado'}`
           }
         ]
       }
@@ -58,4 +108,3 @@ Genera un informe detallado y estructurado en formato JSON. El formato JSON devu
 
   return JSON.parse(cleanJsonStr);
 };
-

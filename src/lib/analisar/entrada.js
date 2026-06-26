@@ -1,34 +1,30 @@
 import { wiSmart, Notificacion } from '../widev.js';
 
-// Cargar Mammoth.js de forma diferida en interacción del usuario
-wiSmart({
-  js: 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js'
-});
+// Cargar librerías de forma diferida en interacción del usuario
+export const cargarLibreriasExtraccion = () => {
+  wiSmart({
+    js: 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.11.0/mammoth.browser.min.js'
+  });
+  wiSmart({
+    js: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'
+  });
+};
 
 let selectedFile = null;
 let fileBase64 = null;
 let fileTextContent = null;
-let manualMode = false;
 let onValidateCallback = null;
 
 // Selectores de DOM
-let tabUpload, tabText, panelUpload, panelText, atsDropzone, fileInput, filePreviewContainer, cvTextarea, jobTextarea, cvCounter, jobCounter;
+let atsDropzone, fileInput, filePreviewContainer;
 let uploadProgressContainer, uploadProgressBar, uploadProgressPercent;
 
 export const initEntrada = (onValidate) => {
   onValidateCallback = onValidate;
 
-  tabUpload = document.getElementById('tabUpload');
-  tabText = document.getElementById('tabText');
-  panelUpload = document.getElementById('panelUpload');
-  panelText = document.getElementById('panelText');
   atsDropzone = document.getElementById('atsDropzone');
   fileInput = document.getElementById('fileInput');
   filePreviewContainer = document.getElementById('filePreviewContainer');
-  cvTextarea = document.getElementById('cvTextarea');
-  jobTextarea = document.getElementById('jobTextarea');
-  cvCounter = document.getElementById('cvCounter');
-  jobCounter = document.getElementById('jobCounter');
 
   uploadProgressContainer = document.getElementById('uploadProgressContainer');
   uploadProgressBar = document.getElementById('uploadProgressBar');
@@ -38,16 +34,18 @@ export const initEntrada = (onValidate) => {
 };
 
 const setupListeners = () => {
-  tabUpload?.addEventListener('click', () => switchTab(false));
-  tabText?.addEventListener('click', () => switchTab(true));
-
   // Drag & Drop
-  atsDropzone?.addEventListener('click', () => fileInput?.click());
+  atsDropzone?.addEventListener('mouseenter', cargarLibreriasExtraccion, { once: true });
+  atsDropzone?.addEventListener('click', () => {
+    cargarLibreriasExtraccion();
+    fileInput?.click();
+  });
   atsDropzone?.addEventListener('dragover', (e) => { e.preventDefault(); atsDropzone.classList.add('dragover'); });
   atsDropzone?.addEventListener('dragleave', () => atsDropzone.classList.remove('dragover'));
   atsDropzone?.addEventListener('drop', (e) => {
     e.preventDefault();
     atsDropzone.classList.remove('dragover');
+    cargarLibreriasExtraccion();
     if (e.dataTransfer?.files.length) {
       handleFileSelection(e.dataTransfer.files[0]);
     }
@@ -59,32 +57,11 @@ const setupListeners = () => {
     }
   });
 
-  cvTextarea?.addEventListener('input', () => {
-    if (cvCounter) cvCounter.textContent = `${cvTextarea.value.length.toLocaleString()} / 25,000 caracteres`;
-    validate();
-  });
-
-  jobTextarea?.addEventListener('input', () => {
-    if (jobCounter) jobCounter.textContent = `${jobTextarea.value.length.toLocaleString()} / 15,000 caracteres`;
-    validate();
-  });
+  const roleInput = document.getElementById('atsTargetRole');
+  roleInput?.addEventListener('input', validate);
 };
 
-const switchTab = (isTextMode) => {
-  manualMode = isTextMode;
-  if (isTextMode) {
-    tabText?.classList.add('active');
-    tabUpload?.classList.remove('active');
-    if (panelText) panelText.style.display = 'flex';
-    if (panelUpload) panelUpload.style.display = 'none';
-  } else {
-    tabUpload?.classList.add('active');
-    tabText?.classList.remove('active');
-    if (panelUpload) panelUpload.style.display = 'flex';
-    if (panelText) panelText.style.display = 'none';
-  }
-  validate();
-};
+// switchTab removida (sólo modo archivo soportado)
 
 const runProgress = (duration = 600) => {
   return new Promise((resolve) => {
@@ -144,9 +121,10 @@ const handleFileSelection = async (file) => {
   if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
     try {
       fileBase64 = await convertFileToBase64(file);
+      fileTextContent = await parsePdf(file);
     } catch (err) {
       console.error(err);
-      Notificacion('Error al leer el archivo PDF.', 'error');
+      Notificacion('Error al leer y extraer texto del PDF.', 'error');
       removeFile();
     }
   } else {
@@ -242,45 +220,66 @@ const extractTextFromDocx = (file) => {
 };
 
 const validate = () => {
-  const hasJob = jobTextarea && jobTextarea.value.trim().length >= 10;
-  let hasCv = false;
-
-  if (manualMode) {
-    hasCv = cvTextarea && cvTextarea.value.trim().length >= 50;
-  } else {
-    hasCv = selectedFile !== null && (fileBase64 !== null || fileTextContent !== null);
-  }
+  const roleInput = document.getElementById('atsTargetRole');
+  const hasRole = roleInput && roleInput.value.trim().length >= 2;
+  const hasCv = selectedFile !== null && (fileBase64 !== null || fileTextContent !== null);
 
   if (onValidateCallback) {
-    onValidateCallback(hasJob && hasCv);
+    onValidateCallback(hasRole && hasCv);
   }
 };
 
 export const getCvData = () => {
-  if (manualMode) {
-    return { type: 'text', data: cvTextarea ? cvTextarea.value.trim() : '' };
+  if (selectedFile && (selectedFile.type === 'application/pdf' || selectedFile.name.endsWith('.pdf'))) {
+    return { type: 'pdf', data: fileBase64, name: selectedFile.name };
   } else {
-    if (selectedFile && (selectedFile.type === 'application/pdf' || selectedFile.name.endsWith('.pdf'))) {
-      return { type: 'pdf', data: fileBase64, name: selectedFile.name };
-    } else {
-      return { type: 'text', data: fileTextContent, name: selectedFile ? selectedFile.name : '' };
-    }
+    return { type: 'text', data: fileTextContent, name: selectedFile ? selectedFile.name : '' };
   }
 };
 
 export const getJobDescription = () => {
-  return jobTextarea ? jobTextarea.value.trim() : '';
+  return '';
+};
+
+export const getCvTextContent = () => {
+  return fileTextContent || '';
+};
+
+const parsePdf = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(file);
+    reader.onload = async (e) => {
+      const arrayBuffer = e.target.result;
+      const pdfjsLib = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
+
+      if (!pdfjsLib) {
+        reject(new Error('Librería PDF no está lista en el cliente. Intenta de nuevo.'));
+        return;
+      }
+
+      try {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let fullText = '';
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const textContent = await page.getTextContent();
+          const pageText = textContent.items.map(item => item.str).join(' ');
+          fullText += pageText + '\n';
+        }
+        resolve(fullText);
+      } catch (err) {
+        console.error('Pdfjs error:', err);
+        reject(new Error('Error al decodificar las páginas del PDF.'));
+      }
+    };
+    reader.onerror = () => reject(new Error('Error al leer el archivo PDF.'));
+  });
 };
 
 export const resetEntrada = () => {
   removeFile();
-  if (cvTextarea) {
-    cvTextarea.value = '';
-    if (cvCounter) cvCounter.textContent = '0 / 25,000 caracteres';
-  }
-  if (jobTextarea) {
-    jobTextarea.value = '';
-    if (jobCounter) jobCounter.textContent = '0 / 15,000 caracteres';
-  }
   validate();
 };
