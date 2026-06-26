@@ -24,6 +24,12 @@ let cvState = { ...DEFAULT_STATE };
 const subscribers = [];
 let debounceTimer = null;
 
+const getCacheKey = () => {
+  if (typeof window === 'undefined') return 'crear_cv_es';
+  const isEn = window.location.pathname.includes('/en/crear');
+  return isEn ? 'crear_cv_en' : 'crear_cv_es';
+};
+
 export const crearEstructuraExp = () => ({
   id: 'exp_' + Math.random().toString(36).substring(2, 9),
   puesto: '',
@@ -56,7 +62,8 @@ export const saveToLocalStorage = () => {
   
   debounceTimer = setTimeout(() => {
     try {
-      localStorage.setItem('workwii_active_cv', JSON.stringify(cvState));
+      const key = getCacheKey();
+      localStorage.setItem(key, JSON.stringify(cvState));
     } catch (e) {
       console.error('Error al guardar caché de CV:', e);
     }
@@ -103,7 +110,8 @@ export const loadFromLocalStorage = () => {
   if (typeof localStorage === 'undefined') return { ...DEFAULT_STATE };
 
   try {
-    const cached = localStorage.getItem('workwii_active_cv');
+    const key = getCacheKey();
+    const cached = localStorage.getItem(key);
     if (cached) {
       const parsed = JSON.parse(cached);
       cvState = { ...DEFAULT_STATE, ...parsed };
@@ -148,7 +156,8 @@ export const resetCvData = () => {
     educacion: [crearEstructuraEdu()]
   };
   if (typeof localStorage !== 'undefined') {
-    localStorage.removeItem('workwii_active_cv');
+    const key = getCacheKey();
+    localStorage.removeItem(key);
   }
   notifySubscribers();
 };

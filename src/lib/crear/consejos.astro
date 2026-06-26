@@ -1,8 +1,16 @@
 ---
 // src/lib/crear/consejos.astro
 // Componente de Consejos y Buenas Prácticas ATS con Citas de Autoridad
----
+import { useTranslations } from '../i18n/utils.js';
+import { idiomaCrear } from './idiomaCrear.js';
 
+interface Props {
+  lang?: string;
+}
+
+const { lang = Astro.currentLocale || 'es' } = Astro.props;
+const lg = useTranslations(lang, idiomaCrear);
+---
 
 <style>
   .consejos_container {
@@ -171,54 +179,53 @@
   }
 </style>
 
-
 <section class="consejos_container">
   <!-- Encabezado de la guía -->
   <div class="consejos_title_sec">
     <div class="consejos_badge">
       <i class="fas fa-graduation-cap"></i>
-      <span>Guía Científica</span>
+      <span>{lg('crear.consejos.badge')}</span>
     </div>
-    <h2>Buenas Prácticas para un <span>CV ATS Flawless</span></h2>
-    <p>Alinea tu currículum con los estándares de lectura automática recomendados por los departamentos de reclutamiento líderes del sector tecnológico.</p>
+    <h2>{lg('crear.consejos.titulo')}<span>{lg('crear.consejos.tituloSpan')}</span></h2>
+    <p>{lg('crear.consejos.desc')}</p>
   </div>
 
-  <!-- Tabla Comparativa Premium (Inspirada en comparar.astro) -->
+  <!-- Tabla Comparativa Premium -->
   <div class="comp_table_card consejos_table_card">
     <div class="comp_table_wrapper">
       <table class="comp_table consejos_table">
         <thead>
           <tr>
-            <th>Categoría</th>
-            <th class="consejos_col_green">Práctica Recomendada <i class="fas fa-circle-check"></i></th>
-            <th class="consejos_col_red">Práctica a Evitar <i class="fas fa-circle-xmark"></i></th>
+            <th>{lg('crear.consejos.categoria')}</th>
+            <th class="consejos_col_green">{lg('crear.consejos.recomendada')} <i class="fas fa-circle-check"></i></th>
+            <th class="consejos_col_red">{lg('crear.consejos.evitar')} <i class="fas fa-circle-xmark"></i></th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td class="consejos_cat_cell"><strong>Tipografía</strong></td>
-            <td>Fuentes estándar legibles como Roboto, Arial o Helvetica (10pt a 11pt) con negrita clara en tu nombre, cargos y empresas.</td>
-            <td>Fuentes cursivas, decorativas o tipografías no estándar. Evitar tamaños demasiado reducidos (menores a 9.5pt).</td>
+            <td class="consejos_cat_cell"><strong>{lg('crear.consejos.catTipografia')}</strong></td>
+            <td>{lg('crear.consejos.recTipografia')}</td>
+            <td>{lg('crear.consejos.evitTipografia')}</td>
           </tr>
           <tr>
-            <td class="consejos_cat_cell"><strong>Alineación</strong></td>
-            <td>Alineación estricta a la izquierda para el perfil profesional y logros, garantizando una lectura lineal natural del parser.</td>
-            <td>Texto justificado. Los espacios desiguales entre palabras pueden fragmentar frases clave y confundir al robot.</td>
+            <td class="consejos_cat_cell"><strong>{lg('crear.consejos.catAlineacion')}</strong></td>
+            <td>{lg('crear.consejos.recAlineacion')}</td>
+            <td>{lg('crear.consejos.evitAlineacion')}</td>
           </tr>
           <tr>
-            <td class="consejos_cat_cell"><strong>Estructura</strong></td>
-            <td>Diseño de flujo continuo de una sola columna o columnas de texto vectoriales nativas para ordenar la cronología.</td>
-            <td>Tablas HTML (`&lt;table&gt;`) o cuadros de texto flotantes. El texto dentro de ellos se extrae fuera de orden o se mezcla.</td>
+            <td class="consejos_cat_cell"><strong>{lg('crear.consejos.catEstructura')}</strong></td>
+            <td>{lg('crear.consejos.recEstructura')}</td>
+            <td>{lg('crear.consejos.evitEstructura')}</td>
           </tr>
           <tr>
-            <td class="consejos_cat_cell"><strong>Elementos Visuales</strong></td>
-            <td>Viñetas estándar y limpias (`-` o `•`) para listar tus funciones. Enfocarse al 100% en texto legible.</td>
-            <td>Fotos, logotipos de empresas, gráficos de barras para medir habilidades o iconos complejos en el texto.</td>
+            <td class="consejos_cat_cell"><strong>{lg('crear.consejos.catVisuales')}</strong></td>
+            <td>{lg('crear.consejos.recVisuales')}</td>
+            <td>{lg('crear.consejos.evitVisuales')}</td>
           </tr>
           <tr>
-            <td class="consejos_cat_cell"><strong>Dimensiones</strong></td>
-            <td>Márgenes uniformes y consistentes de entre 0.5 y 1 pulgada. Exportación a tamaño de página A4 o Letter estándar.</td>
-            <td>Márgenes desiguales o extremadamente reducidos para forzar texto, lo que arruina la impresión física.</td>
+            <td class="consejos_cat_cell"><strong>{lg('crear.consejos.catDimensiones')}</strong></td>
+            <td>{lg('crear.consejos.recDimensiones')}</td>
+            <td>{lg('crear.consejos.evitDimensiones')}</td>
           </tr>
         </tbody>
       </table>
@@ -227,32 +234,32 @@
 
   <!-- Cuadrícula de Citas de Autoridad -->
   <div class="consejos_quotes_sec">
-    <h3>Citas de Autoridad y Respaldo</h3>
+    <h3>{lg('crear.consejos.citasTitulo')}</h3>
     <div class="consejos_quotes_grid">
       <div class="consejos_quote_card">
         <div class="quote_icon"><i class="fas fa-quote-left"></i></div>
-        <p class="quote_text">"Un formato simple de una sola columna, sin tablas ni imágenes decorativas, incrementa hasta en un 60% la probabilidad de que un parser ATS indexe el currículum de forma correcta."</p>
+        <p class="quote_text">{lg('crear.consejos.harvardTexto')}</p>
         <div class="quote_author">
           <strong>Harvard Career Services</strong>
-          <span>Guía oficial de reclutamiento corporativo</span>
+          <span>{lg('crear.consejos.harvardAutor')}</span>
         </div>
       </div>
 
       <div class="consejos_quote_card">
         <div class="quote_icon"><i class="fas fa-quote-left"></i></div>
-        <p class="quote_text">"El uso de negrita clara en cargos y nombres de empresa clave reduce el tiempo de revisión humana (promedio de 6 segundos) y duplica la tasa de retención visual del reclutador."</p>
+        <p class="quote_text">{lg('crear.consejos.mitTexto')}</p>
         <div class="quote_author">
           <strong>MIT Career Development</strong>
-          <span>Estudio de empleabilidad y ergonomía visual</span>
+          <span>{lg('crear.consejos.mitAutor')}</span>
         </div>
       </div>
 
       <div class="consejos_quote_card">
         <div class="quote_icon"><i class="fas fa-quote-left"></i></div>
-        <p class="quote_text">"Los algoritmos ATS ignoran de forma sistemática el texto ubicado dentro de encabezados, pies de página o cuadros de texto separados, resultando en descartes prematuros."</p>
+        <p class="quote_text">{lg('crear.consejos.googleTexto')}</p>
         <div class="quote_author">
           <strong>Google Staffing Team</strong>
-          <span>Recomendaciones oficiales para procesos de ingeniería</span>
+          <span>{lg('crear.consejos.googleAutor')}</span>
         </div>
       </div>
     </div>

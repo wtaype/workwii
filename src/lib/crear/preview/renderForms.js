@@ -1,7 +1,7 @@
 // src/lib/crear/preview/renderForms.js
 // Renderizado de todos los formularios del editor de CV ATS
 
-import { updateCvData } from '../estado.js';
+import { updateCvData, getCvData } from '../estado.js';
 import { crearEstructuraExp, crearEstructuraEdu } from '../estado.js';
 import { Notificacion, wicopy } from '../../widev.js';
 import { sugerirHabilidadesConIA } from '../wiibot.js';
@@ -145,6 +145,8 @@ export const renderAchievementsInputs = (container, exp, cv, expIdx) => {
             value="${ach.replace(/"/g, '&quot;')}"
             placeholder="Logro o función #${idx + 1}"
             draggable="false"
+            spellcheck="true"
+            lang="${cv.idioma}"
           />
           <button type="button" class="conv_btn_danger_small btn_del_achievement" data-idx="${idx}" title="Eliminar viñeta">
             <i class="fas fa-trash"></i>
@@ -214,12 +216,12 @@ export const renderContactoForm = (container, cv) => {
   container.innerHTML = `
     <div class="conv_form_grid">
       <div class="conv_field">
-        <label>${lang.nombre}<span class="cr_help_tip" data-witip="Pon tu nombre de pila y apellidos principales. Evita apodos o nombres artísticos."><i class="fas fa-question-circle"></i></span></label>
-        <input type="text" id="cr_inp_nombre" value="${cv.nombre || ''}" placeholder="${lang.placeholderNombre}" required />
+        <label>${lang.nombre}</label>
+        <input type="text" id="cr_inp_nombre" value="${cv.nombre || ''}" placeholder="${lang.placeholderNombre}" required spellcheck="true" lang="${cv.idioma}" />
       </div>
       <div class="conv_field">
         <label>${lang.titulo}<span class="cr_help_tip" data-witip="El cargo al que aspiras o tu especialidad. Ayuda a que el reclutador te ubique rápidamente."><i class="fas fa-question-circle"></i></span></label>
-        <input type="text" id="cr_inp_titulo" value="${cv.titulo || ''}" placeholder="${lang.placeholderTitulo}" required />
+        <input type="text" id="cr_inp_titulo" value="${cv.titulo || ''}" placeholder="${lang.placeholderTitulo}" required spellcheck="true" lang="${cv.idioma}" />
       </div>
       <div class="conv_field">
         <label>${lang.email}<span class="cr_help_tip" data-witip="Usa una dirección profesional (nombre.apellido@correo.com). Evita correos informales."><i class="fas fa-question-circle"></i></span></label>
@@ -231,7 +233,7 @@ export const renderContactoForm = (container, cv) => {
       </div>
       <div class="conv_field">
         <label>${lang.ubicacion}<span class="cr_help_tip" data-witip="Ciudad y País actuales. Importante para filtros geográficos y ofertas locales."><i class="fas fa-question-circle"></i></span></label>
-        <input type="text" id="cr_inp_ubicacion" value="${cv.ubicacion || ''}" placeholder="${lang.placeholderUbicacion}" required />
+        <input type="text" id="cr_inp_ubicacion" value="${cv.ubicacion || ''}" placeholder="${lang.placeholderUbicacion}" required spellcheck="true" lang="${cv.idioma}" />
       </div>
       <div class="conv_field">
         <label>${lang.linkedin}<span class="cr_help_tip" data-witip="Enlace a tu perfil profesional. El 90% de los reclutadores lo consulta antes de llamar."><i class="fas fa-question-circle"></i></span></label>
@@ -310,7 +312,24 @@ export const renderContactoForm = (container, cv) => {
     el?.addEventListener('input', () => updateCvData({ [field]: el.value }));
   });
   document.getElementById('cr_inp_idioma')?.addEventListener('change', (e) => {
-    updateCvData({ idioma: e.target.value });
+    const nextLang = e.target.value;
+    
+    // Guardar el estado actual en la clave del idioma destino antes de redirigir
+    const currentState = getCvData();
+    currentState.idioma = nextLang;
+    const targetKey = nextLang === 'en' ? 'crear_cv_en' : 'crear_cv_es';
+    localStorage.setItem(targetKey, JSON.stringify(currentState));
+
+    updateCvData({ idioma: nextLang });
+
+    // Redirección para acoplar idioma del CV e idioma del editor (Astro-way)
+    const currentPath = window.location.pathname;
+    const isCurrentlyEn = currentPath.includes('/en/crear');
+    if (nextLang === 'en' && !isCurrentlyEn) {
+      window.location.href = '/en/crear';
+    } else if (nextLang === 'es' && isCurrentlyEn) {
+      window.location.href = '/crear';
+    }
   });
 };
 
@@ -326,7 +345,7 @@ export const renderPerfilForm = (container, cv) => {
         ${lang.titulo}
         <span class="cr_help_tip" data-witip="Un resumen profesional de 50 a 100 palabras ayuda al reclutador a entender tu perfil rápidamente."><i class="fas fa-question-circle"></i></span>
       </label>
-      <textarea id="cr_inp_resumen" rows="8" placeholder="${lang.placeholder}" required>${cv.resumen || ''}</textarea>
+      <textarea id="cr_inp_resumen" rows="8" placeholder="${lang.placeholder}" required spellcheck="true" lang="${cv.idioma}">${cv.resumen || ''}</textarea>
       <span class="conv_char_counter" id="lbl_resumen_counter">${(cv.resumen || '').length} ${lang.caracteres}</span>
     </div>
   `;
@@ -371,9 +390,9 @@ export const renderExperienciasForm = (container, cv) => {
           </div>
         </div>
         <div class="conv_form_grid">
-          <div class="conv_field"><label>${lang.cargo}</label><input type="text" class="exp_puesto" value="${exp.puesto || ''}" placeholder="${lang.placeholderCargo}" required /></div>
-          <div class="conv_field"><label>${lang.empresa}</label><input type="text" class="exp_empresa" value="${exp.empresa || ''}" placeholder="${lang.placeholderEmpresa}" required /></div>
-          <div class="conv_field"><label>${lang.ubicacion}</label><input type="text" class="exp_ubicacion" value="${exp.ubicacion || ''}" placeholder="${lang.placeholderUbicacion}" /></div>
+          <div class="conv_field"><label>${lang.cargo}</label><input type="text" class="exp_puesto" value="${exp.puesto || ''}" placeholder="${lang.placeholderCargo}" required spellcheck="true" lang="${cv.idioma}" /></div>
+          <div class="conv_field"><label>${lang.empresa}</label><input type="text" class="exp_empresa" value="${exp.empresa || ''}" placeholder="${lang.placeholderEmpresa}" required spellcheck="true" lang="${cv.idioma}" /></div>
+          <div class="conv_field"><label>${lang.ubicacion}</label><input type="text" class="exp_ubicacion" value="${exp.ubicacion || ''}" placeholder="${lang.placeholderUbicacion}" spellcheck="true" lang="${cv.idioma}" /></div>
           <div class="conv_field"><label>${lang.inicio}</label><input type="text" class="exp_inicio" value="${exp.inicio || ''}" placeholder="${lang.placeholderInicio}" required /></div>
           <div class="conv_field"><label>${lang.fin}</label><input type="text" class="exp_fin" value="${exp.fin || ''}" placeholder="${lang.placeholderFin}" required /></div>
           <div class="conv_field full_width">
@@ -463,9 +482,9 @@ export const renderEducacionForm = (container, cv) => {
           ${cv.educacion.length > 1 ? `<button class="conv_btn_danger_small btn_del_edu" data-id="${edu.id}"><i class="fas fa-trash"></i> ${lang.eliminar}</button>` : ''}
         </div>
         <div class="conv_form_grid">
-          <div class="conv_field"><label>${lang.institucion}</label><input type="text" class="edu_institucion" value="${edu.institucion || ''}" placeholder="${lang.placeholderInstitucion}" required /></div>
-          <div class="conv_field"><label>${lang.grado}</label><input type="text" class="edu_grado" value="${edu.grado || ''}" placeholder="${lang.placeholderGrado}" required /></div>
-          <div class="conv_field"><label>${lang.ubicacion}</label><input type="text" class="edu_ubicacion" value="${edu.ubicacion || ''}" placeholder="${lang.placeholderUbicacion}" /></div>
+          <div class="conv_field"><label>${lang.institucion}</label><input type="text" class="edu_institucion" value="${edu.institucion || ''}" placeholder="${lang.placeholderInstitucion}" required spellcheck="true" lang="${cv.idioma}" /></div>
+          <div class="conv_field"><label>${lang.grado}</label><input type="text" class="edu_grado" value="${edu.grado || ''}" placeholder="${lang.placeholderGrado}" required spellcheck="true" lang="${cv.idioma}" /></div>
+          <div class="conv_field"><label>${lang.ubicacion}</label><input type="text" class="edu_ubicacion" value="${edu.ubicacion || ''}" placeholder="${lang.placeholderUbicacion}" spellcheck="true" lang="${cv.idioma}" /></div>
           <div class="conv_field"><label>${lang.inicio}</label><input type="text" class="edu_inicio" value="${edu.inicio || ''}" placeholder="${lang.placeholderInicio}" required /></div>
           <div class="conv_field"><label>${lang.fin}</label><input type="text" class="edu_fin" value="${edu.fin || ''}" placeholder="${lang.placeholderFin}" required /></div>
         </div>
@@ -513,7 +532,7 @@ export const renderSkillsForm = (container, cv) => {
         ${lang.titulo}
         <span class="cr_help_tip" data-witip="Palabras clave de tus tecnologías o conocimientos. Los sistemas ATS las buscan exactamente para calificarte. Sepáralas por comas."><i class="fas fa-question-circle"></i></span>
       </label>
-      <input type="text" id="cr_inp_skills" value="${cv.skills || ''}" placeholder="${lang.placeholder}" required />
+      <input type="text" id="cr_inp_skills" value="${cv.skills || ''}" placeholder="${lang.placeholder}" required spellcheck="true" lang="${cv.idioma}" />
       <div class="cr_ai_opt_trigger_bar">
         <button type="button" class="cr_btn_opt_ai" id="crBtnSugerirHabilidades">
           <i class="fas fa-sparkles"></i> Sugerir Habilidades con IA
@@ -581,7 +600,7 @@ export const renderLanguages = (cv) => {
     const row = document.createElement('div');
     row.className = 'conv_lang_row';
     row.innerHTML = `
-      <input type="text" class="in_lang_value" value="${langVal || ''}" placeholder="${lang.placeholderIdioma}" />
+      <input type="text" class="in_lang_value" value="${langVal || ''}" placeholder="${lang.placeholderIdioma}" spellcheck="true" lang="${cv.idioma}" />
       <button type="button" class="conv_btn_icon_danger btn_del_lang" data-idx="${idx}"><i class="fas fa-trash-can"></i></button>
     `;
     container.appendChild(row);

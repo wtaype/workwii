@@ -34,8 +34,8 @@ export const updateA4Preview = (cv) => {
   const headerHTML = `
     <div class="cr_cv_header ${cv.incluirFoto && cv.fotoBase64 ? 'has_avatar' : ''}" data-click-tab="contacto">
       <div class="cr_cv_header_text">
-        <h1 class="cr_cv_name cr_prev_editable" data-edit-field="nombre">${cv.nombre || 'Nombre Completo'}</h1>
-        <div class="cr_cv_title cr_prev_editable" data-edit-field="titulo">${cv.titulo || 'Título o Profesión'}</div>
+        <h1 class="cr_cv_name cr_prev_editable" data-edit-field="nombre" spellcheck="true" lang="${cv.idioma}">${cv.nombre || 'Nombre Completo'}</h1>
+        <div class="cr_cv_title cr_prev_editable" data-edit-field="titulo" spellcheck="true" lang="${cv.idioma}">${cv.titulo || 'Título o Profesión'}</div>
         <div class="cr_cv_contact">${contactsHTML || 'Email &bull; Teléfono &bull; Ubicación'}</div>
       </div>
       ${cv.incluirFoto && cv.fotoBase64 ? `
@@ -55,7 +55,7 @@ export const updateA4Preview = (cv) => {
       html: `
         <div class="cr_cv_section" data-click-tab="perfil">
           <h2 class="cr_cv_section_title">${textPerfil}</h2>
-          <p class="cr_cv_text cr_prev_editable" data-edit-field="resumen">${cv.resumen}</p>
+          <p class="cr_cv_text cr_prev_editable" data-edit-field="resumen" spellcheck="true" lang="${cv.idioma}">${cv.resumen}</p>
         </div>
       `
     });
@@ -80,7 +80,7 @@ export const updateA4Preview = (cv) => {
         .filter(l => l.length > 0)
         .map((line, liIdx) => {
           const clean = line.replace(/^[-\*\•\s]+/, '').trim();
-          return `<li class="cr_prev_editable" data-edit-field="exp_logro" data-exp-id="${exp.id}" data-logro-idx="${liIdx}">${clean}</li>`;
+          return `<li class="cr_prev_editable" data-edit-field="exp_logro" data-exp-id="${exp.id}" data-logro-idx="${liIdx}" spellcheck="true" lang="${cv.idioma}">${clean}</li>`;
         })
         .join('');
 
@@ -89,12 +89,12 @@ export const updateA4Preview = (cv) => {
         html: `
           <div class="cr_cv_item" data-click-tab="experiencia">
             <div class="cr_cv_item_row">
-              <strong class="cr_prev_editable" data-edit-field="exp_puesto" data-exp-id="${exp.id}">${exp.puesto || 'Puesto / Cargo'}</strong>
+              <strong class="cr_prev_editable" data-edit-field="exp_puesto" data-exp-id="${exp.id}" spellcheck="true" lang="${cv.idioma}">${exp.puesto || 'Puesto / Cargo'}</strong>
               <span>${exp.inicio || ''} – ${exp.fin === 'Presente' || !exp.fin ? textPresente : exp.fin}</span>
             </div>
             <div class="cr_cv_item_subrow">
-              <span class="cr_prev_editable" data-edit-field="exp_empresa" data-exp-id="${exp.id}">${exp.empresa || 'Empresa'}</span>
-              <span class="cr_prev_editable" data-edit-field="exp_ubicacion" data-exp-id="${exp.id}">${exp.ubicacion || ''}</span>
+              <span class="cr_prev_editable" data-edit-field="exp_empresa" data-exp-id="${exp.id}" spellcheck="true" lang="${cv.idioma}">${exp.empresa || 'Empresa'}</span>
+              <span class="cr_prev_editable" data-edit-field="exp_ubicacion" data-exp-id="${exp.id}" spellcheck="true" lang="${cv.idioma}">${exp.ubicacion || ''}</span>
             </div>
             ${achievements ? `<div class="cr_cv_item_desc"><ul>${achievements}</ul></div>` : ''}
           </div>
@@ -117,12 +117,12 @@ export const updateA4Preview = (cv) => {
         html: `
           <div class="cr_cv_item" data-click-tab="educacion">
             <div class="cr_cv_item_row">
-              <strong class="cr_prev_editable" data-edit-field="edu_grado" data-edu-id="${edu.id}">${edu.grado || 'Grado / Certificación'}</strong>
+              <strong class="cr_prev_editable" data-edit-field="edu_grado" data-edu-id="${edu.id}" spellcheck="true" lang="${cv.idioma}">${edu.grado || 'Grado / Certificación'}</strong>
               <span>${edu.inicio || ''} – ${edu.fin || ''}</span>
             </div>
             <div class="cr_cv_item_subrow">
-              <span class="cr_prev_editable" data-edit-field="edu_institucion" data-edu-id="${edu.id}">${edu.institucion || 'Institución'}</span>
-              <span class="cr_prev_editable" data-edit-field="edu_ubicacion" data-edu-id="${edu.id}">${edu.ubicacion || ''}</span>
+              <span class="cr_prev_editable" data-edit-field="edu_institucion" data-edu-id="${edu.id}" spellcheck="true" lang="${cv.idioma}">${edu.institucion || 'Institución'}</span>
+              <span class="cr_prev_editable" data-edit-field="edu_ubicacion" data-edu-id="${edu.id}" spellcheck="true" lang="${cv.idioma}">${edu.ubicacion || ''}</span>
             </div>
           </div>
         `
@@ -138,7 +138,7 @@ export const updateA4Preview = (cv) => {
         <div class="cr_cv_section" data-click-tab="skills">
           <h2 class="cr_cv_section_title">${textSkills}</h2>
           <div class="cr_cv_skills_list">
-            ${cv.skills ? `<p class="cr_cv_text"><strong>${textSkillsLabel}:</strong> <span class="cr_prev_editable" data-edit-field="skills">${cv.skills}</span></p>` : ''}
+            ${cv.skills ? `<p class="cr_cv_text"><strong>${textSkillsLabel}:</strong> <span class="cr_prev_editable" data-edit-field="skills" spellcheck="true" lang="${cv.idioma}">${cv.skills}</span></p>` : ''}
             ${cv.idiomas && cv.idiomas.length > 0 ? `<p class="cr_cv_text"><strong>${textIdiomasLabel}:</strong> ${cv.idiomas.filter(Boolean).join(', ')}</p>` : ''}
           </div>
         </div>

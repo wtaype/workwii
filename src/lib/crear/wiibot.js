@@ -11,9 +11,13 @@ import { wiRateLimit, Notificacion } from '../widev.js';
 export const estructurarCvConIA = async (textoCv, puestoDeseado = '', idiomaDestino = 'es', inputType = 'text') => {
   let idiomaPrompt = '';
   if (idiomaDestino === 'en') {
-    idiomaPrompt = `IMPORTANTE: Traduce y redacta TODO el contenido del currículum al inglés (English). El JSON resultante debe tener todos los textos (incluyendo títulos de puestos, nombres de empresas si aplica traducirlas, resúmenes, descripciones de logros, nombres de habilidades e idiomas) redactados profesionalmente en inglés.`;
+    idiomaPrompt = `IMPORTANTE: Traduce y redacta TODO el contenido del currículum al inglés (English). El JSON resultante debe tener todos los textos (incluyendo títulos de puestos, nombres de empresas si aplica traducirlas, resúmenes, descripciones de logros, nombres de habilidades e idiomas) redactados profesionalmente en inglés. En el JSON final, establece el campo "idioma" como "en".`;
+  } else if (idiomaDestino === 'es') {
+    idiomaPrompt = `IMPORTANTE: Redacta todo el contenido del currículum en español latinoamericano. En el JSON final, establece el campo "idioma" como "es".`;
   } else {
-    idiomaPrompt = `IMPORTANTE: Redacta todo el contenido del currículum en español latinoamericano.`;
+    idiomaPrompt = `IMPORTANTE: Analiza y detecta el idioma del currículum provisto.
+1. Si el currículum está redactado principalmente en español, mantén e interactúa todo en español latinoamericano, y establece el campo obligatorio "idioma" como "es" en el JSON final.
+2. Si el currículum está redactado en inglés o en cualquier otro idioma, tradúcelo, redáctalo e interactúalo completamente en inglés (English) profesional, y establece el campo obligatorio "idioma" como "en" en el JSON final.`;
   }
 
   const systemInstruction = `Eres un extractor inteligente de información de currículums.
@@ -59,7 +63,8 @@ Devuelve ÚNICAMENTE el reporte JSON que cumpla EXACTAMENTE con esta estructura 
     }
   ],
   "skills": "Habilidad1, Habilidad2, Habilidad3...",
-  "idiomas": ["Idioma 1 (Nivel)", "Idioma 2 (Nivel)"]
+  "idiomas": ["Idioma 1 (Nivel)", "Idioma 2 (Nivel)"],
+  "idioma": "es o en (según el idioma detectado o solicitado)"
 }`;
 
   let contents = [];
@@ -100,7 +105,11 @@ Por favor, extrae y transcribe fielmente su información (manteniendo la redacci
   });
 
   const parsedJson = JSON.parse(rawResponse);
-  parsedJson.idioma = idiomaDestino;
+  if (idiomaDestino === 'auto') {
+    parsedJson.idioma = parsedJson.idioma === 'en' ? 'en' : 'es';
+  } else {
+    parsedJson.idioma = idiomaDestino;
+  }
   
   // Agregar IDs únicos a experiencias y educación para render
   if (parsedJson.experiencias && Array.isArray(parsedJson.experiencias)) {

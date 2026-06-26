@@ -24,10 +24,14 @@ export const initEditablePreview = (printableArea, getCvData, updateCvData, onSy
 
   const editables = printableArea.querySelectorAll('[data-edit-field]');
 
+  const cv = getCvData();
+  const cvLang = cv?.idioma || 'es';
+
   editables.forEach(el => {
     // Solo activar si el elemento tiene contenido (no es un placeholder vacío)
     el.contentEditable = 'true';
     el.spellcheck = true;
+    el.setAttribute('lang', cvLang);
     el.draggable = false;
 
     let debounceTimer = null;

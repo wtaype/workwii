@@ -20,7 +20,15 @@ let activeTab = 'contacto';
 // ─── Punto de entrada público ─────────────────────────────────────────────────
 
 export const initVisual = () => {
-  loadFromLocalStorage();
+  const cv = loadFromLocalStorage();
+  
+  // Sincronizar el idioma del CV según la URL actual si está vacío
+  const workspace = document.getElementById('crearWorkspace');
+  const pageLang = workspace?.getAttribute('data-locale') || 'es';
+  if (!cv.nombre && !cv.resumen && (!cv.experiencias || cv.experiencias.length <= 1) && cv.idioma !== pageLang) {
+    updateCvData({ idioma: pageLang });
+  }
+
   subscribe(onStateChange);
   setupGlobalListeners();
   setAbrirModalIA(abrirModalIA); // Inyectar callback de modal IA en renderForms
@@ -203,6 +211,10 @@ const abrirModalIA = (exp) => {
   const applyBtn = document.getElementById('cr_btn_apply_ai');
   if (!modal || !origText || !optText || !loader || !applyBtn) return;
 
+  const cv = getCvData();
+  optText.setAttribute('lang', cv.idioma || 'es');
+  optText.setAttribute('spellcheck', 'true');
+
   origText.textContent = exp.logros || '';
   optText.textContent  = '';
   optText.classList.add('dpn');
@@ -331,7 +343,6 @@ const handleCvFileUpload = async (file, uploadCvInput) => {
     updateLoader(15, 1, []);
     let parsedData = null;
     let pdfWarnings = [];
-    const uploadLang = document.getElementById('cr_upload_lang')?.value || 'es';
 
     if (isPdf) {
       let extractedText = '';
@@ -344,10 +355,10 @@ const handleCvFileUpload = async (file, uploadCvInput) => {
 
       if (extractedText.trim().length < 100) {
         const base64 = await convertFileToBase64(file);
-        parsedData = await estructurarCvConIA(base64, '', uploadLang, 'pdf');
+        parsedData = await estructurarCvConIA(base64, '', 'auto', 'pdf');
         pdfWarnings = [{ type: 'tabla', text: 'Tu PDF anterior usaba tablas o columnas. Los escáneres ATS no pueden leer tablas correctamente: esto puede hacer que tu CV sea rechazado automáticamente en muchos sistemas. Revisa que tus datos estén bien cargados y usa el botón "Optimizar con Botwii" para mejorar el texto.' }];
       } else {
-        parsedData = await estructurarCvConIA(extractedText, '', uploadLang, 'text');
+        parsedData = await estructurarCvConIA(extractedText, '', 'auto', 'text');
       }
     } else {
       const parseResult = await parseDocx(file);
@@ -357,7 +368,7 @@ const handleCvFileUpload = async (file, uploadCvInput) => {
       progressTimer = setInterval(() => {
         if (currentPercent < 90) { currentPercent += 2; if (progressFill) progressFill.style.width = `${currentPercent}%`; }
       }, 300);
-      parsedData = await estructurarCvConIA(parseResult.text, '', uploadLang, 'text');
+      parsedData = await estructurarCvConIA(parseResult.text, '', 'auto', 'text');
     }
 
     if (progressTimer) clearInterval(progressTimer);
@@ -368,6 +379,19 @@ const handleCvFileUpload = async (file, uploadCvInput) => {
 
     parsedData._pdfWarnings = pdfWarnings;
     updateCvData(parsedData);
+
+    // Redirección inteligente i18n
+    const currentPath = window.location.pathname;
+    const isCurrentlyEn = currentPath.includes('/en/crear');
+    if (parsedData.idioma === 'en' && !isCurrentlyEn) {
+      localStorage.setItem('crear_cv_en', JSON.stringify(parsedData));
+      window.location.href = '/en/crear';
+      return;
+    } else if (parsedData.idioma === 'es' && isCurrentlyEn) {
+      localStorage.setItem('crear_cv_es', JSON.stringify(parsedData));
+      window.location.href = '/crear';
+      return;
+    }
     const msgExtra = pdfWarnings.length > 0 ? ' ⚠️ Revisa las alertas en el panel de compatibilidad.' : '';
     Notificacion(`¡CV cargado exitosamente! Revisa los campos y usa Botwii si deseas optimizarlo.${msgExtra}`, 'success', 6000);
   } catch (err) {

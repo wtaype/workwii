@@ -1085,31 +1085,7 @@
       box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.45) !important;
       outline: none !important;
     }
-    /* Badge flotante via ::after (no choca con ::before del bullet) */
-    .cr_prev_editable.cr_prev_editable_active::after {
-      content: '\270F  Editando';
-      position: absolute;
-      top: -1.7em;
-      left: 0;
-      font-size: 8pt !important;
-      font-family: 'Poppins', sans-serif !important;
-      font-weight: 600 !important;
-      background: #3b82f6;
-      color: #fff !important;
-      padding: 1px 8px;
-      border-radius: 4px;
-      white-space: nowrap;
-      pointer-events: none;
-      z-index: 9999;
-      letter-spacing: 0.02em !important;
-      text-transform: none !important;
-      border-bottom: none !important;
-      box-shadow: 0 2px 6px rgba(59,130,246,0.35);
-    }
-    /* Los <li> editables no muestran badge (para no cortar la viñeta ni el texto) */
-    .cr_cv_item_desc li.cr_prev_editable.cr_prev_editable_active::after {
-      display: none !important;
-    }
+
     /* Asegurar que los <li> editables muestran todo su texto sin recorte */
     .cr_cv_item_desc li.cr_prev_editable {
       overflow: visible !important;

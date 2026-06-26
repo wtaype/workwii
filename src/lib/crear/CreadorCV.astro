@@ -1,0 +1,250 @@
+---
+// src/lib/crear/CreadorCV.astro
+// Creador de CV ATS interactivo con Optimización de IA (Gemini) y soporte de Supabase
+import Layout from '../../layouts/Layout.astro';
+import { app } from '../../wii.js';
+import { seo } from '../../lib/seo.js';
+import estilos from './crear.css?inline';
+import Consejos from './consejos.astro';
+import { useTranslations } from '../i18n/utils.js';
+import { idiomaCrear } from './idiomaCrear.js';
+
+interface Props {
+  lang: string;
+}
+
+const { lang } = Astro.props;
+const lg = useTranslations(lang, idiomaCrear);
+
+// Configurar el SEO adaptado al idioma
+const seoData = lang === 'en' ? {
+  title: 'ATS CV Builder | Workwii',
+  description: 'Write and optimize your resume with artificial intelligence to beat selection algorithms.',
+  keywords: ['cv builder', 'ats resume', 'ats checker', 'cv maker', 'workwii']
+} : seo.crear;
+---
+
+<Layout {...seoData}>
+<style set:html={estilos}></style>
+
+  <div class="conv_wrap">
+    <!-- Header -->
+    <header class="conv_header">
+      <div class="cr_header_flex">
+        <div class="cr_header_left">
+          <h1><i class="fas fa-file-signature cr_header_icon"></i>{lg('crear.titulo')} <span>{lg('crear.subtitulo')}</span></h1>
+          <p class="cr_header_sub">{lg('crear.desc')}</p>
+        </div>
+        <div class="cr_header_right">
+          <!-- Hidden file input for resume parser -->
+          <input type="file" id="cr_header_cv_file" accept=".pdf,.docx" class="dpn" />
+          
+          <!-- Upload button -->
+          <button id="cr_btn_upload_cv" class="conv_btn_sec cr_btn_upload_dash" data-witip={lg('crear.subirBtnHelp')}>
+            <i class="fas fa-magic"></i> {lg('crear.subirBtn')}
+          </button>
+          
+          <!-- New CV button -->
+          <button id="cr_btn_reset_all" class="conv_btn_sec" data-witip={lg('crear.nuevoBtnHelp')}><i class="fas fa-file-circle-plus"></i> {lg('crear.nuevoBtn')}</button>
+          
+          <!-- Download dropdown -->
+          <div class="conv_download_dropdown">
+            <button class="conv_btn" id="cr_btn_download_final" data-witip={lg('crear.descargarBtnHelp')}><i class="fas fa-download"></i> {lg('crear.descargarBtn')}</button>
+            <button class="conv_btn_dropdown_toggle" id="crBtnDownloadToggle" aria-haspopup="true" aria-expanded="false" title="Más formatos de descarga">
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="conv_dropdown_menu" id="crDownloadMenu">
+              <button class="conv_dropdown_item" id="cr_btn_print"><i class="fas fa-print"></i> {lg('crear.printBtn')}</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_pdf"><i class="fas fa-file-pdf"></i> {lg('crear.dwPdfBtn')}</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_docx"><i class="fas fa-file-word"></i> {lg('crear.dwDocxBtn')}</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_txt"><i class="fas fa-file-alt"></i> {lg('crear.dwTxtBtn')}</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_md"><i class="fab fa-markdown"></i> {lg('crear.dwMdBtn')}</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_json"><i class="fas fa-file-code"></i> {lg('crear.dwJsonBtn')}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace Split -->
+    <main class="conv_workspace_split" id="crearWorkspace" data-locale={lang}>
+      
+      <!-- Panel Izquierdo: Formularios -->
+      <section class="conv_left_pane">
+        <!-- Navegación interna de pestañas (Renderizado dinámico) -->
+        <div class="conv_tabs_header" id="crTabsHeader">
+          <!-- Renderizado dinámico desde visual.js -->
+        </div>
+
+        <!-- Contenido dinámico del formulario -->
+        <form id="crFormContent" onsubmit="return false;">
+          <!-- Renderizado dinámico desde visual.js -->
+        </form>
+
+        <!-- Scorecard ATS al final del panel izquierdo -->
+        <div class="cr_scorecard_bottom">
+          <div class="cr_score_header">
+            <span class="cr_score_title">{lg('crear.compatibilidad')}</span>
+            <div class="cr_score_actions">
+              <button id="cr_btn_optimize_all" class="cr_btn_optimize_botwii" data-witip={lg('crear.optimizarBtnHelp')}>
+                <i class="fas fa-wand-magic-sparkles"></i> {lg('crear.optimizarBtn')}
+              </button>
+              <div class="cr_score_badge" data-witip={lg('crear.scoreHelp')}>
+                <span id="cr_score_val">0</span>/100
+              </div>
+            </div>
+          </div>
+          <!-- Progress bar -->
+          <div class="cr_score_bar_bg">
+            <div id="cr_score_fill" class="cr_progress_fill"></div>
+          </div>
+          <!-- Checklist -->
+          <div id="cr_checklist">
+            <!-- Advertencias inyectadas por auditor.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel Derecho: Vista previa -->
+      <section class="conv_right_pane">
+        <!-- Escritorio de Vista Previa -->
+        <div class="conv_a4_wrapper" data-witip={lg('crear.templateHelp')}>
+          <div id="cr_cv_printable_area" class="cr_printable_pages_container">
+            <!-- Las páginas A4 se inyectan dinámicamente desde visual.js -->
+          </div>
+        </div>
+      </section>
+      
+    </main>
+
+  </div>
+
+  <div class="consejos_crear">
+    <Consejos lang={lang} />
+  </div>
+
+  <!-- Modal para la Optimización de Logros con IA -->
+  <div id="cr_ai_modal" class="cr_modal">
+    <div class="cr_modal_content">
+      <div class="cr_modal_header">
+        <h3><i class="fas fa-wand-magic-sparkles"></i> {lg('crear.modalIaTitulo')}</h3>
+        <button id="cr_btn_close_modal" class="cr_modal_close">&times;</button>
+      </div>
+      <div class="cr_modal_body">
+        <p>{lg('crear.modalIaDesc')}</p>
+        <div class="cr_ai_diff_grid">
+          <div class="cr_ai_diff_card">
+            <h4>{lg('crear.modalIaOriginal')}</h4>
+            <div id="cr_ai_original_text" class="cr_ai_text_box"></div>
+          </div>
+          <div class="cr_ai_diff_card">
+            <h4>{lg('crear.modalIaSugerencia')}</h4>
+            <div id="cr_ai_optimized_container">
+              <div id="cr_ai_loading" class="cr_ai_loading dpn">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>{lg('crear.modalIaCargando')}</p>
+              </div>
+              <div id="cr_ai_optimized_text" class="cr_ai_text_box success dpn" contenteditable="true"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cr_modal_footer">
+        <button id="cr_btn_discard_ai" class="cr_btn outline small">{lg('crear.modalIaDescartar')}</button>
+        <button id="cr_btn_apply_ai" class="cr_btn primary small" disabled>{lg('crear.modalIaAplicar')}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación para crear nuevo CV (Premium) -->
+  <div id="cr_reset_modal" class="wiModal">
+    <div class="modalBody cr_confirm_modal_body">
+      <button class="modalX" id="cr_btn_close_reset_modal">&times;</button>
+      <div class="cr_confirm_content">
+        <div class="cr_confirm_icon_wrapper">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3>{lg('crear.modalResetTitulo')}</h3>
+        <p>{lg('crear.modalResetDesc')}</p>
+        <div class="cr_confirm_actions">
+          <button id="cr_btn_confirm_reset" class="cr_btn_confirm_yes">{lg('crear.modalResetConfirmar')}</button>
+          <button id="cr_btn_cancel_reset" class="cr_btn_confirm_no">{lg('crear.modalResetCancelar')}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { initVisual } from './visual.js';
+  import { Notificacion } from '../widev.js';
+
+  const init = () => {
+    // 1. Inicializar Módulo Visual modularizado del Creador de CV
+    initVisual();
+
+    // 2. Controlar la interactividad del dropdown de descargas
+    const toggleBtn = document.getElementById('crBtnDownloadToggle');
+    const menu = document.getElementById('crDownloadMenu');
+    
+    if (toggleBtn && menu) {
+      const toggleMenu = (e: MouseEvent) => {
+        e.stopPropagation();
+        const isOpen = menu.classList.contains('show');
+        if (isOpen) {
+          menu.classList.remove('show');
+          toggleBtn.setAttribute('aria-expanded', 'false');
+        } else {
+          menu.classList.add('show');
+          toggleBtn.setAttribute('aria-expanded', 'true');
+        }
+      };
+
+      toggleBtn.addEventListener('click', toggleMenu);
+
+      // Cerrar al hacer clic fuera
+      document.addEventListener('click', () => {
+        menu.classList.remove('show');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    // 3. Notificaciones bilingües reactivas
+    const workspace = document.getElementById('crearWorkspace');
+    const pageLang = workspace?.getAttribute('data-locale') || 'es';
+
+    // Evento de confirmación de Reset
+    document.getElementById('cr_btn_confirm_reset')?.addEventListener('click', () => {
+      const msg = pageLang === 'en' 
+        ? 'A new resume has been created from scratch.' 
+        : 'Se ha creado un nuevo currículum desde cero.';
+      Notificacion(msg, 'success');
+    });
+
+    // Notificación motivadora cuando el Score llega a 92+
+    let scoreNotified = false;
+    const scoreValObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          const score = parseInt(mutation.target.textContent || '0');
+          if (score >= 92 && !scoreNotified) {
+            const msg = pageLang === 'en'
+              ? 'Excellent ATS compatibility! You have exceeded the recommended threshold to pass corporate selection filters. 🌟'
+              : '¡Excelente compatibilidad ATS! Has superado el umbral recomendado para pasar los filtros de selección corporativos. 🌟';
+            Notificacion(msg, 'success', 5000);
+            scoreNotified = true;
+          } else if (score < 92) {
+            scoreNotified = false;
+          }
+        }
+      });
+    });
+
+    const scoreValEl = document.getElementById('cr_score_val');
+    if (scoreValEl) {
+      scoreValObserver.observe(scoreValEl, { childList: true });
+    }
+  };
+
+  document.addEventListener('astro:page-load', init);
+</script>
