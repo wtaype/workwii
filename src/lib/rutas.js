@@ -4,15 +4,15 @@ const COMUN = [
   { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles', txt: 'Convertir a ATS' },
   { href: '/remotos', ico: 'fa-briefcase', txt: 'Trabajo Remoto' },
   { href: '/blog',   ico: 'fa-blog',  txt: 'Blog Apoyo'},
-  { href: '/comparar',   ico: 'fa-trophy',  txt: 'Comparar'},
-  { href: '/acerca', ico: 'fa-circle-info', txt: 'Acerca' }
 ];
 
 export const NAV_CONFIG = {
   todos: {
     left: [
       { href: '/', ico: 'fa-house', txt: 'Inicio' },
-      ...COMUN
+      ...COMUN,
+      { href: '/comparar',   ico: 'fa-trophy',  txt: 'Comparar'},
+      { href: '/acerca', ico: 'fa-circle-info', txt: 'Acerca' }
     ],
     right: [
       { isBtn: true, cls: 'bt_auth registrar', ico: 'fa-user-plus', txt: 'Registrar' },
@@ -26,23 +26,19 @@ export const NAV_CONFIG = {
     ],
     right: [
       { href: '/ser-editor', ico: 'fa-user-pen', txt: 'Ser Editor' },
-      { href: '/word', ico: 'fa-file-word', txt: 'Documentos' },
       { href: '/notas', ico: 'fa-note-sticky', txt: 'Notas' },
-      { href: '/mensajes', ico: 'fa-comments', txt: 'Mensajes' },
       { isPerfil: true }, { isSalir: true }
     ]
   },
   editor: {
     left: [
       { href: '/editor', ico: 'fa-house', txt: 'Dashboard' },
-      { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
-      { href: '/analisar', ico: 'fa-expand', txt: 'Analizar CV' },
       ...COMUN
     ],
     right: [
       { href: '/nuevo', ico: 'fa-plus', txt: 'Nuevo Post' },
       { href: '/notas', ico: 'fa-note-sticky', txt: 'Notas' },
-      { href: '/mensajes', ico: 'fa-comments', txt: 'Mensajes' },
+      { href: '/word', ico: 'fa-file-word', txt: 'Planificar' },
       { isPerfil: true }, { isSalir: true }
     ]
   },
@@ -50,7 +46,6 @@ export const NAV_CONFIG = {
     left: [
       { href: '/gestor', ico: 'fa-house', txt: 'Dashboard' },
       { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
-      { href: '/analisar', ico: 'fa-expand', txt: 'Analizar CV' },
       ...COMUN
     ],
     right: [
