@@ -177,5 +177,19 @@ export const seo = {
     ],
     audience: ['candidatos', 'profesionales', 'desempleados', 'estudiantes'],
     intent: 'convertir curriculum vitae a formato ats'
+  },
+  comparar: {
+    title: `Comparativa de Creadores de CV y Filtros ATS | ${app}`,
+    description: "Compara de manera transparente a Workwii frente a otras herramientas como Rezi, Resume.io, Novoresume y Jobscan. Descubre por qué somos la mejor opción.",
+    path: '/comparar',
+    keywords: [
+      'comparativa creadores cv',
+      'rezi vs workwii',
+      'resume io alternativa gratis',
+      'ats checker gratuito',
+      'mejor creador de curriculum'
+    ],
+    audience: ['candidatos', 'profesionales', 'reclutadores'],
+    intent: 'comparar plataformas de curriculum vitae y herramientas de empleo'
   }
 };

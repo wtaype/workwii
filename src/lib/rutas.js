@@ -1,7 +1,10 @@
 const COMUN = [
+  { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
+  { href: '/analisar', ico: 'fa-expand', txt: 'Analizar CV' },
   { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles', txt: 'Convertir a ATS' },
   { href: '/remotos', ico: 'fa-briefcase', txt: 'Trabajo Remoto' },
   { href: '/blog',   ico: 'fa-blog',  txt: 'Blog Apoyo'},
+  { href: '/comparar',   ico: 'fa-trophy',  txt: 'Comparar'},
   { href: '/acerca', ico: 'fa-circle-info', txt: 'Acerca' }
 ];
 
@@ -9,8 +12,6 @@ export const NAV_CONFIG = {
   todos: {
     left: [
       { href: '/', ico: 'fa-house', txt: 'Inicio' },
-      { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
-      { href: '/analisar', ico: 'fa-expand', txt: 'Analizar CV' },
       ...COMUN
     ],
     right: [
@@ -20,9 +21,7 @@ export const NAV_CONFIG = {
   },
   usuario: {
     left: [
-      { href: '/smile', ico: 'fa-house', txt: 'Dashboard' },
-      { href: '/crear', ico: 'fa-file-signature', txt: 'Crear CV' },
-      { href: '/analisar', ico: 'fa-expand', txt: 'Analizar CV' },
+      { href: '/smile', ico: 'fa-house', txt: 'Dashboard' }, 
       ...COMUN
     ],
     right: [
