@@ -4,6 +4,7 @@ import { descargarPdfDirecto, imprimirPdf, descargarDocx, descargarTxt, descarga
 import { Notificacion, wiSmart, abrirModal, cerrarModal, wiRateLimit } from '../widev.js';
 import { isEditingPreview } from './preview/editarPreview.js';
 import { updateA4Preview, updateScorecard } from './preview/renderPreview.js';
+import { initChat } from './chatwii/visual.js';
 import {
   locales,
   setAbrirModalIA,
@@ -11,6 +12,8 @@ import {
   renderPerfilForm,
   renderExperienciasForm,
   renderEducacionForm,
+  renderProyectosForm,
+  renderCertificadosForm,
   renderSkillsForm,
   validarFormularios
 } from './preview/renderForms.js';
@@ -33,6 +36,15 @@ export const initVisual = () => {
   setupGlobalListeners();
   setAbrirModalIA(abrirModalIA); // Inyectar callback de modal IA en renderForms
   cargarLibreriasExtraccion();
+
+  // Inicializar Chatwii
+  try {
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('wiSmile')) {
+      initChat(pageLang, getCvData, updateCvData);
+    }
+  } catch (e) {
+    console.error('Error al inicializar Chatwii:', e);
+  }
 };
 
 // ─── Pre-carga de librerías externas ─────────────────────────────────────────
@@ -72,11 +84,13 @@ const renderTabs = (cv) => {
   const tabLang = isEn ? locales.en.tabs : locales.es.tabs;
 
   const tabs = [
-    { id: 'contacto',    label: tabLang.contacto,    icon: 'fa-address-card' },
-    { id: 'perfil',      label: tabLang.perfil,      icon: 'fa-user' },
-    { id: 'experiencia', label: tabLang.experiencia, icon: 'fa-briefcase' },
-    { id: 'educacion',   label: tabLang.educacion,   icon: 'fa-graduation-cap' },
-    { id: 'skills',      label: tabLang.skills,      icon: 'fa-sliders-h' }
+    { id: 'contacto',     label: tabLang.contacto,     icon: 'fa-address-card' },
+    { id: 'perfil',       label: tabLang.perfil,       icon: 'fa-user' },
+    { id: 'experiencia',  label: tabLang.experiencia,  icon: 'fa-briefcase' },
+    { id: 'educacion',    label: tabLang.educacion,    icon: 'fa-graduation-cap' },
+    { id: 'proyectos',    label: tabLang.proyectos,    icon: 'fa-project-diagram' },
+    { id: 'certificados', label: tabLang.certificados, icon: 'fa-certificate' },
+    { id: 'skills',       label: tabLang.skills,       icon: 'fa-sliders-h' }
   ];
 
   container.innerHTML = tabs.map(tab => `
@@ -106,11 +120,13 @@ const renderFormContent = (cv) => {
   container.innerHTML = '';
 
   switch (activeTab) {
-    case 'contacto':    renderContactoForm(container, cv);    break;
-    case 'perfil':      renderPerfilForm(container, cv);      break;
-    case 'experiencia': renderExperienciasForm(container, cv);break;
-    case 'educacion':   renderEducacionForm(container, cv);   break;
-    case 'skills':      renderSkillsForm(container, cv);      break;
+    case 'contacto':     renderContactoForm(container, cv);    break;
+    case 'perfil':       renderPerfilForm(container, cv);      break;
+    case 'experiencia':  renderExperienciasForm(container, cv);break;
+    case 'educacion':    renderEducacionForm(container, cv);   break;
+    case 'proyectos':    renderProyectosForm(container, cv);   break;
+    case 'certificados': renderCertificadosForm(container, cv);break;
+    case 'skills':       renderSkillsForm(container, cv);      break;
   }
 
   validarFormularios();

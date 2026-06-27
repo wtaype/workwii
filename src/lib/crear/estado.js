@@ -12,6 +12,8 @@ const DEFAULT_STATE = {
   resumen: '',
   experiencias: [],
   educacion: [],
+  proyectos: [],
+  certificaciones: [],
   skills: '',
   idiomas: [],
   incluirFoto: false,
@@ -47,6 +49,21 @@ export const crearEstructuraEdu = () => ({
   ubicacion: '',
   inicio: '',
   fin: ''
+});
+
+export const crearEstructuraProj = () => ({
+  id: 'proj_' + Math.random().toString(36).substring(2, 9),
+  nombre: '',
+  enlace: '',
+  descripcion: '',
+  tecnologias: ''
+});
+
+export const crearEstructuraCert = () => ({
+  id: 'cert_' + Math.random().toString(36).substring(2, 9),
+  nombre: '',
+  emisor: '',
+  fecha: ''
 });
 
 // Obtener una copia profunda del estado actual
@@ -119,7 +136,9 @@ export const loadFromLocalStorage = () => {
       cvState = {
         ...DEFAULT_STATE,
         experiencias: [crearEstructuraExp()],
-        educacion: [crearEstructuraEdu()]
+        educacion: [crearEstructuraEdu()],
+        proyectos: [],
+        certificaciones: []
       };
     }
   } catch (e) {
@@ -127,7 +146,9 @@ export const loadFromLocalStorage = () => {
     cvState = {
       ...DEFAULT_STATE,
       experiencias: [crearEstructuraExp()],
-      educacion: [crearEstructuraEdu()]
+      educacion: [crearEstructuraEdu()],
+      proyectos: [],
+      certificaciones: []
     };
   }
   
@@ -153,7 +174,9 @@ export const resetCvData = () => {
   cvState = {
     ...DEFAULT_STATE,
     experiencias: [crearEstructuraExp()],
-    educacion: [crearEstructuraEdu()]
+    educacion: [crearEstructuraEdu()],
+    proyectos: [],
+    certificaciones: []
   };
   if (typeof localStorage !== 'undefined') {
     const key = getCacheKey();

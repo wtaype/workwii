@@ -1,8 +1,7 @@
 // src/lib/crear/preview/renderForms.js
 // Renderizado de todos los formularios del editor de CV ATS
 
-import { updateCvData, getCvData } from '../estado.js';
-import { crearEstructuraExp, crearEstructuraEdu } from '../estado.js';
+import { updateCvData, getCvData, crearEstructuraExp, crearEstructuraEdu, crearEstructuraProj, crearEstructuraCert } from '../estado.js';
 import { Notificacion, wicopy } from '../../widev.js';
 import { sugerirHabilidadesConIA } from '../wiibot.js';
 
@@ -12,7 +11,9 @@ export const locales = {
   es: {
     tabs: {
       contacto: 'Contacto', perfil: 'Perfil',
-      experiencia: 'Experiencia', educacion: 'Educación', skills: 'Habilidades'
+      experiencia: 'Experiencia', educacion: 'Educación',
+      proyectos: 'Proyectos', certificados: 'Certificados',
+      skills: 'Habilidades'
     },
     contacto: {
       nombre: 'Nombre Completo *', titulo: 'Título Profesional *',
@@ -60,12 +61,28 @@ export const locales = {
       idiomas: 'Idiomas', agregarIdioma: 'Agregar Idioma',
       placeholderIdioma: 'Ej: Inglés - Avanzado (C1)',
       noIdiomas: 'No has añadido ningún idioma aún.'
+    },
+    proyectos: {
+      titulo: 'Proyectos Destacados', agregar: 'Añadir Proyecto', proyectoNum: 'Proyecto', eliminar: 'Eliminar',
+      nombre: 'Nombre del Proyecto *', enlace: 'Enlace del Proyecto (URL)',
+      descripcion: 'Descripción del Proyecto *', tecnologias: 'Tecnologías utilizadas (Ej: Astro, Firebase)',
+      placeholderNombre: 'Ej: Portafolio Personal', placeholderEnlace: 'Ej: https://misitio.com',
+      placeholderDescripcion: 'Ej: Aplicación web desarrollada para optimización de...',
+      placeholderTecnologias: 'Ej: Astro, TailwindCSS, Firebase'
+    },
+    certificados: {
+      titulo: 'Certificaciones', agregar: 'Añadir Certificación', certificadoNum: 'Certificación', eliminar: 'Eliminar',
+      nombre: 'Nombre de la Certificación *', emisor: 'Emisor / Organización *', fecha: 'Fecha de Expedición',
+      placeholderNombre: 'Ej: Fundamentos de Inteligencia Artificial', placeholderEmisor: 'Ej: Credicorp',
+      placeholderFecha: 'Ej: Sep 2025'
     }
   },
   en: {
     tabs: {
       contacto: 'Contact Info', perfil: 'Summary',
-      experiencia: 'Experience', educacion: 'Education', skills: 'Skills'
+      experiencia: 'Experience', educacion: 'Education',
+      proyectos: 'Projects', certificados: 'Certifications',
+      skills: 'Skills'
     },
     contacto: {
       nombre: 'Full Name *', titulo: 'Professional Title *',
@@ -113,6 +130,20 @@ export const locales = {
       idiomas: 'Languages', agregarIdioma: 'Add Language',
       placeholderIdioma: 'e.g., English - Fluent (C1)',
       noIdiomas: "You haven't added any languages yet."
+    },
+    proyectos: {
+      titulo: 'Featured Projects', agregar: 'Add Project', proyectoNum: 'Project', eliminar: 'Delete',
+      nombre: 'Project Name *', enlace: 'Project Link (URL)',
+      descripcion: 'Project Description *', tecnologias: 'Technologies used (e.g., React, Firebase)',
+      placeholderNombre: 'e.g., Personal Portfolio', placeholderEnlace: 'e.g., https://myweb.com',
+      placeholderDescripcion: 'e.g., Web application designed for optimizing...',
+      placeholderTecnologias: 'e.g., Astro, TailwindCSS, Firebase'
+    },
+    certificados: {
+      titulo: 'Certifications', agregar: 'Add Certification', certificadoNum: 'Certification', eliminar: 'Delete',
+      nombre: 'Certification Name *', emisor: 'Issuer / Organization *', fecha: 'Issue Date',
+      placeholderNombre: 'e.g., AI Fundamentals', placeholderEmisor: 'e.g., Credicorp',
+      placeholderFecha: 'e.g., Sep 2025'
     }
   }
 };
@@ -653,4 +684,135 @@ export const validarFormularios = () => {
     else if (val.split(/\s+/).length < 40) resumen.classList.add('val_warning');
     else resumen.classList.add('val_success');
   }
+};
+
+// ─── Formulario Proyectos Destacados ──────────────────────────────────────────
+export const renderProyectosForm = (container, cv) => {
+  const isEn = cv.idioma === 'en';
+  const lang = isEn ? locales.en.proyectos : locales.es.proyectos;
+
+  container.innerHTML = `
+    <div class="conv_header_row conv_form_header_row">
+      <h3>${lang.titulo}</h3>
+      <button type="button" class="conv_btn_small" id="crBtnAddProj"><i class="fas fa-plus"></i> ${lang.agregar}</button>
+    </div>
+    <div class="conv_list_items" id="crProjList"></div>
+  `;
+
+  const projListContainer = document.getElementById('crProjList');
+  if (!projListContainer) return;
+
+  const renderList = () => {
+    projListContainer.innerHTML = '';
+    const listProjs = cv.proyectos || [];
+    listProjs.forEach((proj, idx) => {
+      const card = document.createElement('div');
+      card.className = 'conv_item_card';
+      card.dataset.id = proj.id;
+      card.innerHTML = `
+        <div class="conv_item_card_header">
+          <h4>${lang.proyectoNum} #${idx + 1}</h4>
+          ${listProjs.length > 0 ? `<button class="conv_btn_danger_small btn_del_proj" data-id="${proj.id}"><i class="fas fa-trash"></i> ${lang.eliminar}</button>` : ''}
+        </div>
+        <div class="conv_form_grid">
+          <div class="conv_field"><label>${lang.nombre}</label><input type="text" class="proj_nombre" value="${proj.nombre || ''}" placeholder="${lang.placeholderNombre}" required spellcheck="true" lang="${cv.idioma}" /></div>
+          <div class="conv_field"><label>${lang.enlace}</label><input type="text" class="proj_enlace" value="${proj.enlace || ''}" placeholder="${lang.placeholderEnlace}" /></div>
+          <div class="conv_field full_width"><label>${lang.descripcion}</label><input type="text" class="proj_descripcion" value="${proj.descripcion || ''}" placeholder="${lang.placeholderDescripcion}" required spellcheck="true" lang="${cv.idioma}" /></div>
+          <div class="conv_field full_width"><label>${lang.tecnologias}</label><input type="text" class="proj_tecnologias" value="${proj.tecnologias || ''}" placeholder="${lang.placeholderTecnologias}" spellcheck="true" lang="${cv.idioma}" /></div>
+        </div>
+      `;
+      projListContainer.appendChild(card);
+    });
+
+    projListContainer.querySelectorAll('.conv_item_card').forEach(card => {
+      const id  = card.dataset.id;
+      const idx = cv.proyectos.findIndex(p => p.id === id);
+      if (idx === -1) return;
+      ['nombre','enlace','descripcion','tecnologias'].forEach(field => {
+        const el = card.querySelector(`.proj_${field}`);
+        el?.addEventListener('input', () => {
+          const list = [...cv.proyectos];
+          list[idx][field] = el.value;
+          updateCvData({ proyectos: list });
+        });
+      });
+    });
+
+    projListContainer.querySelectorAll('.btn_del_proj').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        updateCvData({ proyectos: cv.proyectos.filter(p => p.id !== id) });
+      });
+    });
+  };
+
+  renderList();
+  document.getElementById('crBtnAddProj')?.addEventListener('click', () => {
+    updateCvData({ proyectos: [...(cv.proyectos || []), crearEstructuraProj()] });
+  });
+};
+
+// ─── Formulario Certificaciones ──────────────────────────────────────────────
+export const renderCertificadosForm = (container, cv) => {
+  const isEn = cv.idioma === 'en';
+  const lang = isEn ? locales.en.certificados : locales.es.certificados;
+
+  container.innerHTML = `
+    <div class="conv_header_row conv_form_header_row">
+      <h3>${lang.titulo}</h3>
+      <button type="button" class="conv_btn_small" id="crBtnAddCert"><i class="fas fa-plus"></i> ${lang.agregar}</button>
+    </div>
+    <div class="conv_list_items" id="crCertList"></div>
+  `;
+
+  const certListContainer = document.getElementById('crCertList');
+  if (!certListContainer) return;
+
+  const renderList = () => {
+    certListContainer.innerHTML = '';
+    const listCerts = cv.certificaciones || [];
+    listCerts.forEach((cert, idx) => {
+      const card = document.createElement('div');
+      card.className = 'conv_item_card';
+      card.dataset.id = cert.id;
+      card.innerHTML = `
+        <div class="conv_item_card_header">
+          <h4>${lang.certificadoNum} #${idx + 1}</h4>
+          ${listCerts.length > 0 ? `<button class="conv_btn_danger_small btn_del_cert" data-id="${cert.id}"><i class="fas fa-trash"></i> ${lang.eliminar}</button>` : ''}
+        </div>
+        <div class="conv_form_grid">
+          <div class="conv_field"><label>${lang.nombre}</label><input type="text" class="cert_nombre" value="${cert.nombre || ''}" placeholder="${lang.placeholderNombre}" required spellcheck="true" lang="${cv.idioma}" /></div>
+          <div class="conv_field"><label>${lang.emisor}</label><input type="text" class="cert_emisor" value="${cert.emisor || ''}" placeholder="${lang.placeholderEmisor}" required spellcheck="true" lang="${cv.idioma}" /></div>
+          <div class="conv_field"><label>${lang.fecha}</label><input type="text" class="cert_fecha" value="${cert.fecha || ''}" placeholder="${lang.placeholderFecha}" /></div>
+        </div>
+      `;
+      certListContainer.appendChild(card);
+    });
+
+    certListContainer.querySelectorAll('.conv_item_card').forEach(card => {
+      const id  = card.dataset.id;
+      const idx = cv.certificaciones.findIndex(c => c.id === id);
+      if (idx === -1) return;
+      ['nombre','emisor','fecha'].forEach(field => {
+        const el = card.querySelector(`.cert_${field}`);
+        el?.addEventListener('input', () => {
+          const list = [...cv.certificaciones];
+          list[idx][field] = el.value;
+          updateCvData({ certificaciones: list });
+        });
+      });
+    });
+
+    certListContainer.querySelectorAll('.btn_del_cert').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        updateCvData({ certificaciones: cv.certificaciones.filter(c => c.id !== id) });
+      });
+    });
+  };
+
+  renderList();
+  document.getElementById('crBtnAddCert')?.addEventListener('click', () => {
+    updateCvData({ certificaciones: [...(cv.certificaciones || []), crearEstructuraCert()] });
+  });
 };

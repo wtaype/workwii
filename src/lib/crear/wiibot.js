@@ -30,6 +30,8 @@ IMPORTANTE (REGLAS DE EXTRACCIÓN SIN OPTIMIZAR - FIDELIDAD ABSOLUTA):
 4. Conserva las funciones y logros originales de cada experiencia laboral dentro del campo "logros" en forma de lista de guiones (- ).
 5. Habilidades (Skills): Extrae únicamente las habilidades técnicas y blandas que el candidato menciona de forma explícita en su currículum, y devuélvelas como un string separado por comas (ej: "React, Node.js, Git"). Máximo 20 habilidades.
 6. Idiomas: Identifica únicamente los idiomas y niveles mencionados explícitamente en el currículum.
+7. Proyectos: Extrae los proyectos destacados que mencione el candidato en un array "proyectos". Cada proyecto debe contener: "nombre" (nombre del proyecto), "enlace" (link del proyecto, si existe), "descripcion" (descripción de lo que hace o logró) y "tecnologias" (tecnologías separadas por comas, ej: "React, Node.js").
+8. Certificaciones: Extrae las certificaciones que posea el candidato en un array "certificaciones". Cada certificación debe tener: "nombre" (título obtenido), "emisor" (entidad que certifica) y "fecha" (fecha de expedición, año o mes/año).
 
 ${idiomaPrompt}
 
@@ -60,6 +62,21 @@ Devuelve ÚNICAMENTE el reporte JSON que cumpla EXACTAMENTE con esta estructura 
       "ubicacion": "Ciudad, País",
       "inicio": "Fecha de inicio (ej: Mar 2017)",
       "fin": "Fecha de fin (ej: Dic 2021)"
+    }
+  ],
+  "proyectos": [
+    {
+      "nombre": "Nombre del proyecto",
+      "enlace": "https://proyecto.com (opcional)",
+      "descripcion": "Descripción del proyecto...",
+      "tecnologias": "Astro, Firebase"
+    }
+  ],
+  "certificaciones": [
+    {
+      "nombre": "Nombre de la certificación",
+      "emisor": "Emisor u Organización",
+      "fecha": "Fecha"
     }
   ],
   "skills": "Habilidad1, Habilidad2, Habilidad3...",
@@ -130,6 +147,24 @@ Por favor, extrae y transcribe fielmente su información (manteniendo la redacci
     parsedJson.educacion = [];
   }
 
+  if (parsedJson.proyectos && Array.isArray(parsedJson.proyectos)) {
+    parsedJson.proyectos = parsedJson.proyectos.map(proj => ({
+      id: 'proj_' + Math.random().toString(36).substring(2, 9),
+      ...proj
+    }));
+  } else {
+    parsedJson.proyectos = [];
+  }
+
+  if (parsedJson.certificaciones && Array.isArray(parsedJson.certificaciones)) {
+    parsedJson.certificaciones = parsedJson.certificaciones.map(cert => ({
+      id: 'cert_' + Math.random().toString(36).substring(2, 9),
+      ...cert
+    }));
+  } else {
+    parsedJson.certificaciones = [];
+  }
+
   if (!parsedJson.idiomas || !Array.isArray(parsedJson.idiomas)) {
     parsedJson.idiomas = [];
   }
@@ -159,7 +194,9 @@ Reglas de optimización:
    - Enfócate en resultados cuantificables. Si el original no tiene métricas, estima cifras lógicas de ejemplo o redacta de forma muy orientada a logros para darle mayor impacto visual.
 3. Habilidades ("skills"): Asegura que estén estructuradas como una lista separada por comas, agregando habilidades clave que falten para el puesto actual o deseado (hasta un máximo de 20 habilidades).
 4. Idiomas ("idiomas"): Mantén los idiomas del candidato y sus niveles en un array.
-5. Mantén intactos los IDs de las experiencias y de la educación (los campos "id"). Esto es CRÍTICO.
+5. Proyectos ("proyectos"): Conserva y optimiza las descripciones de los proyectos destacados. Asegúrate de incluir el campo "tecnologias" como una cadena de texto separada por comas.
+6. Certificaciones ("certificaciones"): Conserva y mantén las certificaciones del candidato.
+7. Mantén intactos los IDs de las experiencias, educación, proyectos y certificaciones (los campos "id"). Esto es CRÍTICO.
 
 ${idiomaPrompt}
 
@@ -194,6 +231,18 @@ Por favor, optimiza todo este currículum en base a las reglas de sistema y devu
     parsedJson.educacion = parsedJson.educacion.map((edu, index) => ({
       id: cvObj.educacion[index]?.id || 'edu_' + Math.random().toString(36).substring(2, 9),
       ...edu
+    }));
+  }
+  if (parsedJson.proyectos && Array.isArray(parsedJson.proyectos)) {
+    parsedJson.proyectos = parsedJson.proyectos.map((proj, index) => ({
+      id: cvObj.proyectos?.[index]?.id || 'proj_' + Math.random().toString(36).substring(2, 9),
+      ...proj
+    }));
+  }
+  if (parsedJson.certificaciones && Array.isArray(parsedJson.certificaciones)) {
+    parsedJson.certificaciones = parsedJson.certificaciones.map((cert, index) => ({
+      id: cvObj.certificaciones?.[index]?.id || 'cert_' + Math.random().toString(36).substring(2, 9),
+      ...cert
     }));
   }
 

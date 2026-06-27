@@ -302,6 +302,133 @@ export const descargarDocx = async (cv) => {
     }
   }
 
+  // Certificaciones
+  const validCerts = cv.certificaciones?.filter(c => c.nombre?.trim() || c.emisor?.trim()) || [];
+  if (validCerts.length > 0) {
+    const textCertificaciones = isEn ? 'Certifications' : 'Certificaciones';
+    docElements.push(createSectionHeading(textCertificaciones));
+
+    validCerts.forEach((cert) => {
+      const textParts = [
+        new TextRun({
+          text: cert.nombre || 'Certificación',
+          bold: true,
+          size: 21,
+          font: 'Arial',
+          color: '111111'
+        })
+      ];
+      if (cert.emisor) {
+        textParts.push(
+          new TextRun({
+            text: `   |   ${cert.emisor}`,
+            bold: true,
+            size: 20,
+            font: 'Arial',
+            color: '333333'
+          })
+        );
+      }
+      docElements.push(
+        new Paragraph({
+          spacing: { before: 120, after: 40 },
+          children: textParts
+        })
+      );
+      if (cert.fecha) {
+        docElements.push(
+          new Paragraph({
+            spacing: { before: 0, after: 120 },
+            children: [
+              new TextRun({
+                text: cert.fecha,
+                bold: true,
+                italic: true,
+                size: 19,
+                font: 'Arial',
+                color: '666666'
+              })
+            ]
+          })
+        );
+      }
+      docElements.push(new Paragraph({ spacing: { before: 0, after: 60 } }));
+    });
+  }
+
+  // Proyectos Destacados
+  const validProjs = cv.proyectos?.filter(p => p.nombre?.trim()) || [];
+  if (validProjs.length > 0) {
+    const textProyectos = isEn ? 'Featured Projects' : 'Proyectos Destacados';
+    docElements.push(createSectionHeading(textProyectos));
+
+    validProjs.forEach((proj) => {
+      const textParts = [
+        new TextRun({
+          text: proj.nombre || 'Nombre del Proyecto',
+          bold: true,
+          size: 21,
+          font: 'Arial',
+          color: '111111'
+        })
+      ];
+      if (proj.enlace) {
+        textParts.push(
+          new TextRun({
+            text: `   |   ${proj.enlace}`,
+            size: 19,
+            font: 'Arial',
+            color: '666666'
+          })
+        );
+      }
+      docElements.push(
+        new Paragraph({
+          spacing: { before: 120, after: 40 },
+          children: textParts
+        })
+      );
+      if (proj.descripcion) {
+        docElements.push(
+          new Paragraph({
+            spacing: { before: 40, after: 40 },
+            children: [
+              new TextRun({
+                text: proj.descripcion,
+                size: 20,
+                font: 'Arial',
+                color: '333333'
+              })
+            ]
+          })
+        );
+      }
+      if (proj.tecnologias) {
+        docElements.push(
+          new Paragraph({
+            spacing: { before: 40, after: 120 },
+            children: [
+              new TextRun({
+                text: `${isEn ? 'Technologies' : 'Tecnologías'}: `,
+                bold: true,
+                size: 18,
+                font: 'Arial',
+                color: '555555'
+              }),
+              new TextRun({
+                text: proj.tecnologias,
+                size: 18,
+                font: 'Arial',
+                color: '555555'
+              })
+            ]
+          })
+        );
+      }
+      docElements.push(new Paragraph({ spacing: { before: 0, after: 60 } }));
+    });
+  }
+
   // 7. Habilidades e Idiomas
   if (cv.skills) {
     docElements.push(createSectionHeading(textSkills));

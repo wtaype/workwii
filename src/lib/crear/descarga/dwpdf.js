@@ -58,33 +58,41 @@ export const descargarPdfDirecto = async (cv) => {
   const textPresente    = isEn ? 'Present'              : 'Presente';
 
   // ── Contacto ──
-  const contacts = [];
-  if (cv.email)    contacts.push(cv.email);
-  if (cv.telefono) contacts.push(cv.telefono);
-  if (cv.ubicacion)contacts.push(cv.ubicacion);
-  if (cv.linkedin) contacts.push(cv.linkedin);
-  if (cv.web)      contacts.push(cv.web);
-  const contactsText = contacts.join('   |   ');
+  const personal = [];
+  if (cv.email)    personal.push(cv.email);
+  if (cv.telefono) personal.push(cv.telefono);
+  if (cv.ubicacion)personal.push(cv.ubicacion);
+  const personalText = personal.join('   |   ');
+
+  const links = [];
+  if (cv.linkedin) links.push(cv.linkedin);
+  if (cv.web)      links.push(cv.web);
+  const linksText = links.join('   |   ');
 
   // ── Estructura de Contenido del PDF (pdfmake) ──
   const docContent = [
     // Header principal
     { text: cv.nombre || 'Nombre Completo', style: 'name' },
     { text: cv.titulo || 'Título o Profesión', style: 'title' },
-    { text: contactsText || '', style: 'contact' },
-    {
-      canvas: [
-        {
-          type: 'line',
-          x1: 0, y1: 5,
-          x2: 515, y2: 5, // Ancho A4 (595pt) - márgenes laterales (40pt * 2) = 515pt
-          lineWidth: 0.75,
-          lineColor: '#cbd5e0'
-        }
-      ],
-      margin: [0, 0, 0, estilosPdf.contact.spaceAfter]
-    }
+    { text: personalText || '', style: 'contact' }
   ];
+
+  if (linksText) {
+    docContent.push({ text: linksText, style: 'contact', margin: [0, -4, 0, 4] });
+  }
+
+  docContent.push({
+    canvas: [
+      {
+        type: 'line',
+        x1: 0, y1: 5,
+        x2: 515, y2: 5, // Ancho A4 (595pt) - márgenes laterales (40pt * 2) = 515pt
+        lineWidth: 0.75,
+        lineColor: '#cbd5e0'
+      }
+    ],
+    margin: [0, 0, 0, estilosPdf.contact.spaceAfter]
+  });
 
   // ── Resumen / Perfil ──
   if (cv.resumen) {
@@ -116,14 +124,12 @@ export const descargarPdfDirecto = async (cv) => {
     validExps.forEach((exp, idx) => {
       const dateText = `${exp.inicio || ''} – ${exp.fin === 'Presente' || !exp.fin ? textPresente : exp.fin}`;
       
-      docContent.push({
+      const expStack = [];
+      expStack.push({
         columns: [
           {
-            text: [
-              { text: exp.puesto || 'Puesto / Cargo', bold: estilosPdf.puesto.bold },
-              { text: exp.empresa ? `  |  ` : '', bold: false },
-              { text: exp.empresa || '', bold: estilosPdf.empresa.bold, color: estilosPdf.empresa.color }
-            ],
+            text: exp.puesto || 'Puesto / Cargo',
+            bold: estilosPdf.puesto.bold,
             fontSize: estilosPdf.puesto.fontSize,
             width: '*'
           },
@@ -135,18 +141,31 @@ export const descargarPdfDirecto = async (cv) => {
             width: 'auto'
           }
         ],
-        margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
+        margin: [0, 0, 0, 2]
       });
 
+      const subrowColumns = [];
+      subrowColumns.push({
+        text: exp.empresa || '',
+        fontSize: estilosPdf.fecha.fontSize,
+        color: '#4a5568',
+        italic: true,
+        width: '*'
+      });
       if (exp.ubicacion) {
-        docContent.push({
+        subrowColumns.push({
           text: exp.ubicacion,
           fontSize: estilosPdf.ubicacion.fontSize,
           color: estilosPdf.ubicacion.color,
-          italic: estilosPdf.ubicacion.italic,
-          margin: [0, 0, 0, estilosPdf.ubicacion.spaceAfter]
+          italic: true,
+          alignment: 'right',
+          width: 'auto'
         });
       }
+      expStack.push({
+        columns: subrowColumns,
+        margin: [0, 0, 0, exp.logros ? 2 : estilosPdf.ubicacion.spaceAfter]
+      });
 
       if (exp.logros) {
         const logrosStr = Array.isArray(exp.logros)
@@ -161,16 +180,22 @@ export const descargarPdfDirecto = async (cv) => {
             .map(line => line.replace(/^[-\*\•\s]+/, '').trim());
 
           if (achievementsList.length > 0) {
-            docContent.push({
+            expStack.push({
               ul: achievementsList,
               fontSize: estilosPdf.logros.fontSize,
               color: estilosPdf.logros.color,
-              margin: [estilosPdf.logros.spaceLeft, estilosPdf.logros.spaceBefore, 0, estilosPdf.logros.spaceAfter],
+              margin: [estilosPdf.logros.spaceLeft, estilosPdf.logros.spaceBefore, 0, 0],
               lineHeight: estilosPdf.logros.lineHeight
             });
           }
         }
       }
+
+      docContent.push({
+        stack: expStack,
+        unbreakable: true,
+        margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
+      });
     });
   }
 
@@ -190,14 +215,12 @@ export const descargarPdfDirecto = async (cv) => {
     validEdus.forEach((edu, idx) => {
       const dateText = `${edu.inicio || ''} – ${edu.fin || ''}`;
       
-      docContent.push({
+      const eduStack = [];
+      eduStack.push({
         columns: [
           {
-            text: [
-              { text: edu.grado || 'Grado / Certificación', bold: estilosPdf.puesto.bold },
-              { text: edu.institucion ? `  |  ` : '', bold: false },
-              { text: edu.institucion || '', bold: estilosPdf.empresa.bold, color: estilosPdf.empresa.color }
-            ],
+            text: edu.grado || 'Grado / Certificación',
+            bold: estilosPdf.puesto.bold,
             fontSize: estilosPdf.puesto.fontSize,
             width: '*'
           },
@@ -209,18 +232,154 @@ export const descargarPdfDirecto = async (cv) => {
             width: 'auto'
           }
         ],
-        margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
+        margin: [0, 0, 0, 2]
       });
 
+      const subrowColumns = [];
+      subrowColumns.push({
+        text: edu.institucion || '',
+        fontSize: estilosPdf.fecha.fontSize,
+        color: '#4a5568',
+        italic: true,
+        width: '*'
+      });
       if (edu.ubicacion) {
-        docContent.push({
+        subrowColumns.push({
           text: edu.ubicacion,
           fontSize: estilosPdf.ubicacion.fontSize,
           color: estilosPdf.ubicacion.color,
-          italic: estilosPdf.ubicacion.italic,
+          italic: true,
+          alignment: 'right',
+          width: 'auto'
+        });
+      }
+      eduStack.push({
+        columns: subrowColumns,
+        margin: [0, 0, 0, estilosPdf.ubicacion.spaceAfter]
+      });
+
+      docContent.push({
+        stack: eduStack,
+        unbreakable: true,
+        margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
+      });
+    });
+  }
+
+  // ── Certificaciones ──
+  const validCerts = cv.certificaciones?.filter(c => c.nombre?.trim() || c.emisor?.trim()) || [];
+  if (validCerts.length > 0) {
+    const textCertificaciones = isEn ? 'Certifications' : 'Certificaciones';
+    docContent.push(
+      { text: textCertificaciones, style: 'sectionHeader', margin: [0, 12, 0, 0] },
+      {
+        canvas: [
+          { type: 'line', x1: 0, y1: 2, x2: 515, y2: 2, lineWidth: 0.5, lineColor: '#a0aec0' }
+        ],
+        margin: [0, 2, 0, estilosPdf.sectionHeader.spaceAfter]
+      }
+    );
+
+    validCerts.forEach((cert, idx) => {
+      const certStack = [];
+      certStack.push({
+        columns: [
+          {
+            text: cert.nombre || 'Certificación',
+            bold: estilosPdf.puesto.bold,
+            fontSize: estilosPdf.puesto.fontSize,
+            width: '*'
+          },
+          {
+            text: cert.fecha || '',
+            alignment: 'right',
+            fontSize: estilosPdf.fecha.fontSize,
+            color: estilosPdf.fecha.color,
+            width: 'auto'
+          }
+        ],
+        margin: [0, 0, 0, 2]
+      });
+
+      if (cert.emisor) {
+        certStack.push({
+          text: cert.emisor,
+          fontSize: estilosPdf.fecha.fontSize,
+          color: '#4a5568',
+          italic: true,
           margin: [0, 0, 0, estilosPdf.ubicacion.spaceAfter]
         });
       }
+
+      docContent.push({
+        stack: certStack,
+        unbreakable: true,
+        margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
+      });
+    });
+  }
+
+  // ── Proyectos Destacados ──
+  const validProjs = cv.proyectos?.filter(p => p.nombre?.trim()) || [];
+  if (validProjs.length > 0) {
+    const textProyectos = isEn ? 'Featured Projects' : 'Proyectos Destacados';
+    docContent.push(
+      { text: textProyectos, style: 'sectionHeader', margin: [0, 12, 0, 0] },
+      {
+        canvas: [
+          { type: 'line', x1: 0, y1: 2, x2: 515, y2: 2, lineWidth: 0.5, lineColor: '#a0aec0' }
+        ],
+        margin: [0, 2, 0, estilosPdf.sectionHeader.spaceAfter]
+      }
+    );
+
+    validProjs.forEach((proj, idx) => {
+      const projStack = [];
+      projStack.push({
+        columns: [
+          {
+            text: proj.nombre || 'Nombre del Proyecto',
+            bold: estilosPdf.puesto.bold,
+            fontSize: estilosPdf.puesto.fontSize,
+            width: '*'
+          },
+          {
+            text: proj.enlace || '',
+            alignment: 'right',
+            fontSize: estilosPdf.fecha.fontSize,
+            color: estilosPdf.fecha.color,
+            width: 'auto'
+          }
+        ],
+        margin: [0, 0, 0, 2]
+      });
+
+      if (proj.descripcion) {
+        projStack.push({
+          text: proj.descripcion,
+          fontSize: estilosPdf.bodyText.fontSize,
+          color: estilosPdf.bodyText.color,
+          margin: [0, 2, 0, 2]
+        });
+      }
+
+      if (proj.tecnologias) {
+        projStack.push({
+          text: [
+            { text: `${isEn ? 'Technologies' : 'Tecnologías'}: `, bold: true },
+            { text: proj.tecnologias }
+          ],
+          fontSize: estilosPdf.ubicacion.fontSize,
+          color: '#555555',
+          margin: [0, 0, 0, estilosPdf.ubicacion.spaceAfter]
+        });
+      }
+
+      docContent.push({
+        stack: projStack,
+        unbreakable: true,
+        margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
+      });
     });
   }
 

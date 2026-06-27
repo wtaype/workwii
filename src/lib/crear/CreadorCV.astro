@@ -5,6 +5,7 @@ import Layout from '../../layouts/Layout.astro';
 import { app } from '../../wii.js';
 import { seo } from '../../lib/seo.js';
 import estilos from './crear.css?inline';
+import estilosChat from './chatwii/estilo.css?inline';
 import Consejos from './consejos.astro';
 import { useTranslations } from '../i18n/utils.js';
 import { idiomaCrear } from './idiomaCrear.js';
@@ -26,6 +27,7 @@ const seoData = lang === 'en' ? {
 
 <Layout {...seoData}>
 <style set:html={estilos}></style>
+<style set:html={estilosChat}></style>
 
   <div class="conv_wrap">
     <!-- Header -->

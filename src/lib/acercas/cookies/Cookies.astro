@@ -1,0 +1,178 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { app } from '../../../wii.js';
+import { seo } from '../../../lib/seo.js';
+import { idiomaCookies } from './idiomaCookies.js';
+import estilosAcercas from '../acercas.css?inline';
+
+const { lang = 'es' } = Astro.props as { lang?: 'es' | 'en' };
+const t = (idiomaCookies as any)[lang] || idiomaCookies['es'];
+const currentYear = new Date().getFullYear();
+
+const route = (path: string) => lang === 'en' ? `/en${path}` : path;
+---
+
+<style is:global set:html={estilosAcercas}></style>
+
+<Layout {...(lang === 'en' ? (seo.cookies as any).en : (seo.cookies as any).es)}>
+<div class="ac_wrap tm_wrap">
+  <section class="ac_hero tm_hero">
+    <div class="ac_hero_orb ac_orb1"></div><div class="ac_hero_orb ac_orb2"></div><div class="ac_hero_orb ac_orb3"></div>
+    <div class="ac_hero_body">
+      <div class="ac_hero_badge"><i class="fas fa-cookie-bite"></i> {t.hero.badge}</div>
+      <h1 class="ac_hero_tit">{t.hero.tit1}<br><span class="ac_grad">{t.hero.titGrad}</span></h1>
+      <p class="ac_hero_sub" set:html={t.hero.sub}></p>
+      <div class="tm_hero_chips">
+        <span class="tm_chip"><i class="fas fa-cookie-bite"></i> {t.hero.chip1}</span>
+        <span class="tm_chip"><i class="fas fa-user-shield"></i> {t.hero.chip2}</span>
+        <span class="tm_chip"><i class="fas fa-heart"></i> {t.hero.chip3}</span>
+      </div>
+      <div class="tm_last_upd"><i class="fas fa-calendar-check"></i> {t.hero.lastUpd} {currentYear}</div>
+    </div>
+  </section>
+
+  <section class="ac_sec">
+    <div class="ac_sec_head">
+      <div class="ac_sec_badge"><i class="fas fa-list-check"></i> {t.tipos.badge}</div>
+      <h2 class="ac_sec_tit">{t.tipos.tit}<span class="ac_grad">{t.tipos.titGrad}</span></h2>
+      <p class="ac_sec_sub">{t.tipos.sub}</p>
+    </div>
+    <div class="ck_grid">
+      <div class="ck_card wi_fadeUp">
+        <div class="ck_card_top">
+          <div class="tm_sec_ico" style="--tc:#0EBEFF"><i class="fas fa-shield-halved"></i></div>
+          <span class="ck_tag" style="background:color-mix(in srgb,#0EBEFF 15%,transparent);color:#0EBEFF">{t.tipos.c1_tag}</span>
+        </div>
+        <h3 class="ck_tit">{t.tipos.c1_tit}</h3>
+        <p class="ck_desc">{t.tipos.c1_desc}</p>
+        <ul class="tm_list">
+          <li><i class="fas fa-check"></i>{t.tipos.c1_item1}</li>
+          <li><i class="fas fa-check"></i>{t.tipos.c1_item2}</li>
+          <li><i class="fas fa-check"></i>{t.tipos.c1_item3}</li>
+        </ul>
+      </div>
+
+      <div class="ck_card wi_fadeUp">
+        <div class="ck_card_top">
+          <div class="tm_sec_ico" style="--tc:#29C72E"><i class="fas fa-hard-drive"></i></div>
+          <span class="ck_tag" style="background:color-mix(in srgb,#29C72E 15%,transparent);color:#29C72E">{t.tipos.c2_tag}</span>
+        </div>
+        <h3 class="ck_tit">{t.tipos.c2_tit}</h3>
+        <p class="ck_desc">{t.tipos.c2_desc}</p>
+        <ul class="tm_list">
+          <li><i class="fas fa-check"></i>{t.tipos.c2_item1}</li>
+          <li><i class="fas fa-check"></i>{t.tipos.c2_item2}</li>
+          <li><i class="fas fa-check"></i>{t.tipos.c2_item3}</li>
+          <li><i class="fas fa-check"></i>{t.tipos.c2_item4}</li>
+        </ul>
+      </div>
+
+      <div class="ck_card wi_fadeUp">
+        <div class="ck_card_top">
+          <div class="tm_sec_ico" style="--tc:#FF5C69"><i class="fas fa-bullhorn"></i></div>
+          <span class="ck_tag" style="background:color-mix(in srgb,#FF5C69 15%,transparent);color:#FF5C69">{t.tipos.c3_tag}</span>
+        </div>
+        <h3 class="ck_tit">{t.tipos.c3_tit}</h3>
+        <p class="ck_desc">{t.tipos.c3_desc}</p>
+        <ul class="tm_list">
+          <li><i class="fas fa-check"></i>{t.tipos.c3_item1}</li>
+          <li><i class="fas fa-check"></i>{t.tipos.c3_item2}</li>
+          <li><i class="fas fa-check"></i>{t.tipos.c3_item3}</li>
+          <li><i class="fas fa-check"></i>{t.tipos.c3_item4}</li>
+        </ul>
+        <a href="https://adssettings.google.com" target="_blank" rel="noopener" class="ck_ext_link" style="color:#FF5C69"><i class="fas fa-arrow-up-right-from-square"></i> {t.tipos.c3_link}</a>
+      </div>
+
+      <div class="ck_card wi_fadeUp">
+        <div class="ck_card_top">
+          <div class="tm_sec_ico" style="--tc:#7000FF"><i class="fas fa-chart-line"></i></div>
+          <span class="ck_tag" style="background:color-mix(in srgb,#7000FF 15%,transparent);color:#7000FF">{t.tipos.c4_tag}</span>
+        </div>
+        <h3 class="ck_tit">{t.tipos.c4_tit}</h3>
+        <p class="ck_desc">{t.tipos.c4_desc}</p>
+        <ul class="tm_list">
+          <li><i class="fas fa-check"></i>{t.tipos.c4_item1}</li>
+          <li><i class="fas fa-check"></i>{t.tipos.c4_item2}</li>
+          <li><i class="fas fa-check"></i>{t.tipos.c4_item3}</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="ac_sec ac_sec_alt">
+    <div class="ac_sec_head">
+      <div class="ac_sec_badge"><i class="fas fa-sliders"></i> {t.gestionar.badge}</div>
+      <h2 class="ac_sec_tit">{t.gestionar.tit}<span class="ac_grad">{t.gestionar.titGrad}</span></h2>
+      <p class="ac_sec_sub">{t.gestionar.sub}</p>
+    </div>
+    <div class="ac_feat_grid">
+      <div class="ac_feat_card wi_fadeUp" style="--sc:#0EBEFF">
+        <div class="ac_feat_ico"><i class="fab fa-chrome"></i></div>
+        <h3>{t.gestionar.g1_tit}</h3>
+        <p>{t.gestionar.g1_desc}</p>
+      </div>
+      <div class="ac_feat_card wi_fadeUp" style="--sc:#FF5C69">
+        <div class="ac_feat_ico"><i class="fab fa-firefox-browser"></i></div>
+        <h3>{t.gestionar.g2_tit}</h3>
+        <p>{t.gestionar.g2_desc}</p>
+      </div>
+      <div class="ac_feat_card wi_fadeUp" style="--sc:#29C72E">
+        <div class="ac_feat_ico"><i class="fab fa-safari"></i></div>
+        <h3>{t.gestionar.g3_tit}</h3>
+        <p>{t.gestionar.g3_desc}</p>
+      </div>
+      <div class="ac_feat_card wi_fadeUp" style="--sc:#7000FF">
+        <div class="ac_feat_ico"><i class="fas fa-mobile-screen"></i></div>
+        <h3>{t.gestionar.g4_tit}</h3>
+        <p>{t.gestionar.g4_desc}</p>
+      </div>
+    </div>
+    <div class="tm_alert" style="max-width:800px;margin:6vh auto 0">
+      <i class="fas fa-triangle-exclamation"></i>
+      <p>{t.gestionar.warning}</p>
+    </div>
+  </section>
+
+  <section class="ac_cta_sec">
+    <div class="ac_cta_wrap wi_fadeUp">
+      <div class="ac_hero_orb ac_orb1"></div>
+      <div class="ac_hero_orb ac_orb2"></div>
+      <div class="ac_cta_glow"></div>
+      <div class="ac_cta_inner">
+        <span class="ac_cta_emoji">🍪</span>
+        <h2>{t.cta.tit}</h2>
+        <p>{t.cta.sub}</p>
+        <div class="ac_cta_btns">
+          <a href="mailto:wilder.taype@hotmail.com" class="ac_btn_p ac_btn_lg"><i class="fas fa-envelope"></i> {t.cta.btnContacto}</a>
+          <a href={route('/privacidad')} class="ac_btn_s ac_btn_lg"><i class="fas fa-lock"></i> {t.cta.btnPrivacidad}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</Layout>
+
+<script is:inline>
+const initCookies = () => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.wi_fadeUp').forEach(el => {
+    observer.observe(el);
+  });
+
+  console.log('🍪 Cookies ready');
+  window.__WIREADY__ = true;
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initCookies);
+} else {
+  initCookies();
+}
+</script>

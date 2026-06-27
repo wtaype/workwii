@@ -68,6 +68,34 @@ export const descargarMd = (cv) => {
     }
   }
 
+  // Certificaciones
+  const validCerts = cv.certificaciones?.filter(c => c.nombre?.trim() || c.emisor?.trim()) || [];
+  if (validCerts.length > 0) {
+    const textCertificaciones = isEn ? 'Certifications' : 'Certificaciones';
+    md += `### ${textCertificaciones}\n\n`;
+    validCerts.forEach((cert) => {
+      md += `#### ${cert.nombre || ''} — **${cert.emisor || ''}**\n`;
+      if (cert.fecha) md += `*${cert.fecha}*\n`;
+      md += `\n`;
+    });
+    md += `---\n\n`;
+  }
+
+  // Proyectos Destacados
+  const validProjs = cv.proyectos?.filter(p => p.nombre?.trim()) || [];
+  if (validProjs.length > 0) {
+    const textProyectos = isEn ? 'Featured Projects' : 'Proyectos Destacados';
+    md += `### ${textProyectos}\n\n`;
+    validProjs.forEach((proj) => {
+      md += `#### ${proj.nombre || ''}`;
+      if (proj.enlace) md += ` — [${proj.enlace}](${proj.enlace})`;
+      md += `\n`;
+      if (proj.descripcion) md += `${proj.descripcion}\n\n`;
+      if (proj.tecnologias) md += `*${isEn ? 'Technologies' : 'Tecnologías'}:* ${proj.tecnologias}\n\n`;
+    });
+    md += `---\n\n`;
+  }
+
   // Habilidades
   if (cv.skills) {
     md += `### ${textSkills}\n\n`;

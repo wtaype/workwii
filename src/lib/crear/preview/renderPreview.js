@@ -22,13 +22,22 @@ export const updateA4Preview = (cv) => {
   const textPresente    = isEn ? 'Present'              : 'Presente';
 
   // ── Contacto ──
-  const contacts = [];
-  if (cv.email)    contacts.push(`<span><i class="fas fa-envelope"></i> ${cv.email}</span>`);
-  if (cv.telefono) contacts.push(`<span><i class="fas fa-phone"></i> ${cv.telefono}</span>`);
-  if (cv.ubicacion)contacts.push(`<span><i class="fas fa-location-dot"></i> ${cv.ubicacion}</span>`);
-  if (cv.linkedin) contacts.push(`<span><i class="fab fa-linkedin"></i> ${cv.linkedin}</span>`);
-  if (cv.web)      contacts.push(`<span><i class="fas fa-globe"></i> ${cv.web}</span>`);
-  const contactsHTML = contacts.join(' &bull; ');
+  const personalInfo = [];
+  if (cv.email)    personalInfo.push(`<span><i class="fas fa-envelope"></i> ${cv.email}</span>`);
+  if (cv.telefono) personalInfo.push(`<span><i class="fas fa-phone"></i> ${cv.telefono}</span>`);
+  if (cv.ubicacion)personalInfo.push(`<span><i class="fas fa-location-dot"></i> ${cv.ubicacion}</span>`);
+
+  const linksInfo = [];
+  if (cv.linkedin) linksInfo.push(`<span><i class="fab fa-linkedin"></i> ${cv.linkedin}</span>`);
+  if (cv.web)      linksInfo.push(`<span><i class="fas fa-globe"></i> ${cv.web}</span>`);
+
+  const personalHTML = personalInfo.join(' &bull; ');
+  const linksHTML = linksInfo.join(' &bull; ');
+
+  const contactsHTML = `
+    <div>${personalHTML}</div>
+    ${linksHTML ? `<div style="margin-top: 4px;">${linksHTML}</div>` : ''}
+  `;
 
   // ── Bloques para paginado dinámico ──
   const headerHTML = `
@@ -130,15 +139,90 @@ export const updateA4Preview = (cv) => {
     });
   }
 
+  // Certificaciones
+  const validCerts = cv.certificaciones?.filter(c => c.nombre?.trim() || c.emisor?.trim()) || [];
+  if (validCerts.length > 0) {
+    const textCertificados = isEn ? 'Certifications' : 'Certificaciones';
+    blocks.push({
+      type: 'section_title',
+      html: `<h2 class="cr_cv_section_title cr_cv_section_title--spaced" data-click-tab="certificados">${textCertificados}</h2>`
+    });
+
+    validCerts.forEach(cert => {
+      blocks.push({
+        type: 'item',
+        html: `
+          <div class="cr_cv_item" data-click-tab="certificados">
+            <div class="cr_cv_item_row">
+              <strong class="cr_prev_editable" data-edit-field="cert_nombre" data-cert-id="${cert.id}" spellcheck="true" lang="${cv.idioma}">${cert.nombre || 'Certificación'}</strong>
+              <span>${cert.fecha || ''}</span>
+            </div>
+            <div class="cr_cv_item_subrow">
+              <span class="cr_prev_editable" data-edit-field="cert_emisor" data-cert-id="${cert.id}" spellcheck="true" lang="${cv.idioma}">${cert.emisor || 'Emisor / Organización'}</span>
+            </div>
+          </div>
+        `
+      });
+    });
+  }
+
+  // Proyectos Destacados
+  const validProjs = cv.proyectos?.filter(p => p.nombre?.trim()) || [];
+  if (validProjs.length > 0) {
+    const textProyectos = isEn ? 'Featured Projects' : 'Proyectos Destacados';
+    blocks.push({
+      type: 'section_title',
+      html: `<h2 class="cr_cv_section_title cr_cv_section_title--spaced" data-click-tab="proyectos">${textProyectos}</h2>`
+    });
+
+    validProjs.forEach(proj => {
+      blocks.push({
+        type: 'item',
+        html: `
+          <div class="cr_cv_item" data-click-tab="proyectos">
+            <div class="cr_cv_item_row">
+              <strong class="cr_prev_editable" data-edit-field="proj_nombre" data-proj-id="${proj.id}" spellcheck="true" lang="${cv.idioma}">${proj.nombre || 'Nombre del Proyecto'}</strong>
+              ${proj.enlace ? `<span class="cr_prev_editable" data-edit-field="proj_enlace" data-proj-id="${proj.id}">${proj.enlace}</span>` : ''}
+            </div>
+            <div class="cr_cv_item_desc">
+              <p class="cr_prev_editable" data-edit-field="proj_descripcion" data-proj-id="${proj.id}" spellcheck="true" lang="${cv.idioma}">${proj.descripcion || ''}</p>
+              ${proj.tecnologias ? `<p class="cr_cv_proj_tech"><strong>${isEn ? 'Technologies' : 'Tecnologías'}:</strong> <span class="cr_prev_editable" data-edit-field="proj_tecnologias" data-proj-id="${proj.id}" spellcheck="true" lang="${cv.idioma}">${proj.tecnologias}</span></p>` : ''}
+            </div>
+          </div>
+        `
+      });
+    });
+  }
+
   // Habilidades
   if (cv.skills || (cv.idiomas && cv.idiomas.length > 0)) {
+    let skillsHTML = '';
+    if (cv.skills) {
+      const lines = cv.skills.split('\n').map(l => l.trim()).filter(Boolean);
+      if (lines.length > 1 && lines.some(l => l.startsWith('-') || l.startsWith('*') || l.includes(':'))) {
+        const parsedCategories = lines.map(line => {
+          const cleanLine = line.replace(/^[-\*\•\s]+/, '').trim();
+          const colonIdx = cleanLine.indexOf(':');
+          if (colonIdx !== -1) {
+            const category = cleanLine.substring(0, colonIdx).trim();
+            const skillsVal = cleanLine.substring(colonIdx + 1).trim();
+            return `<strong>${category}</strong>: ${skillsVal}`;
+          }
+          return cleanLine;
+        });
+        skillsHTML = `<p class="cr_cv_text"><span class="cr_prev_editable" data-edit-field="skills" spellcheck="true" lang="${cv.idioma}">${parsedCategories.join(' &bull; ')}</span></p>`;
+      } else {
+        skillsHTML = `<p class="cr_cv_text"><strong>${textSkillsLabel}:</strong> <span class="cr_prev_editable" data-edit-field="skills" spellcheck="true" lang="${cv.idioma}">${cv.skills}</span></p>`;
+      }
+    }
+
     blocks.push({
       type: 'skills',
       html: `
         <div class="cr_cv_section" data-click-tab="skills">
           <h2 class="cr_cv_section_title">${textSkills}</h2>
           <div class="cr_cv_skills_list">
-            ${cv.skills ? `<p class="cr_cv_text"><strong>${textSkillsLabel}:</strong> <span class="cr_prev_editable" data-edit-field="skills" spellcheck="true" lang="${cv.idioma}">${cv.skills}</span></p>` : ''}
+            ${skillsHTML}
             ${cv.idiomas && cv.idiomas.length > 0 ? `<p class="cr_cv_text"><strong>${textIdiomasLabel}:</strong> ${cv.idiomas.filter(Boolean).join(', ')}</p>` : ''}
           </div>
         </div>

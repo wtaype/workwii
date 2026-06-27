@@ -73,18 +73,34 @@ export const seo = {
     intent: 'leer guías y reflexiones sobre búsqueda de empleo'
   },
   acerca: {
-    title: `Acerca de ${app}: Tu Mentor de Carrera con IA.`,
-    description: "Conoce el propósito de nuestra plataforma web diseñada para democratizar herramientas de reclutamiento gratuitas y guiar a profesionales en su empleo.",
-    path: '/acerca',
-    keywords: [
-      'sobre workwii',
-      'creador de la app',
-      'mision de workwii',
-      'desarrollo profesional',
-      'empleabilidad ia'
-    ],
-    audience: ['candidatos', 'reclutadores'],
-    intent: 'acerca del creador y la mision del proyecto'
+    es: {
+      title: `Acerca de ${app}: Tu Mentor de Carrera con IA.`,
+      description: "Conoce el propósito de nuestra plataforma web diseñada para democratizar herramientas de reclutamiento gratuitas y guiar a profesionales en su empleo.",
+      path: '/acerca',
+      keywords: [
+        'sobre workwii',
+        'creador de la app',
+        'mision de workwii',
+        'desarrollo profesional',
+        'empleabilidad ia'
+      ],
+      audience: ['candidatos', 'reclutadores'],
+      intent: 'acerca del creador y la mision del proyecto'
+    },
+    en: {
+      title: `About ${app}: Your AI Career Mentor.`,
+      description: "Learn about the purpose of our web platform designed to democratize free recruitment tools and guide professionals in their career.",
+      path: '/en/acerca',
+      keywords: [
+        'about workwii',
+        'app creator',
+        'workwii mission',
+        'professional development',
+        'ai employability'
+      ],
+      audience: ['candidates', 'recruiters'],
+      intent: 'about the creator and project mission'
+    }
   },
   descubre: {
     title: `Descubre todas nuestras herramientas | ${app}.`,
@@ -119,60 +135,124 @@ export const seo = {
     }
   },
   cookies: {
-    title: `Política de Cookies de la Plataforma | ${app}.`,
-    description: "Transparencia y claridad sobre cómo usamos las cookies y el almacenamiento local para optimizar tu experiencia y tus preferencias en nuestro editor...",
-    path: '/cookies',
-    keywords: [
-      'politica de cookies',
-      'cookies de supabase',
-      'almacenamiento local cv',
-      'cookies de adsense',
-      'privacidad de cookies'
-    ],
-    audience: ['usuarios preocupados por cookies'],
-    intent: 'ver politica de cookies'
+    es: {
+      title: `Política de Cookies de la Plataforma | ${app}.`,
+      description: "Transparencia y claridad sobre cómo usamos las cookies y el almacenamiento local para optimizar tu experiencia y tus preferencias en nuestro editor...",
+      path: '/cookies',
+      keywords: [
+        'politica de cookies',
+        'cookies de supabase',
+        'almacenamiento local cv',
+        'cookies de adsense',
+        'privacidad de cookies'
+      ],
+      audience: ['usuarios preocupados por cookies'],
+      intent: 'ver politica de cookies'
+    },
+    en: {
+      title: `Cookies Policy | ${app} Platform.`,
+      description: "Transparency and clarity about how we use cookies and local storage to optimize your experience and preferences in our editor.",
+      path: '/en/cookies',
+      keywords: [
+        'cookies policy',
+        'supabase cookies',
+        'local storage resume',
+        'adsense cookies',
+        'cookie privacy'
+      ],
+      audience: ['cookie-conscious users'],
+      intent: 'view cookies policy'
+    }
   },
   privacidad: {
-    title: `Política de Privacidad: Tus Datos | ${app} Web`,
-    description: "Tus datos personales, notas y borradores de CV están protegidos de forma segura. Conoce nuestro compromiso con la confidencialidad de tu información..",
-    path: '/privacidad',
-    keywords: [
-      'politica de privacidad',
-      'seguridad de datos cv',
-      'privacidad de candidatos',
-      'proteccion de datos ia',
-      'cuenta segura workwii'
-    ],
-    audience: ['usuarios preocupados por privacidad'],
-    intent: 'ver politica de privacidad'
+    es: {
+      title: `Política de Privacidad: Tus Datos | ${app} Web`,
+      description: "Tus datos personales, notas y borradores de CV están protegidos de forma segura. Conoce nuestro compromiso con la confidencialidad de tu información..",
+      path: '/privacidad',
+      keywords: [
+        'politica de privacidad',
+        'seguridad de datos cv',
+        'privacidad de candidatos',
+        'proteccion de datos ia',
+        'cuenta segura workwii'
+      ],
+      audience: ['usuarios preocupados por privacidad'],
+      intent: 'ver politica de privacidad'
+    },
+    en: {
+      title: `Privacy Policy: Your Data | ${app} Web`,
+      description: "Your personal data, notes, and resume drafts are securely protected. Learn about our commitment to the confidentiality of your information.",
+      path: '/en/privacidad',
+      keywords: [
+        'privacy policy',
+        'resume data security',
+        'candidate privacy',
+        'ai data protection',
+        'secure account workwii'
+      ],
+      audience: ['privacy-conscious users'],
+      intent: 'view privacy policy'
+    }
   },
   terminos: {
-    title: `Términos y Condiciones de Uso | ${app} Portal.`,
-    description: "Reglas, responsabilidades, propiedad intelectual y condiciones de uso bajo las cuales ofrecemos nuestras herramientas gratuitas de preparación laboral",
-    path: '/terminos',
-    keywords: [
-      'terminos de servicio',
-      'condiciones de uso',
-      'reglas de la plataforma',
-      'propiedad intelectual cv',
-      'derechos del candidato'
-    ],
-    audience: ['usuarios de la plataforma'],
-    intent: 'ver terminos de servicio'
+    es: {
+      title: `Términos y Condiciones de Uso | ${app} Portal.`,
+      description: "Reglas, responsabilidades, propiedad intelectual y condiciones de uso bajo las cuales ofrecemos nuestras herramientas gratuitas de preparación laboral",
+      path: '/terminos',
+      keywords: [
+        'terminos de servicio',
+        'condiciones de uso',
+        'reglas de la plataforma',
+        'propiedad intelectual cv',
+        'derechos del candidato'
+      ],
+      audience: ['usuarios de la plataforma'],
+      intent: 'ver terminos de servicio'
+    },
+    en: {
+      title: `Terms and Conditions of Use | ${app} Portal.`,
+      description: "Rules, responsibilities, intellectual property, and conditions of use under which we offer our free career preparation tools.",
+      path: '/en/terminos',
+      keywords: [
+        'terms of service',
+        'terms and conditions',
+        'platform rules',
+        'resume intellectual property',
+        'candidate rights'
+      ],
+      audience: ['platform users'],
+      intent: 'view terms of service'
+    }
   },
   feedback: {
-    title: `Feedback: Ayúdanos a Mejorar esta Web | ${app}`,
-    description: "Tu opinión y reportes de errores nos ayudan a perfeccionar el editor de CV y simulador de entrevistas. Participa activamente en la mejora de la web...",
-    path: '/feedback',
-    keywords: [
-      'feedback workwii',
-      'opinar sobre editor',
-      'sugerir nuevas funciones',
-      'mejorar simulador ia',
-      'comunidad de candidatos'
-    ],
-    audience: ['candidatos', 'usuarios activos'],
-    intent: 'dejar feedback'
+    es: {
+      title: `Feedback: Ayúdanos a Mejorar esta Web | ${app}`,
+      description: "Tu opinión y reportes de errores nos ayudan a perfeccionar el editor de CV y simulador de entrevistas. Participa activamente en la mejora de la web...",
+      path: '/feedback',
+      keywords: [
+        'feedback workwii',
+        'opinar sobre editor',
+        'sugerir nuevas funciones',
+        'mejorar simulador ia',
+        'comunidad de candidatos'
+      ],
+      audience: ['candidatos', 'usuarios activos'],
+      intent: 'dejar feedback'
+    },
+    en: {
+      title: `Feedback: Help Us Improve This Site | ${app}`,
+      description: "Your opinion and bug reports help us perfect the resume builder and interview simulator. Join the community.",
+      path: '/en/feedback',
+      keywords: [
+        'workwii feedback',
+        'review resume editor',
+        'suggest features',
+        'improve ai simulator',
+        'candidates community'
+      ],
+      audience: ['candidates', 'active users'],
+      intent: 'submit feedback'
+    }
   },
   remotos: {
     title: "Trabajos Remotos Seguros | Portales Reales 2026",

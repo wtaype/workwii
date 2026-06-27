@@ -1,0 +1,142 @@
+export const idiomaCookies = {
+  es: {
+    seo: {
+      titulo: 'Política de Cookies - Workwii',
+      descripcion: 'Transparencia y claridad sobre cómo usamos las cookies y el almacenamiento local para optimizar tu experiencia y tus preferencias en nuestro editor.'
+    },
+    hero: {
+      badge: 'Total transparencia',
+      tit1: 'Política de',
+      titGrad: 'Cookies',
+      sub: 'Te explicamos qué cookies usamos, para qué sirven y <strong>cómo puedes controlarlas.</strong>',
+      chip1: '4 tipos de cookies',
+      chip2: 'Tú decides',
+      chip3: 'Sin sorpresas',
+      lastUpd: 'Última actualización: Abril'
+    },
+    tipos: {
+      badge: 'Tipos',
+      tit: '¿Qué cookies ',
+      titGrad: 'usamos?',
+      sub: 'Cada cookie tiene un propósito claro.',
+      c1_tag: 'Esencial',
+      c1_tit: 'Cookies de Sesión y Autenticación',
+      c1_desc: 'Necesarias para que Workwii funcione. Sin ellas no puedes iniciar sesión.',
+      c1_item1: 'Supabase Auth mantiene tu sesión mediante tokens seguros.',
+      c1_item2: 'Se eliminan automáticamente al cerrar sesión.',
+      c1_item3: 'No pueden desactivarse sin afectar la app.',
+      c2_tag: 'Funcional',
+      c2_tit: 'LocalStorage (Preferencias y Caché)',
+      c2_desc: 'Almacenamiento local para una experiencia ultrarrápida sin depender de internet.',
+      c2_item1: 'Guarda borradores de CV locales y configuraciones del editor.',
+      c2_item2: 'Almacena tu tema visual preferido (Cielo, Mora, Futuro…).',
+      c2_item3: 'Caché de la app para carga instantánea.',
+      c2_item4: 'Borrable desde Configuración → Privacidad de tu navegador.',
+      c3_tag: 'Publicidad',
+      c3_tit: 'Cookies de Google AdSense',
+      c3_desc: 'Workwii usa Google AdSense para mostrar anuncios que financian el servicio gratuito.',
+      c3_item1: 'Google usa cookies como NID o IDE para personalizar anuncios.',
+      c3_item2: 'Basadas en tu historial de navegación.',
+      c3_item3: 'Desactívalas en Google Ads Settings o con un bloqueador.',
+      c3_item4: 'No compartimos tu información con anunciantes.',
+      c3_link: 'Gestionar preferencias de anuncios →',
+      c4_tag: 'Analítica',
+      c4_tit: 'Cookies de Analítica Web',
+      c4_desc: 'Usamos Analytics para entender cómo se usa Workwii y poder mejorarlo.',
+      c4_item1: 'Miden visitas, páginas populares y tiempo de sesión.',
+      c4_item2: 'Los datos son anónimos y no te identifican.',
+      c4_item3: 'Ayudan a detectar errores y optimizar el rendimiento.'
+    },
+    gestionar: {
+      badge: 'Control',
+      tit: 'Cómo ',
+      titGrad: 'gestionar',
+      sub: 'Puedes borrar o bloquear cookies desde la configuración de tu navegador',
+      g1_tit: 'Chrome / Edge',
+      g1_desc: 'Configuración → Privacidad y seguridad → Cookies y otros datos de sitios',
+      g2_tit: 'Firefox',
+      g2_desc: 'Opciones → Privacidad y seguridad → Cookies y datos del sitio',
+      g3_tit: 'Safari',
+      g3_desc: 'Preferencias → Privacidad → Gestionar datos de sitios web',
+      g4_tit: 'Móvil (Android/iOS)',
+      g4_desc: 'Configuración del navegador → Privacidad → Borrar datos de navegación',
+      warning: 'Deshabilitar ciertas cookies puede afectar el inicio de sesión y la sincronización de tus datos en Workwii.'
+    },
+    cta: {
+      tit: '¿Más preguntas sobre cookies?',
+      sub: 'Escríbenos sin problema, estamos para ayudarte.',
+      btnContacto: 'Contactar al equipo',
+      btnPrivacidad: 'Ver Privacidad'
+    }
+  },
+  en: {
+    seo: {
+      titulo: 'Cookies Policy - Workwii',
+      descripcion: 'Transparency and clarity about how we use cookies and local storage to optimize your experience and preferences in our editor.'
+    },
+    hero: {
+      badge: 'Full transparency',
+      tit1: 'Cookies',
+      titGrad: 'Policy',
+      sub: 'We explain which cookies we use, what they are for, and <strong>how you can control them.</strong>',
+      chip1: '4 cookie types',
+      chip2: 'You decide',
+      chip3: 'No surprises',
+      lastUpd: 'Last updated: April'
+    },
+    tipos: {
+      badge: 'Types',
+      tit: 'Which cookies ',
+      titGrad: 'do we use?',
+      sub: 'Each cookie has a clear purpose.',
+      c1_tag: 'Essential',
+      c1_tit: 'Session & Authentication Cookies',
+      c1_desc: 'Necessary for Workwii to work. Without them you cannot log in.',
+      c1_item1: 'Supabase Auth maintains your session through secure tokens.',
+      c1_item2: 'They are automatically deleted when you log out.',
+      c1_item3: 'They cannot be disabled without affecting the app.',
+      c2_tag: 'Functional',
+      c2_tit: 'LocalStorage (Preferences & Cache)',
+      c2_desc: 'Local storage for an ultra-fast experience without depending on internet.',
+      c2_item1: 'Saves local CV drafts and editor configurations.',
+      c2_item2: 'Stores your preferred visual theme (Cielo, Mora, Futuro…).',
+      c2_item3: 'App cache for instant loading.',
+      c2_item4: 'Erasable from your browser\'s Settings → Privacy.',
+      c3_tag: 'Advertising',
+      c3_tit: 'Google AdSense Cookies',
+      c3_desc: 'Workwii uses Google AdSense to display ads that fund the free service.',
+      c3_item1: 'Google uses cookies like NID or IDE to customize ads.',
+      c3_item2: 'Based on your browsing history.',
+      c3_item3: 'Disable them in Google Ads Settings or with an ad blocker.',
+      c3_item4: 'We do not share your information with advertisers.',
+      c3_link: 'Manage ad preferences →',
+      c4_tag: 'Analytics',
+      c4_tit: 'Web Analytics Cookies',
+      c4_desc: 'We use Analytics to understand how Workwii is used and to improve it.',
+      c4_item1: 'They measure visits, popular pages, and session duration.',
+      c4_item2: 'The data is anonymous and does not identify you.',
+      c4_item3: 'They help detect errors and optimize performance.'
+    },
+    gestionar: {
+      badge: 'Control',
+      tit: 'How to ',
+      titGrad: 'manage',
+      sub: 'You can delete or block cookies from your browser settings',
+      g1_tit: 'Chrome / Edge',
+      g1_desc: 'Settings → Privacy and security → Cookies and other site data',
+      g2_tit: 'Firefox',
+      g2_desc: 'Options → Privacy and security → Cookies and site data',
+      g3_tit: 'Safari',
+      g3_desc: 'Preferences → Privacy → Manage website data',
+      g4_tit: 'Mobile (Android/iOS)',
+      g4_desc: 'Browser settings → Privacy → Clear browsing data',
+      warning: 'Disabling certain cookies may affect login and data synchronization on Workwii.'
+    },
+    cta: {
+      tit: 'More questions about cookies?',
+      sub: 'Write to us without problem, we are here to help you.',
+      btnContacto: 'Contact team',
+      btnPrivacidad: 'View Privacy'
+    }
+  }
+};
