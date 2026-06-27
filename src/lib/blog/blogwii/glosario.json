@@ -1,0 +1,15 @@
+{
+  "untranslatable": [
+    "Workwii",
+    "Supabase",
+    "Astro",
+    "Tauri",
+    "Disqus"
+  ],
+  "technical_translations": {
+    "curriculum": "resume",
+    "hoja de vida": "resume",
+    "reclutador": "recruiter",
+    "red inteligente": "smart grid"
+  }
+}

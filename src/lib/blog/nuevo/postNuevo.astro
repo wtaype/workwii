@@ -1,0 +1,1216 @@
+---
+// src/lib/blog/nuevo/postNuevo.astro
+// Componente lógico modular del creador/editor de posts
+
+import Layout from '../../../layouts/Layout.astro';
+import { app, id } from '../../../wii.js';
+import { useTranslations } from '../../i18n/utils.js';
+import { idiomaNuevo } from './idiomaNuevo.js';
+
+interface Props {
+  lang?: string;
+}
+
+const { lang = 'es' } = Astro.props;
+const lg = useTranslations(lang, idiomaNuevo);
+
+import postStyles from '../post/post.css?raw';
+import contenidoStyles from '../contenido.css?raw';
+import nuevoStyles from './nuevo.css?raw';
+---
+
+<style is:global set:html={postStyles + contenidoStyles + nuevoStyles}></style>
+
+<Layout title="Creador de Artículos — Admin">
+  <div class="nu_wrap">
+    <div class="nu_head">
+      <div class="nu_head_left">
+        <h1 id="nu_main_title"><i class="fas fa-file-pen"></i> Nueva publicación</h1>
+        <p id="nu_edit_info" class="nu_edit_info dpn"></p>
+      </div>
+      <div class="nu_head_right">
+        <a id="nu_view_post_btn" class="nu_btn_sec dpn" href="" target="_blank"><i class="fas fa-eye"></i> Ver post</a>
+        <button id="nu_load_draft_btn" class="nu_btn_sec" title="Sincronizar borrador local"><i class="fas fa-sync-alt"></i></button>
+        <button type="submit" form="nu_form" id="nu_submit" class="nu_btn_submit"><i class="fas fa-paper-plane"></i> <span id="nu_btn_lbl">Publicar</span></button>
+      </div>
+    </div>
+    
+    <form id="nu_form" autocomplete="off">
+      <div class="nu_layout">
+        <div class="nu_left">
+          
+          <!-- Título -->
+          <div class="nu_card">
+            <div class="nu_card_title"><i class="fas fa-heading"></i> Título</div>
+            <input id="nu_titulo" type="text" class="nu_titulo_inp" placeholder="Escribe un título impactante... (Mínimo: 35, Mínimo: 47)" maxlength="47" required/>
+            <div class="nu_counter_box">
+              <span id="nu_titulo_msg" class="nu_status_msg"></span>
+              <span><span id="nu_titulo_cnt">0</span>/47</span>
+            </div>
+            <div class="nu_slug_box">
+              <span class="nu_slug_label"><i class="fas fa-link"></i> <span id="nu_domain_lbl">{id}.vercel.app/</span></span>
+              <input id="nu_slug_inp" type="text" placeholder="novedades-ia" maxlength="32" spellcheck="false"/>
+            </div>
+            <div class="nu_counter_box">
+              <span id="nu_slug_msg" class="nu_status_msg"></span>
+              <span><span id="nu_slug_cnt">0</span>/32</span>
+            </div>
+            <div id="nu_slug_status" class="nu_slug_status"></div>
+          </div>
+
+          <!-- Dos columnas: Resumen y Keywords -->
+          <div class="nu_row_two">
+            <!-- Resumen -->
+            <div class="nu_card">
+              <div class="nu_card_title_row">
+                <span><i class="fas fa-align-left"></i> Resumen de lectura</span>
+                <span class="nu_counter"><span id="nu_resumen_cnt">0</span>/200</span>
+              </div>
+              <textarea id="nu_resumen" class="nu_resumen_tx" placeholder="Escribe una descripción breve que enganche... (Mínimo: 100, Máximo: 200)" maxlength="200" required></textarea>
+              <div class="nu_counter_box">
+                <span id="nu_resumen_msg" class="nu_status_msg"></span>
+              </div>
+            </div>
+
+            <!-- Keywords -->
+            <div class="nu_card">
+              <div class="nu_card_title_row">
+                <span><i class="fas fa-key"></i> Palabras clave (SEO Keywords)</span>
+                <span class="nu_counter"><span id="nu_keywords_cnt">0</span>/160</span>
+              </div>
+              <textarea id="nu_keywords" class="nu_resumen_tx" placeholder="Escribe keywords separadas por comas... (Ej: empleo, ats, curriculum)" maxlength="160"></textarea>
+              <div class="nu_counter_box">
+                <span id="nu_keywords_msg" class="nu_status_msg"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contenido y Vista Previa (TABS) -->
+          <div class="nu_card">
+            <div class="nu_tabs_header">
+              <span class="nu_tabs_label"><i class="fas fa-keyboard"></i> Redactor de Contenido</span>
+              <div class="nu_tabs_buttons">
+                <button type="button" id="nu_tab_write" class="nu_tab_btn active">
+                  <i class="fas fa-pen-nib"></i> Contenido
+                </button>
+                <button type="button" id="nu_tab_preview" class="nu_tab_btn">
+                  <i class="fas fa-magnifying-glass"></i> Vista previa
+                </button>
+              </div>
+            </div>
+
+            <!-- Panel Editor -->
+            <div id="nu_panel_write" class="nu_tab_panel">
+              <div class="nu_editor_wrap">
+                <div class="nu_toolbar">
+                  <button type="button" class="nu_tool" data-cmd="bold" title="Negrita"><i class="fas fa-bold"></i></button>
+                  <button type="button" class="nu_tool" data-cmd="italic" title="Cursiva"><i class="fas fa-italic"></i></button>
+                  <button type="button" class="nu_tool" data-cmd="h2" title="Título H2"><i class="fas fa-heading"></i>2</button>
+                  <button type="button" class="nu_tool" data-cmd="h3" title="Título H3"><i class="fas fa-heading"></i>3</button>
+                  <button type="button" class="nu_tool" data-cmd="link" title="Enlace"><i class="fas fa-link"></i></button>
+                  <button type="button" class="nu_tool" data-cmd="quote" title="Cita"><i class="fas fa-quote-left"></i></button>
+                  <button type="button" class="nu_tool" data-cmd="code" title="Bloque Código"><i class="fas fa-code"></i></button>
+                  <button type="button" class="nu_tool" data-cmd="image" title="Imagen"><i class="fas fa-image"></i></button>
+                  <button type="button" class="nu_tool" data-cmd="yt" title="Video de YouTube"><i class="fab fa-youtube"></i></button>
+                  <button type="button" class="nu_tool" data-cmd="info" title="Caja de Alerta Azul"><i class="fas fa-info-circle"></i></button>
+                  <button type="button" class="nu_tool" data-cmd="success" title="Caja de Alerta Verde"><i class="fas fa-check-circle"></i></button>
+                  <button type="button" class="nu_tool" data-cmd="warning" title="Caja de Alerta Naranja"><i class="fas fa-triangle-exclamation"></i></button>
+                </div>
+                <textarea id="nu_contenido" class="nu_textarea" placeholder="Escribe el contenido de tu artículo usando formato Markdown..." required></textarea>
+              </div>
+              <div class="nu_content_footer">
+                <span id="nu_palabras"><i class="fas fa-font"></i> 0 palabras</span>
+                <span id="nu_lectura"><i class="fas fa-clock"></i> 0 min</span>
+              </div>
+            </div>
+
+            <!-- Panel Vista Previa -->
+            <div id="nu_panel_preview" class="nu_tab_panel dpn">
+              <div class="nu_preview_body po_contenido" id="nu_prev_html"></div>
+            </div>
+          </div>
+          
+        </div>
+        <div class="nu_right">
+          
+          <!-- MÓDULO DE IDIOMA E IA TRADUCCIÓN -->
+          <div class="nu_card">
+            <div class="nu_card_title"><i class="fas fa-language"></i> {lg('language')}</div>
+            <select id="nu_lang" class="nu_select">
+              <option value="es">{lg('es')}</option>
+              <option value="en">{lg('en')}</option>
+            </select>
+
+            <div class="nu_field_group">
+              <label class="nu_field_label"><i class="fas fa-link"></i> {lg('originalPost')}</label>
+              <select id="nu_traduccionId" class="nu_select">
+                <option value="">{lg('selectPost')}</option>
+              </select>
+            </div>
+
+            <button type="button" id="nu_btn_translate_ai" class="nu_btn_translate_ai">
+              <i class="fas fa-wand-magic-sparkles"></i> {lg('translateAi')}
+            </button>
+            <button type="button" id="nu_btn_duplicate_translate" class="nu_btn_duplicate_translate dpn">
+              <i class="fas fa-copy"></i> Traducir como Nuevo Post
+            </button>
+          </div>
+
+          <div class="nu_card">
+            <div class="nu_card_title"><i class="fas fa-earth-americas"></i> Publicación</div>
+            <div class="nu_switch_row">
+              <span>Publicar inmediatamente</span>
+              <label class="nu_ios_switch">
+                <input id="nu_activo" type="checkbox" checked />
+                <span class="nu_ios_slider"></span>
+              </label>
+            </div>
+            <div class="nu_switch_row">
+              <span>Destacar artículo (Pin)</span>
+              <label class="nu_ios_switch">
+                <input id="nu_pin" type="checkbox" />
+                <span class="nu_ios_slider"></span>
+              </label>
+            </div>
+            <div class="nu_autor_box">
+              <div class="po_autor_box">
+                <div class="po_autor_av"><i class="fas fa-user-pen"></i></div>
+                <div class="po_autor_info">
+                  <strong id="nu_autor_nombre">Cargando...</strong>
+                  <span id="nu_autor_email">...</span>
+                </div>
+              </div>
+            </div>
+            <button type="submit" form="nu_form" id="nu_submit_btn_aside" class="nu_btn_submit nu_btn_full"><i class="fas fa-paper-plane"></i> <span id="nu_btn_lbl_aside">Publicar</span></button>
+          </div>
+
+          <div class="nu_card">
+            <div class="nu_card_title"><i class="fas fa-folder"></i> Categoría</div>
+            <input id="nu_cat_inp" type="text" placeholder="Escribe una categoría" maxlength="30" required/>
+          </div>
+
+          <div class="nu_card">
+            <div class="nu_card_title"><i class="fas fa-tags"></i> Tags</div>
+            <input id="nu_tags_inp" type="text" placeholder="Escribe tags con comas"/>
+            <div id="nu_tags_box" class="nu_tags_box"></div>
+          </div>
+
+          <div class="nu_card">
+            <div class="nu_card_title"><i class="fas fa-image"></i> Imágenes</div>
+            <div class="nu_image_input_group">
+              <label class="nu_image_field_label"><i class="fas fa-compress"></i> Miniatura (Inicio-Blog)</label>
+              <input id="nu_img" type="url" placeholder="https://... (Sugerido: 334x208px)" required/>
+              <div id="nu_img_prev" class="nu_img_prev dpn"><img id="nu_img_el" src="" alt=""/><button type="button" id="nu_img_clear" class="nu_img_clear" title="Quitar"><i class="fas fa-xmark"></i></button></div>
+            </div>
+            <div class="nu_image_input_group nu_image_input_group--spaced">
+              <label class="nu_image_field_label"><i class="fas fa-expand"></i> Cabecera (Imagen Principal)</label>
+              <input id="nu_img_top" type="url" placeholder="https://... (Sugerido: 1200x450px)"/>
+              <div id="nu_img_top_prev" class="nu_img_prev dpn"><img id="nu_img_top_el" src="" alt=""/><button type="button" id="nu_img_top_clear" class="nu_img_clear" title="Quitar"><i class="fas fa-xmark"></i></button></div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </form>
+  </div>
+</Layout>
+
+<script>
+  import { protegerRuta } from '../../auth.js';
+  import { wiSpin, Notificacion, Mensaje, getls, savels, minus, imgwii } from '../../widev.js';
+  import { linkweb } from '../../../wii.js';
+  import { mdToHtml, wiSanihtml, countWords } from '../recursos/procesarmd.js';
+  import { supabase } from '../../supabase.js';
+  import { traducirArticuloCompleto } from '../blogwii/brain.js';
+  import { generarSlugDeTraduccion, transformarFormularioAClon } from '../blogwii/clonar.js';
+  import { idiomaNuevo } from './idiomaNuevo.js';
+
+  let tags: string[] = [];
+  let sT: any, iT: any, iT2: any;
+  let draftTimer: any = null;
+  let isEdit = false;
+  let editSlug: string | null = null;
+  let originalPostId: string | null = null;
+  let originalPostLang = 'es';
+  let slugDebounceTimer: any = null;
+  let isTranslating = false;
+  let slugAbortController: AbortController | null = null;
+  let eventListeners: Array<{ target: EventTarget | Window | Document, type: string, handler: any }> = [];
+
+  const listen = (target: EventTarget | Window | Document, type: string, handler: any) => {
+    target.addEventListener(type, handler);
+    eventListeners.push({ target, type, handler });
+  };
+
+  const cleanup = () => {
+    eventListeners.forEach(({ target, type, handler }) => {
+      target.removeEventListener(type, handler);
+    });
+    eventListeners = [];
+    tags = [];
+    isEdit = false;
+    editSlug = null;
+  };
+
+  const ser = (d: any) => {
+    if (!d) return null;
+    return {
+      ...d,
+      resumen: d.descripcion || '',
+      keywords: d.metaSEO?.keywords || '',
+      contenidoMd: d.contenidoMD || '',
+      tiempoLectura: d.lecturaTM || ''
+    };
+  };
+
+  const getPost = async (slug: string, force = false) => {
+    if (!force) { const c = getls(`wi_post_${slug}`); if (c) return { data: c, fromCache: true }; }
+    const { data, error } = await supabase.from('blog').select('id, slug, titulo, descripcion, categoria, contenidoMD, imagen, imagenTop, activo, pin, tags, metaSEO, lang, traduccionId').eq('slug', slug).maybeSingle();
+    if (error || !data) return null;
+    const mapped = ser(data);
+    savels(`wi_post_${slug}`, mapped, 12);
+    return { data: mapped, fromCache: false };
+  };
+
+  const clearPostCache = (s: string) => { if (typeof localStorage !== 'undefined') localStorage.removeItem(`wi_post_${s}`); };
+  const clearBlogCache = () => { if (typeof localStorage !== 'undefined') Object.keys(localStorage).filter(k => k.startsWith('wi_blogs')).forEach(k => localStorage.removeItem(k)); };
+
+  const getDraftKey = () => isEdit ? 'wi_draft_edit_' + editSlug : 'wi_draft_new';
+
+  const saveDraft = () => {
+    const key = getDraftKey();
+    const draft = {
+      titulo: (document.getElementById('nu_titulo') as HTMLInputElement)?.value || '',
+      slug: (document.getElementById('nu_slug_inp') as HTMLInputElement)?.value || '',
+      resumen: (document.getElementById('nu_resumen') as HTMLTextAreaElement)?.value || '',
+      keywords: (document.getElementById('nu_keywords') as HTMLTextAreaElement)?.value || '',
+      cat: (document.getElementById('nu_cat_inp') as HTMLInputElement)?.value || '',
+      img: (document.getElementById('nu_img') as HTMLInputElement)?.value || '',
+      imgTop: (document.getElementById('nu_img_top') as HTMLInputElement)?.value || '',
+      content: (document.getElementById('nu_contenido') as HTMLTextAreaElement)?.value || '',
+      lang: (document.getElementById('nu_lang') as HTMLSelectElement)?.value || 'es',
+      traduccionId: (document.getElementById('nu_traduccionId') as HTMLSelectElement)?.value || '',
+      tags
+    };
+    localStorage.setItem(key, JSON.stringify(draft));
+  };
+
+  const triggerDraftSave = () => {
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(saveDraft, 1000);
+  };
+
+  const updCount = () => {
+    const val = (document.getElementById('nu_contenido') as HTMLTextAreaElement)?.value || '';
+    const { words, min } = countWords(val);
+    const wordsEl = document.getElementById('nu_palabras');
+    const readingEl = document.getElementById('nu_lectura');
+    if (wordsEl) wordsEl.innerHTML = `<i class="fas fa-font"></i> ${words} palabras`;
+    if (readingEl) readingEl.innerHTML = `<i class="fas fa-clock"></i> ${min} min`;
+  };
+
+  const renderTags = () => {
+    const box = document.getElementById('nu_tags_box');
+    if (box) {
+      box.innerHTML = tags.map((t, i) => `
+        <span class="nu_tag_chip">#${t} <i class="fas fa-xmark nu_tag_rm" data-i="${i}"></i></span>
+      `).join('');
+    }
+  };
+
+  let allPostsData: any[] = [];
+
+  const fillTranslationSelect = async (selectedLang: string, preselectedId = '') => {
+    const select = document.getElementById('nu_traduccionId') as HTMLSelectElement;
+    if (!select) return;
+
+    const dict = selectedLang === 'en' ? idiomaNuevo.en : idiomaNuevo.es;
+    select.innerHTML = `<option value="">${dict.selectPost}</option>`;
+
+    if (!allPostsData.length) {
+      try {
+        const { data } = await supabase.from('blog').select('id, slug, titulo, lang').eq('activo', true);
+        allPostsData = data || [];
+      } catch (e) {
+        console.warn('[fillTranslationSelect]', e);
+      }
+    }
+
+    const oppositePosts = allPostsData.filter(p => {
+      const pLang = p.lang || 'es';
+      return selectedLang === 'en' ? pLang === 'es' : pLang === 'en';
+    });
+
+    oppositePosts.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = `[${p.lang?.toUpperCase() || 'ES'}] ${p.titulo}`;
+      if (p.id === preselectedId) {
+        opt.selected = true;
+      }
+      select.appendChild(opt);
+    });
+  };
+
+  const setupEvents = (u: any) => {
+    const form = document.getElementById('nu_form');
+    const slugInp = document.getElementById('nu_slug_inp') as HTMLInputElement;
+    const titleInp = document.getElementById('nu_titulo') as HTMLInputElement;
+    const resumenInp = document.getElementById('nu_resumen') as HTMLTextAreaElement;
+    const keywordsInp = document.getElementById('nu_keywords') as HTMLTextAreaElement;
+    const langSelect = document.getElementById('nu_lang') as HTMLSelectElement;
+    const translationSelect = document.getElementById('nu_traduccionId') as HTMLSelectElement;
+
+    // Tabs switching logic
+    const tabWrite = document.getElementById('nu_tab_write');
+    const tabPreview = document.getElementById('nu_tab_preview');
+    const panelWrite = document.getElementById('nu_panel_write');
+    const panelPreview = document.getElementById('nu_panel_preview');
+
+    if (tabWrite && tabPreview && panelWrite && panelPreview) {
+      listen(tabWrite, 'click', () => {
+        tabWrite.classList.add('active');
+        tabPreview.classList.remove('active');
+        panelWrite.classList.remove('dpn');
+        panelPreview.classList.add('dpn');
+      });
+
+      listen(tabPreview, 'click', () => {
+        tabPreview.classList.add('active');
+        tabWrite.classList.remove('active');
+        panelPreview.classList.remove('dpn');
+        panelWrite.classList.add('dpn');
+
+        const ta = document.getElementById('nu_contenido') as HTMLTextAreaElement;
+        const val = ta?.value || '';
+        const prevHtml = document.getElementById('nu_prev_html');
+        const curLang = langSelect?.value || 'es';
+        if (prevHtml) {
+          prevHtml.innerHTML = wiSanihtml(mdToHtml(val, curLang));
+          imgwii.ver('#nu_prev_html');
+        }
+      });
+    }
+
+    if (langSelect) {
+      listen(langSelect, 'change', async () => {
+        const curLang = langSelect.value;
+        const curTranslationId = translationSelect?.value || '';
+        await fillTranslationSelect(curLang, curTranslationId);
+        saveDraft();
+      });
+    }
+
+    // IA Translation Button Integration
+    const translateAiBtn = document.getElementById('nu_btn_translate_ai');
+    if (translateAiBtn) {
+      listen(translateAiBtn, 'click', async () => {
+        const titleVal = titleInp?.value.trim();
+        const resumenVal = resumenInp?.value.trim();
+        const contentVal = (document.getElementById('nu_contenido') as HTMLTextAreaElement)?.value.trim();
+        const catVal = (document.getElementById('nu_cat_inp') as HTMLInputElement)?.value.trim();
+        const keywordsVal = (document.getElementById('nu_keywords') as HTMLTextAreaElement)?.value.trim();
+        const currentLang = langSelect?.value || 'es';
+
+        if (!titleVal || !contentVal) {
+          Notificacion('Escribe un título y contenido antes de traducir', 'warning');
+          return;
+        }
+
+        const oldHtml = translateAiBtn.innerHTML;
+        const targetLang = currentLang === 'es' ? 'en' : 'es';
+        const dict = currentLang === 'es' ? idiomaNuevo.es : idiomaNuevo.en;
+        
+        translateAiBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${dict.translating}`;
+        translateAiBtn.setAttribute('disabled', 'true');
+        isTranslating = true;
+
+        try {
+          const result = await traducirArticuloCompleto({
+            titulo: titleVal,
+            resumen: resumenVal,
+            contenido: contentVal,
+            categoria: catVal,
+            keywords: keywordsVal,
+            tags: tags,
+            lang: currentLang,
+            onProgress: (progressiveMarkdown: string) => {
+              const ta = document.getElementById('nu_contenido') as HTMLTextAreaElement;
+              if (ta) {
+                ta.value = progressiveMarkdown;
+              }
+            }
+          });
+
+          console.log('[AI Translation Result]', result);
+
+          if (result.titulo) titleInp.value = result.titulo.substring(0, 47);
+          if (result.descripcion) resumenInp.value = result.descripcion;
+          if (result.categoria) (document.getElementById('nu_cat_inp') as HTMLInputElement).value = result.categoria;
+          if (result.keywords) {
+            (document.getElementById('nu_keywords') as HTMLTextAreaElement).value = result.keywords;
+            (document.getElementById('nu_keywords') as HTMLTextAreaElement).dispatchEvent(new Event('input'));
+          }
+          if (result.tags) {
+            tags = Array.isArray(result.tags) ? result.tags : [];
+            renderTags();
+          }
+          const ta = document.getElementById('nu_contenido') as HTMLTextAreaElement;
+          if (ta && result.contenido) ta.value = result.contenido;
+
+          langSelect.value = targetLang;
+          
+          titleInp.dispatchEvent(new Event('input'));
+          if (ta) {
+            isTranslating = false; // Permite que updCount y saveDraft corran temporalmente
+            ta.dispatchEvent(new Event('input'));
+            isTranslating = true;
+          }
+          resumenInp.dispatchEvent(new Event('input'));
+          
+          await fillTranslationSelect(targetLang);
+          saveDraft();
+
+          Notificacion(dict.translateSuccess, 'success');
+        } catch (e: any) {
+          console.error('[AI Translation]', e);
+          Notificacion(dict.translateError, 'error');
+        } finally {
+          isTranslating = false;
+          translateAiBtn.innerHTML = oldHtml;
+          translateAiBtn.removeAttribute('disabled');
+        }
+      });
+    }
+
+    // Duplicar y Traducir Button click handler
+    const duplicateBtn = document.getElementById('nu_btn_duplicate_translate');
+    if (duplicateBtn) {
+      listen(duplicateBtn, 'click', async () => {
+        const titleVal = titleInp?.value.trim();
+        const resumenVal = resumenInp?.value.trim();
+        const contentVal = (document.getElementById('nu_contenido') as HTMLTextAreaElement)?.value.trim();
+        const catVal = (document.getElementById('nu_cat_inp') as HTMLInputElement)?.value.trim();
+        const keywordsVal = (document.getElementById('nu_keywords') as HTMLTextAreaElement)?.value.trim();
+        const currentLang = originalPostLang;
+
+        if (!titleVal || !contentVal) {
+          Notificacion('Escribe un título y contenido antes de clonar', 'warning');
+          return;
+        }
+
+        const oldHtml = duplicateBtn.innerHTML;
+        const targetLang = currentLang === 'es' ? 'en' : 'es';
+        const dict = currentLang === 'es' ? idiomaNuevo.es : idiomaNuevo.en;
+
+        duplicateBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Traduciendo...`;
+        duplicateBtn.setAttribute('disabled', 'true');
+        isTranslating = true;
+
+        try {
+          const result = await traducirArticuloCompleto({
+            titulo: titleVal,
+            resumen: resumenVal,
+            contenido: contentVal,
+            categoria: catVal,
+            keywords: keywordsVal,
+            tags: tags,
+            lang: currentLang,
+            onProgress: (progressiveMarkdown: string) => {
+              const ta = document.getElementById('nu_contenido') as HTMLTextAreaElement;
+              if (ta) {
+                ta.value = progressiveMarkdown;
+              }
+            }
+          });
+
+          console.log('[AI Duplicate & Translate Result]', result);
+
+          const newSlug = generarSlugDeTraduccion(result.titulo);
+
+          transformarFormularioAClon(originalPostId, newSlug, targetLang);
+
+          isEdit = false;
+          editSlug = null;
+
+          if (result.titulo) titleInp.value = result.titulo.substring(0, 47);
+          if (result.descripcion) resumenInp.value = result.descripcion;
+          if (result.categoria) (document.getElementById('nu_cat_inp') as HTMLInputElement).value = result.categoria;
+          if (result.keywords) {
+            (document.getElementById('nu_keywords') as HTMLTextAreaElement).value = result.keywords;
+            (document.getElementById('nu_keywords') as HTMLTextAreaElement).dispatchEvent(new Event('input'));
+          }
+          if (result.tags) {
+            tags = Array.isArray(result.tags) ? result.tags : [];
+            renderTags();
+          }
+          const ta = document.getElementById('nu_contenido') as HTMLTextAreaElement;
+          if (ta && result.contenido) ta.value = result.contenido;
+
+          langSelect.value = targetLang;
+
+          titleInp.dispatchEvent(new Event('input'));
+          if (ta) {
+            isTranslating = false; // Permite que updCount y saveDraft corran temporalmente
+            ta.dispatchEvent(new Event('input'));
+            isTranslating = true;
+          }
+          resumenInp.dispatchEvent(new Event('input'));
+
+          await fillTranslationSelect(targetLang, originalPostId || undefined);
+          saveDraft();
+
+          duplicateBtn.classList.add('dpn');
+
+          Notificacion('¡Traducción completada con éxito como borrador de nuevo post!', 'success');
+        } catch (e: any) {
+          console.error('[Duplicate & Translate]', e);
+          Notificacion('Error al clonar y traducir', 'error');
+        } finally {
+          isTranslating = false;
+          duplicateBtn.innerHTML = oldHtml;
+          duplicateBtn.removeAttribute('disabled');
+        }
+      });
+    }
+
+    const actualizandoPost = async () => {
+      try {
+        const btn = document.getElementById('nu_load_draft_btn');
+        const icon = btn?.querySelector('i');
+        if (icon) icon.className = 'fas fa-spinner fa-spin';
+        const res = await fetch('http://localhost:3001/');
+        const data = await res.json();
+        const ta = document.getElementById('nu_contenido') as HTMLTextAreaElement;
+        if (ta && data.content) {
+          ta.value = data.content;
+          updCount();
+          saveDraft();
+          const prev = document.getElementById('nu_prev_html');
+          if (prev && !prev.classList.contains('dpn')) {
+            prev.innerHTML = wiSanihtml(mdToHtml(ta.value));
+          }
+          Notificacion('¡Artículo sincronizado con éxito!', 'success');
+        }
+      } catch (e) {
+        Notificacion('No se pudo conectar con cargar.js', 'error');
+      } finally {
+        const icon = document.querySelector('#nu_load_draft_btn i');
+        if (icon) icon.className = 'fas fa-sync-alt';
+      }
+    };
+
+    const loadDraftBtn = document.getElementById('nu_load_draft_btn');
+    if (loadDraftBtn) listen(loadDraftBtn, 'click', actualizandoPost);
+
+    const updateTituloCounter = () => {
+      const cnt = document.getElementById('nu_titulo_cnt');
+      const msg = document.getElementById('nu_titulo_msg');
+      if (titleInp && cnt && msg) {
+        const len = titleInp.value.length;
+        cnt.textContent = String(len);
+        if (len === 0) {
+          msg.textContent = '';
+        } else if (len < 35) {
+          msg.textContent = 'Muy corto';
+          msg.className = 'nu_status_msg err';
+        } else {
+          msg.textContent = 'Excelente';
+          msg.className = 'nu_status_msg ok';
+        }
+      }
+    };
+    if (titleInp) {
+      listen(titleInp, 'input', () => {
+        updateTituloCounter();
+        triggerDraftSave();
+      });
+    }
+
+    const updateSlugCounter = () => {
+      const cnt = document.getElementById('nu_slug_cnt');
+      const msg = document.getElementById('nu_slug_msg');
+      if (slugInp && cnt && msg) {
+        const len = slugInp.value.length;
+        cnt.textContent = String(len);
+        if (len === 0) {
+          msg.textContent = '';
+        } else if (len < 3) {
+          msg.textContent = 'Muy corto';
+          msg.className = 'nu_status_msg err';
+        } else {
+          msg.textContent = 'Válido';
+          msg.className = 'nu_status_msg ok';
+        }
+      }
+    };
+
+    const updateResumenCounter = () => {
+      const cnt = document.getElementById('nu_resumen_cnt');
+      const msg = document.getElementById('nu_resumen_msg');
+      if (resumenInp && cnt && msg) {
+        const len = resumenInp.value.length;
+        cnt.textContent = String(len);
+        if (len === 0) {
+          msg.textContent = '';
+        } else if (len < 100) {
+          msg.textContent = `Faltan ${100 - len} caracteres`;
+          msg.className = 'nu_status_msg err';
+        } else {
+          msg.textContent = 'Excelente';
+          msg.className = 'nu_status_msg ok';
+        }
+      }
+    };
+    if (resumenInp) {
+      listen(resumenInp, 'input', () => {
+        updateResumenCounter();
+        triggerDraftSave();
+      });
+    }
+
+    const updateKeywordsCounter = () => {
+      const cnt = document.getElementById('nu_keywords_cnt');
+      const msg = document.getElementById('nu_keywords_msg');
+      if (keywordsInp && cnt && msg) {
+        const len = keywordsInp.value.length;
+        cnt.textContent = String(len);
+        if (len > 0) {
+          msg.textContent = 'Válido';
+          msg.className = 'nu_status_msg ok';
+        } else {
+          msg.textContent = '';
+        }
+      }
+    };
+    if (keywordsInp) {
+      listen(keywordsInp, 'input', () => {
+        updateKeywordsCounter();
+        triggerDraftSave();
+      });
+    }
+
+    if (form) {
+      listen(form, 'submit', async (e: Event) => {
+        e.preventDefault();
+        const btnSelector = '#nu_submit, #nu_submit_btn_aside';
+        
+        const titulo = titleInp.value.trim();
+        const slug = slugInp.value.trim();
+        const resumen = resumenInp.value.trim();
+        const keywords = keywordsInp.value.trim();
+        const catVal = (document.getElementById('nu_cat_inp') as HTMLInputElement).value.trim();
+        const img = (document.getElementById('nu_img') as HTMLInputElement).value.trim();
+        const imgTop = (document.getElementById('nu_img_top') as HTMLInputElement).value.trim();
+        const contenidoMD = (document.getElementById('nu_contenido') as HTMLTextAreaElement).value.trim();
+        const langVal = langSelect.value;
+        const translationIdVal = translationSelect.value || null;
+
+        const contenido = mdToHtml(contenidoMD);
+
+        if (!titulo || titulo.length < 35) {
+          Notificacion('Título demasiado corto', 'warning');
+          return;
+        }
+        if (!resumen || resumen.length < 100) {
+          Notificacion('Resumen demasiado corto', 'warning');
+          return;
+        }
+        if (!contenidoMD) {
+          Notificacion('El contenido está vacío', 'warning');
+          return;
+        }
+        if (!slug || slug.length < 3) {
+          Notificacion('Slug inválido', 'warning');
+          return;
+        }
+
+        const slugStatus = document.getElementById('nu_slug_status');
+        if (!isEdit && slugStatus && slugStatus.classList.contains('err')) {
+          Notificacion('Slug no disponible', 'error');
+          return;
+        }
+
+        wiSpin(btnSelector, true, isEdit ? 'Guardando...' : 'Publicando...');
+
+        try {
+          const min = countWords(contenido).min;
+          const readTime = `${min} min`;
+
+          if (isEdit && editSlug) {
+            const { error } = await supabase.from('blog').update({
+              activo: (document.getElementById('nu_activo') as HTMLInputElement).checked,
+              pin: (document.getElementById('nu_pin') as HTMLInputElement).checked,
+              titulo,
+              descripcion: resumen,
+              categoria: catVal,
+              contenido,
+              contenidoMD,
+              imagen: img,
+              imagenTop: imgTop,
+              tags,
+              lecturaTM: readTime,
+              lang: langVal,
+              traduccionId: translationIdVal,
+              metaSEO: { keywords }
+            }).eq('slug', editSlug);
+            if (error) throw error;
+
+            // Sincronización bidireccional de traducción
+            if (originalPostId) {
+              await supabase.from('blog').update({ traduccionId: null }).eq('traduccionId', originalPostId);
+              if (translationIdVal) {
+                await supabase.from('blog').update({ traduccionId: originalPostId }).eq('id', translationIdVal);
+              }
+            }
+            
+            clearPostCache(editSlug);
+            clearBlogCache();
+            Mensaje('¡Publicación actualizada!', 'success');
+            setTimeout(() => {
+              const prefix = langVal === 'en' ? '/en/' : '/';
+              window.location.href = `${prefix}${editSlug}`;
+            }, 1200);
+          } else {
+            const { data: existing } = await supabase.from('blog').select('slug').eq('slug', slug).maybeSingle();
+            if (existing) {
+              wiSpin(btnSelector, false);
+              Notificacion('Slug existente', 'warning');
+              return;
+            }
+            const { data: insData, error: insError } = await supabase.from('blog').insert({
+              slug,
+              activo: (document.getElementById('nu_activo') as HTMLInputElement).checked,
+              pin: (document.getElementById('nu_pin') as HTMLInputElement).checked,
+              usuario: u.usuario,
+              email: u.email,
+              userId: u.id,
+              autor: u.nombre || u.usuario,
+              titulo,
+              descripcion: resumen,
+              contenido,
+              contenidoMD,
+              categoria: catVal,
+              imagen: img,
+              imagenTop: imgTop,
+              tags,
+              vistas: 0,
+              likes: 0,
+              lecturaTM: readTime,
+              lang: langVal,
+              traduccionId: translationIdVal,
+              metaSEO: { keywords }
+            }).select('id').maybeSingle();
+            if (insError) throw insError;
+            
+            // Sincronización bidireccional de traducción
+            const newPostId = insData?.id;
+            if (newPostId) {
+              await supabase.from('blog').update({ traduccionId: null }).eq('traduccionId', newPostId);
+              if (translationIdVal) {
+                await supabase.from('blog').update({ traduccionId: newPostId }).eq('id', translationIdVal);
+              }
+            }
+
+            clearBlogCache();
+            localStorage.removeItem(getDraftKey());
+            Mensaje('¡Publicación creada con éxito!', 'success');
+            setTimeout(() => {
+              const prefix = langVal === 'en' ? '/en/' : '/';
+              window.location.href = `${prefix}${slug}`;
+            }, 1200);
+          }
+        } catch (err) {
+          console.error(err);
+          Notificacion(isEdit ? 'Error al guardar' : 'Error al publicar', 'error');
+          wiSpin(btnSelector, false);
+        }
+      });
+    }
+
+    if (slugInp) {
+      listen(slugInp, 'input', () => {
+        if (!isEdit) {
+          slugInp.value = slugInp.value.replace(/[^a-z0-9_-]/gi, s => s === ' ' ? '-' : '').toLowerCase().replace(/[-_]{2,}/g, '-');
+        }
+        
+        updateSlugCounter();
+
+        if (isEdit) return;
+
+        const slugStatus = document.getElementById('nu_slug_status');
+        const v = slugInp.value;
+
+        clearTimeout(slugDebounceTimer);
+        if (slugAbortController) {
+          slugAbortController.abort();
+          slugAbortController = null;
+        }
+
+        if (!v) {
+          if (slugStatus) {
+            slugStatus.innerHTML = '';
+            slugStatus.className = 'nu_slug_status';
+          }
+          return;
+        }
+
+        if (v.length < 3) {
+          if (slugStatus) {
+            slugStatus.innerHTML = '<i class="fas fa-exclamation"></i> Muy corto';
+            slugStatus.className = 'nu_slug_status err';
+          }
+          return;
+        }
+
+        if (slugStatus) {
+          slugStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validando...';
+          slugStatus.className = 'nu_slug_status';
+        }
+
+        slugDebounceTimer = setTimeout(async () => {
+          if (!slugStatus) return;
+          slugAbortController = new AbortController();
+          try {
+            const { data: existing, error } = await supabase
+              .from('blog')
+              .select('slug')
+              .eq('slug', v)
+              .abortSignal(slugAbortController.signal)
+              .maybeSingle();
+
+            if (error) throw error;
+
+            if (existing) {
+              slugStatus.innerHTML = '<i class="fas fa-xmark"></i> Ya existe';
+              slugStatus.className = 'nu_slug_status err';
+            } else {
+              slugStatus.innerHTML = '<i class="fas fa-check"></i> OK';
+              slugStatus.className = 'nu_slug_status ok';
+            }
+          } catch (err: any) {
+            if (err.name !== 'AbortError') {
+              console.warn('[slug check]', err);
+              slugStatus.innerHTML = '';
+            }
+          } finally {
+            slugAbortController = null;
+          }
+        }, 300);
+      });
+    }
+
+    const contentArea = document.getElementById('nu_contenido');
+    if (contentArea) {
+      listen(contentArea, 'input', () => {
+        if (isTranslating) return;
+        updCount();
+        triggerDraftSave();
+      });
+    }
+
+    const imgInp = document.getElementById('nu_img') as HTMLInputElement;
+    if (imgInp) {
+      listen(imgInp, 'input', () => {
+        clearTimeout(iT);
+        iT = setTimeout(() => {
+          const val = imgInp.value.trim();
+          const prev = document.getElementById('nu_img_prev');
+          const el = document.getElementById('nu_img_el') as HTMLImageElement;
+          if (!val) { prev?.classList.add('dpn'); return; }
+          if (el && prev) {
+            el.src = val;
+            el.onload = () => prev.classList.remove('dpn');
+            el.onerror = () => prev.classList.add('dpn');
+          }
+        }, 600);
+      });
+    }
+
+    const imgClear = document.getElementById('nu_img_clear');
+    if (imgClear && imgInp) {
+      listen(imgClear, 'click', () => {
+        imgInp.value = '';
+        imgInp.dispatchEvent(new Event('input'));
+      });
+    }
+
+    const imgTopInp = document.getElementById('nu_img_top') as HTMLInputElement;
+    if (imgTopInp) {
+      listen(imgTopInp, 'input', () => {
+        clearTimeout(iT2);
+        iT2 = setTimeout(() => {
+          const val = imgTopInp.value.trim();
+          const prev = document.getElementById('nu_img_top_prev');
+          const el = document.getElementById('nu_img_top_el') as HTMLImageElement;
+          if (!val) { prev?.classList.add('dpn'); return; }
+          if (el && prev) {
+            el.src = val;
+            el.onload = () => prev.classList.remove('dpn');
+            el.onerror = () => prev.classList.add('dpn');
+          }
+        }, 600);
+      });
+    }
+
+    const imgTopClear = document.getElementById('nu_img_top_clear');
+    if (imgTopClear && imgTopInp) {
+      listen(imgTopClear, 'click', () => {
+        imgTopInp.value = '';
+        imgTopInp.dispatchEvent(new Event('input'));
+      });
+    }
+
+    const tagsInp = document.getElementById('nu_tags_inp') as HTMLInputElement;
+    if (tagsInp) {
+      listen(tagsInp, 'keydown', (e: Event) => {
+        const keyEvent = e as KeyboardEvent;
+        if (keyEvent.key === 'Enter' || keyEvent.key === ',') {
+          keyEvent.preventDefault();
+          const items = tagsInp.value.toLowerCase().split(',').map(t => t.trim().replace(/\s+/g, '_')).filter(Boolean);
+          items.forEach(t => {
+            if (!tags.includes(t) && tags.length < 8) tags.push(t);
+          });
+          renderTags();
+          tagsInp.value = '';
+          saveDraft();
+        }
+      });
+    }
+
+    // Markdown tools
+    const tools = document.querySelectorAll('.nu_tool');
+    tools.forEach(btn => {
+      listen(btn, 'click', () => {
+        const cmd = btn.getAttribute('data-cmd');
+        const ta = document.getElementById('nu_contenido') as HTMLTextAreaElement;
+        if (!ta || !cmd) return;
+
+        const start = ta.selectionStart;
+        const end = ta.selectionEnd;
+        const text = ta.value;
+        const selected = text.substring(start, end);
+        
+        let rep = '';
+        let offset = 0;
+
+        switch(cmd) {
+          case 'bold':    rep = `**${selected || 'texto'}**`; offset = 2; break;
+          case 'italic':  rep = `*${selected || 'texto'}*`;   offset = 1; break;
+          case 'h2':      rep = `\n## ${selected || 'Título H2'}\n`; offset = 4; break;
+          case 'h3':      rep = `\n### ${selected || 'Título H3'}\n`; offset = 5; break;
+          case 'link':    rep = `[${selected || 'enlace'}](https://url.com)`; offset = 1; break;
+          case 'quote':   rep = `\n> ${selected || 'Cita'}\n`; offset = 3; break;
+          case 'code':    rep = `\n\`\`\`javascript\n${selected || '// código'}\n\`\`\`\n`; offset = 15; break;
+          case 'image':   rep = `\n![Alt Imagen](https://url-imagen.com/foto.jpg)\n`; break;
+          case 'yt':      rep = `\n[youtube](ID-DEL-VIDEO)\n`; break;
+          case 'info':    rep = `\n> [!NOTE]\n> ${selected || 'Contenido de la alerta'}\n`; offset = 12; break;
+          case 'success': rep = `\n> [!TIP]\n> ${selected || 'Contenido del tip'}\n`; offset = 11; break;
+          case 'warning': rep = `\n> [!WARNING]\n> ${selected || 'Contenido de advertencia'}\n`; offset = 15; break;
+        }
+
+        ta.value = text.substring(0, start) + rep + text.substring(end);
+        ta.focus();
+        
+        if (selected) {
+          ta.setSelectionRange(start + rep.length, start + rep.length);
+        } else if (offset > 0) {
+          ta.setSelectionRange(start + offset, start + offset + (rep.length - offset * 2));
+        }
+
+        updCount();
+        saveDraft();
+
+        const prevHtml = document.getElementById('nu_prev_html');
+        if (prevHtml && panelPreview && !panelPreview.classList.contains('dpn')) {
+          prevHtml.innerHTML = wiSanihtml(mdToHtml(ta.value));
+        }
+      });
+    });
+
+    ['nu_cat_inp', 'nu_activo', 'nu_pin'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) listen(el, 'change', saveDraft);
+    });
+
+    const tagRemoveContainer = document.getElementById('nu_tags_box');
+    if (tagRemoveContainer) {
+      listen(tagRemoveContainer, 'click', (e: Event) => {
+        const target = e.target as HTMLElement;
+        const rm = target.closest('.nu_tag_rm') as HTMLElement;
+        if (rm) {
+          const idx = parseInt(rm.getAttribute('data-i') || '-1');
+          if (idx >= 0 && idx < tags.length) {
+            tags.splice(idx, 1);
+            renderTags();
+            saveDraft();
+          }
+        }
+      });
+    }
+  };
+
+  const getEditSlug = () => {
+    if (typeof window === 'undefined') return null;
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('edit') || null;
+  };
+
+  const initDashboard = async () => {
+    cleanup();
+
+    const u = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
+    if (!u) return;
+
+    const autorNombreEl = document.getElementById('nu_autor_nombre');
+    const autorEmailEl = document.getElementById('nu_autor_email');
+    if (autorNombreEl) autorNombreEl.textContent = u.nombre || u.usuario || 'Anónimo';
+    if (autorEmailEl) autorEmailEl.textContent = u.email || '';
+
+    const domainLblEl = document.getElementById('nu_domain_lbl');
+    if (domainLblEl) domainLblEl.textContent = linkweb.replace('https://','').replace('http://','') + '/';
+
+    editSlug = getEditSlug();
+    isEdit = !!editSlug;
+
+    const mainTitleEl = document.getElementById('nu_main_title');
+    const editInfoEl = document.getElementById('nu_edit_info');
+    const submitBtnEl = document.getElementById('nu_submit');
+    const submitBtnAsideEl = document.getElementById('nu_submit_btn_aside');
+    const btnLblEl = document.getElementById('nu_btn_lbl');
+    const btnLblAsideEl = document.getElementById('nu_btn_lbl_aside');
+    const cardPubLblEl = document.getElementById('nu_card_pub_lbl');
+    const slugInp = document.getElementById('nu_slug_inp') as HTMLInputElement;
+    const viewPostBtnEl = document.getElementById('nu_view_post_btn');
+    const langSelect = document.getElementById('nu_lang') as HTMLSelectElement;
+
+    if (isEdit) {
+      if (mainTitleEl) mainTitleEl.innerHTML = `<i class="fas fa-pen-to-square"></i> Editar publicación`;
+      if (editInfoEl) {
+        editInfoEl.innerHTML = `<i class="fas fa-pen-nib"></i> Editando: <strong>${editSlug}</strong>`;
+        editInfoEl.classList.remove('dpn');
+      }
+      if (btnLblEl) btnLblEl.textContent = 'Guardar';
+      if (btnLblAsideEl) btnLblAsideEl.textContent = 'Guardar cambios';
+      if (cardPubLblEl) cardPubLblEl.textContent = 'Actualizar';
+      if (slugInp) slugInp.readOnly = true;
+      if (viewPostBtnEl) {
+        viewPostBtnEl.classList.remove('dpn');
+        viewPostBtnEl.setAttribute('href', `/${editSlug}`);
+      }
+      
+      const duplicateBtn = document.getElementById('nu_btn_duplicate_translate');
+      if (duplicateBtn) duplicateBtn.classList.remove('dpn');
+
+      const resetSlugBtn = document.getElementById('nu_slug_reset');
+      if (resetSlugBtn) resetSlugBtn.remove();
+      const slugStatusEl = document.getElementById('nu_slug_status');
+      if (slugStatusEl) slugStatusEl.innerHTML = '<span class="ok"><i class="fas fa-lock"></i> Slug bloqueado (edición)</span>';
+    }
+
+    cargarSugerencias();
+    setupEvents(u);
+    minus('#nu_cat_inp');
+
+    // Rellenar formulario (Edición o Draft)
+    if (isEdit && editSlug) {
+      try {
+        const result = await getPost(editSlug, true);
+        if (result?.data) {
+          const p = result.data;
+          originalPostId = p.id; // Almacenamos el ID del post original
+          originalPostLang = p.lang || 'es'; // Almacenamos el idioma original
+          (document.getElementById('nu_titulo') as HTMLInputElement).value = p.titulo || '';
+          slugInp.value = p.slug || p.id || '';
+          (document.getElementById('nu_resumen') as HTMLTextAreaElement).value = p.resumen || '';
+          (document.getElementById('nu_keywords') as HTMLTextAreaElement).value = p.keywords || '';
+          (document.getElementById('nu_contenido') as HTMLTextAreaElement).value = p.contenidoMd || p.contenido || '';
+          (document.getElementById('nu_cat_inp') as HTMLInputElement).value = p.categoria || '';
+          (document.getElementById('nu_img') as HTMLInputElement).value = p.imagen || '';
+          (document.getElementById('nu_img_top') as HTMLInputElement).value = p.imagenTop || '';
+          (document.getElementById('nu_activo') as HTMLInputElement).checked = p.activo !== false;
+          (document.getElementById('nu_pin') as HTMLInputElement).checked = !!p.pin;
+
+          const savedLang = p.lang || 'es';
+          if (langSelect) langSelect.value = savedLang;
+          
+          await fillTranslationSelect(savedLang, p.traduccionId || '');
+
+          tags = Array.isArray(p.tags) ? [...p.tags] : [];
+          renderTags();
+
+          if (p.imagen) {
+            const imgEl = document.getElementById('nu_img_el') as HTMLImageElement;
+            const prevEl = document.getElementById('nu_img_prev');
+            if (imgEl && prevEl) { imgEl.src = p.imagen; prevEl.classList.remove('dpn'); }
+          }
+          if (p.imagenTop) {
+            const imgTopEl = document.getElementById('nu_img_top_el') as HTMLImageElement;
+            const prevTopEl = document.getElementById('nu_img_top_prev');
+            if (imgTopEl && prevTopEl) { imgTopEl.src = p.imagenTop; prevTopEl.classList.remove('dpn'); }
+          }
+
+          updCount();
+        }
+      } catch (err) {
+        console.error('Error al cargar post en edición:', err);
+        Notificacion('Error cargando post', 'error');
+      }
+    } else {
+      // Intentar cargar draft guardado
+      try {
+        const draftKey = getDraftKey();
+        const d = JSON.parse(localStorage.getItem(draftKey) || 'null');
+        if (d) {
+          (document.getElementById('nu_titulo') as HTMLInputElement).value = d.titulo || '';
+          if (slugInp) slugInp.value = d.slug || '';
+          (document.getElementById('nu_resumen') as HTMLTextAreaElement).value = d.resumen || '';
+          (document.getElementById('nu_keywords') as HTMLTextAreaElement).value = d.keywords || '';
+          (document.getElementById('nu_cat_inp') as HTMLInputElement).value = d.cat || '';
+          (document.getElementById('nu_contenido') as HTMLTextAreaElement).value = d.content || '';
+          
+          const imgInp = document.getElementById('nu_img') as HTMLInputElement;
+          const imgTopInp = document.getElementById('nu_img_top') as HTMLInputElement;
+          if (imgInp) imgInp.value = d.img || '';
+          if (imgTopInp) imgTopInp.value = d.imgTop || '';
+
+          const savedLang = d.lang || 'es';
+          if (langSelect) langSelect.value = savedLang;
+
+          await fillTranslationSelect(savedLang, d.traduccionId || '');
+
+          if (d.img) {
+            const imgEl = document.getElementById('nu_img_el') as HTMLImageElement;
+            const prevEl = document.getElementById('nu_img_prev');
+            if (imgEl && prevEl) { imgEl.src = d.img; prevEl.classList.remove('dpn'); }
+          }
+          if (d.imgTop) {
+            const imgTopEl = document.getElementById('nu_img_top_el') as HTMLImageElement;
+            const prevTopEl = document.getElementById('nu_img_top_prev');
+            if (imgTopEl && prevTopEl) { imgTopEl.src = d.imgTop; prevTopEl.classList.remove('dpn'); }
+          }
+
+          if (d.tags) { tags = d.tags; renderTags(); }
+          
+          updCount();
+        } else {
+          await fillTranslationSelect('es');
+        }
+      } catch (_) {
+        await fillTranslationSelect('es');
+      }
+    }
+
+    ['nu_titulo', 'nu_slug_inp', 'nu_resumen', 'nu_keywords'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.dispatchEvent(new Event('input'));
+    });
+  };
+
+  const cargarSugerencias = () => {
+    // Categorías sugeridas
+  };
+
+  document.addEventListener('astro:page-load', initDashboard);
+  document.addEventListener('astro:before-preparation', cleanup);
+</script>

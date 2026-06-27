@@ -1,0 +1,688 @@
+---
+// src/lib/blog/listas/BlogList.astro
+// Componente lógico unificado para el listado del blog
+
+import Layout from '../../../layouts/Layout.astro';
+import { app } from '../../../wii.js';
+import { seo } from '../../seo.js';
+import { supabase } from '../../supabase.js';
+import { imgwii } from '../../widev.js';
+import { useTranslations, getRelativeLocaleUrl } from '../../i18n/utils.js';
+import { idiomaBlog } from './idiomaBlog.js';
+import { getCategoryLabel } from '../post/idiomaPost.js';
+
+interface Props {
+  lang?: string;
+}
+
+const { lang = 'es' } = Astro.props;
+const lg = useTranslations(lang, idiomaBlog);
+
+let initialPosts: any[] = [];
+let categories: any[] = [];
+
+try {
+  // Obtener todos los posts activos en el servidor para filtrar localmente por idioma
+  const { data: postsData } = await supabase
+    .from('blog')
+    .select('id, slug, activo, lang, titulo, descripcion, categoria, imagen, imagenTop, tags, vistas, likes, lecturaTM, pin, usuario, autor, email, creado, actualizado, metaSEO')
+    .eq('activo', true)
+    .order('creado', { ascending: false });
+
+  if (postsData) {
+    // Filtrar en memoria según el idioma
+    initialPosts = postsData.filter((p: any) => lang === 'en' ? p.lang === 'en' : (p.lang === 'es' || !p.lang)).slice(0, 16);
+    const catList = postsData.filter((p: any) => lang === 'en' ? p.lang === 'en' : (p.lang === 'es' || !p.lang)).map(p => p.categoria).filter(Boolean);
+    categories = [...new Set(catList)].sort();
+  }
+} catch (e) {
+  console.error('[blog frontmatter error]', e);
+}
+
+const SERVER_CATS = [
+  { id:'todo',           icon:'fa-grip',         label: lg('allCats'),          color:'var(--mco)' },
+  { id:'Cv',             icon:'fa-address-card', label: getCategoryLabel('Cv', lang),     color:'#ff3849'    },
+  { id:'ATS',            icon:'fa-robot',        label: getCategoryLabel('ATS', lang),            color:'#0EBEFF'    },
+  { id:'Entrevistas',    icon:'fa-comments',     label: getCategoryLabel('Entrevistas', lang),    color:'#25b62a'    },
+  { id:'Teletrabajo',    icon:'fa-house-laptop', label: getCategoryLabel('Teletrabajo', lang),    color:'#6a00f5'    },
+  { id:'Marca personal', icon:'fa-award',        label: getCategoryLabel('Marca personal', lang), color:'#ffa726'    },
+  { id:'Buscar trabajo', icon:'fa-search',       label: getCategoryLabel('Buscar trabajo', lang), color:'#ffa726'    },
+  { id:'Empleo',         icon:'fa-briefcase',    label: getCategoryLabel('Empleo', lang),         color:'#ffa726'    },
+];
+
+const getCatInfo = (c: string) => SERVER_CATS.find(x => x.id.toLowerCase() === c.toLowerCase()) || { id: c, icon: 'fa-briefcase', label: c, color: 'var(--mco)' };
+
+const seoConfig = lang === 'en' ? seo.blog.en : seo.blog.es;
+
+// Importación de estilos CSS raw
+import blogStyles from './blog.css?raw';
+---
+
+<style is:global set:html={blogStyles}></style>
+
+<Layout {...seoConfig}>
+  <div class="bl_wrap" data-locale={lang}>
+    <div class="bl_hero" data-herowi="100">
+      <h1 class="bl_hero_tit" set:html={lg('heroTitle')}></h1>
+      <p class="bl_hero_sub">{lg('heroSubtitle')}</p>
+    </div>
+    
+    <div class="bl_search_bar" id="bl_search_bar" style="display:none">
+      <div class="bl_search_inner">
+        <i class="fas fa-search bl_search_ico"></i>
+        <input id="bl_search_inp" type="text" placeholder={lg('searchPlaceholder')} autocomplete="off" spellcheck="false"/>
+        <button id="bl_search_close" class="bl_search_close"><i class="fas fa-xmark"></i></button>
+      </div>
+    </div>
+    
+    <div class="bl_bar">
+      <div class="bl_cats" id="bl_cats">
+        <button class="bl_cat_btn active" data-cat="todo" style="--cc:var(--mco)"><i class="fas fa-grip"></i><span>{lg('allCats')}</span></button>
+        {categories.map(c => {
+          const info = getCatInfo(c);
+          return (
+            <button class="bl_cat_btn" data-cat={c} style={`--cc:${info.color}`}><i class={`fas ${info.icon}`}></i><span>{getCategoryLabel(c, lang)}</span></button>
+          );
+        })}
+      </div>
+      <div class="bl_bar_right">
+        <div class="bl_orden">
+          <button class="bl_ord_btn active" data-ord="nuevo"><i class="fas fa-clock"></i><span>{lg('recent')}</span></button>
+          <button class="bl_ord_btn" data-ord="vistas"><i class="fas fa-fire"></i><span>{lg('popular')}</span></button>
+        </div>
+        <button class="bl_icon_btn" id="bl_search_toggle" data-witip={lg('search')}><i class="fas fa-search"></i></button>
+        <button class="bl_icon_btn" id="bl_refresh" data-witip={lg('refresh')}><i class="fas fa-rotate"></i></button>
+      </div>
+    </div>
+    
+    <div class="bl_result_bar" id="bl_result_bar"></div>
+    
+    <div class="bl_grid" id="bl_grid" data-herowi="140">
+      {initialPosts.length > 0 ? (
+        initialPosts.map((p) => {
+          const c = getCatInfo(p.categoria);
+          const creadoFecha = p.creado ? new Date(p.creado).toLocaleDateString(lg('dateLocale'), { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+          return (
+            <a href={getRelativeLocaleUrl(lang, `/${p.slug || p.id}`)} class="bl_card bl_fade bl_visible">
+              <div class="bl_card_img">
+                <img src={imgwii.svg} data-src={p.imagen || '/poster.webp'} alt={p.imagenAlt || p.titulo} class="wi_skeleton img_fade" />
+                <div class="bl_card_over">
+                  <span class="bl_card_cat" style={`--cc:${c.color}`}><i class={`fas ${c.icon}`}></i> {getCategoryLabel(p.categoria, lang) || '—'}</span>
+                  {p.pin && <span class="bl_card_dest" data-witip={lg('pin')}><i class="fas fa-thumbtack"></i></span>}
+                </div>
+              </div>
+              <div class="bl_card_body">
+                <h2 class="bl_card_tit">{p.titulo}</h2>
+                <p class="bl_card_res">{p.descripcion || ''}</p>
+                <div class="bl_card_footer">
+                  <div class="bl_card_meta">
+                    <span data-witip={lang === 'en' ? 'Date' : 'Fecha'}><i class="fas fa-calendar-alt"></i> {creadoFecha}</span>
+                    <span data-witip={lg('views')}><i class="fas fa-eye"></i> {p.vistas || 0}</span>
+                    <span data-witip={lg('likes')}><i class="fas fa-heart" style="color:#fe0149"></i> {p.likes || 0}</span>
+                  </div>
+                  <span class="bl_card_leer">{lg('readMore')} <i class="fas fa-arrow-right"></i></span>
+                </div>
+              </div>
+            </a>
+          );
+        })
+      ) : (
+        <>
+          <div class="bl_card_sk"><div class="bl_sk_img shimmer"></div><div class="bl_sk_body"><div class="bl_sk_cat shimmer"></div><div class="bl_sk_tit shimmer"></div><div class="bl_sk_tit bl_sk_t2 shimmer"></div><div class="bl_sk_p shimmer"></div><div class="bl_sk_p bl_sk_p2 shimmer"></div><div class="bl_sk_foot shimmer"></div></div></div>
+          <div class="bl_card_sk"><div class="bl_sk_img shimmer"></div><div class="bl_sk_body"><div class="bl_sk_cat shimmer"></div><div class="bl_sk_tit shimmer"></div><div class="bl_sk_tit bl_sk_t2 shimmer"></div><div class="bl_sk_p shimmer"></div><div class="bl_sk_p bl_sk_p2 shimmer"></div><div class="bl_sk_foot shimmer"></div></div></div>
+          <div class="bl_card_sk"><div class="bl_sk_img shimmer"></div><div class="bl_sk_body"><div class="bl_sk_cat shimmer"></div><div class="bl_sk_tit shimmer"></div><div class="bl_sk_tit bl_sk_t2 shimmer"></div><div class="bl_sk_p shimmer"></div><div class="bl_sk_p bl_sk_p2 shimmer"></div><div class="bl_sk_foot shimmer"></div></div></div>
+          <div class="bl_card_sk"><div class="bl_sk_img shimmer"></div><div class="bl_sk_body"><div class="bl_sk_cat shimmer"></div><div class="bl_sk_tit shimmer"></div><div class="bl_sk_tit bl_sk_t2 shimmer"></div><div class="bl_sk_p shimmer"></div><div class="bl_sk_p bl_sk_p2 shimmer"></div><div class="bl_sk_foot shimmer"></div></div></div>
+        </>
+      )}
+    </div>
+    
+    <div class="bl_mas_wrap" id="bl_mas_wrap" style="display:none">
+      <button class="bl_mas_btn" id="bl_mas"><i class="fas fa-plus"></i> {lg('more')}</button>
+    </div>
+    
+    <div class="bl_empty" id="bl_empty" style="display:none; text-align:center; padding:10vh 0;">
+      <i class="fas fa-folder-open" style="font-size: 8vh; color: var(--mco); opacity: 0.25; margin-bottom: 2vh; display:block;"></i>
+      <h3>{lg('emptyTitle')}</h3>
+      <p>{lg('emptyText')}</p>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../../supabase.js';
+  import { savels, getls, Notificacion, imgwii } from '../../widev.js';
+  import { getCategoryLabel } from '../post/idiomaPost.js';
+  import { idiomaBlog } from './idiomaBlog.js';
+
+  const PAG_INI = 16, PAG_MAS = 8;
+  
+  const CATS = [
+    { id:'todo',           icon:'fa-grip',         color:'var(--mco)' },
+    { id:'Cv',             icon:'fa-address-card', color:'#ff3849'    },
+    { id:'ATS',            icon:'fa-robot',        color:'#0EBEFF'    },
+    { id:'Entrevistas',    icon:'fa-comments',     color:'#25b62a'    },
+    { id:'Teletrabajo',    icon:'fa-house-laptop', color:'#6a00f5'    },
+    { id:'Marca personal', icon:'fa-award',        color:'#ffa726'    },
+    { id:'Buscar trabajo', icon:'fa-search',       color:'#ffa726'    },
+    { id:'Empleo',         icon:'fa-briefcase',    color:'#ffa726'    },
+  ];
+
+  const catInfo = (c: string) => CATS.find(x => x.id.toLowerCase() === c.toLowerCase()) || { id: c, icon: 'fa-briefcase', color: 'var(--mco)' };
+  
+  const toMs = (v: any) => v ? new Date(v).getTime() : null;
+  const ser = (d: any) => {
+    if (!d) return null;
+    return {
+      ...d,
+      resumen: d.descripcion || '',
+      creado: toMs(d.creado)
+    };
+  };
+
+  const skCard = () => `<div class="bl_card_sk"><div class="bl_sk_img shimmer"></div><div class="bl_sk_body"><div class="bl_sk_cat shimmer"></div><div class="bl_sk_tit shimmer"></div><div class="bl_sk_tit bl_sk_t2 shimmer"></div><div class="bl_sk_p shimmer"></div><div class="bl_sk_p bl_sk_p2 shimmer"></div><div class="bl_sk_foot shimmer"></div></div></div>`;
+
+  const getLang = () => document.querySelector('.bl_wrap')?.getAttribute('data-locale') || 'es';
+  const getDict = () => idiomaBlog[getLang() as 'es' | 'en'] || idiomaBlog.es;
+
+  const srcBadge = (fc: boolean) => {
+    const labelVeloz = getLang() === 'en' ? 'Speedy' : 'Veloz';
+    const labelOnline = getLang() === 'en' ? 'Online' : 'Online';
+    return fc
+      ? `<span class="bl_cache_tag" data-witip="⚡ ${labelVeloz}"><i class="fas fa-bolt"></i> ${labelVeloz}</span>`
+      : `<span class="bl_fire_tag"  data-witip="☁️ ${labelOnline}"><i class="fas fa-cloud"></i> ${labelOnline}</span>`;
+  };
+
+  const formatCardDate = (creadoMs: any) => {
+    if (!creadoMs) return '—';
+    const d = new Date(creadoMs);
+    return d.toLocaleDateString(getDict().dateLocale, { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  const tplCard = (p: any) => {
+    const c = catInfo(p.categoria);
+    const lang = getLang();
+    const dict = getDict();
+    const pathPrefix = lang === 'en' ? '/en' : '';
+    const labelDate = lang === 'en' ? 'Date' : 'Fecha';
+    return `
+      <a href="${pathPrefix}/${p.slug || p.id}" class="bl_card">
+        <div class="bl_card_img">
+          <img src="${imgwii.svg}" data-src="${p.imagen || '/poster.webp'}" alt="${p.imagenAlt || p.titulo}" class="wi_skeleton img_fade" />
+          <div class="bl_card_over">
+            <span class="bl_card_cat" style="--cc:${c.color}"><i class="fas ${c.icon}"></i> ${getCategoryLabel(p.categoria, lang) || '—'}</span>
+            ${p.pin ? `<span class="bl_card_dest" data-witip="${dict.pin}"><i class="fas fa-thumbtack"></i></span>` : ''}
+          </div>
+        </div>
+        <div class="bl_card_body">
+          <h2 class="bl_card_tit">${p.titulo}</h2>
+          <p class="bl_card_res">${p.resumen || ''}</p>
+          <div class="bl_card_footer">
+            <div class="bl_card_meta">
+              <span data-witip="${labelDate}"><i class="fas fa-calendar-alt"></i> ${formatCardDate(p.creado)}</span>
+              <span data-witip="${dict.views}"><i class="fas fa-eye"></i> ${p.vistas || 0}</span>
+              <span data-witip="${dict.likes}"><i class="fas fa-heart" style="color:#fe0149"></i> ${p.likes || 0}</span>
+            </div>
+            <span class="bl_card_leer">${dict.readMore} <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </div>
+      </a>`;
+  };
+
+  const cleanCacheLRU = () => {
+    try {
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('wi_blogs') || k.startsWith('wi_post_') || k.startsWith('wi_mas_') || k.startsWith('ultimosposts'));
+      if (keys.length > 25) {
+        const items = keys.map(k => {
+          const raw = localStorage.getItem(k);
+          if (!raw) return { k, e: 0 };
+          try { const p = JSON.parse(raw); return { k, e: p.e || 0 }; } catch { return { k, e: 0 }; }
+        }).sort((a, b) => a.e - b.e);
+        items.slice(0, 10).forEach(i => localStorage.removeItem(i.k));
+      }
+    } catch (e) {}
+  };
+
+  // State variables
+  let cat = 'todo';
+  let ord = 'nuevo';
+  let lista: any[] = [];
+  let busy = false;
+  let lastSnap: any = null;
+  let hasMore = true;
+  let isFirstLoad = true;
+  let _allCache: any[] | null = null;
+  let _allTime = 0;
+  const _prefetched = new Set();
+  let eventListeners: Array<{ target: EventTarget | Window | Document, type: string, handler: any }> = [];
+
+  const K_list = (c: string, o: string) => {
+    const lang = getLang();
+    return c === 'todo' && o === 'nuevo' ? `ultimosposts_${lang}` : `wi_blogs_${lang}_${c}_${o}`;
+  };
+  const K_post = (s: string) => `wi_post_${s}`;
+
+  const listen = (target: EventTarget | Window | Document, type: string, handler: any) => {
+    target.addEventListener(type, handler);
+    eventListeners.push({ target, type, handler });
+  };
+
+  const prefetchPost = async (slug: string) => {
+    if (_prefetched.has(slug)) return;
+    _prefetched.add(slug);
+    try {
+      const { data } = await supabase.from('blog').select('*').eq('slug', slug).maybeSingle();
+      if (data) {
+        savels(K_post(slug), ser(data), 12);
+      }
+    } catch {}
+  };
+
+  const getPostsPaginated = async (c = 'todo', o = 'nuevo', force = false, lastSnapshot = null, pageSize = 16) => {
+    cleanCacheLRU();
+    const PAGE_SIZE = pageSize;
+    const lang = getLang();
+    
+    const key = K_list(c, o) + (lastSnapshot ? '_page' : '');
+    if (!force && !lastSnapshot) { 
+      const cachedList = getls(key); 
+      if (Array.isArray(cachedList) && cachedList.length) return { lista: cachedList, fromCache: true, lastSnap: cachedList.length }; 
+    }
+
+    let query = supabase.from('blog').select('*').eq('activo', true).eq('lang', lang);
+    
+    if (c !== 'todo') {
+      query = query.eq('categoria', c);
+    }
+    
+    const orderField = o === 'vistas' ? 'vistas' : 'creado';
+    query = query.order(orderField, { ascending: false });
+    
+    const offset = lastSnapshot || 0;
+    query = query.range(offset, offset + PAGE_SIZE - 1);
+    
+    const { data: snap, error } = await query;
+    if (error || !snap) return { lista: [], fromCache: false, lastSnap: null };
+    
+    let resultList = snap.map(d => ser(d));
+    const newLastSnap = snap.length > 0 ? offset + snap.length : null;
+    
+    if (resultList.length && !lastSnapshot) {
+      savels(key, resultList, key.startsWith('ultimosposts') ? 24 : 3);
+    }
+    
+    return { lista: resultList, fromCache: false, lastSnap: newLastSnap };
+  };
+
+  const buildCats = (postsOrUniq: any[]) => {
+    const isPostObj = postsOrUniq.length > 0 && typeof postsOrUniq[0] === 'object';
+    const uniq = isPostObj 
+      ? [...new Set(postsOrUniq.map(p => p.categoria).filter(Boolean))].sort()
+      : postsOrUniq.sort();
+      
+    const lang = getLang();
+    localStorage.setItem(`wi_blogs_cats_${lang}`, JSON.stringify(uniq));
+    
+    const catsEl = document.getElementById('bl_cats');
+    if (catsEl) {
+      const labelAll = getDict().allCats;
+      catsEl.innerHTML = `<button class="bl_cat_btn ${cat === 'todo' ? 'active' : ''}" data-cat="todo" style="--cc:var(--mco)"><i class="fas fa-grip"></i><span>${labelAll}</span></button>` + 
+        uniq.map(c => {
+          const info = catInfo(c);
+          return `<button class="bl_cat_btn ${cat === c ? 'active' : ''}" data-cat="${c}" style="--cc:${info.color}"><i class="fas ${info.icon}"></i><span>${getCategoryLabel(c, lang)}</span></button>`;
+        }).join('');
+    }
+  };
+
+  const grid = (append: boolean, newItems: any[] = []) => {
+    const items = append || newItems.length ? newItems : lista;
+    const emptyEl = document.getElementById('bl_empty');
+    const gridEl = document.getElementById('bl_grid');
+    const masWrapEl = document.getElementById('bl_mas_wrap');
+
+    if (!items.length && !append) {
+      if (emptyEl) emptyEl.style.display = 'flex';
+      if (masWrapEl) masWrapEl.style.display = 'none';
+      if (gridEl) gridEl.innerHTML = '';
+      return;
+    }
+    
+    if (emptyEl) emptyEl.style.display = 'none';
+    
+    const cardsHtml = items.map(tplCard).join('');
+    
+    if (gridEl) {
+      if (append) {
+        gridEl.insertAdjacentHTML('beforeend', cardsHtml);
+      } else {
+        gridEl.innerHTML = cardsHtml;
+      }
+    }
+
+    if (typeof (window as any).herowi === 'function') {
+      (window as any).herowi();
+    }
+    imgwii.ver('#bl_grid');
+    
+    if (masWrapEl) {
+      masWrapEl.style.display = (newItems.length && newItems !== lista) ? 'none' : (hasMore ? 'flex' : 'none');
+    }
+  };
+
+  const renderInstantaneo = () => {
+    const lang = getLang();
+    try {
+      const c = JSON.parse(localStorage.getItem(`wi_blogs_cats_${lang}`) || '[]');
+      if (c.length) buildCats(c);
+    } catch (e) {}
+
+    const cData = getls(K_list(cat, ord));
+    if (Array.isArray(cData) && cData.length) {
+      lista = cData.slice(0, PAG_INI);
+      lastSnap = lista.length;
+      hasMore = cData.length === PAG_INI;
+      const resultBar = document.getElementById('bl_result_bar');
+      if (resultBar) {
+        const wordStories = lang === 'en' ? (lista.length === 1 ? 'story' : 'stories') : (lista.length === 1 ? 'historia' : 'historias');
+        const wordLocal = lang === 'en' ? 'Local' : 'Local';
+        resultBar.innerHTML = `<span><strong>${lista.length}</strong> ${wordStories}</span><span class="bl_cache_tag" data-witip="⚡ ${wordLocal}"><i class="fas fa-bolt"></i> ${wordLocal}</span>`;
+      }
+      grid(false, lista);
+      isFirstLoad = false;
+      return true;
+    }
+    return false;
+  };
+
+  const fetchAll = async (force = false) => {
+    if (!force && _allCache && Date.now() - _allTime < 60000) return _allCache;
+    const lang = getLang();
+    const { data, error } = await supabase
+      .from('blog')
+      .select('*')
+      .eq('activo', true)
+      .eq('lang', lang)
+      .order('creado', { ascending: false })
+      .limit(50);
+    if (error || !data) return [];
+    _allCache = data.map(d => ser(d));
+    _allTime = Date.now();
+    return _allCache;
+  };
+
+  const cargar = async (force = false, append = false) => {
+    if (busy) return;
+    busy = true;
+    const limitCount = append ? PAG_MAS : PAG_INI;
+    const lang = getLang();
+    
+    const emptyEl = document.getElementById('bl_empty');
+    const masWrapEl = document.getElementById('bl_mas_wrap');
+    if (!append) {
+      if (emptyEl) emptyEl.style.display = 'none';
+      if (masWrapEl) masWrapEl.style.display = 'none';
+      lastSnap = null;
+    }
+    
+    try {
+      const r = await getPostsPaginated(cat, ord, force, lastSnap, limitCount);
+      
+      const gridEl = document.getElementById('bl_grid');
+      // Bugfix: Si hay esqueletos (bl_card_sk) renderizados en el DOM, forzar renderizado completo.
+      const hasSkeletons = gridEl && gridEl.querySelector('.bl_card_sk');
+      
+      if (isFirstLoad || hasSkeletons || JSON.stringify(append ? [] : lista) !== JSON.stringify(r.lista)) {
+        lista = append ? [...lista, ...r.lista] : r.lista;
+        buildCats(lista);
+        grid(append, r.lista);
+      }
+      lastSnap = r.lastSnap;
+      hasMore = r.lista.length === limitCount;
+      
+      const resultBar = document.getElementById('bl_result_bar');
+      if (resultBar) {
+        const wordStories = lang === 'en' ? (lista.length === 1 ? 'story' : 'stories') : (lista.length === 1 ? 'historia' : 'historias');
+        resultBar.innerHTML = `<span><strong>${lista.length}</strong> ${wordStories}</span>${srcBadge(r.fromCache)}`;
+      }
+    } catch(e) {
+      console.error('[blog]', e);
+      const labelError = lang === 'en' ? 'Failed to load' : 'Error al cargar';
+      Notificacion(labelError, 'error');
+      
+      const gridEl = document.getElementById('bl_grid');
+      if (!append && !lista.length && gridEl) {
+        // En caso de error y lista vacía, limpiar esqueletos y mostrar el estado vacío
+        gridEl.innerHTML = '';
+        if (emptyEl) emptyEl.style.display = 'flex';
+      }
+    }
+    isFirstLoad = false;
+    busy = false;
+  };
+
+  let sT: number;
+  const doSearch = (q: string) => {
+    window.clearTimeout(sT);
+    sT = window.setTimeout(async () => {
+      const resultBar = document.getElementById('bl_result_bar');
+      const lang = getLang();
+      const wordStories = lang === 'en' ? (lista.length === 1 ? 'story' : 'stories') : (lista.length === 1 ? 'historia' : 'historias');
+
+      if (!q.trim()) {
+        grid(false);
+        if (resultBar) {
+          resultBar.innerHTML = `<span><strong>${lista.length}</strong> ${wordStories}</span>`;
+        }
+        return;
+      }
+      const s = q.toLowerCase();
+      if (resultBar) {
+        const labelSearching = lang === 'en' ? 'Searching...' : 'Buscando...';
+        resultBar.innerHTML = `<span><i class="fas fa-spinner fa-spin"></i> ${labelSearching}</span>`;
+      }
+      
+      const allPosts = await fetchAll();
+      const res = allPosts.filter(p => [p.titulo, p.resumen, p.categoria, ...(p.tags || [])].some(t => t?.toLowerCase().includes(s)));
+      
+      if (resultBar) {
+        const labelResults = lang === 'en' ? 'results' : 'resultados';
+        resultBar.innerHTML = `<span><i class="fas fa-search"></i> <strong>${res.length}</strong> ${labelResults} — "<em>${q}</em>"</span>`;
+      }
+      grid(false, res);
+    }, 400);
+  };
+
+  const resetList = () => {
+    isFirstLoad = true;
+    lastSnap = null;
+    const gridEl = document.getElementById('bl_grid');
+    if (!renderInstantaneo() && gridEl && gridEl.querySelectorAll('.bl_card').length === 0) {
+      gridEl.innerHTML = Array(16).fill(skCard()).join('');
+    }
+  };
+
+  const init = async () => {
+    cleanup();
+    const lang = getLang();
+    
+    // Leer datos pre-cargados del servidor
+    const initialPostsEl = document.getElementById('initial-blog-posts');
+    const initialCatsEl = document.getElementById('initial-blog-cats');
+    
+    const preLoadedPosts = initialPostsEl ? JSON.parse(initialPostsEl.textContent || '[]') : [];
+    const preLoadedCats = initialCatsEl ? JSON.parse(initialCatsEl.textContent || '[]') : [];
+
+    cat = 'todo';
+    ord = 'nuevo';
+    lista = preLoadedPosts.map((p: any) => ser(p));
+    busy = false;
+    lastSnap = preLoadedPosts.length > 0 ? preLoadedPosts.length : null;
+    hasMore = preLoadedPosts.length === PAG_INI;
+    isFirstLoad = false;
+
+    if (preLoadedCats.length) {
+      buildCats(preLoadedCats);
+    }
+
+    const resultBar = document.getElementById('bl_result_bar');
+    if (resultBar && lista.length) {
+      const wordStories = lang === 'en' ? (lista.length === 1 ? 'story' : 'stories') : (lista.length === 1 ? 'historia' : 'historias');
+      const wordServer = lang === 'en' ? 'Server' : 'Servidor';
+      resultBar.innerHTML = `<span><strong>${lista.length}</strong> ${wordStories}</span><span class="bl_cache_tag" data-witip="⚡ ${wordServer}"><i class="fas fa-bolt"></i> ${wordServer}</span>`;
+    }
+
+    // Direct event listeners delegation in Vanilla JS
+    listen(document, 'click', async (e: Event) => {
+      const target = e.target as HTMLElement;
+
+      // Category button
+      const catBtn = target.closest('.bl_cat_btn') as HTMLElement;
+      if (catBtn) {
+        const c = catBtn.getAttribute('data-cat') || 'todo';
+        if (c === cat) return;
+        cat = c;
+        resetList();
+        await cargar();
+        return;
+      }
+
+      // Order button
+      const ordBtn = target.closest('.bl_ord_btn') as HTMLElement;
+      if (ordBtn) {
+        const o = ordBtn.getAttribute('data-ord') || 'nuevo';
+        if (o === ord) return;
+        ord = o;
+        resetList();
+        await cargar();
+        return;
+      }
+
+      // Refresh button
+      const refreshBtn = target.closest('#bl_refresh') as HTMLButtonElement;
+      if (refreshBtn) {
+        const icon = refreshBtn.querySelector('i');
+        if (icon) icon.className = 'fas fa-spinner fa-spin';
+        refreshBtn.disabled = true;
+
+        // Clear local storage cache for this language
+        const lang = getLang();
+        Object.keys(localStorage).filter(k => k.startsWith(`wi_blogs_${lang}`) || k.startsWith(`ultimosposts_${lang}`)).forEach(k => localStorage.removeItem(k));
+        localStorage.removeItem(`wi_blogs_cats_${lang}`);
+        
+        resetList();
+        await cargar(true);
+
+        if (icon) icon.className = 'fas fa-cross'; // will reset to rotate
+        refreshBtn.innerHTML = '<i class="fas fa-rotate"></i>';
+        refreshBtn.disabled = false;
+        const msgSuccess = lang === 'en' ? 'Refreshed ✅' : 'Actualizado ✅';
+        Notificacion(msgSuccess, 'success');
+        return;
+      }
+
+      // Search toggle button
+      const searchToggle = target.closest('#bl_search_toggle');
+      if (searchToggle) {
+        const searchBar = document.getElementById('bl_search_bar');
+        const searchInp = document.getElementById('bl_search_inp') as HTMLInputElement;
+        if (searchBar) {
+          if (searchBar.style.display === 'none' || !searchBar.style.display) {
+            searchBar.style.display = 'block';
+            if (searchInp) searchInp.focus();
+          } else {
+            searchBar.style.display = 'none';
+            if (searchInp) {
+              searchInp.value = '';
+              grid(false);
+            }
+          }
+        }
+        return;
+      }
+
+      // Search close button
+      const searchClose = target.closest('#bl_search_close');
+      if (searchClose) {
+        const searchBar = document.getElementById('bl_search_bar');
+        const searchInp = document.getElementById('bl_search_inp') as HTMLInputElement;
+        if (searchBar) searchBar.style.display = 'none';
+        if (searchInp) {
+          searchInp.value = '';
+          grid(false);
+        }
+        return;
+      }
+
+      // Load more button
+      const loadMoreBtn = target.closest('#bl_mas') as HTMLButtonElement;
+      if (loadMoreBtn) {
+        const oldHtml = loadMoreBtn.innerHTML;
+        const labelLoading = getLang() === 'en' ? 'Loading...' : 'Cargando...';
+        loadMoreBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${labelLoading}`;
+        loadMoreBtn.disabled = true;
+        await cargar(false, true).finally(() => {
+          loadMoreBtn.innerHTML = oldHtml;
+          loadMoreBtn.disabled = false;
+        });
+        return;
+      }
+
+      // Card link redirect
+      const card = target.closest('.bl_card') as HTMLAnchorElement;
+      if (card) {
+        e.preventDefault();
+        const path = card.getAttribute('href');
+        if (path) {
+          window.location.href = path;
+        }
+        return;
+      }
+    });
+
+    // Prefetching trigger on hover
+    listen(document, 'mouseover', (e: Event) => {
+      const target = e.target as HTMLElement;
+      const card = target.closest('.bl_card');
+      if (card) {
+        const href = card.getAttribute('href');
+        if (href) {
+          // Remove potential locale prefixes before prefetching slug
+          let slug = href.startsWith('/') ? href.substring(1) : href;
+          if (slug.startsWith('en/')) {
+            slug = slug.substring(3);
+          }
+          prefetchPost(slug);
+        }
+      }
+    });
+
+    // Search input field event
+    const searchInp = document.getElementById('bl_search_inp') as HTMLInputElement;
+    if (searchInp) {
+      listen(searchInp, 'input', () => {
+        doSearch(searchInp.value);
+      });
+    }
+
+    const gridEl = document.getElementById('bl_grid');
+    if (gridEl && gridEl.querySelectorAll('.bl_card').length === 0) {
+      renderInstantaneo() || (gridEl.innerHTML = Array(16).fill(skCard()).join(''));
+    }
+    
+    // Solo consultar a la base de datos si el servidor no cargó datos
+    if (lista.length === 0) {
+      await cargar(false, false);
+    } else {
+      imgwii.ver('#bl_grid');
+    }
+  };
+
+  const cleanup = () => {
+    eventListeners.forEach(({ target, type, handler }) => {
+      target.removeEventListener(type, handler);
+    });
+    eventListeners = [];
+  };
+
+  document.addEventListener('astro:page-load', init);
+  document.addEventListener('astro:before-preparation', cleanup);
+</script>

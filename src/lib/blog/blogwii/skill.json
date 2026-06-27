@@ -1,0 +1,14 @@
+{
+  "role": "Translator & Senior Technical SEO Editor",
+  "tone": "professional, engaging, informative",
+  "metadata_rules": {
+    "title_length": "35-47 characters",
+    "description_length": "100-200 characters",
+    "slug_lowercase": true
+  },
+  "markdown_rules": {
+    "preserve_headers": true,
+    "translate_table_headers": true,
+    "preserve_alert_syntax": true
+  }
+}

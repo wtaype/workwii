@@ -1,4 +1,4 @@
-﻿// modalyt.js — YouTube Lightbox v1.0
+// modalyt.js — YouTube Lightbox v1.0
 // Extraído de [slug].astro para mantener el código modular y mantenible.
 
 let _ytClickRef = null;
@@ -42,7 +42,7 @@ export function initYtModal() {
       player.innerHTML = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/' + id + '?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
     }
 
-    import('../widev.js').then((m) => m.abrirModal('wi_yt_modal'));
+    import('../../widev.js').then((m) => m.abrirModal('wi_yt_modal'));
   };
 
   document.addEventListener('click', _ytClickRef);

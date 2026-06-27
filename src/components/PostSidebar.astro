@@ -2,26 +2,31 @@
 // src/components/PostSidebar.astro
 import { app, icon } from '../wii.js';
 import { imgwii } from '../lib/widev.js';
+import { useTranslations, getRelativeLocaleUrl } from '../lib/i18n/utils.js';
+import { idiomaPost, getCategoryLabel } from '../lib/blog/post/idiomaPost.js';
 
 interface Props {
   post: any;
   latest?: any[];
   related?: any[];
+  lang?: string;
 }
 
-const { post, latest = [], related = [] } = Astro.props;
+const { post, latest = [], related = [], lang = 'es' } = Astro.props;
+const lg = useTranslations(lang, idiomaPost);
 
 const formatShortDate = (dateVal: any) => {
   if (!dateVal) return '';
   const d = new Date(dateVal);
-  return d.toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' });
+  const locale = lang === 'en' ? 'en-US' : 'es-PE';
+  return d.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
 };
 ---
 
 <aside class="po_sidebar">
   <!-- Tarjeta del Autor -->
   <div class="po_side_card po_fade po_visible" style="--d:.15s">
-    <div class="po_side_title"><i class="fas fa-user-pen"></i> Autor</div>
+    <div class="po_side_title"><i class="fas fa-user-pen"></i> {lg('author')}</div>
     <div class="po_autor_box">
       <div class="po_autor_av">
         <img src="/smile.avif" alt={post.autor} />
@@ -36,15 +41,15 @@ const formatShortDate = (dateVal: any) => {
   <!-- Últimas Historias -->
   {latest.length > 0 && (
     <div class="po_side_card po_fade po_visible" style="--d:.2s">
-      <div class="po_side_title"><i class="fas fa-clock"></i> Últimas historias</div>
+      <div class="po_side_title"><i class="fas fa-clock"></i> {lg('latest')}</div>
       <div class="po_relacionados" data-showi="100">
         {latest.map(r => (
-          <a href={`/${r.slug || r.id}`} class="po_rel_card" data-witip={r.resumen || r.titulo}>
+          <a href={getRelativeLocaleUrl(lang, `/${r.slug || r.id}`)} class="po_rel_card" data-witip={r.resumen || r.titulo}>
             <div class="po_rel_img">
               <img src={imgwii.svg} data-src={r.imagen} alt={r.imagenAlt || r.titulo} class="wi_skeleton img_fade" />
             </div>
             <div class="po_rel_info">
-              <span class="po_rel_cat"><i class={`fas ${icon}`}></i> {r.categoria}</span>
+              <span class="po_rel_cat"><i class={`fas ${icon}`}></i> {getCategoryLabel(r.categoria, lang)}</span>
               <strong>{r.titulo}</strong>
               <span class="po_rel_meta">
                 <i class="fas fa-calendar"></i> {formatShortDate(r.creado)} · <i class="fas fa-eye"></i> {r.vistas || 0} · <i class="fas fa-heart" style="color:#fe0149"></i> {r.likes || 0}
@@ -59,15 +64,15 @@ const formatShortDate = (dateVal: any) => {
   <!-- Artículos Relacionados -->
   {related.length > 0 && (
     <div class="po_side_card po_fade po_visible" style="--d:.25s">
-      <div class="po_side_title"><i class="fas fa-heart"></i> Más historias de {post.categoria}</div>
+      <div class="po_side_title"><i class="fas fa-heart"></i> {lg('related')} {getCategoryLabel(post.categoria, lang)}</div>
       <div class="po_relacionados" data-showi="100">
         {related.map(r => (
-          <a href={`/${r.slug || r.id}`} class="po_rel_card" data-witip={r.resumen || r.titulo}>
+          <a href={getRelativeLocaleUrl(lang, `/${r.slug || r.id}`)} class="po_rel_card" data-witip={r.resumen || r.titulo}>
             <div class="po_rel_img">
               <img src={imgwii.svg} data-src={r.imagen} alt={r.imagenAlt || r.titulo} class="wi_skeleton img_fade" />
             </div>
             <div class="po_rel_info">
-              <span class="po_rel_cat"><i class={`fas ${icon}`}></i> {r.categoria}</span>
+              <span class="po_rel_cat"><i class={`fas ${icon}`}></i> {getCategoryLabel(r.categoria, lang)}</span>
               <strong>{r.titulo}</strong>
               <span class="po_rel_meta">
                 <i class="fas fa-calendar"></i> {formatShortDate(r.creado)} · <i class="fas fa-eye"></i> {r.vistas || 0} · <i class="fas fa-heart" style="color:#fe0149"></i> {r.likes || 0}
@@ -85,7 +90,7 @@ const formatShortDate = (dateVal: any) => {
     import { wiSmart } from '../lib/widev.js';
     wiSmart({ fn: [async () => {
       const el = document.getElementById('po_ad_sidebar');
-      if (el) el.innerHTML = (await import('../lib/wiad.js')).adLeft;
+      if (el) el.innerHTML = (await import('../lib/blog/post/wiad.js')).adLeft;
     }] });
   </script>
 </aside>

@@ -6,6 +6,7 @@ import { app } from '../../wii.js';
 import { supabase } from '../supabase.js';
 import { locales } from './idiomaInicio.js';
 import { useTranslations } from '../i18n/utils.js';
+import { getCategoryLabel } from '../blog/post/idiomaPost.js';
 import estilos from './inicio.css?inline';
 
 interface Props {
@@ -18,11 +19,12 @@ const lg = useTranslations(lang, locales);
 // We fetch blog posts dynamically on the server side
 let posts: any[] = [];
 try {
-  // Query Supabase for active posts
+  // Query Supabase for active posts in the current language
   const { data: rawPosts, error } = await supabase
     .from('blog')
     .select('id, slug, titulo, descripcion, categoria, creado, imagen, vistas, likes')
     .eq('activo', true)
+    .eq('lang', lang)
     .order('creado', { ascending: false })
     .limit(16);
 
@@ -124,15 +126,22 @@ try {
     <div class="ib_grid" id="ib_grid" data-herowi="100">
       {posts.length > 0 ? (
         posts.map((p) => {
-          const catColors = { Animales:'#0EBEFF', Naturaleza:'#25b62a', Amor:'#ff3849', Inspiración:'#ffa726', Vida:'#6a00f5' };
-          const c = catColors[p.categoria as keyof typeof catColors] ?? 'var(--mco)';
+          const normalizedCat = (p.categoria || '').toLowerCase().trim();
+          const catColors = { 
+            animales:'#0EBEFF', animals:'#0EBEFF',
+            naturaleza:'#25b62a', nature:'#25b62a',
+            amor:'#ff3849', love:'#ff3849',
+            inspiración:'#ffa726', inspiration:'#ffa726',
+            vida:'#6a00f5', life:'#6a00f5' 
+          };
+          const c = catColors[normalizedCat as keyof typeof catColors] ?? 'var(--mco)';
           const localeString = lang === 'en' ? 'en-US' : 'es-PE';
           const formattedDate = p.creado ? new Date(p.creado).toLocaleDateString(localeString, { day:'numeric', month:'short', year:'numeric' }) : '';
           return (
             <a href={lang === 'en' ? `/en/${p.slug || p.id || ''}` : `/${p.slug || p.id || ''}`} class="ib_card" data-slug={p.slug || p.id}>
               <div class="ib_img_wrap">
                 <img src={imgwii.svg} data-src={p.imagen || '/poster.webp'} alt={p.titulo || 'Artículo'} class="ib_img wi_skeleton img_fade" />
-                <span class="ib_cat" style={`background:color-mix(in srgb,${c} 20%,transparent);color:${c}`}>{p.categoria || 'Blog'}</span>
+                <span class="ib_cat" style={`background:color-mix(in srgb,${c} 20%,transparent);color:${c}`}>{getCategoryLabel(p.categoria, lang)}</span>
               </div>
               <div class="ib_body">
                 <h3 class="ib_tit">{p.titulo || 'Sin título'}</h3>
@@ -291,7 +300,9 @@ try {
   };
 
   const syncCache = async () => {
-    let cached = getls('ultimosposts');
+    const lang = getLanguage();
+    const cacheKey = `ultimosposts_${lang}`;
+    let cached = getls(cacheKey);
     if (cached && Array.isArray(cached) && cached.length) {
       updateDOMWithCache(cached);
       return;
@@ -302,6 +313,7 @@ try {
         .from('blog')
         .select('id, slug, titulo, descripcion, categoria, creado, imagen, vistas, likes')
         .eq('activo', true)
+        .eq('lang', lang)
         .order('creado', { ascending: false })
         .limit(16);
       if (data) {
@@ -316,7 +328,7 @@ try {
           vistas: p.vistas || 0,
           likes: p.likes || 0
         }));
-        savels('ultimosposts', mapped, 24);
+        savels(cacheKey, mapped, 24);
         updateDOMWithCache(mapped);
       }
     } catch (e) {

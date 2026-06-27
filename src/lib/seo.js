@@ -59,18 +59,34 @@ export const seo = {
     intent: 'analizar compatibilidad cv'
   },
   blog: {
-    title: `Blog de Empleo e IA: Consejos y Guías | ${app}`,
-    description: "Guías y consejos prácticos para optimizar tu CV con IA, superar filtros ATS y preparar tus entrevistas de trabajo. Potencia tu perfil profesional hoy.",
-    path: '/blog',
-    keywords: [
-      'blog de empleo',
-      'consejos curriculum',
-      'superar filtros ats',
-      'preparar entrevistas',
-      'ia para empleo'
-    ],
-    audience: ['personas buscando guías de empleo', 'candidatos en búsqueda de trabajo', 'lectores que quieren optimizar su trayectoria'],
-    intent: 'leer guías y reflexiones sobre búsqueda de empleo'
+    es: {
+      title: `Blog de Empleo e IA: Consejos y Guías | ${app}`,
+      description: "Guías y consejos prácticos para optimizar tu CV con IA, superar filtros ATS y preparar tus entrevistas de trabajo. Potencia tu perfil profesional hoy.",
+      path: '/blog',
+      keywords: [
+        'blog de empleo',
+        'consejos curriculum',
+        'superar filtros ats',
+        'preparar entrevistas',
+        'ia para empleo'
+      ],
+      audience: ['personas buscando guías de empleo', 'candidatos en búsqueda de trabajo', 'lectores que quieren optimizar su trayectoria'],
+      intent: 'leer guías y reflexiones sobre búsqueda de empleo'
+    },
+    en: {
+      title: `AI & Job Blog: Tips, Guides & Careers | ${app}`,
+      description: "Practical guides and tips to optimize your CV with AI, bypass ATS filters, and prep for your job interviews. Power your career today.",
+      path: '/en/blog',
+      keywords: [
+        'career blog',
+        'resume tips',
+        'bypass ats filters',
+        'job interview prep',
+        'ai for careers'
+      ],
+      audience: ['people looking for job guides', 'job seekers', 'readers wanting to optimize career paths'],
+      intent: 'read guides and thoughts about job searching'
+    }
   },
   acerca: {
     es: {

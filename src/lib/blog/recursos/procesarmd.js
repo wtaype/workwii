@@ -1,4 +1,4 @@
-import { imgwii } from '../widev.js';
+import { imgwii } from '../../widev.js';
 
 export const CUSTOM_ICONS = {
   'corazon': '<i class="fas fa-heart po_ico_red"></i>',
@@ -57,10 +57,11 @@ export const countWords = (html) => {
 // Memoizador para mdToHtml
 const mdCache = new Map();
 
-export const mdToHtml = (md) => {
+export const mdToHtml = (md, lang = 'es') => {
   if (!md) return '';
-  if (mdCache.has(md)) {
-    return mdCache.get(md);
+  const cacheKey = `${lang}_${md}`;
+  if (mdCache.has(cacheKey)) {
+    return mdCache.get(cacheKey);
   }
 
   let html = md
@@ -114,11 +115,11 @@ export const mdToHtml = (md) => {
     if (alertMatch) {
       const type = alertMatch[1].toUpperCase();
       let icon = 'fas fa-info-circle';
-      let title = 'Nota';
-      if (type === 'TIP') { icon = 'fas fa-lightbulb'; title = 'Consejo'; }
-      else if (type === 'WARNING') { icon = 'fas fa-triangle-exclamation'; title = 'Advertencia'; }
-      else if (type === 'IMPORTANT') { icon = 'fas fa-circle-exclamation'; title = 'Importante'; }
-      else if (type === 'CAUTION') { icon = 'fas fa-ban'; title = 'Precaución'; }
+      let title = lang === 'en' ? 'Note' : 'Nota';
+      if (type === 'TIP') { icon = 'fas fa-lightbulb'; title = lang === 'en' ? 'Tip' : 'Consejo'; }
+      else if (type === 'WARNING') { icon = 'fas fa-triangle-exclamation'; title = lang === 'en' ? 'Warning' : 'Advertencia'; }
+      else if (type === 'IMPORTANT') { icon = 'fas fa-circle-exclamation'; title = lang === 'en' ? 'Important' : 'Importante'; }
+      else if (type === 'CAUTION') { icon = 'fas fa-ban'; title = lang === 'en' ? 'Caution' : 'Precaución'; }
       
       const content = quoteLines.slice(1).join('<br/>');
       result.push(`<div class="po_alert po_alert_${type.toLowerCase()}"><div class="po_alert_title"><i class="${icon}"></i> ${title}</div><p>${content}</p></div>`);
@@ -192,7 +193,7 @@ export const mdToHtml = (md) => {
     const firstKey = mdCache.keys().next().value;
     mdCache.delete(firstKey);
   }
-  mdCache.set(md, finalHtml);
+  mdCache.set(cacheKey, finalHtml);
 
   return finalHtml;
 };

@@ -202,6 +202,34 @@ import Layout from '../layouts/Layout.astro';
   flex-wrap: wrap;
 }
 
+.ed_badge_lang {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 750;
+  padding: 0.4vh 1vh;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+.ed_badge_lang.es {
+  background: rgba(255, 56, 73, 0.1);
+  color: #ff3849;
+}
+.ed_badge_lang.en {
+  background: rgba(14, 190, 255, 0.1);
+  color: #0EBEFF;
+}
+.ed_select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1.2vh center;
+  background-size: 1.6vh;
+  padding-right: 3.5vh !important;
+}
+
 .ed_search_wrapper {
   flex-grow: 1;
   position: relative;
@@ -683,6 +711,14 @@ import Layout from '../layouts/Layout.astro';
             <button class="ed_filter_btn" data-filter="activo">Públicos</button>
             <button class="ed_filter_btn" data-filter="borrador">Borradores</button>
           </div>
+          <div class="ed_filter_tags" style="display: flex; gap: 1vh; align-items: center; margin-left: auto;">
+            <span style="font-size: var(--fz_s3); color: var(--tx3); font-weight: 600; display: flex; align-items: center; gap: 0.5vh;"><i class="fas fa-language"></i> Idioma:</span>
+            <select id="ed_filter_lang" class="ed_select" style="padding: 0.6vh 1.4vh; border-radius: 5vh; border: 1px solid var(--brd); background: var(--wb); color: var(--tx2); font-family: inherit; font-size: var(--fz_s4); font-weight: 600; cursor: pointer; outline: none; transition: border-color 0.2s;">
+              <option value="todos">Todos</option>
+              <option value="es">Español</option>
+              <option value="en">Inglés</option>
+            </select>
+          </div>
         </div>
 
         <!-- LISTADOS (Desktop Table / Mobile Cards) -->
@@ -695,6 +731,7 @@ import Layout from '../layouts/Layout.astro';
                 <tr>
                   <th>Artículo</th>
                   <th>Categoría</th>
+                  <th>Idioma</th>
                   <th>Estado</th>
                   <th>Publicado</th>
                   <th>Acciones</th>
@@ -760,6 +797,7 @@ import Layout from '../layouts/Layout.astro';
   let u: any = null;
   let posts: any[] = [];
   let filterState: 'todos' | 'activo' | 'borrador' = 'todos';
+  let filterLang = 'todos';
   let busqueda = '';
   let activeDeletePost: any = null;
 
@@ -779,7 +817,13 @@ import Layout from '../layouts/Layout.astro';
         if (p.activo === true) return false;
       }
 
-      // 2. Filtro por Buscador
+      // 2. Filtro por Idioma
+      if (filterLang !== 'todos') {
+        const pLang = p.lang || 'es';
+        if (pLang !== filterLang) return false;
+      }
+
+      // 3. Filtro por Buscador
       if (busqueda.trim()) {
         const queryStr = busqueda.toLowerCase().trim();
         const titStr = (p.titulo || '').toLowerCase();
@@ -867,6 +911,9 @@ import Layout from '../layouts/Layout.astro';
               <span class="ed_badge_cat">${p.categoria || 'General'}</span>
             </td>
             <td>
+              <span class="ed_badge_lang ${p.lang || 'es'}">${(p.lang || 'es').toUpperCase()}</span>
+            </td>
+            <td>
               ${statusHtml}
             </td>
             <td>
@@ -904,7 +951,10 @@ import Layout from '../layouts/Layout.astro';
               <div class="ed_mob_thumb" style="background-image: url('${thumb}')"></div>
               <div class="ed_mob_title_box">
                 <a href="/${p.slug || p.id}" target="_blank" class="ed_mob_title">${p.titulo || 'Sin título'}</a>
-                <span class="ed_badge_cat" style="display:inline-block;margin-top:0.25rem">${p.categoria || 'General'}</span>
+                <div style="display:flex; gap:0.5rem; align-items:center; margin-top:0.25rem;">
+                  <span class="ed_badge_cat">${p.categoria || 'General'}</span>
+                  <span class="ed_badge_lang ${p.lang || 'es'}">${(p.lang || 'es').toUpperCase()}</span>
+                </div>
               </div>
             </div>
             <div class="ed_mob_meta">
@@ -1011,6 +1061,14 @@ import Layout from '../layouts/Layout.astro';
         renderPosts();
       });
     });
+
+    const langFilter = document.getElementById('ed_filter_lang');
+    if (langFilter) {
+      langFilter.addEventListener('change', (e: Event) => {
+        filterLang = (e.target as HTMLSelectElement).value;
+        renderPosts();
+      });
+    }
   };
 
   const init = async () => {

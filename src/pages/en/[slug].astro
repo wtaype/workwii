@@ -1,9 +1,9 @@
 ---
-// src/pages/[slug].astro
-// Spanish Blog Post Routing Wrapper
+// src/pages/en/[slug].astro
+// English Blog Post Routing Wrapper
 
-import { supabase } from '../lib/supabase.js';
-import VerPost from '../lib/blog/post/verPost.astro';
+import { supabase } from '../../lib/supabase.js';
+import VerPost from '../../lib/blog/post/verPost.astro';
 
 export async function getStaticPaths() {
   try {
@@ -17,20 +17,20 @@ export async function getStaticPaths() {
 
     if (!allPosts || !allPosts.length) {
       return [{
-        params: { slug: 'ejemplo-de-articulo-con-mas-de-11-caracteres' },
+        params: { slug: 'sample-article-with-more-than-11-characters' },
         props: { post: {} as any, related: [] as any[], latest: [] as any[], prevPost: null as any, nextPost: null as any, translationSlug: null }
       }];
     }
 
-    // Filtrar posts en español
-    const posts = allPosts.filter((p: any) => p.lang === 'es' || !p.lang);
+    // Filtrar posts en inglés
+    const posts = allPosts.filter((p: any) => p.lang === 'en');
 
     return posts.map((post: any, index: number) => {
       const related = posts.filter((p: any) => p.categoria === post.categoria && p.slug !== post.slug).slice(0, 3);
       const latest  = posts.filter((p: any) => p.slug !== post.slug).slice(0, 5);
       
-      // Encontrar traducción vinculada
-      const partner = allPosts.find((p: any) => p.lang === 'en' && (p.id === post.traduccionId || p.traduccionId === post.id));
+      // Encontrar traducción vinculada (Español)
+      const partner = allPosts.find((p: any) => (p.lang === 'es' || !p.lang) && (p.id === post.traduccionId || p.traduccionId === post.id));
       const translationSlug = partner ? partner.slug : null;
 
       return {
@@ -39,9 +39,9 @@ export async function getStaticPaths() {
       };
     }) as any;
   } catch (err) {
-    console.error('[getStaticPaths es]', err);
+    console.error('[getStaticPaths en]', err);
     return [{
-      params: { slug: 'ejemplo-de-articulo-con-mas-de-11-caracteres' },
+      params: { slug: 'sample-article-with-more-than-11-characters' },
       props: { post: {} as any, related: [] as any[], latest: [] as any[], prevPost: null as any, nextPost: null as any, translationSlug: null }
     }];
   }
@@ -59,4 +59,4 @@ interface Props {
 const { post, related, latest, prevPost, nextPost, translationSlug } = Astro.props;
 ---
 
-<VerPost post={post} related={related} latest={latest} prevPost={prevPost} nextPost={nextPost} translationSlug={translationSlug} lang="es" />
+<VerPost post={post} related={related} latest={latest} prevPost={prevPost} nextPost={nextPost} translationSlug={translationSlug} lang="en" />

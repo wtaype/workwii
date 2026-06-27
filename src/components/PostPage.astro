@@ -3,26 +3,35 @@
 import PostComent from './PostComent.astro';
 import { icon, linkweb } from '../wii.js';
 import { Image } from 'astro:assets';
+import { useTranslations, getRelativeLocaleUrl } from '../lib/i18n/utils.js';
+import { idiomaPost, getCategoryLabel } from '../lib/blog/post/idiomaPost.js';
 
 interface Props {
   post: any;
   headings: { text: string; id: string; depth: number }[];
   prevPost?: any;
   nextPost?: any;
+  lang?: string;
+  translationSlug?: string | null;
 }
 
-const { post, headings, prevPost, nextPost } = Astro.props;
+const { post, headings, prevPost, nextPost, lang = 'es', translationSlug } = Astro.props;
+const lg = useTranslations(lang, idiomaPost);
 
 const formatLongDate = (dateVal: any) => {
   if (!dateVal) return '';
   const d = new Date(dateVal);
-  return d.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' });
+  const locale = lang === 'en' ? 'en-US' : 'es-PE';
+  return d.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
 };
+
+const postSlug = post.slug || post.id;
+const shareUrl = `${linkweb}${getRelativeLocaleUrl(lang, postSlug)}`;
 ---
 
 <div class="po_progress_bar" id="po_progress"></div>
 
-<div class="po_wrap" data-id={post.id} data-slug={post.slug || post.id} data-title={post.titulo}>
+<div class="po_wrap" data-id={post.id} data-slug={postSlug} data-title={post.titulo} data-lang={lang} data-translation-slug={translationSlug || ''}>
   <div class="po_layout">
     <div class="po_col_main">
       <div class="po_content">
@@ -34,11 +43,16 @@ const formatLongDate = (dateVal: any) => {
             <img src="/poster.webp" alt="" class="po_hero_img" />
           )}
           <div class="po_hero_over">
-            <a href="/blog" class="po_back" data-witip="Volver"><i class="fas fa-arrow-left"></i> Blog</a>
+            <a href={getRelativeLocaleUrl(lang, '/blog')} class="po_back" data-witip={lg('back')}><i class="fas fa-arrow-left"></i> {lg('back')}</a>
             <div class="po_hero_badges">
-              <span class="po_cat_badge" data-witip={post.categoria}><i class={`fas ${icon}`}></i> {post.categoria}</span>
-              {post.pin && <span class="po_dest_badge" data-witip="Destacada"><i class="fas fa-thumbtack"></i> Pin</span>}
-              <button class="po_like_btn po_like_sync po_hero_like" data-witip="Me encanta">
+              <span class="po_cat_badge" data-witip={getCategoryLabel(post.categoria, lang)}><i class={`fas ${icon}`}></i> {getCategoryLabel(post.categoria, lang)}</span>
+              {post.pin && <span class="po_dest_badge" data-witip={lg('pin')}><i class="fas fa-thumbtack"></i> {lg('pin')}</span>}
+              {translationSlug && (
+                <a href={lang === 'es' ? `/en/${translationSlug}` : `/${translationSlug}`} class="po_dest_badge" style="background:var(--mco);text-decoration:none;" data-witip={lang === 'es' ? 'English version' : 'Versión en español'}>
+                  <i class="fas fa-globe"></i> {lang === 'es' ? 'EN' : 'ES'}
+                </a>
+              )}
+              <button class="po_like_btn po_like_sync po_hero_like" data-witip={lg('likes')}>
                 <i class="fas fa-heart"></i> <span class="po_likes_count_text">{post.likes || 0}</span>
               </button>
             </div>
@@ -50,11 +64,11 @@ const formatLongDate = (dateVal: any) => {
           <h1 class="po_titulo">{post.titulo}</h1>
           {post.descripcion && <p class="po_resumen">{post.descripcion}</p>}
           <div class="po_meta">
-            <span data-witip="Autor"><i class="fas fa-user-pen"></i> {post.autor}</span>
-            <span data-witip="Fecha"><i class="fas fa-calendar"></i> {formatLongDate(post.creado)}</span>
-            <span data-witip="Lectura"><i class="fas fa-clock"></i> {post.lecturaTM}</span>
-            <span data-witip="Vistas" class="po_vistas_sync"><i class="fas fa-eye"></i> <span class="po_vistas_count_text">{post.vistas || 0}</span></span>
-            <button class="po_like_btn po_like_sync" data-witip="Me encanta">
+            <span data-witip={lg('author')}><i class="fas fa-user-pen"></i> {post.autor}</span>
+            <span><i class="fas fa-calendar"></i> {formatLongDate(post.creado)}</span>
+            <span><i class="fas fa-clock"></i> {post.lecturaTM}</span>
+            <span data-witip={lg('views')} class="po_vistas_sync"><i class="fas fa-eye"></i> <span class="po_vistas_count_text">{post.vistas || 0}</span></span>
+            <button class="po_like_btn po_like_sync" data-witip={lg('likes')}>
               <i class="fas fa-heart"></i> <span class="po_likes_count_text">{post.likes || 0}</span>
             </button>
           </div>
@@ -63,7 +77,7 @@ const formatLongDate = (dateVal: any) => {
         <!-- Contenedor de Tabla de Contenidos (Generado en Servidor) -->
         {headings && headings.length > 0 && (
           <div class="po_toc_box">
-            <div class="po_toc_title"><i class="fas fa-list"></i> En este artículo</div>
+            <div class="po_toc_title"><i class="fas fa-list"></i> {lg('tocTitle')}</div>
             <ul class="po_toc">
               {headings.map(h => (
                 <li style={{ marginLeft: h.depth === 3 ? '1.5vh' : '0' }}>
@@ -82,12 +96,12 @@ const formatLongDate = (dateVal: any) => {
         {(prevPost || nextPost) && (
           <div class="po_pn_box po_fade po_visible" style="--d:.4s">
             {prevPost ? (
-              <a href={`/${prevPost.slug || prevPost.id}`} class="po_pn_card pn_prev" data-witip="Anterior">
+              <a href={getRelativeLocaleUrl(lang, `/${prevPost.slug || prevPost.id}`)} class="po_pn_card pn_prev" data-witip={lg('prev')}>
                 <div class="po_pn_img">
                   <img src={prevPost.imagen} alt="" loading="lazy" />
                 </div>
                 <div class="po_pn_info">
-                  <span class="po_pn_lb"><i class="fas fa-arrow-left"></i> Anterior</span>
+                  <span class="po_pn_lb"><i class="fas fa-arrow-left"></i> {lg('prev')}</span>
                   <strong class="po_pn_tit">{prevPost.titulo}</strong>
                 </div>
               </a>
@@ -95,9 +109,9 @@ const formatLongDate = (dateVal: any) => {
               <div></div>
             )}
             {nextPost ? (
-              <a href={`/${nextPost.slug || nextPost.id}`} class="po_pn_card pn_next" data-witip="Siguiente">
+              <a href={getRelativeLocaleUrl(lang, `/${nextPost.slug || nextPost.id}`)} class="po_pn_card pn_next" data-witip={lg('next')}>
                 <div class="po_pn_info">
-                  <span class="po_pn_lb">Siguiente <i class="fas fa-arrow-right"></i></span>
+                  <span class="po_pn_lb">{lg('next')} <i class="fas fa-arrow-right"></i></span>
                   <strong class="po_pn_tit">{nextPost.titulo}</strong>
                 </div>
                 <div class="po_pn_img">
@@ -112,21 +126,21 @@ const formatLongDate = (dateVal: any) => {
 
         <!-- Compartir Artículo -->
         <div class="po_share po_fade po_visible" style="--d:.45s">
-          <span><i class="fas fa-share-nodes"></i> Compartes</span>
+          <span><i class="fas fa-share-nodes"></i> {lg('share')}</span>
           <div class="po_share_btns">
-            <button class="po_like_btn po_like_sync" data-witip="Me encanta">
+            <button class="po_like_btn po_like_sync" data-witip={lg('likes')}>
               <i class="fas fa-heart"></i> <span class="po_likes_count_text">{post.likes || 0}</span>
             </button>
-            <a href={`https://www.facebook.com/sharer/sharer.php?u=${linkweb}/${post.slug || post.id}`} target="_blank" rel="noopener" class="po_share_btn" style="--sc:#1877F2" data-witip="Facebook">
+            <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener" class="po_share_btn" style="--sc:#1877F2" data-witip="Facebook">
               <i class="fab fa-facebook"></i>
             </a>
-            <a href={`https://twitter.com/intent/tweet?url=${linkweb}/${post.slug || post.id}&text=${encodeURIComponent(post.titulo)}`} target="_blank" rel="noopener" class="po_share_btn" style="--sc:#1da1f2" data-witip="Twitter">
+            <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.titulo)}`} target="_blank" rel="noopener" class="po_share_btn" style="--sc:#1da1f2" data-witip="Twitter">
               <i class="fab fa-twitter"></i>
             </a>
-            <a href={`https://wa.me/?text=${encodeURIComponent(post.titulo + ' ' + linkweb + '/' + (post.slug || post.id))}`} target="_blank" rel="noopener" class="po_share_btn" style="--sc:#25D366" data-witip="WhatsApp">
+            <a href={`https://wa.me/?text=${encodeURIComponent(post.titulo + ' ' + shareUrl)}`} target="_blank" rel="noopener" class="po_share_btn" style="--sc:#25D366" data-witip="WhatsApp">
               <i class="fab fa-whatsapp"></i>
             </a>
-            <button class="po_share_btn po_copy" style="--sc:var(--mco)" data-witip="Copiar">
+            <button class="po_share_btn po_copy" style="--sc:var(--mco)" data-witip={lg('copyLink')}>
               <i class="fas fa-link"></i>
             </button>
           </div>
@@ -134,7 +148,7 @@ const formatLongDate = (dateVal: any) => {
       </div>
 
       <!-- Comentarios Disqus -->
-      <PostComent slug={post.slug || post.id} titulo={post.titulo} />
+      <PostComent slug={postSlug} titulo={post.titulo} />
     </div>
 
     <!-- Barra lateral renderizada aquí -->
