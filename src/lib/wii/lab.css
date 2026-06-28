@@ -1,0 +1,160 @@
+/* src/lib/wii/lab.css */
+.lab_container {
+  padding: 4vh;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3vh;
+}
+.lab_grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3vh;
+}
+@media (min-width: 900px) {
+  .lab_grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.lab_card {
+  border: 1px solid var(--brd);
+  border-radius: 2vh;
+  padding: 4vh;
+  background: var(--wb);
+  box-shadow: 0 4px 12px rgba(0,0,0,.02);
+}
+.lab_card--full {
+  grid-column: 1 / -1;
+}
+.lab_title {
+  font-size: var(--fz_m4);
+  font-weight: 700;
+  color: var(--tx1);
+  margin-bottom: 2vh;
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+}
+.lab_saludo {
+  font-size: var(--fz_m3);
+  font-weight: 700;
+  color: var(--mco);
+  margin: 3vh 0;
+}
+.lab_btn_submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8vh;
+  padding: 1.2vh 3vh;
+  background: var(--mco);
+  color: var(--txa);
+  border: none;
+  border-radius: 5vh;
+  font-weight: 700;
+  font-size: var(--fz_m2);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-decoration: none;
+}
+.lab_btn_submit:hover {
+  transform: translateY(-0.3vh);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+  filter: brightness(1.08);
+}
+.lab_sec_title {
+  margin-bottom: 2vh;
+  font-size: var(--fz_m2);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.8vh;
+  color: var(--tx);
+}
+.lab_text {
+  margin: 1vh 0;
+  color: var(--tx2);
+}
+.lab_item {
+  padding: 2vh;
+  background: var(--bg4);
+  margin-bottom: 1vh;
+  border-radius: 1vh;
+  color: var(--tx1);
+}
+.lab_vista_item {
+  opacity: 0.3;
+  transform: scale(0.95);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 1.5vh;
+  background: var(--bg4);
+  border-radius: 0.8vh;
+  margin-top: 1vh;
+  color: var(--tx2);
+}
+.lab_vista_item.wi_visible {
+  opacity: 1;
+  transform: scale(1);
+  color: var(--tx1);
+  border-left: 4px solid var(--mco);
+}
+.lab_fade_box {
+  padding: 2.5vh;
+  background: var(--bg4);
+  border-radius: 1vh;
+  margin-bottom: 2vh;
+  text-align: center;
+  font-weight: 600;
+  font-size: var(--fz_m1);
+  color: var(--tx1);
+  border: 1px dashed var(--brd);
+}
+
+
+/* ── SCROLL-DRIVEN ANIMATIONS (100% CSS / GPU) ── */
+@keyframes reveal_css {
+  from { opacity: 0; transform: translateY(4vh); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.lab_scroll_item {
+  padding: 2vh;
+  background: var(--bg4);
+  margin-bottom: 1vh;
+  border-radius: 1vh;
+  color: var(--tx1);
+  
+  /* Scroll-driven timeline nativa del navegador */
+  view-timeline-name: --reveal-timeline;
+  view-timeline-axis: block;
+  animation-name: reveal_css;
+  animation-fill-mode: both;
+  animation-timeline: --reveal-timeline;
+  animation-range: entry 10% cover 30%;
+}
+
+/* ── @starting-style (Animación de entrada nativa al DOM) ── */
+.lab_alert_container {
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+  margin-top: 2vh;
+  min-height: 5vh;
+}
+.lab_alert_starting {
+  padding: 1.5vh;
+  background: var(--warning);
+  color: var(--txa);
+  border-radius: 1vh;
+  font-weight: 500;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@starting-style {
+  .lab_alert_starting {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}

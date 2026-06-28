@@ -514,21 +514,7 @@ if (typeof window !== 'undefined') {
       return;
     }
 
-    // 8. Cambiar Tema
-    if (target.closest('.tema')) {
-      const wi = getls('wiSmile'); if (!wi?.usuario) return;
-      setTimeout(async () => {
-        const t = localStorage.wiTema; if (!t) return;
-        try {
-          await supabase.from('smiles')
-            .update({ tema: t, actualizado: new Date().toISOString() })
-            .eq('id', wi.id);
-          savels('wiSmile', { ...wi, tema: t }, 7);
-          Mensaje(`Tema ${t} guardado <i class="fas fa-check-circle"></i>`, 'success');
-        } catch (errCode) { console.error('tema:', errCode); }
-      }, 0);
-      return;
-    }
+
   });
 
   // Manejo de focos secuenciales

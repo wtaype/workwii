@@ -1,0 +1,29 @@
+// src/lib/widev/widev.js
+// El cerebro del módulo que une y expone las utilidades segmentadas de widev/
+
+export { Saludar } from './saludo.js';
+export { wiTip } from './witip.js';
+export { wiVista, herowi, showi, wiFade } from './animacion.js';
+export { wicopy } from './copy.js';
+export { year, wiDate, fechaHoy, formatearFechaParaInput, formatearFechaHora, wiTiempo, calcMeses } from './fecha.js';
+export { imgwii } from './imgwii.js';
+export { Mensaje, Notificacion } from './mensajes.js';
+export { abrirModal, cerrarModal, cerrarTodos } from './modales.js';
+export { wiPath } from './navegador.js';
+export { Capit, NombreApellido, getNombre, avatar } from './nombre.js';
+export { wiRateLimit } from './ratelimit.js';
+export { wiScroll } from './scroll.js';
+export { setMeta } from './seometa.js';
+export { wiSpin } from './spin.js';
+export { savels, getls, removels, gosave, getsave, gosaves, getsaves } from './storage.js';
+export { superFun } from './superfun.js';
+export { witema, witemas } from './tema.js';
+export { Mayu, Capi, mis10, minus } from './texto.js';
+export { wiCode } from './wicode.js';
+export { wiIp } from './wiip.js';
+export { wiSmart } from './wismart.js';
+export { wiSuma, adrm, adtm, adup } from './more.js';
+export { wiAuth } from './auth.js';
+export { wiMd } from './wimd.js';
+export { wiInit } from './wiinit.js';
+export { langwii } from './langwii.js';

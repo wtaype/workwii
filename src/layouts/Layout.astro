@@ -1,7 +1,7 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import { app, titulo, descri, keywii, linkweb, by, linkme, dtema }  from '../wii.js';
-import { witemas } from '../lib/widev.js';
+import { witemas } from '../lib/widev/widev.js';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { rutaRoles } from '../lib/rutas.js';
@@ -126,7 +126,7 @@ const seoSchema = {
     <ClientRouter />
 
     <!-- Aplicación del tema síncrona inmediata para evitar parpadeo blanco (flash) -->
-    <script is:inline define:vars={{ wtema, witemas }}>(() => { window.wtema = wtema; const a = () => { try { let t = localStorage.wiTema; try { const u = JSON.parse(localStorage.getItem('wiSmile') || '{}').value; if (u?.tema) t = u.tema; } catch (_) {} const n = t || wtema; document.documentElement.dataset.theme = n; const c = witemas[n] || '#FFC107'; (document.querySelector('meta[name="theme-color"]') || document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'theme-color' }))).content = c; } catch (e) {} }; a(); document.addEventListener('astro:after-swap', a); })();</script>
+    <script is:inline define:vars={{ wtema, witemas }}>(() => { window.wtema = wtema; const a = () => { try { const n = localStorage.wiTema || wtema; document.documentElement.dataset.theme = n; const c = witemas[n] || '#FFC107'; (document.querySelector('meta[name="theme-color"]') || document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'theme-color' }))).content = c; } catch (e) {} }; a(); document.addEventListener('astro:after-swap', a); })();</script>
 
     <!-- Guardia Unificada de Rutas (Seguridad y Rendimiento) -->
     <script is:inline define:vars={{ ROUTE_ROLES }}>(() => { const c = (p) => { const clean = p.replace(/^\/en/, '').replace(/\/$/, '') || '/'; const r = ROUTE_ROLES.roles[clean]; if (!r) return 1; try { const u = JSON.parse(localStorage.getItem('wiSmile') || '{}').value; if (u && r.includes(u.rol)) { const target = ROUTE_ROLES.require2FA.includes(clean) && sessionStorage.getItem('vault_unlocked') !== 'true' ? '/verificar' : 1; if (target === 1) return 1; return p.startsWith('/en') ? `/en${target}` : target; } } catch (e) {} return 0; }; const h = (p, e) => { const r = c(p); if (r !== 1) { if (e) e.preventDefault(); const fb = p.startsWith('/en') ? '/en' : '/'; window.location.replace(r ? (p.startsWith('/en') ? `/en${r}` : r) : fb); } }; h(window.location.pathname); document.addEventListener('astro:before-preparation', (e) => h(e.to.pathname, e)); })();</script>
@@ -154,10 +154,9 @@ const seoSchema = {
 
     <!-- Script Interactivo de Selección de Temas (Optimizado al final del Body) -->
     <script>
-      import { wiSmart, witema } from '../lib/widev.js';
+      import { witema, wiSmart } from '../lib/widev/widev.js';
       import { dtema } from '../wii.js';
       wiSmart({ css: ['https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap'] });
-
       witema(dtema);
     </script>
   </body>
