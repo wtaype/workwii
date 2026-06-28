@@ -490,7 +490,7 @@ function openModal(clickedSrc) {
   _modal.querySelector('.wim_body').classList.toggle('wim_solo', _galeria.length <= 1);
   buildStrip();
   goto(_idx);
-  import('../../widev.js').then((m) => m.abrirModal('wi_img_modal'));
+  import('../../widev/widev.js').then((m) => m.abrirModal('wi_img_modal'));
 }
 
 export function initModalImgs(selector) {

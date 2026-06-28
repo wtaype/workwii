@@ -1,7 +1,7 @@
 ---
 // src/lib/inicio/Inicio.astro
 // Shared Homepage Template for Workwii supporting ES/EN translations
-import { Saludar, imgwii } from '../widev.js';
+import { Saludar, imgwii } from '../widev/widev.js';
 import { app } from '../../wii.js';
 import { supabase } from '../supabase.js';
 import { locales } from './idiomaInicio.js';
@@ -255,7 +255,7 @@ try {
 </div>
 
 <script>
-  import { herowi, imgwii, getls, savels } from '../widev.js';
+  import { herowi, imgwii, getls, savels } from '../widev/widev.js';
 
   /** @type {ReturnType<typeof setInterval>|null} */
   let roleInterval: any = null;

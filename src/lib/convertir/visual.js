@@ -1,4 +1,4 @@
-import { wiTip, Notificacion } from '../widev.js';
+import { wiTip, Notificacion } from '../widev/widev.js';
 import { descargarPdfDirecto, imprimirPdf, descargarDocx, descargarTxt, descargarMd, descargarJson } from './descarga/descargas.js';
 import { initEditablePreview, isEditingPreview } from '../crear/preview/editarPreview.js';
 

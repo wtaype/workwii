@@ -6,7 +6,7 @@ import Layout from '../../../layouts/Layout.astro';
 import { app } from '../../../wii.js';
 import { seo } from '../../seo.js';
 import { supabase } from '../../supabase.js';
-import { imgwii } from '../../widev.js';
+import { imgwii } from '../../widev/widev.js';
 import { useTranslations, getRelativeLocaleUrl } from '../../i18n/utils.js';
 import { idiomaBlog } from './idiomaBlog.js';
 import { getCategoryLabel } from '../post/idiomaPost.js';
@@ -150,7 +150,7 @@ import blogStyles from './blog.css?raw';
 
 <script>
   import { supabase } from '../../supabase.js';
-  import { savels, getls, Notificacion, imgwii } from '../../widev.js';
+  import { savels, getls, Notificacion, imgwii } from '../../widev/widev.js';
   import { getCategoryLabel } from '../post/idiomaPost.js';
   import { idiomaBlog } from './idiomaBlog.js';
 

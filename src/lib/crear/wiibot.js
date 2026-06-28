@@ -2,7 +2,7 @@
 // Asistente Inteligente Wiibot (IA con Gemini) para Optimización de CV ATS
 
 import { llamarGemini } from '../api/gemini.js';
-import { wiRateLimit, Notificacion } from '../widev.js';
+import { wiRateLimit, Notificacion } from '../widev/widev.js';
 
 /**
  * Llama a la API de Gemini para estructurar un currículum bruto o PDF extraído

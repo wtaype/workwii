@@ -1,7 +1,7 @@
 ---
 // src/components/PostSidebar.astro
 import { app, icon } from '../wii.js';
-import { imgwii } from '../lib/widev.js';
+import { imgwii } from '../lib/widev/widev.js';
 import { useTranslations, getRelativeLocaleUrl } from '../lib/i18n/utils.js';
 import { idiomaPost, getCategoryLabel } from '../lib/blog/post/idiomaPost.js';
 
@@ -87,7 +87,7 @@ const formatShortDate = (dateVal: any) => {
   <!-- Custom Ad Target -->
   <div class="po_ad_sticky po_fade po_visible" style="--d:.3s;" id="po_ad_sidebar"></div>
   <script>
-    import { wiSmart } from '../lib/widev.js';
+    import { wiSmart } from '../lib/widev/widev.js';
     wiSmart({ fn: [async () => {
       const el = document.getElementById('po_ad_sidebar');
       if (el) el.innerHTML = (await import('../lib/blog/post/wiad.js')).adLeft;

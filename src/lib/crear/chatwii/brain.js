@@ -1,5 +1,5 @@
 import { llamarGeminiStream } from '../../api/gemini.js';
-import { wiRateLimit, Notificacion } from '../../widev.js';
+import { wiRateLimit, Notificacion } from '../../widev/widev.js';
 import { nuevoSkill } from './nuevo.js';
 import { existeSkill } from './existe.js';
 

@@ -1,15 +1,18 @@
 ---
 // src/components/PostComent.astro
+import { langwii } from "../lib/widev/widev.js";
+
 interface Props {
   slug: string;
   titulo: string;
 }
 
 const { slug, titulo } = Astro.props;
+const txtComentarios = langwii.n('Comentarios', 'Comments', Astro);
 ---
 
 <div id="wi_comments" class="po_comments po_fade po_visible" style="--d:.55s" data-slug={slug} data-title={titulo}>
-  <div class="po_comments_title"><i class="fas fa-comments"></i> Comentarios</div>
+  <div class="po_comments_title" id="tx_coments"><i class="fas fa-comments"></i> {txtComentarios}</div>
   <div id="disqus_thread"></div>
 </div>
 

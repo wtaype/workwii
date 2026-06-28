@@ -1,6 +1,6 @@
 import './login.css';
 import { supabase } from './supabase.js';
-import { wiTip, Mensaje, savels, getls, wiSpin, wiAuth, abrirModal, cerrarTodos, wiRateLimit, witemas } from './widev.js';
+import { wiTip, Mensaje, savels, getls, wiSpin, wiAuth, abrirModal, cerrarTodos, wiRateLimit, witemas } from './widev/widev.js';
 import { app, dtema } from '../wii.js';
 
 // ── CONFIG ───────────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-import { wiSmart, Notificacion } from '../widev.js';
+import { wiSmart, Notificacion } from '../widev/widev.js';
 
 // Carga bajo demanda desde CDN cuando el usuario interactúa
 export const cargarLibreriasExtraccion = () => {

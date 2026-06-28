@@ -1,4 +1,4 @@
-import { wiSmart, Notificacion } from '../widev.js';
+import { wiSmart, Notificacion } from '../widev/widev.js';
 
 // Cargar librerías de forma diferida en interacción del usuario
 export const cargarLibreriasExtraccion = () => {

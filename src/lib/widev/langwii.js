@@ -7,7 +7,11 @@ export const langwii = {
    * Prioriza: 1. Parámetro explícito, 2. Atributo HTML lang, 3. Preferencia del navegador
    */
   get(l = '') {
-    if (l) return l.startsWith('en') ? 'en' : 'es';
+    // Si l es el objeto Astro global, extraemos su locale
+    if (l && typeof l === 'object' && 'currentLocale' in l) {
+      l = l.currentLocale;
+    }
+    if (l && typeof l === 'string') return l.startsWith('en') ? 'en' : 'es';
     if (typeof document !== 'undefined') {
       const htmlLang = document.documentElement.lang;
       if (htmlLang) return htmlLang.startsWith('en') ? 'en' : 'es';
@@ -54,6 +58,11 @@ export const langwii = {
    * Opción 5: Formatear plantilla rápida bilingüe directa en una línea (alias: line / n)
    */
   n(esStr, enStr, params = {}, l = '') {
+    // Si params es el objeto Astro global o un string de locale, lo desplazamos a l
+    if (typeof params === 'string' || (params && typeof params === 'object' && 'currentLocale' in params)) {
+      l = params;
+      params = {};
+    }
     return this.nw({ es: esStr, en: enStr }, params, l);
   },
 

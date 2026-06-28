@@ -1,4 +1,4 @@
-import { imgwii } from '../../widev.js';
+import { imgwii } from '../../widev/widev.js';
 
 export const CUSTOM_ICONS = {
   'corazon': '<i class="fas fa-heart po_ico_red"></i>',

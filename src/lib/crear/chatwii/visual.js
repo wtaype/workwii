@@ -1,7 +1,7 @@
 import { initChatwii, enviarMensaje, aplicarPatch, limpiarChat, getHistorial } from './brain.js';
 import { mdToHtml } from './procesarmd.js';
 import { langChatwii } from './lang.js';
-import { abrirModal, cerrarModal, getls } from '../../widev.js';
+import { abrirModal, cerrarModal, getls } from '../../widev/widev.js';
 
 let _lang = 'es';
 let _getCvData = null;

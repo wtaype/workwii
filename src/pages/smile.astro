@@ -441,7 +441,7 @@ import { app } from '../wii.js';
 
 <script>
   import { protegerRuta } from '../lib/auth.js';
-  import { getNombre, Saludar } from '../lib/widev.js';
+  import { getNombre, Saludar } from '../lib/widev/widev.js';
 
   const initDashboard = async () => {
     // 1. Proteger ruta usando el guard centralizado de Supabase + localStorage

@@ -1,4 +1,4 @@
-import { imgwii, Mensaje, Notificacion } from '../../widev.js';
+import { imgwii, Mensaje, Notificacion } from '../../widev/widev.js';
 
 if (typeof window !== 'undefined') {
   window.Mensaje = window.Mensaje || Mensaje;

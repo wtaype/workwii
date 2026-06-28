@@ -1,7 +1,7 @@
 import { getCvData, updateCvData, loadFromLocalStorage, resetCvData, subscribe } from './estado.js';
 import { optimizarLogroConIA, optimizarCvCompletoConIA, estructurarCvConIA } from './wiibot.js';
 import { descargarPdfDirecto, imprimirPdf, descargarDocx, descargarTxt, descargarMd, descargarJson } from './descarga/descargas.js';
-import { Notificacion, wiSmart, abrirModal, cerrarModal, wiRateLimit } from '../widev.js';
+import { Notificacion, wiSmart, abrirModal, cerrarModal, wiRateLimit } from '../widev/widev.js';
 import { isEditingPreview } from './preview/editarPreview.js';
 import { updateA4Preview, updateScorecard } from './preview/renderPreview.js';
 import { initChat } from './chatwii/visual.js';

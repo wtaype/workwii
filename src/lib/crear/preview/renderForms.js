@@ -2,7 +2,7 @@
 // Renderizado de todos los formularios del editor de CV ATS
 
 import { updateCvData, getCvData, crearEstructuraExp, crearEstructuraEdu, crearEstructuraProj, crearEstructuraCert } from '../estado.js';
-import { Notificacion, wicopy } from '../../widev.js';
+import { Notificacion, wicopy } from '../../widev/widev.js';
 import { sugerirHabilidadesConIA } from '../wiibot.js';
 
 // ─── Locales ─────────────────────────────────────────────────────────────────

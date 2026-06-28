@@ -12,10 +12,11 @@ const t = (idiomaAcerca as any)[lang] || idiomaAcerca['es'];
 const route = (path: string) => lang === 'en' ? `/en${path}` : path;
 ---
 
-<style is:global set:html={estilosAcercas}></style>
 
 <Layout {...(lang === 'en' ? (seo.acerca as any).en : (seo.acerca as any).es)}>
-<div class="ac_wrap">
+  <style is:global set:html={estilosAcercas}></style>
+  
+  <div class="ac_wrap">
 
   <!-- ══ HERO ══ -->
   <section class="ac_hero">

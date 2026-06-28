@@ -1,4 +1,4 @@
-import { Mensaje, Notificacion, wiTip } from '../widev.js';
+import { Mensaje, Notificacion, wiTip } from '../widev/widev.js';
 import { getCvTextContent, getJobDescription } from './entrada.js';
 import { initTipsRotator, renderScoreTips } from './tips_ats.js';
 

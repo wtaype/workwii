@@ -1,5 +1,5 @@
 import { supabase } from './supabase.js';
-import { getls } from './widev.js';
+import { getls } from './widev/widev.js';
 
 /**
  * Espera a obtener el usuario autenticado de Supabase.
