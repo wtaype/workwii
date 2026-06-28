@@ -158,7 +158,8 @@ const seoSchema = {
       import { witema, wiSmart } from '../lib/widev/widev.js';
       import { dtema } from '../wii.js';
       wiSmart({ css: ['https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap'] });
-      witema(dtema);
+      witema(dtema); 
+      window.addEventListener('storage', (e) => { if (e.key === 'wiSmile' && !e.newValue) { window.location.replace('/'); } }); //Cerrar session pro
     </script>
   </body>
 </html>

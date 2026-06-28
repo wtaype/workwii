@@ -23,7 +23,6 @@ export { wiCode } from './wicode.js';
 export { wiIp } from './wiip.js';
 export { wiSmart } from './wismart.js';
 export { wiSuma, adrm, adtm, adup } from './more.js';
-export { wiAuth } from './auth.js';
 export { wiMd } from './wimd.js';
 export { wiInit } from './wiinit.js';
 export { langwii } from './langwii.js';

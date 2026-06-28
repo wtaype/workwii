@@ -12,9 +12,8 @@ const currentYear = new Date().getFullYear();
 const route = (path: string) => lang === 'en' ? `/en${path}` : path;
 ---
 
-<style is:global set:html={estilosAcercas}></style>
-
 <Layout {...(lang === 'en' ? (seo.cookies as any).en : (seo.cookies as any).es)}>
+  <style is:global set:html={estilosAcercas}></style>
 <div class="ac_wrap tm_wrap">
   <section class="ac_hero tm_hero">
     <div class="ac_hero_orb ac_orb1"></div><div class="ac_hero_orb ac_orb2"></div><div class="ac_hero_orb ac_orb3"></div>
@@ -152,27 +151,26 @@ const route = (path: string) => lang === 'en' ? `/en${path}` : path;
 </div>
 </Layout>
 
-<script is:inline>
-const initCookies = () => {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
+<script>
+  const initCookies = () => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.wi_fadeUp').forEach(el => {
+      observer.observe(el);
     });
-  }, { threshold: 0.1 });
 
-  document.querySelectorAll('.wi_fadeUp').forEach(el => {
-    observer.observe(el);
+    console.log('🍪 Cookies ready');
+  };
+
+  document.addEventListener('astro:page-load', () => {
+    if (document.querySelector('.tm_wrap')) {
+      initCookies();
+    }
   });
-
-  console.log('🍪 Cookies ready');
-  window.__WIREADY__ = true;
-};
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initCookies);
-} else {
-  initCookies();
-}
 </script>

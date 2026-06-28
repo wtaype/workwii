@@ -9,9 +9,8 @@ const { lang = 'es' } = Astro.props as { lang?: 'es' | 'en' };
 const t = (idiomaFeedback as any)[lang] || idiomaFeedback['es'];
 ---
 
-<style is:global set:html={estilosAcercas}></style>
-
 <Layout {...(lang === 'en' ? (seo.feedback as any).en : (seo.feedback as any).es)}>
+  <style is:global set:html={estilosAcercas}></style>
 <div class="ac_wrap tm_wrap">
   <section class="ac_hero tm_hero">
     <div class="ac_hero_orb ac_orb1"></div>

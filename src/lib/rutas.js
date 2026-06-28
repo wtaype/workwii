@@ -125,6 +125,8 @@ export const NAV_CONFIG = {
   }
 };
 
+export const ROL_PATH = { usuario: '/smile', editor: '/editor', gestor: '/gestor', admin: '/admin' };
+
 // 3. Helper inteligente que inyecta el "txt" traducido y adapta URLs
 export function translateNav(config, lang) {
   const activeLang = lang === 'en' ? 'en' : 'es';

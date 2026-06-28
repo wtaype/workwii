@@ -292,17 +292,17 @@ const route = (path: string) => lang === 'en' ? `/en${path}` : path;
 </div>
 </Layout>
 
-<script is:inline>
+<script>
   const animateCounters = () => {
     document.querySelectorAll('.ac_counter_num').forEach(el => {
-      const targetVal = el.dataset.target;
+      const targetVal = (el as HTMLElement).dataset.target;
       if (!targetVal) return;
       
       const target = parseInt(targetVal);
       const duration = 2000;
-      let start = null;
+      let start: number | null = null;
       
-      const step = ts => {
+      const step = (ts: number) => {
         if (!start) start = ts;
         const progress = Math.min((ts - start) / duration, 1);
         const ease = 1 - Math.pow(1 - progress, 4);
@@ -341,10 +341,10 @@ const route = (path: string) => lang === 'en' ? `/en${path}` : path;
 
     const shareBtn = document.getElementById('ac_compartir');
     if (shareBtn) {
-      shareBtn.addEventListener('click', function () {
+      shareBtn.addEventListener('click', () => {
         const url = window.location.origin;
-        const shareTxt = this.getAttribute('data-share-text');
-        const copiedTxt = this.getAttribute('data-share-copied');
+        const shareTxt = shareBtn.getAttribute('data-share-text') || '';
+        const copiedTxt = shareBtn.getAttribute('data-share-copied') || '';
         
         if (navigator.share) {
           navigator.share({ 
@@ -354,21 +354,20 @@ const route = (path: string) => lang === 'en' ? `/en${path}` : path;
           }).catch(() => {});
         } else {
           navigator.clipboard.writeText(url);
-          this.textContent = copiedTxt;
+          shareBtn.textContent = copiedTxt;
           setTimeout(() => {
-            this.innerHTML = '<i class="fas fa-share-nodes"></i> ' + (document.documentElement.lang === 'en' ? 'Share App' : 'Compartir App');
+            shareBtn.innerHTML = '<i class="fas fa-share-nodes"></i> ' + (document.documentElement.lang === 'en' ? 'Share App' : 'Compartir App');
           }, 2000);
         }
       });
     }
 
     console.log('CV Acerca listo');
-    window.__WIREADY__ = true;
   };
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAcerca);
-  } else {
-    initAcerca();
-  }
+  document.addEventListener('astro:page-load', () => {
+    if (document.querySelector('.ac_wrap')) {
+      initAcerca();
+    }
+  });
 </script>

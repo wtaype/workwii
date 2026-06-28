@@ -261,7 +261,7 @@ const optimizarLogroConGemini = async (textoOriginal, puesto, empresa) => {
     if (!rate.ok) {
       Notificacion('Has alcanzado el límite de 5 optimizaciones de prueba. Regístrate para continuar ilimitadamente.', 'warning', 6000);
       closeAIModal();
-      const { abrirLogin } = await import('../login.js');
+      const { abrirLogin } = await import('../wiauth/visual.js');
       abrirLogin('registrar');
       throw new Error('Limit reached');
     }

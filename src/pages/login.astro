@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import '../lib/login.css';
+import '../lib/wiauth/login.css';
 ---
 
 <Layout title="Iniciar Sesión" robots="noindex, nofollow">
@@ -26,7 +26,7 @@ import '../lib/login.css';
   </div>
 
   <script>
-    import { init } from '../lib/login.js';
+    import { init } from '../lib/wiauth/visual.js';
 
     document.addEventListener('astro:page-load', () => {
       init();

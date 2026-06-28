@@ -1452,7 +1452,7 @@ import { seo } from '../lib/seo.js';
       rate = wiRateLimit('guest_ats_cv_conversion', 5, 315360000000 as any);
       if (!rate.ok) {
         Notificacion('Has alcanzado el límite de 5 conversiones de prueba. Regístrate gratis para continuar sin límites.', 'warning', 6000);
-        const { abrirLogin } = await import('../lib/login.js');
+        const { abrirLogin } = await import('../lib/wiauth/visual.js');
         abrirLogin('registrar');
         return;
       }

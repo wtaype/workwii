@@ -12,10 +12,9 @@ const currentYear = new Date().getFullYear();
 const route = (path: string) => lang === 'en' ? `/en${path}` : path;
 ---
 
-<style is:global set:html={estilosAcercas}></style>
-
 <Layout {...(lang === 'en' ? (seo.terminos as any).en : (seo.terminos as any).es)}>
-<div class="ac_wrap tm_wrap">
+  <style is:global set:html={estilosAcercas}></style>
+  <div class="ac_wrap tm_wrap">
 
   <!-- ══ HERO ══ -->
   <section class="ac_hero tm_hero">
@@ -275,7 +274,7 @@ const route = (path: string) => lang === 'en' ? `/en${path}` : path;
 </div>
 </Layout>
 
-<script is:inline>
+<script>
   const initTerminos = () => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -290,9 +289,10 @@ const route = (path: string) => lang === 'en' ? `/en${path}` : path;
     });
 
     document.querySelectorAll('.tm_index_item').forEach(link => {
-      link.addEventListener('click', function(e) {
+      link.addEventListener('click', (e) => {
         e.preventDefault();
-        const href = this.getAttribute('href');
+        const href = link.getAttribute('href');
+        if (!href) return;
         const target = document.querySelector(href);
         if (target) {
           window.scrollTo({ 
@@ -304,14 +304,13 @@ const route = (path: string) => lang === 'en' ? `/en${path}` : path;
     });
 
     console.log('📜 Terms ready');
-    window.__WIREADY__ = true;
   };
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initTerminos);
-  } else {
-    initTerminos();
-  }
+  document.addEventListener('astro:page-load', () => {
+    if (document.querySelector('.tm_wrap')) {
+      initTerminos();
+    }
+  });
 </script>
 
 <!-- 

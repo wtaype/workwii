@@ -781,7 +781,7 @@ import Layout from '../layouts/Layout.astro';
 
 <script>
   import { supabase } from '../lib/supabase.js';
-  import { protegerRuta } from '../lib/auth.js';
+  import { protegerRuta } from '../lib/wiauth/sesion.js';
   import { getNombre, Notificacion } from '../lib/widev/widev.js';
 
   let u: any = null;
