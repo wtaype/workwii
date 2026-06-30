@@ -1,0 +1,15 @@
+---
+// src/pages/en/perfil.astro
+import Layout from '../../layouts/Layout.astro';
+import PerfilPage from '../../lib/usuarios/perfil/perfilPage.astro';
+import { app } from '../../wii.js';
+import estilosPerfil from '../../lib/usuarios/perfil/perfil.css?inline';
+---
+
+<Layout title="My Profile" name={app} robots="noindex, nofollow">
+  <!-- ⚡ Guardia y estilos inyectados en el head -->
+  <script is:inline slot="head">localStorage.wiSmile||location.replace('/')</script>
+  <style is:global set:html={estilosPerfil} slot="head"></style>
+  
+  <PerfilPage />
+</Layout>

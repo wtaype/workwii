@@ -1,0 +1,395 @@
+---
+// src/lib/usuarios/perfil/perfilPage.astro
+import { app } from '../../../wii.js';
+import { idiomaPerfil } from './idiomaPerfil.js';
+
+const lang = Astro.locals.lang || Astro.currentLocale || 'es';
+const lg = (idiomaPerfil as any)[lang] || idiomaPerfil['es'];
+---
+
+<div class="prf_wrap">
+
+  <div class="prf_hero">
+    <div class="prf_av_wrap">
+      <img id="prfHeroAv" src="/smile.avif" alt="Avatar" class="prf_av" onerror="this.src='/smile.avif'">
+      <div class="prf_av_ring"></div>
+    </div>
+    <div class="prf_hero_info">
+      <h1 class="prf_fullname" id="prfHeroFullname">{lg['perfil.cargando']}</h1>
+      <p class="prf_username"><i class="fas fa-at"></i> <span id="prfHeroUsername">...</span></p>
+      <span class="prf_rol_chip"><i class="fas fa-crown"></i> <span id="prfHeroPlan">...</span></span>
+    </div>
+  </div>
+
+  <div class="prf_grid">
+
+    <div class="prf_card">
+      <h2 class="prf_card_tit"><i class="fas fa-user-edit"></i> {lg['perfil.editar']}</h2>
+      
+      <div class="prf_form_2col">
+        <div class="prf_form_grp">
+          <label for="prf_nombre">{lg['perfil.nombres']}</label>
+          <input id="prf_nombre" placeholder={lg['perfil.tusNombres']}>
+        </div>
+        <div class="prf_form_grp">
+          <label for="prf_apellidos">{lg['perfil.apellidos']}</label>
+          <input id="prf_apellidos" placeholder={lg['perfil.tusApellidos']}>
+        </div>
+      </div>
+      
+      <label for="prf_avatar">{lg['perfil.avatarUrl']}</label>
+      <input id="prf_avatar" placeholder={lg['perfil.avatarPl']}>
+      
+      <div class="prf_form_2col">
+        <div class="prf_form_grp">
+          <label for="prf_nacimiento">{lg['perfil.nacimiento']}</label>
+          <input type="date" id="prf_nacimiento">
+        </div>
+        <div class="prf_form_grp">
+          <label for="prf_genero">{lg['perfil.genero']}</label>
+          <select id="prf_genero">
+            <option value="" disabled selected>{lg['perfil.selectGenero']}</option>
+            <option value="Masculino">{lg['perfil.masculino']}</option>
+            <option value="Femenino">{lg['perfil.femenino']}</option>
+            <option value="Otro">{lg['perfil.otro']}</option>
+            <option value="Prefiero no decirlo">{lg['perfil.noDecirlo']}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="prf_form_2col">
+        <div class="prf_form_grp">
+          <label for="prf_pais">{lg['perfil.pais']}</label>
+          <input id="prf_pais" placeholder={lg['perfil.ejPais']}>
+        </div>
+        <div class="prf_form_grp">
+          <label for="prf_gustos">{lg['perfil.gustos']}</label>
+          <input id="prf_gustos" placeholder={lg['perfil.ejGustos']}>
+        </div>
+      </div>
+      
+      <label for="prf_bio">{lg['perfil.bio']}</label>
+      <textarea id="prf_bio" rows="3" placeholder={lg['perfil.tusGustos']}></textarea>
+
+      <button id="prf_guardar" class="prf_btn"><i class="fas fa-save"></i> {lg['perfil.guardar']}</button>
+    </div>
+
+    <div class="prf_col_right">
+      <div class="prf_card">
+        <h2 class="prf_card_tit"><i class="fas fa-lock"></i> {lg['perfil.actualizarPass']}</h2>
+        <label for="prf_pass">{lg['perfil.nuevaPass']}</label>
+        <input type="password" id="prf_pass" placeholder={lg['perfil.passPl']}>
+        <label for="prf_pass_conf">{lg['perfil.confPass']}</label>
+        <input type="password" id="prf_pass_conf" placeholder={lg['perfil.confPassPl']}>
+        <button id="prf_guardar_pass" class="prf_btn"><i class="fas fa-key"></i> {lg['perfil.actualizarPass']}</button>
+      </div>
+
+      <div class="prf_card">
+        <h2 class="prf_card_tit"><i class="fas fa-info-circle"></i> {lg['perfil.datosCuenta']}</h2>
+        <div class="prf_row">
+          <span class="prf_lbl"><i class="fas fa-envelope"></i> {lg['perfil.email']}</span>
+          <span class="prf_val em" id="prfInfoEmail">...</span>
+        </div>
+        <div class="prf_row">
+          <span class="prf_lbl"><i class="fas fa-crown"></i> {lg['perfil.plan']}</span>
+          <span class="prf_val" style="color:var(--mco); text-transform:uppercase;" id="prfInfoPlan">...</span>
+        </div>
+        <div class="prf_row">
+          <span class="prf_lbl"><i class="fas fa-signal"></i> {lg['perfil.estado']}</span>
+          <span class="prf_val" id="prfInfoEstado">...</span>
+        </div>
+        <div class="prf_row">
+          <span class="prf_lbl"><i class="fas fa-toggle-on"></i> {lg['perfil.activo']}</span>
+          <span class="prf_val" id="prfInfoActivo">...</span>
+        </div>
+        <div class="prf_row">
+          <span class="prf_lbl"><i class="fas fa-calendar-alt"></i> {lg['perfil.registro']}</span>
+          <span class="prf_val" id="prfInfoCreado">...</span>
+        </div>
+        <div class="prf_row">
+          <span class="prf_lbl"><i class="fas fa-history"></i> {lg['perfil.actividad']}</span>
+          <span class="prf_val" id="prfInfoActividad">...</span>
+        </div>
+        <div class="prf_row">
+          <span class="prf_lbl"><i class="fas fa-user-tag"></i> {lg['perfil.rol']}</span>
+          <span class="prf_val" style="text-transform:capitalize;" id="prfInfoRol">...</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  import { supabase } from '../../../lib/supabase.js';
+  import { protegerRuta } from '../../../lib/wiauth/sesion.js';
+  import { savels, getls, Mensaje, wiTip, wiDate } from '../../../lib/widev/widev.js';
+  import { idiomaPerfil } from './idiomaPerfil.js';
+
+  const clientLang = document.documentElement.lang || 'es';
+  const lg = (idiomaPerfil as any)[clientLang] || idiomaPerfil['es'];
+
+  let eventListeners: { target: EventTarget; type: string; handler: EventListener }[] = [];
+
+  const listen = (target: EventTarget, type: string, handler: EventListener) => {
+    target.addEventListener(type, handler);
+    eventListeners.push({ target, type, handler });
+  };
+
+  const cleanup = () => {
+    eventListeners.forEach(({ target, type, handler }) => {
+      target.removeEventListener(type, handler);
+    });
+    eventListeners = [];
+  };
+
+  const setupEvents = () => {
+    const btnGuardar = document.getElementById('prf_guardar') as HTMLButtonElement;
+    if (btnGuardar) {
+      listen(btnGuardar, 'click', async () => {
+        const u = getls('wiSmile') || {};
+        const inputNombre = document.getElementById('prf_nombre') as HTMLInputElement;
+        const inputApellidos = document.getElementById('prf_apellidos') as HTMLInputElement;
+        const inputAvatar = document.getElementById('prf_avatar') as HTMLInputElement;
+        const inputNacimiento = document.getElementById('prf_nacimiento') as HTMLInputElement;
+        const selectGenero = document.getElementById('prf_genero') as HTMLSelectElement;
+        const inputPais = document.getElementById('prf_pais') as HTMLInputElement;
+        const inputGustos = document.getElementById('prf_gustos') as HTMLInputElement;
+        const inputBio = document.getElementById('prf_bio') as HTMLTextAreaElement;
+
+        const rawNacimiento = inputNacimiento?.value || '';
+        let nacimientoTS: any = '';
+        if (rawNacimiento) {
+          const [yyyy, mm, dd] = rawNacimiento.split('-').map(Number);
+          nacimientoTS = new Date(yyyy, mm - 1, dd, 12, 0, 0);
+        }
+
+        const updates = {
+          nombre: inputNombre?.value.trim() || '',
+          apellidos: inputApellidos?.value.trim() || '',
+          avatar: inputAvatar?.value.trim() || '/smile.avif',
+          bio: inputBio?.value.trim() || '',
+          actualizado: new Date().toISOString()
+        };
+
+        if (!updates.nombre) {
+          wiTip(inputNombre, lg['perfil.ingresaNombre'], 'error');
+          return;
+        }
+
+        btnGuardar.disabled = true;
+        btnGuardar.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${lg['perfil.guardando']}`;
+
+        try {
+          const { error } = await supabase.from('smiles').update(updates).eq('id', u.id);
+          if (error) throw error;
+
+          const localUpdates = {
+            ...updates,
+            fechaNacimiento: nacimientoTS,
+            pais: inputPais?.value.trim() || '',
+            genero: selectGenero?.value || '',
+            gustos: inputGustos?.value.trim() || '',
+          };
+
+          savels('wiSmile', { ...u, ...localUpdates, ultActividad: Date.now() }, 24);
+          
+          const fullnameEl = document.getElementById('prfHeroFullname');
+          if (fullnameEl) fullnameEl.textContent = `${updates.nombre} ${updates.apellidos}`;
+          
+          const avImg = document.getElementById('prfHeroAv') as HTMLImageElement;
+          if (avImg) avImg.src = updates.avatar || '/smile.avif';
+          
+          Mensaje(lg['perfil.actualizado'], 'success');
+        } catch (e) {
+          console.error(e);
+          Mensaje(lg['perfil.errorGuardar'], 'error');
+        } finally {
+          btnGuardar.disabled = false;
+          btnGuardar.innerHTML = `<i class="fas fa-save"></i> ${lg['perfil.guardar']}`;
+        }
+      });
+    }
+
+    const btnGuardarPass = document.getElementById('prf_guardar_pass') as HTMLButtonElement;
+    if (btnGuardarPass) {
+      listen(btnGuardarPass, 'click', async () => {
+        const inputPass = document.getElementById('prf_pass') as HTMLInputElement;
+        const inputPassConf = document.getElementById('prf_pass_conf') as HTMLInputElement;
+        const p1 = inputPass?.value || '';
+        const p2 = inputPassConf?.value || '';
+
+        if (!p1 || p1.length < 6) {
+          wiTip(inputPass, lg['perfil.minCaracteres'], 'error');
+          return;
+        }
+        if (p1 !== p2) {
+          wiTip(inputPassConf, lg['perfil.passNoCoincide'], 'error');
+          return;
+        }
+
+        btnGuardarPass.disabled = true;
+        btnGuardarPass.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${lg['perfil.guardando']}`;
+
+        try {
+          const { error } = await supabase.auth.updateUser({ password: p1 });
+          if (error) throw error;
+          if (inputPass) inputPass.value = '';
+          if (inputPassConf) inputPassConf.value = '';
+          Mensaje(lg['perfil.contrasenaActualizada'], 'success');
+        } catch (e: any) {
+          console.error(e);
+          Mensaje(lg['perfil.errorActualizarPass'], 'error');
+        } finally {
+          btnGuardarPass.disabled = false;
+          btnGuardarPass.innerHTML = `<i class="fas fa-key"></i> ${lg['perfil.actualizarPass']}`;
+        }
+      });
+    }
+  };
+
+  const initPerfil = async () => {
+    cleanup();
+    // 1. Proteger ruta usando el guard centralizado de Supabase + localStorage
+    const uLocal = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
+    if (!uLocal) return;
+
+    let u = uLocal;
+    try {
+      const { data: d, error } = await supabase.from('smiles').select('*').eq('id', uLocal.id).maybeSingle();
+      if (d) {
+        let needsUpdate = false;
+        const dbUpdates: any = {};
+        if (!d.estado) { dbUpdates.estado = 'activo'; needsUpdate = true; }
+        
+        if (needsUpdate) {
+          await supabase.from('smiles').update(dbUpdates).eq('id', uLocal.id);
+          u = { ...uLocal, ...d, ...dbUpdates, ultActividad: Date.now() };
+        } else {
+          u = { ...uLocal, ...d };
+        }
+        savels('wiSmile', u, 24); // Sincronizar localmente en cada carga
+      }
+    } catch (e) {
+      console.warn('Sync Supabase perfil error:', e);
+    }
+
+    const nombre = u.nombre || '';
+    const apellidos = u.apellidos || '';
+    const usuario = u.usuario || '';
+    const email = u.email || '';
+    const rol = u.rol || 'smile';
+    const plan = u.plan || 'free';
+    const estado = u.estado || 'activo';
+    const activo = u.activo !== false;
+    const avatar = u.avatar || '/smile.avif';
+    const fechaNacimiento = u.fechaNacimiento || '';
+    let fechaNacimientoStr = '';
+    if (fechaNacimiento) {
+      try {
+        const dateObj = new Date(fechaNacimiento);
+        if (!isNaN(dateObj.getTime())) {
+          const yyyy = dateObj.getFullYear();
+          const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+          const dd = String(dateObj.getDate()).padStart(2, '0');
+          fechaNacimientoStr = `${yyyy}-${mm}-${dd}`;
+        }
+      } catch (e) {
+        console.warn('Error formatting birthdate:', e);
+      }
+    }
+    const pais = u.pais || '';
+    const genero = u.genero || '';
+    const gustos = u.gustos || '';
+    const bio = u.bio || '';
+    
+    const tsCreacion = u.creado;
+    const creado = tsCreacion ? wiDate(null).get(tsCreacion, 'local') : lg['perfil.desconocido'];
+
+    const tsActividad = u.ultActividad;
+    const actividad = tsActividad ? wiDate(null).get(tsActividad, 'local') : lg['perfil.recienActivo'];
+
+    const defaultAvatar = '/smile.avif';
+    const imagen = avatar || defaultAvatar;
+
+    // Prefill Hero
+    const avImg = document.getElementById('prfHeroAv') as HTMLImageElement;
+    if (avImg) avImg.src = imagen;
+    
+    const fullnameEl = document.getElementById('prfHeroFullname');
+    if (fullnameEl) fullnameEl.textContent = `${nombre} ${apellidos}`;
+
+    const usernameEl = document.getElementById('prfHeroUsername');
+    if (usernameEl) usernameEl.textContent = usuario;
+
+    const planEl = document.getElementById('prfHeroPlan');
+    if (planEl) {
+      planEl.textContent = `${lg['perfil.plan']} ${plan.toUpperCase()}`;
+    }
+
+    // Prefill inputs
+    const inputNombre = document.getElementById('prf_nombre') as HTMLInputElement;
+    if (inputNombre) inputNombre.value = nombre;
+
+    const inputApellidos = document.getElementById('prf_apellidos') as HTMLInputElement;
+    if (inputApellidos) inputApellidos.value = apellidos;
+
+    const inputAvatar = document.getElementById('prf_avatar') as HTMLInputElement;
+    if (inputAvatar) inputAvatar.value = avatar;
+
+    const inputNacimiento = document.getElementById('prf_nacimiento') as HTMLInputElement;
+    if (inputNacimiento) inputNacimiento.value = fechaNacimientoStr;
+
+    const selectGenero = document.getElementById('prf_genero') as HTMLSelectElement;
+    if (selectGenero) selectGenero.value = genero;
+
+    const inputPais = document.getElementById('prf_pais') as HTMLInputElement;
+    if (inputPais) inputPais.value = pais;
+
+    const inputGustos = document.getElementById('prf_gustos') as HTMLInputElement;
+    if (inputGustos) inputGustos.value = gustos;
+
+    const inputBio = document.getElementById('prf_bio') as HTMLTextAreaElement;
+    if (inputBio) inputBio.value = bio;
+
+    // Prefill account info
+    const infoEmail = document.getElementById('prfInfoEmail');
+    if (infoEmail) infoEmail.textContent = email;
+
+    const infoPlan = document.getElementById('prfInfoPlan');
+    if (infoPlan) infoPlan.textContent = plan;
+
+    const infoEstado = document.getElementById('prfInfoEstado');
+    if (infoEstado) {
+      infoEstado.textContent = estado;
+      infoEstado.style.color = estado === 'activo' ? 'var(--success)' : 'var(--error)';
+    }
+
+    const infoActivo = document.getElementById('prfInfoActivo');
+    if (infoActivo) {
+      infoActivo.textContent = activo ? lg['perfil.si'] : lg['perfil.no'];
+      infoActivo.style.color = activo ? 'var(--success)' : 'var(--error)';
+      infoActivo.style.fontWeight = 'bold';
+    }
+
+    const infoCreado = document.getElementById('prfInfoCreado');
+    if (infoCreado) infoCreado.textContent = creado;
+
+    const infoActividad = document.getElementById('prfInfoActividad');
+    if (infoActividad) infoActividad.textContent = actividad;
+
+    const infoRol = document.getElementById('prfInfoRol');
+    if (infoRol) {
+      let trRol = rol;
+      if (rol === 'admin') trRol = 'Administrador';
+      else if (rol === 'gestor') trRol = 'Gestor';
+      else if (rol === 'smile') trRol = lg['perfil.si'] === 'Yes' ? 'Candidate' : 'Candidato';
+      infoRol.textContent = trRol;
+    }
+
+    setupEvents();
+  };
+
+  document.addEventListener('astro:page-load', initPerfil);
+  document.addEventListener('astro:before-preparation', cleanup);
+</script>
