@@ -1,8 +1,17 @@
 ---
 // src/pages/nuevo.astro
-// Wrapper delgado para el panel del creador/editor de posts
-
-import PostNuevo from '../lib/todos/blog/nuevo/postNuevo.astro';
+import Layout from '../layouts/Layout.astro';
+import NuevoPage from '../lib/todos/blog/nuevo/nuevoPage.astro';
+import { app } from '../wii.js';
+import estilosSlug from '../lib/todos/blog/slug/slug.css?inline';
+import estilosContenido from '../lib/todos/blog/contenido.css?inline';
+import estilosNuevo from '../lib/todos/blog/nuevo/nuevo.css?inline';
 ---
 
-<PostNuevo />
+<Layout title="Creador de Artículos — Admin" name={app} robots="noindex, nofollow">
+  <!-- ⚡ Guardia y estilos inyectados en el head -->
+  <script is:inline slot="head">localStorage.wiSmile||location.replace('/')</script>
+  <style is:global set:html={estilosSlug + estilosContenido + estilosNuevo} slot="head"></style>
+  
+  <NuevoPage />
+</Layout>

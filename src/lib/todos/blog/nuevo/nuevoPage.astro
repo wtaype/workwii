@@ -1,219 +1,204 @@
 ---
-// src/lib/blog/nuevo/postNuevo.astro
-// Componente lógico modular del creador/editor de posts
-
-import Layout from '../../../../layouts/Layout.astro';
+// src/lib/todos/blog/nuevo/nuevoPage.astro
+// Componente de marcado y script cliente del creador/editor de posts
 import { app, id } from '../../../../wii.js';
-import { useTranslations } from '../../../i18n/utils.js';
 import { idiomaNuevo } from './idiomaNuevo.js';
 
-interface Props {
-  lang?: string;
-}
-
-const { lang = 'es' } = Astro.props;
-const lg = useTranslations(lang, idiomaNuevo);
-
-import postStyles from '../slug/slug.css?raw';
-import contenidoStyles from '../contenido.css?raw';
-import nuevoStyles from './nuevo.css?raw';
+const lang = Astro.locals.lang || Astro.currentLocale || 'es';
+const lg = (idiomaNuevo as any)[lang] || idiomaNuevo['es'];
 ---
 
-<style is:global set:html={postStyles + contenidoStyles + nuevoStyles}></style>
+<div class="nu_wrap">
+  <div class="nu_head">
+    <div class="nu_head_left">
+      <h1 id="nu_main_title"><i class="fas fa-file-pen"></i> {lg['nuevo.nuevaPublicacion']}</h1>
+      <p id="nu_edit_info" class="nu_edit_info dpn"></p>
+    </div>
+    <div class="nu_head_right">
+      <a id="nu_view_post_btn" class="nu_btn_sec dpn" href="" target="_blank"><i class="fas fa-eye"></i> {lg['nuevo.verPost']}</a>
+      <button id="nu_load_draft_btn" class="nu_btn_sec" title={lg['nuevo.sincronizarBorrador']}><i class="fas fa-sync-alt"></i></button>
+      <button type="submit" form="nu_form" id="nu_submit" class="nu_btn_submit"><i class="fas fa-paper-plane"></i> <span id="nu_btn_lbl">{lg['nuevo.publicar']}</span></button>
+    </div>
+  </div>
+  
+  <form id="nu_form" autocomplete="off">
+    <div class="nu_layout">
+      <div class="nu_left">
+        
+        <!-- Título -->
+        <div class="nu_card">
+          <div class="nu_card_title"><i class="fas fa-heading"></i> {lg['nuevo.titulo']}</div>
+          <input id="nu_titulo" type="text" class="nu_titulo_inp" placeholder={lg['nuevo.escribeTitulo']} maxlength="47" required/>
+          <div class="nu_counter_box">
+            <span id="nu_titulo_msg" class="nu_status_msg"></span>
+            <span><span id="nu_titulo_cnt">0</span>/47</span>
+          </div>
+          <div class="nu_slug_box">
+            <span class="nu_slug_label"><i class="fas fa-link"></i> <span id="nu_domain_lbl">{id}.vercel.app/</span></span>
+            <input id="nu_slug_inp" type="text" placeholder="novedades-ia" maxlength="32" spellcheck="false"/>
+          </div>
+          <div class="nu_counter_box">
+            <span id="nu_slug_msg" class="nu_status_msg"></span>
+            <span><span id="nu_slug_cnt">0</span>/32</span>
+          </div>
+          <div id="nu_slug_status" class="nu_slug_status"></div>
+        </div>
 
-<Layout title="Creador de Artículos — Admin">
-  <div class="nu_wrap">
-    <div class="nu_head">
-      <div class="nu_head_left">
-        <h1 id="nu_main_title"><i class="fas fa-file-pen"></i> Nueva publicación</h1>
-        <p id="nu_edit_info" class="nu_edit_info dpn"></p>
+        <!-- Dos columnas: Resumen y Keywords -->
+        <div class="nu_row_two">
+          <!-- Resumen -->
+          <div class="nu_card">
+            <div class="nu_card_title_row">
+              <span><i class="fas fa-align-left"></i> {lg['nuevo.resumenLectura']}</span>
+              <span class="nu_counter"><span id="nu_resumen_cnt">0</span>/200</span>
+            </div>
+            <textarea id="nu_resumen" class="nu_resumen_tx" placeholder={lg['nuevo.escribeResumen']} maxlength="200" required></textarea>
+            <div class="nu_counter_box">
+              <span id="nu_resumen_msg" class="nu_status_msg"></span>
+            </div>
+          </div>
+
+          <!-- Keywords -->
+          <div class="nu_card">
+            <div class="nu_card_title_row">
+              <span><i class="fas fa-key"></i> {lg['nuevo.keywords']}</span>
+              <span class="nu_counter"><span id="nu_keywords_cnt">0</span>/160</span>
+            </div>
+            <textarea id="nu_keywords" class="nu_resumen_tx" placeholder={lg['nuevo.escribeKeywords']} maxlength="160"></textarea>
+            <div class="nu_counter_box">
+              <span id="nu_keywords_msg" class="nu_status_msg"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contenido y Vista Previa (TABS) -->
+        <div class="nu_card">
+          <div class="nu_tabs_header">
+            <span class="nu_tabs_label"><i class="fas fa-keyboard"></i> {lg['nuevo.redactorContenido']}</span>
+            <div class="nu_tabs_buttons">
+              <button type="button" id="nu_tab_write" class="nu_tab_btn active">
+                <i class="fas fa-pen-nib"></i> {lg['nuevo.contenido']}
+              </button>
+              <button type="button" id="nu_tab_preview" class="nu_tab_btn">
+                <i class="fas fa-magnifying-glass"></i> {lg['nuevo.vistaPrevia']}
+              </button>
+            </div>
+          </div>
+
+          <!-- Panel Editor -->
+          <div id="nu_panel_write" class="nu_tab_panel">
+            <div class="nu_editor_wrap">
+              <div class="nu_toolbar">
+                <button type="button" class="nu_tool" data-cmd="bold" title="Negrita"><i class="fas fa-bold"></i></button>
+                <button type="button" class="nu_tool" data-cmd="italic" title="Cursiva"><i class="fas fa-italic"></i></button>
+                <button type="button" class="nu_tool" data-cmd="h2" title="Título H2"><i class="fas fa-heading"></i>2</button>
+                <button type="button" class="nu_tool" data-cmd="h3" title="Título H3"><i class="fas fa-heading"></i>3</button>
+                <button type="button" class="nu_tool" data-cmd="link" title="Enlace"><i class="fas fa-link"></i></button>
+                <button type="button" class="nu_tool" data-cmd="quote" title="Cita"><i class="fas fa-quote-left"></i></button>
+                <button type="button" class="nu_tool" data-cmd="code" title="Bloque Código"><i class="fas fa-code"></i></button>
+                <button type="button" class="nu_tool" data-cmd="image" title="Imagen"><i class="fas fa-image"></i></button>
+                <button type="button" class="nu_tool" data-cmd="yt" title="Video de YouTube"><i class="fab fa-youtube"></i></button>
+                <button type="button" class="nu_tool" data-cmd="info" title="Caja de Alerta Azul"><i class="fas fa-info-circle"></i></button>
+                <button type="button" class="nu_tool" data-cmd="success" title="Caja de Alerta Verde"><i class="fas fa-check-circle"></i></button>
+                <button type="button" class="nu_tool" data-cmd="warning" title="Caja de Alerta Naranja"><i class="fas fa-triangle-exclamation"></i></button>
+              </div>
+              <textarea id="nu_contenido" class="nu_textarea" placeholder={lg['nuevo.escribeContenido']} required></textarea>
+            </div>
+            <div class="nu_content_footer">
+              <span id="nu_palabras"><i class="fas fa-font"></i> 0 palabras</span>
+              <span id="nu_lectura"><i class="fas fa-clock"></i> 0 min</span>
+            </div>
+          </div>
+
+          <!-- Panel Vista Previa -->
+          <div id="nu_panel_preview" class="nu_tab_panel dpn">
+            <div class="nu_preview_body po_contenido" id="nu_prev_html"></div>
+          </div>
+        </div>
+        
       </div>
-      <div class="nu_head_right">
-        <a id="nu_view_post_btn" class="nu_btn_sec dpn" href="" target="_blank"><i class="fas fa-eye"></i> Ver post</a>
-        <button id="nu_load_draft_btn" class="nu_btn_sec" title="Sincronizar borrador local"><i class="fas fa-sync-alt"></i></button>
-        <button type="submit" form="nu_form" id="nu_submit" class="nu_btn_submit"><i class="fas fa-paper-plane"></i> <span id="nu_btn_lbl">Publicar</span></button>
+      <div class="nu_right">
+        
+        <!-- MÓDULO DE IDIOMA E IA TRADUCCIÓN -->
+        <div class="nu_card">
+          <div class="nu_card_title"><i class="fas fa-language"></i> {lg['language']}</div>
+          <select id="nu_lang" class="nu_select">
+            <option value="es">{lg['es']}</option>
+            <option value="en">{lg['en']}</option>
+          </select>
+
+          <div class="nu_field_group">
+            <label class="nu_field_label"><i class="fas fa-link"></i> {lg['originalPost']}</label>
+            <select id="nu_traduccionId" class="nu_select">
+              <option value="">{lg['selectPost']}</option>
+            </select>
+          </div>
+
+          <button type="button" id="nu_btn_translate_ai" class="nu_btn_translate_ai">
+            <i class="fas fa-wand-magic-sparkles"></i> {lg['translateAi']}
+          </button>
+          <button type="button" id="nu_btn_duplicate_translate" class="nu_btn_duplicate_translate dpn">
+            <i class="fas fa-copy"></i> Traducir como Nuevo Post
+          </button>
+        </div>
+
+        <div class="nu_card">
+          <div class="nu_card_title" id="nu_card_pub_lbl"><i class="fas fa-earth-americas"></i> Publicación</div>
+          <div class="nu_switch_row">
+            <span>{lg['nuevo.activoLabel']}</span>
+            <label class="nu_ios_switch">
+              <input id="nu_activo" type="checkbox" checked />
+              <span class="nu_ios_slider"></span>
+            </label>
+          </div>
+          <div class="nu_switch_row">
+            <span>{lg['nuevo.pinLabel']}</span>
+            <label class="nu_ios_switch">
+              <input id="nu_pin" type="checkbox" />
+              <span class="nu_ios_slider"></span>
+            </label>
+          </div>
+          <div class="nu_autor_box">
+            <div class="po_autor_box">
+              <div class="po_autor_av"><i class="fas fa-user-pen"></i></div>
+              <div class="po_autor_info">
+                <strong id="nu_autor_nombre">{lg['nuevo.cargandoAutor']}</strong>
+                <span id="nu_autor_email">...</span>
+              </div>
+            </div>
+          </div>
+          <button type="submit" form="nu_form" id="nu_submit_btn_aside" class="nu_btn_submit nu_btn_full"><i class="fas fa-paper-plane"></i> <span id="nu_btn_lbl_aside">{lg['nuevo.publicar']}</span></button>
+        </div>
+
+        <div class="nu_card">
+          <div class="nu_card_title"><i class="fas fa-folder"></i> {lg['nuevo.categoria']}</div>
+          <input id="nu_cat_inp" type="text" placeholder={lg['nuevo.escribeCategoria']} maxlength="30" required/>
+        </div>
+
+        <div class="nu_card">
+          <div class="nu_card_title"><i class="fas fa-tags"></i> {lg['nuevo.tags']}</div>
+          <input id="nu_tags_inp" type="text" placeholder={lg['nuevo.escribeTags']}/>
+          <div id="nu_tags_box" class="nu_tags_box"></div>
+        </div>
+
+        <div class="nu_card">
+          <div class="nu_card_title"><i class="fas fa-image"></i> {lg['nuevo.imagenes']}</div>
+          <div class="nu_image_input_group">
+            <label class="nu_image_field_label"><i class="fas fa-compress"></i> {lg['nuevo.miniatura']}</label>
+            <input id="nu_img" type="url" placeholder="https://... (Sugerido: 334x208px)" required/>
+            <div id="nu_img_prev" class="nu_img_prev dpn"><img id="nu_img_el" src="" alt=""/><button type="button" id="nu_img_clear" class="nu_img_clear" title={lg['nuevo.quitar']}><i class="fas fa-xmark"></i></button></div>
+          </div>
+          <div class="nu_image_input_group nu_image_input_group--spaced">
+            <label class="nu_image_field_label"><i class="fas fa-expand"></i> {lg['nuevo.cabecera']}</label>
+            <input id="nu_img_top" type="url" placeholder="https://... (Sugerido: 1200x450px)"/>
+            <div id="nu_img_top_prev" class="nu_img_prev dpn"><img id="nu_img_top_el" src="" alt=""/><button type="button" id="nu_img_top_clear" class="nu_img_clear" title={lg['nuevo.quitar']}><i class="fas fa-xmark"></i></button></div>
+          </div>
+        </div>
+        
       </div>
     </div>
-    
-    <form id="nu_form" autocomplete="off">
-      <div class="nu_layout">
-        <div class="nu_left">
-          
-          <!-- Título -->
-          <div class="nu_card">
-            <div class="nu_card_title"><i class="fas fa-heading"></i> Título</div>
-            <input id="nu_titulo" type="text" class="nu_titulo_inp" placeholder="Escribe un título impactante... (Mínimo: 35, Mínimo: 47)" maxlength="47" required/>
-            <div class="nu_counter_box">
-              <span id="nu_titulo_msg" class="nu_status_msg"></span>
-              <span><span id="nu_titulo_cnt">0</span>/47</span>
-            </div>
-            <div class="nu_slug_box">
-              <span class="nu_slug_label"><i class="fas fa-link"></i> <span id="nu_domain_lbl">{id}.vercel.app/</span></span>
-              <input id="nu_slug_inp" type="text" placeholder="novedades-ia" maxlength="32" spellcheck="false"/>
-            </div>
-            <div class="nu_counter_box">
-              <span id="nu_slug_msg" class="nu_status_msg"></span>
-              <span><span id="nu_slug_cnt">0</span>/32</span>
-            </div>
-            <div id="nu_slug_status" class="nu_slug_status"></div>
-          </div>
-
-          <!-- Dos columnas: Resumen y Keywords -->
-          <div class="nu_row_two">
-            <!-- Resumen -->
-            <div class="nu_card">
-              <div class="nu_card_title_row">
-                <span><i class="fas fa-align-left"></i> Resumen de lectura</span>
-                <span class="nu_counter"><span id="nu_resumen_cnt">0</span>/200</span>
-              </div>
-              <textarea id="nu_resumen" class="nu_resumen_tx" placeholder="Escribe una descripción breve que enganche... (Mínimo: 100, Máximo: 200)" maxlength="200" required></textarea>
-              <div class="nu_counter_box">
-                <span id="nu_resumen_msg" class="nu_status_msg"></span>
-              </div>
-            </div>
-
-            <!-- Keywords -->
-            <div class="nu_card">
-              <div class="nu_card_title_row">
-                <span><i class="fas fa-key"></i> Palabras clave (SEO Keywords)</span>
-                <span class="nu_counter"><span id="nu_keywords_cnt">0</span>/160</span>
-              </div>
-              <textarea id="nu_keywords" class="nu_resumen_tx" placeholder="Escribe keywords separadas por comas... (Ej: empleo, ats, curriculum)" maxlength="160"></textarea>
-              <div class="nu_counter_box">
-                <span id="nu_keywords_msg" class="nu_status_msg"></span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Contenido y Vista Previa (TABS) -->
-          <div class="nu_card">
-            <div class="nu_tabs_header">
-              <span class="nu_tabs_label"><i class="fas fa-keyboard"></i> Redactor de Contenido</span>
-              <div class="nu_tabs_buttons">
-                <button type="button" id="nu_tab_write" class="nu_tab_btn active">
-                  <i class="fas fa-pen-nib"></i> Contenido
-                </button>
-                <button type="button" id="nu_tab_preview" class="nu_tab_btn">
-                  <i class="fas fa-magnifying-glass"></i> Vista previa
-                </button>
-              </div>
-            </div>
-
-            <!-- Panel Editor -->
-            <div id="nu_panel_write" class="nu_tab_panel">
-              <div class="nu_editor_wrap">
-                <div class="nu_toolbar">
-                  <button type="button" class="nu_tool" data-cmd="bold" title="Negrita"><i class="fas fa-bold"></i></button>
-                  <button type="button" class="nu_tool" data-cmd="italic" title="Cursiva"><i class="fas fa-italic"></i></button>
-                  <button type="button" class="nu_tool" data-cmd="h2" title="Título H2"><i class="fas fa-heading"></i>2</button>
-                  <button type="button" class="nu_tool" data-cmd="h3" title="Título H3"><i class="fas fa-heading"></i>3</button>
-                  <button type="button" class="nu_tool" data-cmd="link" title="Enlace"><i class="fas fa-link"></i></button>
-                  <button type="button" class="nu_tool" data-cmd="quote" title="Cita"><i class="fas fa-quote-left"></i></button>
-                  <button type="button" class="nu_tool" data-cmd="code" title="Bloque Código"><i class="fas fa-code"></i></button>
-                  <button type="button" class="nu_tool" data-cmd="image" title="Imagen"><i class="fas fa-image"></i></button>
-                  <button type="button" class="nu_tool" data-cmd="yt" title="Video de YouTube"><i class="fab fa-youtube"></i></button>
-                  <button type="button" class="nu_tool" data-cmd="info" title="Caja de Alerta Azul"><i class="fas fa-info-circle"></i></button>
-                  <button type="button" class="nu_tool" data-cmd="success" title="Caja de Alerta Verde"><i class="fas fa-check-circle"></i></button>
-                  <button type="button" class="nu_tool" data-cmd="warning" title="Caja de Alerta Naranja"><i class="fas fa-triangle-exclamation"></i></button>
-                </div>
-                <textarea id="nu_contenido" class="nu_textarea" placeholder="Escribe el contenido de tu artículo usando formato Markdown..." required></textarea>
-              </div>
-              <div class="nu_content_footer">
-                <span id="nu_palabras"><i class="fas fa-font"></i> 0 palabras</span>
-                <span id="nu_lectura"><i class="fas fa-clock"></i> 0 min</span>
-              </div>
-            </div>
-
-            <!-- Panel Vista Previa -->
-            <div id="nu_panel_preview" class="nu_tab_panel dpn">
-              <div class="nu_preview_body po_contenido" id="nu_prev_html"></div>
-            </div>
-          </div>
-          
-        </div>
-        <div class="nu_right">
-          
-          <!-- MÓDULO DE IDIOMA E IA TRADUCCIÓN -->
-          <div class="nu_card">
-            <div class="nu_card_title"><i class="fas fa-language"></i> {lg('language')}</div>
-            <select id="nu_lang" class="nu_select">
-              <option value="es">{lg('es')}</option>
-              <option value="en">{lg('en')}</option>
-            </select>
-
-            <div class="nu_field_group">
-              <label class="nu_field_label"><i class="fas fa-link"></i> {lg('originalPost')}</label>
-              <select id="nu_traduccionId" class="nu_select">
-                <option value="">{lg('selectPost')}</option>
-              </select>
-            </div>
-
-            <button type="button" id="nu_btn_translate_ai" class="nu_btn_translate_ai">
-              <i class="fas fa-wand-magic-sparkles"></i> {lg('translateAi')}
-            </button>
-            <button type="button" id="nu_btn_duplicate_translate" class="nu_btn_duplicate_translate dpn">
-              <i class="fas fa-copy"></i> Traducir como Nuevo Post
-            </button>
-          </div>
-
-          <div class="nu_card">
-            <div class="nu_card_title"><i class="fas fa-earth-americas"></i> Publicación</div>
-            <div class="nu_switch_row">
-              <span>Publicar inmediatamente</span>
-              <label class="nu_ios_switch">
-                <input id="nu_activo" type="checkbox" checked />
-                <span class="nu_ios_slider"></span>
-              </label>
-            </div>
-            <div class="nu_switch_row">
-              <span>Destacar artículo (Pin)</span>
-              <label class="nu_ios_switch">
-                <input id="nu_pin" type="checkbox" />
-                <span class="nu_ios_slider"></span>
-              </label>
-            </div>
-            <div class="nu_autor_box">
-              <div class="po_autor_box">
-                <div class="po_autor_av"><i class="fas fa-user-pen"></i></div>
-                <div class="po_autor_info">
-                  <strong id="nu_autor_nombre">Cargando...</strong>
-                  <span id="nu_autor_email">...</span>
-                </div>
-              </div>
-            </div>
-            <button type="submit" form="nu_form" id="nu_submit_btn_aside" class="nu_btn_submit nu_btn_full"><i class="fas fa-paper-plane"></i> <span id="nu_btn_lbl_aside">Publicar</span></button>
-          </div>
-
-          <div class="nu_card">
-            <div class="nu_card_title"><i class="fas fa-folder"></i> Categoría</div>
-            <input id="nu_cat_inp" type="text" placeholder="Escribe una categoría" maxlength="30" required/>
-          </div>
-
-          <div class="nu_card">
-            <div class="nu_card_title"><i class="fas fa-tags"></i> Tags</div>
-            <input id="nu_tags_inp" type="text" placeholder="Escribe tags con comas"/>
-            <div id="nu_tags_box" class="nu_tags_box"></div>
-          </div>
-
-          <div class="nu_card">
-            <div class="nu_card_title"><i class="fas fa-image"></i> Imágenes</div>
-            <div class="nu_image_input_group">
-              <label class="nu_image_field_label"><i class="fas fa-compress"></i> Miniatura (Inicio-Blog)</label>
-              <input id="nu_img" type="url" placeholder="https://... (Sugerido: 334x208px)" required/>
-              <div id="nu_img_prev" class="nu_img_prev dpn"><img id="nu_img_el" src="" alt=""/><button type="button" id="nu_img_clear" class="nu_img_clear" title="Quitar"><i class="fas fa-xmark"></i></button></div>
-            </div>
-            <div class="nu_image_input_group nu_image_input_group--spaced">
-              <label class="nu_image_field_label"><i class="fas fa-expand"></i> Cabecera (Imagen Principal)</label>
-              <input id="nu_img_top" type="url" placeholder="https://... (Sugerido: 1200x450px)"/>
-              <div id="nu_img_top_prev" class="nu_img_prev dpn"><img id="nu_img_top_el" src="" alt=""/><button type="button" id="nu_img_top_clear" class="nu_img_clear" title="Quitar"><i class="fas fa-xmark"></i></button></div>
-            </div>
-          </div>
-          
-        </div>
-      </div>
-    </form>
-  </div>
-</Layout>
+  </form>
+</div>
 
 <script>
   import { protegerRuta } from '../../../wiauth/sesion.js';
@@ -224,6 +209,9 @@ import nuevoStyles from './nuevo.css?raw';
   import { traducirArticuloCompleto } from '../blogwii/brain.js';
   import { generarSlugDeTraduccion, transformarFormularioAClon } from '../blogwii/clonar.js';
   import { idiomaNuevo } from './idiomaNuevo.js';
+
+  const clientLang = document.documentElement.lang || 'es';
+  const lg = (idiomaNuevo as any)[clientLang] || idiomaNuevo['es'];
 
   let tags: string[] = [];
   let sT: any, iT: any, iT2: any;
@@ -305,8 +293,13 @@ import nuevoStyles from './nuevo.css?raw';
     const { words, min } = countWords(val);
     const wordsEl = document.getElementById('nu_palabras');
     const readingEl = document.getElementById('nu_lectura');
-    if (wordsEl) wordsEl.innerHTML = `<i class="fas fa-font"></i> ${words} palabras`;
-    if (readingEl) readingEl.innerHTML = `<i class="fas fa-clock"></i> ${min} min`;
+    
+    if (wordsEl) {
+      wordsEl.innerHTML = `<i class="fas fa-font"></i> ${lg['nuevo.palabras'].replace('{count}', String(words))}`;
+    }
+    if (readingEl) {
+      readingEl.innerHTML = `<i class="fas fa-clock"></i> ${lg['nuevo.lectura'].replace('{count}', String(min))}`;
+    }
   };
 
   const renderTags = () => {
@@ -413,7 +406,7 @@ import nuevoStyles from './nuevo.css?raw';
         const currentLang = langSelect?.value || 'es';
 
         if (!titleVal || !contentVal) {
-          Notificacion('Escribe un título y contenido antes de traducir', 'warning');
+          Notificacion(lg['nuevo.escribeTituloYContenido'], 'warning');
           return;
         }
 
@@ -442,8 +435,6 @@ import nuevoStyles from './nuevo.css?raw';
             }
           });
 
-          console.log('[AI Translation Result]', result);
-
           if (result.titulo) titleInp.value = result.titulo.substring(0, 47);
           if (result.descripcion) resumenInp.value = result.descripcion;
           if (result.categoria) (document.getElementById('nu_cat_inp') as HTMLInputElement).value = result.categoria;
@@ -462,7 +453,7 @@ import nuevoStyles from './nuevo.css?raw';
           
           titleInp.dispatchEvent(new Event('input'));
           if (ta) {
-            isTranslating = false; // Permite que updCount y saveDraft corran temporalmente
+            isTranslating = false;
             ta.dispatchEvent(new Event('input'));
             isTranslating = true;
           }
@@ -495,15 +486,14 @@ import nuevoStyles from './nuevo.css?raw';
         const currentLang = originalPostLang;
 
         if (!titleVal || !contentVal) {
-          Notificacion('Escribe un título y contenido antes de clonar', 'warning');
+          Notificacion(lg['nuevo.escribeTituloYContenidoClonar'], 'warning');
           return;
         }
 
         const oldHtml = duplicateBtn.innerHTML;
         const targetLang = currentLang === 'es' ? 'en' : 'es';
-        const dict = currentLang === 'es' ? idiomaNuevo.es : idiomaNuevo.en;
 
-        duplicateBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Traduciendo...`;
+        duplicateBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${lg['nuevo.clonandoYTraduciendo']}`;
         duplicateBtn.setAttribute('disabled', 'true');
         isTranslating = true;
 
@@ -524,10 +514,7 @@ import nuevoStyles from './nuevo.css?raw';
             }
           });
 
-          console.log('[AI Duplicate & Translate Result]', result);
-
           const newSlug = generarSlugDeTraduccion(result.titulo);
-
           transformarFormularioAClon(originalPostId, newSlug, targetLang);
 
           isEdit = false;
@@ -551,7 +538,7 @@ import nuevoStyles from './nuevo.css?raw';
 
           titleInp.dispatchEvent(new Event('input'));
           if (ta) {
-            isTranslating = false; // Permite que updCount y saveDraft corran temporalmente
+            isTranslating = false;
             ta.dispatchEvent(new Event('input'));
             isTranslating = true;
           }
@@ -562,10 +549,10 @@ import nuevoStyles from './nuevo.css?raw';
 
           duplicateBtn.classList.add('dpn');
 
-          Notificacion('¡Traducción completada con éxito como borrador de nuevo post!', 'success');
+          Notificacion(lg['nuevo.clonarExito'], 'success');
         } catch (e: any) {
           console.error('[Duplicate & Translate]', e);
-          Notificacion('Error al clonar y traducir', 'error');
+          Notificacion(lg['nuevo.clonarError'], 'error');
         } finally {
           isTranslating = false;
           duplicateBtn.innerHTML = oldHtml;
@@ -590,10 +577,10 @@ import nuevoStyles from './nuevo.css?raw';
           if (prev && !prev.classList.contains('dpn')) {
             prev.innerHTML = wiSanihtml(mdToHtml(ta.value));
           }
-          Notificacion('¡Artículo sincronizado con éxito!', 'success');
+          Notificacion(lg['nuevo.sincronizadoExito'], 'success');
         }
       } catch (e) {
-        Notificacion('No se pudo conectar con cargar.js', 'error');
+        Notificacion(lg['nuevo.sincronizadoError'], 'error');
       } finally {
         const icon = document.querySelector('#nu_load_draft_btn i');
         if (icon) icon.className = 'fas fa-sync-alt';
@@ -612,10 +599,10 @@ import nuevoStyles from './nuevo.css?raw';
         if (len === 0) {
           msg.textContent = '';
         } else if (len < 35) {
-          msg.textContent = 'Muy corto';
+          msg.textContent = lg['nuevo.muyCorto'];
           msg.className = 'nu_status_msg err';
         } else {
-          msg.textContent = 'Excelente';
+          msg.textContent = lg['nuevo.excelente'];
           msg.className = 'nu_status_msg ok';
         }
       }
@@ -636,10 +623,10 @@ import nuevoStyles from './nuevo.css?raw';
         if (len === 0) {
           msg.textContent = '';
         } else if (len < 3) {
-          msg.textContent = 'Muy corto';
+          msg.textContent = lg['nuevo.muyCorto'];
           msg.className = 'nu_status_msg err';
         } else {
-          msg.textContent = 'Válido';
+          msg.textContent = lg['nuevo.valido'];
           msg.className = 'nu_status_msg ok';
         }
       }
@@ -654,10 +641,10 @@ import nuevoStyles from './nuevo.css?raw';
         if (len === 0) {
           msg.textContent = '';
         } else if (len < 100) {
-          msg.textContent = `Faltan ${100 - len} caracteres`;
+          msg.textContent = clientLang === 'en' ? `Missing ${100 - len} chars` : `Faltan ${100 - len} caracteres`;
           msg.className = 'nu_status_msg err';
         } else {
-          msg.textContent = 'Excelente';
+          msg.textContent = lg['nuevo.excelente'];
           msg.className = 'nu_status_msg ok';
         }
       }
@@ -676,7 +663,7 @@ import nuevoStyles from './nuevo.css?raw';
         const len = keywordsInp.value.length;
         cnt.textContent = String(len);
         if (len > 0) {
-          msg.textContent = 'Válido';
+          msg.textContent = lg['nuevo.valido'];
           msg.className = 'nu_status_msg ok';
         } else {
           msg.textContent = '';
@@ -709,11 +696,11 @@ import nuevoStyles from './nuevo.css?raw';
         const contenido = mdToHtml(contenidoMD);
 
         if (!titulo || titulo.length < 35) {
-          Notificacion('Título demasiado corto', 'warning');
+          Notificacion(lg['nuevo.muyCorto'], 'warning');
           return;
         }
         if (!resumen || resumen.length < 100) {
-          Notificacion('Resumen demasiado corto', 'warning');
+          Notificacion(lg['nuevo.muyCorto'], 'warning');
           return;
         }
         if (!contenidoMD) {
@@ -731,7 +718,7 @@ import nuevoStyles from './nuevo.css?raw';
           return;
         }
 
-        wiSpin(btnSelector, true, isEdit ? 'Guardando...' : 'Publicando...');
+        wiSpin(btnSelector, true, isEdit ? lg['nuevo.guardar'] : lg['nuevo.publicar']);
 
         try {
           const min = countWords(contenido).min;
@@ -756,7 +743,6 @@ import nuevoStyles from './nuevo.css?raw';
             }).eq('slug', editSlug);
             if (error) throw error;
 
-            // Sincronización bidireccional de traducción
             if (originalPostId) {
               await supabase.from('blog').update({ traduccionId: null }).eq('traduccionId', originalPostId);
               if (translationIdVal) {
@@ -766,7 +752,7 @@ import nuevoStyles from './nuevo.css?raw';
             
             clearPostCache(editSlug);
             clearBlogCache();
-            Mensaje('¡Publicación actualizada!', 'success');
+            Mensaje(lg['nuevo.postActualizado'], 'success');
             setTimeout(() => {
               const prefix = langVal === 'en' ? '/en/' : '/';
               window.location.href = `${prefix}${editSlug}`;
@@ -775,7 +761,7 @@ import nuevoStyles from './nuevo.css?raw';
             const { data: existing } = await supabase.from('blog').select('slug').eq('slug', slug).maybeSingle();
             if (existing) {
               wiSpin(btnSelector, false);
-              Notificacion('Slug existente', 'warning');
+              Notificacion(lg['nuevo.yaExiste'], 'warning');
               return;
             }
             const { data: insData, error: insError } = await supabase.from('blog').insert({
@@ -803,7 +789,6 @@ import nuevoStyles from './nuevo.css?raw';
             }).select('id').maybeSingle();
             if (insError) throw insError;
             
-            // Sincronización bidireccional de traducción
             const newPostId = insData?.id;
             if (newPostId) {
               await supabase.from('blog').update({ traduccionId: null }).eq('traduccionId', newPostId);
@@ -814,7 +799,7 @@ import nuevoStyles from './nuevo.css?raw';
 
             clearBlogCache();
             localStorage.removeItem(getDraftKey());
-            Mensaje('¡Publicación creada con éxito!', 'success');
+            Mensaje(lg['nuevo.postCreado'], 'success');
             setTimeout(() => {
               const prefix = langVal === 'en' ? '/en/' : '/';
               window.location.href = `${prefix}${slug}`;
@@ -822,7 +807,7 @@ import nuevoStyles from './nuevo.css?raw';
           }
         } catch (err) {
           console.error(err);
-          Notificacion(isEdit ? 'Error al guardar' : 'Error al publicar', 'error');
+          Notificacion(isEdit ? lg['nuevo.errorGuardar'] : lg['nuevo.errorPublicar'], 'error');
           wiSpin(btnSelector, false);
         }
       });
@@ -857,14 +842,14 @@ import nuevoStyles from './nuevo.css?raw';
 
         if (v.length < 3) {
           if (slugStatus) {
-            slugStatus.innerHTML = '<i class="fas fa-exclamation"></i> Muy corto';
+            slugStatus.innerHTML = `<i class="fas fa-exclamation"></i> ${lg['nuevo.muyCorto']}`;
             slugStatus.className = 'nu_slug_status err';
           }
           return;
         }
 
         if (slugStatus) {
-          slugStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validando...';
+          slugStatus.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${lg['nuevo.validando']}`;
           slugStatus.className = 'nu_slug_status';
         }
 
@@ -882,10 +867,10 @@ import nuevoStyles from './nuevo.css?raw';
             if (error) throw error;
 
             if (existing) {
-              slugStatus.innerHTML = '<i class="fas fa-xmark"></i> Ya existe';
+              slugStatus.innerHTML = `<i class="fas fa-xmark"></i> ${lg['nuevo.yaExiste']}`;
               slugStatus.className = 'nu_slug_status err';
             } else {
-              slugStatus.innerHTML = '<i class="fas fa-check"></i> OK';
+              slugStatus.innerHTML = `<i class="fas fa-check"></i> ${lg['nuevo.ok']}`;
               slugStatus.className = 'nu_slug_status ok';
             }
           } catch (err: any) {
@@ -1085,14 +1070,14 @@ import nuevoStyles from './nuevo.css?raw';
     const langSelect = document.getElementById('nu_lang') as HTMLSelectElement;
 
     if (isEdit) {
-      if (mainTitleEl) mainTitleEl.innerHTML = `<i class="fas fa-pen-to-square"></i> Editar publicación`;
+      if (mainTitleEl) mainTitleEl.innerHTML = `<i class="fas fa-pen-to-square"></i> ${lg['nuevo.editarPublicacion']}`;
       if (editInfoEl) {
-        editInfoEl.innerHTML = `<i class="fas fa-pen-nib"></i> Editando: <strong>${editSlug}</strong>`;
+        editInfoEl.innerHTML = `<i class="fas fa-pen-nib"></i> ${lg['nuevo.editando']} <strong>${editSlug}</strong>`;
         editInfoEl.classList.remove('dpn');
       }
-      if (btnLblEl) btnLblEl.textContent = 'Guardar';
-      if (btnLblAsideEl) btnLblAsideEl.textContent = 'Guardar cambios';
-      if (cardPubLblEl) cardPubLblEl.textContent = 'Actualizar';
+      if (btnLblEl) btnLblEl.textContent = lg['nuevo.guardar'];
+      if (btnLblAsideEl) btnLblAsideEl.textContent = lg['nuevo.guardarCambios'];
+      if (cardPubLblEl) cardPubLblEl.textContent = lg['nuevo.actualizar'];
       if (slugInp) slugInp.readOnly = true;
       if (viewPostBtnEl) {
         viewPostBtnEl.classList.remove('dpn');
@@ -1105,7 +1090,7 @@ import nuevoStyles from './nuevo.css?raw';
       const resetSlugBtn = document.getElementById('nu_slug_reset');
       if (resetSlugBtn) resetSlugBtn.remove();
       const slugStatusEl = document.getElementById('nu_slug_status');
-      if (slugStatusEl) slugStatusEl.innerHTML = '<span class="ok"><i class="fas fa-lock"></i> Slug bloqueado (edición)</span>';
+      if (slugStatusEl) slugStatusEl.innerHTML = `<span class="ok"><i class="fas fa-lock"></i> ${lg['nuevo.slugBloqueado']}</span>`;
     }
 
     cargarSugerencias();
@@ -1118,8 +1103,8 @@ import nuevoStyles from './nuevo.css?raw';
         const result = await getPost(editSlug, true);
         if (result?.data) {
           const p = result.data;
-          originalPostId = p.id; // Almacenamos el ID del post original
-          originalPostLang = p.lang || 'es'; // Almacenamos el idioma original
+          originalPostId = p.id;
+          originalPostLang = p.lang || 'es';
           (document.getElementById('nu_titulo') as HTMLInputElement).value = p.titulo || '';
           slugInp.value = p.slug || p.id || '';
           (document.getElementById('nu_resumen') as HTMLTextAreaElement).value = p.resumen || '';
@@ -1154,7 +1139,7 @@ import nuevoStyles from './nuevo.css?raw';
         }
       } catch (err) {
         console.error('Error al cargar post en edición:', err);
-        Notificacion('Error cargando post', 'error');
+        Notificacion(lg['nuevo.errorCargarPost'], 'error');
       }
     } else {
       // Intentar cargar draft guardado

@@ -84,7 +84,7 @@
   gap: 0.5vh;
 }
 .nu_card_title_row > span {
-  font-size: var(--fz_m2);
+  font-size: var(--fz_m);
   font-weight: 700;
   color: var(--tx1);
   display: flex;
