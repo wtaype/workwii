@@ -342,9 +342,9 @@ color: var(--tx);
   line-height: 1.85;
   text-align: left;
 }
-.about_text p { margin-bottom: 2.5vh; }
+.about_text p { margin-bottom: 2.5vh;color: var(--txa); }
 .about_text p:last-of-type { margin-bottom: 0; }
-.about_text strong { font-weight: 700; color: #fff; }
+.about_text strong { font-weight: 700;  }
 
 :root[data-theme="Futuro"] .about_text {
   background: rgba(10, 14, 26, 0.4);
