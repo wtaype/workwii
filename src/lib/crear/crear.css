@@ -1811,3 +1811,75 @@
     .cr_preview_cv_line_stub.l1 { width: 95%; }
     .cr_preview_cv_line_stub.l2 { width: 85%; }
     .cr_preview_cv_line_stub.l3 { width: 60%; }
+
+    /* ══════════════════ DISPOSITIVOS MÓVILES EXTRAS (<= 500px) ══════════════════ */
+    @media (max-width: 500px) {
+      /* H1, H2, H3, H4 Responsive */
+      .cr_header_left h1,
+      .consejos_title_sec h2 {
+        font-size: var(--fz_l1) !important;
+      }
+      
+      .consejos_quotes_sec h3,
+      .conv_header_row h3,
+      .cr_modal_header h3,
+      .cr_confirm_content h3 {
+        font-size: var(--fz_m4) !important;
+      }
+      
+      .conv_item_card_header h4,
+      .cr_loader_header_zone h3 {
+        font-size: var(--fz_m1) !important;
+      }
+
+      .cr_header_sub,
+      .consejos_title_sec p {
+        font-size: var(--fz_s3) !important;
+      }
+
+
+      /* Vista de Tablas Responsive y Estética - Evitar Scroll X */
+      .consejos_table_card {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+      }
+      .comp_table_wrapper {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        margin-bottom: 2vh !important;
+      }
+      .consejos_table {
+        min-width: 560px !important;
+        width: 100% !important;
+      }
+      .consejos_table th,
+      .consejos_table td {
+        padding: 1.5vh 2vh !important;
+        font-size: var(--fz_s4) !important;
+      }
+
+      /* Ajustes generales del creador en móvil */
+      .conv_header {
+        padding-bottom: 2vh !important;
+        margin-bottom: 2vh !important;
+      }
+      
+      .conv_tabs_header {
+        gap: 0.8vh !important;
+        justify-content: center !important;
+      }
+      
+      .conv_tab_btn {
+        padding: 1vh 1.4vh !important;
+        font-size: var(--fz_s4) !important;
+      }
+
+      .conv_btn {
+        padding: 1.6vh 2.8vh !important;
+        font-size: var(--fz_m1) !important;
+      }
+    }

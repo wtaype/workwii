@@ -1,5 +1,5 @@
 
-.inicio { max-width: 1400px; margin: 0 auto; padding: 0 2vw }
+.inicio { max-width: 1400px; margin: 0 auto; padding: 0 2vw; overflow-x: hidden; }
 
 .font_o { font-family: var(--ff_O) !important; }
 
@@ -44,8 +44,8 @@
 .hero_visual::before {
   content: '';
   position: absolute;
-  width: 320px;
-  height: 320px;
+  width: 35vh;
+  height: 35vh;
   background: radial-gradient(circle, color-mix(in srgb, var(--mco) 22%, transparent) 0%, transparent 70%);
   z-index: 0;
   filter: blur(40px);
@@ -61,10 +61,13 @@ color: var(--tx);
 }
 .btn_principal {
   background: linear-gradient(135deg, var(--mco), var(--hva)) !important;
-  color: #fff !important;
+  color: var(--txa) !important;
   border: none !important;
   box-shadow: 0 4px 15px color-mix(in srgb, var(--mco) 30%, transparent);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.btn_principal i {
+  color: var(--txa) !important;
 }
 .btn_principal:hover {
   opacity: 1;
@@ -105,7 +108,7 @@ color: var(--tx);
 .mock_name { font-weight: 850; font-size: var(--fz_m4); color: var(--tx); font-family: var(--ff_O); }
 .mock_role { font-size: var(--fz_s4); color: var(--tx3); }
 .mock_bars { display: flex; flex-direction: column; gap: 2vh; }
-.mock_bar_item { display: grid; grid-template-columns: 1fr 1.5fr 45px; align-items: center; gap: 1.5vh; font-size: var(--fz_s3); font-weight: 600; color: var(--tx2); }
+.mock_bar_item { display: grid; grid-template-columns: 1fr 1.5fr 6vh; align-items: center; gap: 1.5vh; font-size: var(--fz_s3); font-weight: 600; color: var(--tx2); }
 .bar_container { height: 1.2vh; background: var(--bg4); border-radius: 50px; overflow: hidden; }
 .bar_fill { height: 100%; background: var(--mco); border-radius: 50px; }
 .bar_fill.ats { width: 95%; }
@@ -164,9 +167,9 @@ color: var(--tx);
 .sec_head { text-align: center; margin-bottom: 3vh }
 .sec_head h2 { font-size: var(--fz_x1); font-weight: 800; color: var(--tx); display: flex; align-items: center; justify-content: center; gap: 1.8vh; letter-spacing: -1px; }
 .sec_head h2 i { color: var(--mco) }
-.sec_line { width: 80px; height: 4px; background: linear-gradient(90deg, var(--mco), var(--hva)); margin: 1.5vh auto 0; border-radius: 2px }
+.sec_line { width: 10vh; height: 0.5vh; background: linear-gradient(90deg, var(--mco), var(--hva)); margin: 1.5vh auto 0; border-radius: 0.2vh; }
 .sec_desc { text-align: center; font-size: var(--fz_m3); color: var(--tx2); margin-bottom: 5vh; font-weight: 500; }
-
+.mainh1 i{color: var(--mco);}
 .btn_sec {
   display: inline-flex;
   align-items: center;
@@ -322,7 +325,7 @@ color: var(--tx);
   padding: 9vh 5vh;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 25px 50px -12px color-mix(in srgb, var(--mco) 25%, rgba(0,0,0,0.2));
+  box-shadow: 0 3vh 6vh -1.5vh color-mix(in srgb, var(--mco) 25%, rgba(0,0,0,0.2));
 }
 .test_bg::before { content: ''; position: absolute; inset: 0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="1.5" fill="white" opacity=".08"/></svg>') repeat; pointer-events: none }
 .test_inner_single { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; text-align: center; }
@@ -363,11 +366,15 @@ color: var(--tx);
   .about_text { padding: 4vh; }
 }
 @media (max-width: 480px) {
-  .mainh { font-size: var(--fz_x1) }
-  .sec_head h2 { font-size: var(--fz_l2) }
-  .hero_oracion { font-size: var(--fz_m2); }
+  .mainh { font-size: var(--fz_l2); }
+  .hero_sub_tit { font-size: var(--fz_m5); }
+  .role { font-size: var(--fz_m5); }
+  .hero_oracion { font-size: var(--fz_m1); }
+  .sec_head h2 { font-size: var(--fz_l1); }
+  .sec_desc { font-size: var(--fz_m1); }
   .about_text { font-size: var(--fz_m1); }
   .cv_mockup { max-width: 100%; }
+  .btn_principal, .btn_sec { padding: 1.4vh 2.8vh; font-size: var(--fz_m1); }
 }
 
 /* ══════════════════ INICIO BLOG ══════════════════ */
@@ -576,4 +583,68 @@ color: var(--tx);
 .sec_cta_btn {
   color: white !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ══════════════════ DISPOSITIVOS MÓVILES EXTRAS (<= 500px) ══════════════════ */
+@media (max-width: 500px) {
+  .hero_badge_float {
+    font-size: var(--fz_s2);
+    padding: 0.6vh 1.4vh;
+  }
+  .hb_1 { top: 6%; right: 2%; }
+  .hb_2 { bottom: 40%; left: 2%; }
+  .hb_3 { bottom: 6%; right: 4%; }
+  
+  .cv_mockup {
+    height: 37vh !important;
+    max-width: 100%;
+  }
+
+  .hero_visual {
+    order: 1;
+  }
+  
+  .hero_ctas {
+    flex-direction: column;
+    width: 100%;
+    gap: 1.5vh;
+  }
+  .hero_ctas .btn_sec {
+    width: 100%;
+    justify-content: center;
+  }
+  .btn_principal, .btn_sec {
+    padding: 2vh 2.8vh !important;
+  }
+
+  .sec_head h2 {
+    font-size: var(--fz_m5) !important;
+  }
+
+  .sec_preguntas {
+    padding: 4vh 2vh !important;
+    margin: 0 !important;
+  }
+
+  .sec_testimonios,
+  #sec_funcionamiento {
+    padding: 0;
+  }
+  #sec_funcionamiento, .sec_test{
+    padding-top: 2vh!important;
+  }
+
+  .feat_grid .feat_card {
+    text-align: center !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .mainh1 {
+    font-size: var(--fz_m5);
+    padding-bottom: 2vh;
+  }
+  .inicio section {
+    padding-bottom: 4vh;
+  }
 }

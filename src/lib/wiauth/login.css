@@ -396,3 +396,71 @@
   .wilg_logo { width: 7.5vh; height: 7.5vh; }
   .wilg_mod #liForm { padding: 2.5vh 3vw; }
 }
+
+/* ══════════════════ DISPOSITIVOS MÓVILES EXTRAS (<= 500px) ══════════════════ */
+@media (max-width: 500px) {
+  #wilg_modal {
+    align-items: flex-start !important;
+    padding-top: 3vh !important;
+  }
+  
+  .wilg_mod .modalBody {
+    max-width: 94vw !important;
+    margin: 0 auto !important;
+    border-radius: 2vh !important;
+  }
+  
+  #liForm {
+    padding: 4vh 6vw !important;
+    gap: 2.2vh !important;
+  }
+  
+  .wilg_logo {
+    width: 7vh !important;
+    height: 7vh !important;
+    margin-bottom: 1.5vh !important;
+  }
+
+  .wilg_head {
+    margin-bottom: 1vh !important;
+  }
+
+  .wilg_head h2 {
+    font-size: var(--fz_l1) !important;
+  }
+
+  .wilg_grupo input {
+    padding: 1.5vh 4vh 1.5vh 4.5vh !important;
+    font-size: var(--fz_m1) !important;
+    border-radius: 1.2vh !important;
+  }
+
+  .wilg_grupo > i:first-of-type {
+    left: 1.6vh !important;
+  }
+
+  .wilg_ojo {
+    right: 1.6vh !important;
+  }
+
+  .wilg_btn {
+    padding: 1.6vh 3vw !important;
+    font-size: var(--fz_m2) !important;
+    border-radius: 1.2vh !important;
+    margin-top: 1vh !important;
+  }
+
+  .wilg_links {
+    gap: 1.2vh !important;
+    margin-top: 1.5vh !important;
+  }
+
+  .wilg_links span {
+    font-size: var(--fz_m) !important;
+    padding: 0.8vh !important;
+  }
+
+  .wilg_or {
+    margin: 1vh 0 !important;
+  }
+}

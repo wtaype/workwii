@@ -946,71 +946,7 @@ text.score-low  { fill: var(--error); stroke: none !important; }
     gap: 3vh;
   }
   .remoto_sidebar {
-    width: 100% !important;
-    position: static;
-    max-height: none;
-    padding: 2vh;
-  }
-  .remoto_layout.sidebar-collapsed .remoto_sidebar {
-    width: 100% !important;
-    padding: 2vh;
-  }
-  .remoto_layout.sidebar-collapsed .sidebar_title,
-  .remoto_layout.sidebar-collapsed .sidebar_name,
-  .remoto_layout.sidebar-collapsed .sidebar_tag {
-    opacity: 1;
-    display: inline-block;
-    pointer-events: auto;
-  }
-  .remoto_layout.sidebar-collapsed .sidebar_header {
-    justify-content: space-between;
-  }
-  .remoto_layout.sidebar-collapsed .sidebar_item {
-    justify-content: flex-start;
-  }
-  .btn_collapse {
-    display: none; /* Ocultar botón collapse en versión móvil */
-  }
-  
-  .sidebar_header {
-    margin-bottom: 1.5vh;
-  }
-  .sidebar_nav {
-    flex-direction: row;
-    overflow-x: auto;
-    padding-bottom: 1vh;
-    scrollbar-width: none;
-    gap: 1.2vh;
-  }
-  .sidebar_nav::-webkit-scrollbar {
-    display: none;
-  }
-  .sidebar_item {
-    padding: 1vh 1.8vh;
-    white-space: nowrap;
-    border-radius: 50px;
-    border: 1px solid var(--brd);
-    background: var(--wb);
-  }
-  .sidebar_name {
-    overflow: visible;
-  }
-  .sidebar_tag {
-    display: none !important; /* Ocultar tag en móvil para ahorrar espacio */
-  }
-  .sidebar_advice_item {
-    margin-top: 0 !important;
-    padding: 1vh 1.8vh !important;
-    border-radius: 50px !important;
-  }
-  .sidebar_item.active::before {
-    display: none; /* Ocultar línea vertical en activo móvil */
-  }
-  .sidebar_item.active {
-    background: color-mix(in srgb, var(--cc) 12%, var(--wb)) !important;
-    color: var(--cc) !important;
-    border-color: var(--cc) !important;
-    font-weight: 700;
+    display: none !important;
   }
   
   .remoto_horizontal_row, .remoto_horizontal_row.row-reversed, .ps_card {
@@ -1039,4 +975,118 @@ text.score-low  { fill: var(--error); stroke: none !important; }
   .ps_metrics_grid { grid-template-columns: repeat(2, 1fr); gap: 4vw; }
   .re_pros_cons_list { grid-template-columns: 1fr; }
   .re_metrics_row { grid-template-columns: repeat(2, 1fr); gap: 4vw; }
+}
+
+/* ══════════════════ DISPOSITIVOS MÓVILES EXTRAS (<= 500px) ══════════════════ */
+@media (max-width: 500px) {
+  /* H1, H2, H3, H4 Responsive */
+  .re_header_ct h1 {
+    font-size: var(--fz_l2) !important;
+  }
+  
+  .re_advice_title {
+    font-size: var(--fz_l1) !important;
+  }
+  
+  .remoto_horizontal_row h3,
+  .re_advice_item_title {
+    font-size: var(--fz_m2) !important;
+  }
+
+  .sidebar_title,
+  .re_search,
+  .re_security h2 {
+    font-size: var(--fz_m1) !important;
+  }
+
+  .re_list_group strong,
+  .re_metrics_title,
+  .re_sec_item strong {
+    font-size: var(--fz_s2) !important;
+  }
+
+  .re_header_ct p,
+  .remoto_row_desc,
+  .re_advice_subtitle,
+  .re_advice_closing {
+    font-size: var(--fz_s3) !important;
+  }
+
+  .re_list_group li,
+  .re_location_line,
+  .re_requirements,
+  .re_metric_item span,
+  .re_expert_opinion,
+  .re_safety_tip,
+  .re_btn_visit_main,
+  .re_btn_guide_main,
+  .re_security p,
+  .re_sec_item p,
+  .re_advice_reason,
+  .re_advice_gold_tip {
+    font-size: var(--fz_s4) !important;
+  }
+
+  /* Ajustes generales del Buscador y Grid en móvil */
+  .remoto_ct {
+    padding: 2vh 1vh 6vh !important;
+  }
+
+  .re_header_ct {
+    padding: 0 2vw !important;
+    margin-bottom: 3vh !important;
+  }
+
+  .re_search_wrap {
+    padding: 1.2vh 2vh !important;
+    margin-bottom: 2.5vh !important;
+  }
+
+  .remoto_horizontal_row {
+    padding: 3vh 4vw !important;
+    border-radius: 16px !important;
+    gap: 2.5vh !important;
+  }
+
+  .re_card_preview_box {
+    padding: 1.8vh !important;
+    gap: 1.5vh !important;
+  }
+
+  .re_logo_container {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  .re_safety_tip {
+    padding: 1.5vh 2vh !important;
+  }
+
+  .re_security {
+    padding: 3vh 4vw !important;
+  }
+
+  .re_advice_card {
+    padding: 3vh 4vw !important;
+  }
+
+  .re_advice_item {
+    padding: 2.5vh !important;
+    gap: 1.5vh !important;
+  }
+
+  .re_advice_num {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .re_actions_row {
+    flex-direction: column !important;
+    gap: 1.2vh !important;
+  }
+
+  .re_btn_visit_main,
+  .re_btn_guide_main {
+    padding: 1.5vh !important;
+  }
 }

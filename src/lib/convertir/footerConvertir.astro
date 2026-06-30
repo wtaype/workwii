@@ -692,4 +692,84 @@ const t = lang === 'en' ? content.en : content.es;
       padding: 0 2vh 1.8vh;
     }
   }
+
+  /* ══════════════════ DISPOSITIVOS MÓVILES EXTRAS (<= 500px) ══════════════════ */
+  @media (max-width: 500px) {
+    .consejos_title_sec h2 {
+      font-size: var(--fz_m4) !important;
+    }
+    .conv_step_content h3 {
+      font-size: var(--fz_m1) !important;
+    }
+    .conv_step_content p {
+      font-size: var(--fz_s3) !important;
+    }
+    .conv_bento_upper {
+      padding: 3vh 4vw !important;
+      gap: 3vh !important;
+    }
+    .conv_scanner_screen {
+      height: 290px !important;
+      padding: 2vh !important;
+    }
+    .conv_score_badge {
+      bottom: 1.5vh !important;
+      right: 1.5vh !important;
+      padding: 1vh 1.4vh !important;
+    }
+    .conv_score_text .val {
+      font-size: 1rem !important;
+    }
+    .conv_timeline_stepper {
+      gap: 1vh !important;
+    }
+    .conv_timeline_step {
+      gap: 1.5vh !important;
+    }
+    .conv_step_num_circle {
+      width: 28px !important;
+      height: 28px !important;
+      font-size: var(--fz_s3) !important;
+    }
+
+    /* Tabla Comparativa en Móvil - Evitar Scroll X */
+    .bento_table_section {
+      min-width: 0 !important;
+      width: 100% !important;
+      overflow: hidden !important;
+    }
+    .consejos_table_card {
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: hidden !important;
+    }
+    .consejos_table_wrapper {
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    .consejos_table {
+      min-width: 560px !important;
+      width: 100% !important;
+    }
+    .consejos_table th,
+    .consejos_table td {
+      padding: 1.2vh 1.5vh !important;
+      font-size: var(--fz_s4) !important;
+    }
+
+    /* FAQs */
+    .conv_faqs_list {
+      gap: 1.5vh !important;
+    }
+    .conv_faq_summary {
+      padding: 1.5vh 2vh !important;
+      font-size: var(--fz_s1) !important;
+    }
+    .conv_faq_content p {
+      font-size: var(--fz_s3) !important;
+    }
+  }
 </style>

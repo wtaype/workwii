@@ -1271,7 +1271,7 @@
         gap: 2.5vh !important;
       }
       .ats_card {
-        padding: 3vh 4vw !important;
+        padding: 3vh 2vh !important;
         border-radius: 16px !important;
         max-width: 91vw !important;
         width: 100% !important;
@@ -1620,18 +1620,18 @@
     .ats_float_dropdown_menu {
       display: none;
       position: absolute;
-      bottom: 120%;
-      left: 0;
-      width: 210px;
-      background: color-mix(in srgb, var(--wb) 95%, transparent);
-      backdrop-filter: blur(12px);
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 260px;
+      background: var(--wb) !important;
       border: 1px solid var(--brd);
       border-radius: 16px;
-      box-shadow: var(--bs_l);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
       z-index: 1001;
       overflow: hidden;
       flex-direction: column;
-      padding: 0.8vh 0;
+      padding: 6px 0;
       animation: menuFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .ats_float_dropdown_menu.show {
@@ -1641,29 +1641,32 @@
     @keyframes menuFadeIn {
       from {
         opacity: 0;
-        transform: translateY(10px) scale(0.98);
+        transform: translate(-50%, 10px) scale(0.95);
       }
       to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translate(-50%, 0) scale(1);
       }
     }
 
     .ats_dropdown_item {
-      padding: 1.6vh 2.2vh;
-      font-size: var(--fz_m1);
+      margin: 3px 8px;
+      padding: 10px 14px;
+      font-size: var(--fz_s2);
       color: var(--tx2);
       background: none;
       border: none;
+      border-radius: 10px;
       text-align: left;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 1.2vh;
+      gap: 10px;
       transition: background var(--tr_f) ease, color var(--tr_f) ease;
       font-weight: 700;
-      width: 100%;
+      width: calc(100% - 16px);
       font-family: inherit;
+      box-sizing: border-box;
     }
     .ats_dropdown_item:hover {
       background: var(--bg4);
@@ -1671,8 +1674,9 @@
     }
     .ats_dropdown_item i {
       color: var(--mco);
-      width: 2.5vh;
+      width: 20px;
       text-align: center;
+      font-size: var(--fz_m1);
     }
 
     /* Adaptabilidad Móvil */
@@ -1693,6 +1697,18 @@
         top: 120%;
         left: 50%;
         transform: translateX(-50%);
+        width: 270px !important;
+        background: var(--wb) !important;
+      }
+      @keyframes menuFadeIn {
+        from {
+          opacity: 0;
+          transform: translate(-50%, 10px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translate(-50%, 0) scale(1);
+        }
       }
     }
 
@@ -1741,3 +1757,124 @@
       color: var(--txa);
       cursor: pointer;
     }
+
+/* ══════════════════ DISPOSITIVOS MÓVILES EXTRAS (<= 500px) ══════════════════ */
+@media (max-width: 500px) {
+  /* H1, H2, H3, H4 Responsive */
+  .ats_header h1 {
+    font-size: var(--fz_l1) !important;
+  }
+  
+  .ats_card_tit,
+  .ats_feedback_title,
+  .loader_title,
+  .modal_title {
+    font-size: var(--fz_m3) !important;
+  }
+
+  .ats_kw_group h4,
+  .prow_label,
+  .rec_advice,
+  .ats_warn_title {
+    font-size: var(--fz_m1) !important;
+  }
+
+  .ats_header p,
+  .ats_dz_sub,
+  .ats_feedback_text,
+  .loader_eta,
+  .loader_step_sub,
+  .rec_section,
+  .ats_warn_item,
+  .modal_desc {
+    font-size: var(--fz_s3) !important;
+  }
+
+  /* Ajustes generales del Dashboard del analizador en móvil */
+  .ats_header {
+    padding: 3vh 4vw !important;
+    margin-bottom: 2vh !important;
+  }
+
+  .ats_card {
+    padding: 3vh 4vw !important;
+    gap: 2vh !important;
+  }
+
+  .ats_dropzone {
+    padding: 4vh 3vh !important;
+    gap: 1.5vh !important;
+  }
+
+  .ats_dropzone i {
+    font-size: 5vh !important;
+  }
+
+  .ats_tabs,
+  .ats_dashboard_tabs {
+    gap: 0.5vh !important;
+    padding: 0.4vh !important;
+  }
+
+  .ats_tab,
+  .ats_dash_tab {
+    padding: 1.2vh 0.6vh !important;
+    font-size: var(--fz_s3) !important;
+  }
+
+  .ats_btn,
+  .ats_btn_sec {
+    padding: 1.6vh 2.8vh !important;
+    font-size: var(--fz_m1) !important;
+  }
+
+  .ats_action_row {
+    flex-direction: column !important;
+    gap: 1.5vh !important;
+  }
+  
+  .ats_action_row .ats_btn_optimize,
+  .ats_action_row .ats_btn_sec {
+    width: 100% !important;
+  }
+
+  /* Perfil detectado - flex wrapping para evitar scroll-x */
+  .profile_row {
+    flex-wrap: wrap !important;
+    padding: 1.2vh 1.5vh !important;
+    gap: 1vh !important;
+  }
+
+  .prow_value {
+    white-space: normal !important; /* Permitir salto de línea en correos/linkedin largos en móviles */
+    word-break: break-all !important;
+  }
+
+  .prow_status {
+    width: 100% !important;
+    text-align: right !important;
+    margin-top: 0.5vh !important;
+  }
+
+  /* File preview styling on mobile */
+  .file_preview {
+    padding: 1.5vh 2vh !important;
+    gap: 1.5vh !important;
+    margin-top: 1vh !important;
+    border-radius: 1.2vh !important;
+  }
+  .file_preview i.file_icon {
+    font-size: 3vh !important;
+  }
+  .file_name {
+    font-size: var(--fz_s4) !important;
+  }
+  .file_size {
+    font-size: var(--fz_s2) !important;
+  }
+  .file_remove {
+    width: 3.8vh !important;
+    height: 3.8vh !important;
+    font-size: var(--fz_m1) !important;
+  }
+}

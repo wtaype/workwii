@@ -43,9 +43,9 @@ const urlEn = cleanPath === '/' ? '/en' : `/en${cleanPath}`;
     <div class="foo_right">
       <!-- Selector de idioma premium footer -->
       <div class="nv_lang" id="footer-language-switcher">
-        <a href={urlEs} class={`lang_btn ${lang === 'es' ? 'active' : ''}`} data-lang="es">ES</a>
+        <a href={urlEs} class={`lang_btn ${lang === 'es' ? 'active' : ''}`} data-lang="es">Spanish</a>
         <span class="lang_divider">|</span>
-        <a href={urlEn} class={`lang_btn ${lang === 'en' ? 'active' : ''}`} data-lang="en">EN</a>
+        <a href={urlEn} class={`lang_btn ${lang === 'en' ? 'active' : ''}`} data-lang="en">English</a>
       </div>
 
       <span>{lg('footer.creadoCon')} <i class="fas fa-heart" style="color:var(--mco);"></i> {lg('footer.por')} <a href={linkme} target="_blank"><strong>{by}</strong></a> {lanzamiento} - {ahora.getFullYear()}</span>

@@ -428,8 +428,8 @@ background: var(--bg1);
 border-radius: 0.8vh;
 position: fixed;
 flex-direction: column;
-top: 73vh;
-right: 0;
+top: 70vh;
+right: .3vh;
 z-index: 1;
 }
 
@@ -1221,7 +1221,7 @@ gap: 0.3vh;
 background: var(--bg3);
 border: 1px solid var(--brd);
 border-radius: 0.8vh;
-padding: 0.2vh;
+padding: .5vh;
 margin-right: 0.8vh;
 }
 .lang_btn {
@@ -1229,7 +1229,7 @@ color: var(--tx2) !important;
 text-decoration: none;
 font-size: var(--fz_s3);
 font-weight: 600;
-padding: 0.5vh 0.8vw;
+padding: .6vh 3vh;
 border-radius: 0.6vh;
 transition: all var(--tr_f);
 display: inline-flex;
@@ -1278,11 +1278,6 @@ padding: 1.5vh 2vh;
 gap: 1vh;
 left: 50%;
 }
-.hero_badge_float{
-  
-
-}
-
 .cookiess_txt {
 font-size: var(--fz_s4);
 }
