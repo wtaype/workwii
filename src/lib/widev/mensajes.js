@@ -149,8 +149,8 @@ const _inyectarCSS = () => {
 
     .widev-toast span, .notification span {
       flex: 1;
-      font-size: var(--fz_s3, 0.875rem);
-      font-weight: 600;
+      font-size: var(--fz_m);
+      font-weight: 500;
       color: var(--tx1);
     }
     .notification button {

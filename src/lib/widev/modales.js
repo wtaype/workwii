@@ -6,7 +6,6 @@ export const abrirModal = (id) => {
   const m = document.getElementById(id);
   if (!m) return console.warn(`Modal #${id} no existe`);
 
-  subirModalCSS();
   m.classList.add('active');
   document.body.classList.add('modal-open');
   
@@ -33,62 +32,6 @@ export const cerrarTodos = () => {
   document.querySelectorAll('.wiModal').forEach(m => m.classList.remove('active'));
   document.body.classList.remove('modal-open');
 };
-
-// Inyectar hoja de estilos de modal si no existe
-const subirModalCSS = (() => {
-  let done = false;
-  return () => {
-    if (done || typeof document === 'undefined') return;
-    done = true;
-    const s = document.createElement('style');
-    s.id = 'widev-modal-css';
-    s.setAttribute('data-astro-transition-persist', 'widev-modal-css');
-    s.textContent = `
-      /* Estilos Premium para Modales (Fade-in + Smooth Slide Down) */
-      .wiModal {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(8px);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        z-index: 99999;
-      }
-      .wiModal.active {
-        opacity: 1;
-        pointer-events: auto;
-      }
-      .wiModal-content {
-        background: var(--bg3, #ffffff);
-        color: var(--tx1, #212529);
-        border: 1px solid var(--brd, rgba(255, 255, 255, 0.1));
-        padding: 3.5vh;
-        border-radius: 1.5vh;
-        width: 90%;
-        max-width: 500px;
-        box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.3);
-        opacity: 0;
-        transform: translateY(-5vh) scale(0.96);
-        transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-      .wiModal.active .wiModal-content {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-      
-      /* Bloqueo de Scroll */
-      body.modal-open {
-        overflow: hidden;
-        padding-right: var(--scrollbar-width, 0px);
-      }
-    `;
-    document.head.appendChild(s);
-  };
-})();
 
 // Escuchas de eventos globales (Auto-inicialización agnóstica universal)
 if (typeof window !== 'undefined') {
