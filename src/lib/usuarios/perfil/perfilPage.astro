@@ -28,25 +28,25 @@ const lg = (idiomaPerfil as any)[lang] || idiomaPerfil['es'];
       
       <div class="prf_form_2col">
         <div class="prf_form_grp">
-          <label for="prf_nombre">{lg['perfil.nombres']}</label>
+          <label for="prf_nombre"><i class="fas fa-user"></i> {lg['perfil.nombres']}</label>
           <input id="prf_nombre" placeholder={lg['perfil.tusNombres']}>
         </div>
         <div class="prf_form_grp">
-          <label for="prf_apellidos">{lg['perfil.apellidos']}</label>
+          <label for="prf_apellidos"><i class="fas fa-user"></i> {lg['perfil.apellidos']}</label>
           <input id="prf_apellidos" placeholder={lg['perfil.tusApellidos']}>
         </div>
       </div>
       
-      <label for="prf_avatar">{lg['perfil.avatarUrl']}</label>
+      <label for="prf_avatar"><i class="fas fa-image"></i> {lg['perfil.avatarUrl']}</label>
       <input id="prf_avatar" placeholder={lg['perfil.avatarPl']}>
       
       <div class="prf_form_2col">
         <div class="prf_form_grp">
-          <label for="prf_nacimiento">{lg['perfil.nacimiento']}</label>
+          <label for="prf_nacimiento"><i class="fas fa-calendar-alt"></i> {lg['perfil.nacimiento']}</label>
           <input type="date" id="prf_nacimiento">
         </div>
         <div class="prf_form_grp">
-          <label for="prf_genero">{lg['perfil.genero']}</label>
+          <label for="prf_genero"><i class="fas fa-venus-mars"></i> {lg['perfil.genero']}</label>
           <select id="prf_genero">
             <option value="" disabled selected>{lg['perfil.selectGenero']}</option>
             <option value="Masculino">{lg['perfil.masculino']}</option>
@@ -59,17 +59,43 @@ const lg = (idiomaPerfil as any)[lang] || idiomaPerfil['es'];
 
       <div class="prf_form_2col">
         <div class="prf_form_grp">
-          <label for="prf_pais">{lg['perfil.pais']}</label>
+          <label for="prf_pais"><i class="fas fa-globe-americas"></i> {lg['perfil.pais']}</label>
           <input id="prf_pais" placeholder={lg['perfil.ejPais']}>
         </div>
         <div class="prf_form_grp">
-          <label for="prf_gustos">{lg['perfil.gustos']}</label>
+          <label for="prf_gustos"><i class="fas fa-heart"></i> {lg['perfil.gustos']}</label>
           <input id="prf_gustos" placeholder={lg['perfil.ejGustos']}>
         </div>
       </div>
+
+      <div class="prf_form_2col">
+        <div class="prf_form_grp">
+          <label for="prf_celular"><i class="fas fa-phone-alt"></i> {lg['perfil.celular']}</label>
+          <input id="prf_celular" placeholder={lg['perfil.celularPl']}>
+        </div>
+        <div class="prf_form_grp">
+          <label for="prf_instagram"><i class="fab fa-instagram"></i> {lg['perfil.instagram']}</label>
+          <input id="prf_instagram" placeholder={lg['perfil.instagramPl']}>
+        </div>
+      </div>
       
-      <label for="prf_bio">{lg['perfil.bio']}</label>
-      <textarea id="prf_bio" rows="3" placeholder={lg['perfil.tusGustos']}></textarea>
+      <div class="prf_form_2col">
+        <div class="prf_form_grp">
+          <label for="prf_bio"><i class="fas fa-address-card"></i> {lg['perfil.bio']}</label>
+          <input id="prf_bio" placeholder={lg['perfil.tusGustos']}>
+        </div>
+        <div class="prf_form_grp">
+          <label for="prf_tema"><i class="fas fa-palette"></i> {lg['perfil.tema']}</label>
+          <select id="prf_tema" class="ed_select" style="cursor:pointer;">
+            <option value="cielo">{lg['perfil.temaCielo']}</option>
+            <option value="dulce">{lg['perfil.temaDulce']}</option>
+            <option value="paz">{lg['perfil.temaPaz']}</option>
+            <option value="oro">{lg['perfil.temaOro']}</option>
+            <option value="mora">{lg['perfil.temaMora']}</option>
+            <option value="futuro">{lg['perfil.temaFuturo']}</option>
+          </select>
+        </div>
+      </div>
 
       <button id="prf_guardar" class="prf_btn"><i class="fas fa-save"></i> {lg['perfil.guardar']}</button>
     </div>
@@ -77,9 +103,9 @@ const lg = (idiomaPerfil as any)[lang] || idiomaPerfil['es'];
     <div class="prf_col_right">
       <div class="prf_card">
         <h2 class="prf_card_tit"><i class="fas fa-lock"></i> {lg['perfil.actualizarPass']}</h2>
-        <label for="prf_pass">{lg['perfil.nuevaPass']}</label>
+        <label for="prf_pass"><i class="fas fa-lock"></i> {lg['perfil.nuevaPass']}</label>
         <input type="password" id="prf_pass" placeholder={lg['perfil.passPl']}>
-        <label for="prf_pass_conf">{lg['perfil.confPass']}</label>
+        <label for="prf_pass_conf"><i class="fas fa-lock"></i> {lg['perfil.confPass']}</label>
         <input type="password" id="prf_pass_conf" placeholder={lg['perfil.confPassPl']}>
         <button id="prf_guardar_pass" class="prf_btn"><i class="fas fa-key"></i> {lg['perfil.actualizarPass']}</button>
       </div>
@@ -123,7 +149,7 @@ const lg = (idiomaPerfil as any)[lang] || idiomaPerfil['es'];
 <script>
   import { supabase } from '../../../lib/supabase.js';
   import { protegerRuta } from '../../../lib/wiauth/sesion.js';
-  import { savels, getls, Mensaje, wiTip, wiDate } from '../../../lib/widev/widev.js';
+  import { savels, getls, Mensaje, wiTip, wiDate, witemas } from '../../../lib/widev/widev.js';
   import { idiomaPerfil } from './idiomaPerfil.js';
 
   const clientLang = document.documentElement.lang || 'es';
@@ -155,7 +181,10 @@ const lg = (idiomaPerfil as any)[lang] || idiomaPerfil['es'];
         const selectGenero = document.getElementById('prf_genero') as HTMLSelectElement;
         const inputPais = document.getElementById('prf_pais') as HTMLInputElement;
         const inputGustos = document.getElementById('prf_gustos') as HTMLInputElement;
-        const inputBio = document.getElementById('prf_bio') as HTMLTextAreaElement;
+        const inputCelular = document.getElementById('prf_celular') as HTMLInputElement;
+        const inputInstagram = document.getElementById('prf_instagram') as HTMLInputElement;
+        const inputBio = document.getElementById('prf_bio') as HTMLInputElement;
+        const selectTema = document.getElementById('prf_tema') as HTMLSelectElement;
 
         const rawNacimiento = inputNacimiento?.value || '';
         let nacimientoTS: any = '';
@@ -169,6 +198,9 @@ const lg = (idiomaPerfil as any)[lang] || idiomaPerfil['es'];
           apellidos: inputApellidos?.value.trim() || '',
           avatar: inputAvatar?.value.trim() || '/smile.avif',
           bio: inputBio?.value.trim() || '',
+          celular: inputCelular?.value.trim() || '',
+          instagram: inputInstagram?.value.trim() || '',
+          tema: selectTema?.value || 'cielo',
           actualizado: new Date().toISOString()
         };
 
@@ -199,6 +231,19 @@ const lg = (idiomaPerfil as any)[lang] || idiomaPerfil['es'];
           
           const avImg = document.getElementById('prfHeroAv') as HTMLImageElement;
           if (avImg) avImg.src = updates.avatar || '/smile.avif';
+
+          // Aplicar tema dinámicamente si se guardó
+          if (updates.tema) {
+            const color = (witemas as any)[updates.tema] || '#FFC107';
+            document.documentElement.dataset.theme = updates.tema;
+            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+            if (metaThemeColor) metaThemeColor.setAttribute('content', color);
+            
+            document.querySelectorAll('.tema').forEach(x => {
+              x.classList.toggle('mtha', x.getAttribute('data-ths') === updates.tema);
+            });
+            localStorage.wiTema = updates.tema;
+          }
           
           Mensaje(lg['perfil.actualizado'], 'success');
         } catch (e) {
@@ -244,6 +289,23 @@ const lg = (idiomaPerfil as any)[lang] || idiomaPerfil['es'];
           btnGuardarPass.disabled = false;
           btnGuardarPass.innerHTML = `<i class="fas fa-key"></i> ${lg['perfil.actualizarPass']}`;
         }
+      });
+    }
+
+    const selectTema = document.getElementById('prf_tema') as HTMLSelectElement;
+    if (selectTema) {
+      listen(selectTema, 'change', () => {
+        const val = selectTema.value;
+        if (!val) return;
+        const color = (witemas as any)[val] || '#FFC107';
+        document.documentElement.dataset.theme = val;
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) metaThemeColor.setAttribute('content', color);
+        
+        document.querySelectorAll('.tema').forEach(x => {
+          x.classList.toggle('mtha', x.getAttribute('data-ths') === val);
+        });
+        localStorage.wiTema = val;
       });
     }
   };
@@ -302,6 +364,9 @@ const lg = (idiomaPerfil as any)[lang] || idiomaPerfil['es'];
     const genero = u.genero || '';
     const gustos = u.gustos || '';
     const bio = u.bio || '';
+    const celular = u.celular || '';
+    const instagram = u.instagram || '';
+    const tema = u.tema || 'cielo';
     
     const tsCreacion = u.creado;
     const creado = tsCreacion ? wiDate(null).get(tsCreacion, 'local') : lg['perfil.desconocido'];
@@ -349,8 +414,17 @@ const lg = (idiomaPerfil as any)[lang] || idiomaPerfil['es'];
     const inputGustos = document.getElementById('prf_gustos') as HTMLInputElement;
     if (inputGustos) inputGustos.value = gustos;
 
-    const inputBio = document.getElementById('prf_bio') as HTMLTextAreaElement;
+    const inputCelular = document.getElementById('prf_celular') as HTMLInputElement;
+    if (inputCelular) inputCelular.value = celular;
+
+    const inputInstagram = document.getElementById('prf_instagram') as HTMLInputElement;
+    if (inputInstagram) inputInstagram.value = instagram;
+
+    const inputBio = document.getElementById('prf_bio') as HTMLInputElement;
     if (inputBio) inputBio.value = bio;
+
+    const selectTema = document.getElementById('prf_tema') as HTMLSelectElement;
+    if (selectTema) selectTema.value = tema;
 
     // Prefill account info
     const infoEmail = document.getElementById('prfInfoEmail');
