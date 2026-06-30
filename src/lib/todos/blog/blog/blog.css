@@ -49,7 +49,7 @@
   text-align: center;
 }
 .bl_hero_tit {
-  font-size: var(--fz_x3);
+  font-size: var(--fz_l2);
   font-weight: 850;
   color: var(--tx1);
   letter-spacing: -1px;

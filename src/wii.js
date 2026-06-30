@@ -9,17 +9,17 @@ export let linkweb = 'https://workwii.app'; // Sin slash (/), al final
 export let lanzamiento = 2026;
 export let by = '@wilder.taype';
 export let linkme = 'https://wtaype.github.io/';
-export let version = 'v20';
+export let version = 'v21';
 export let dtema = 'mora'; // [TEMA] Cambiar aquí el tema por defecto de la aplicación (Solo el nombre)
 
 /** ACTUALIZAR AL TAG POR SEGURIDAD [TAG NUEVO] (1)
-git tag v20 -m "Version v20" ; git push origin v20
+git tag v21 -m "Version v21" ; git push origin v21
 
 ACTUALIZACIÓN AL MAIN PRINCIPAL DEL PROYECTO [MAIN] (2)
-git add . ; git commit -m "Actualizacion Principal v20.10.10" ; git push origin main
+git add . ; git commit -m "Actualizacion Principal v21.10.10" ; git push origin main
 
 // REEMPLAZAR TAG DE SEGURIDAD EXISTENTE [TAG REMPLAZO] (3)
-git tag -d v20 ; git tag v20 -m "Version v20 actualizada" ; git push origin v20 --force
+git tag -d v21 ; git tag v21 -m "Version v21 actualizada" ; git push origin v21 --force
 
 // Actualizar versiones de seguridad [ELIMINAR CARPETA - ARCHIVO ONLINE] (5)
 git rm --cached skills-lock.json ; git commit -m "Archivo Eliminado" ; git push origin main

@@ -1,16 +1,14 @@
 ---
-// src/lib/blog/post/verPost.astro
-// Componente lógico unificado para la visualización de un artículo de blog
+// src/lib/todos/blog/slug/slugPage.astro
+// Componente de visualización del artículo de blog modularizado y optimizado
 
-import Layout from '../../../../layouts/Layout.astro';
 import PostPage from '../../../../components/PostPage.astro';
 import PostSidebar from '../../../../components/PostSidebar.astro';
-import { getRelativeLocaleUrl } from '../../../i18n/utils.js';
 import { procesarHtml } from '../recursos/procesarmd.js';
 
-// Carga de estilos inline RAW para evitar peticiones externas y aliviar la carga
-import postStyles from './post.css?raw';
-import contenidoStyles from '../contenido.css?raw';
+// Carga de estilos inline para alto rendimiento
+import estilosSlug from './slug.css?inline';
+import estilosContenido from '../contenido.css?inline';
 
 interface Props {
   post: any;
@@ -24,15 +22,13 @@ interface Props {
 
 const { post, related = [], latest = [], prevPost, nextPost, lang = 'es', translationSlug } = Astro.props;
 
-// Generar cabeceras y contenido modificado en el servidor para evitar JS en el cliente
+// Generar encabezados y procesamiento HTML en el servidor para 0ms en cliente
 const headings: { text: string; id: string; depth: number }[] = [];
 let modifiedContenido = post.contenido || '';
 
 if (modifiedContenido) {
-  // Aplicar procesamiento unificado común (YouTube, HRs, Checkboxes, Lazy Loading, Figcaptions)
   modifiedContenido = procesarHtml(modifiedContenido);
 
-  // Extraer e identificar encabezados en el servidor para el TOC
   let headingCount = 0;
   modifiedContenido = modifiedContenido.replace(/<(h2|h3)([^>]*?)>([\s\S]*?)<\/\1>/gi, (match: string, tag: string, attrs: string, content: string) => {
     let customId = '';
@@ -69,25 +65,13 @@ const processedPost = {
   ...post,
   contenido: modifiedContenido
 };
-
-const seoMeta = typeof processedPost.metaSEO === 'string' ? JSON.parse(processedPost.metaSEO) : (processedPost.metaSEO || {});
-const keywords = seoMeta.keywords || '';
 ---
 
-<style is:global set:html={postStyles + contenidoStyles}></style>
+<style slot="head" is:global set:html={estilosSlug + estilosContenido}></style>
 
-<Layout
-  title={processedPost.titulo}
-  description={processedPost.descripcion}
-  keywords={keywords}
-  path={getRelativeLocaleUrl(lang, `/${processedPost.slug || processedPost.id || (Astro.params as any).slug}`)}
-  image={processedPost.imagenTop || processedPost.imagen || '/poster.webp'}
-  type="article"
->
-  <PostPage post={processedPost} headings={headings} prevPost={prevPost} nextPost={nextPost} lang={lang} translationSlug={translationSlug}>
-    <PostSidebar post={processedPost} latest={latest} related={related} lang={lang} />
-  </PostPage>
-</Layout>
+<PostPage post={processedPost} headings={headings} prevPost={prevPost} nextPost={nextPost} lang={lang} translationSlug={translationSlug}>
+  <PostSidebar post={processedPost} latest={latest} related={related} lang={lang} />
+</PostPage>
 
 <script>
   import { wicopy, showi, herowi, imgwii, getls, savels, wiSmart } from '../../../widev/widev.js';
@@ -113,28 +97,30 @@ const keywords = seoMeta.keywords || '';
     const pLang  = postEl.dataset.lang || 'es';
     if (!slug) return;
 
-    // Sobrescribir switcher de idioma del footer si hay traducción vinculada
+    // Switcher de idioma del footer dinámico si hay traducción vinculada (con setTimeout para evitar conflicto de carrera con el Footer)
     if (tSlug) {
-      const switcher = document.getElementById('footer-language-switcher');
-      if (switcher) {
-        if (pLang === 'es') {
-          const btnEn = switcher.querySelector('[data-lang="en"]');
-          if (btnEn) btnEn.setAttribute('href', `/en/${tSlug}`);
-        } else {
-          const btnEs = switcher.querySelector('[data-lang="es"]');
-          if (btnEs) btnEs.setAttribute('href', `/${tSlug}`);
+      setTimeout(() => {
+        const switcher = document.getElementById('footer-language-switcher');
+        if (switcher) {
+          if (pLang === 'es') {
+            const btnEn = switcher.querySelector('[data-lang="en"]');
+            if (btnEn) btnEn.setAttribute('href', `/en/${tSlug}`);
+          } else {
+            const btnEs = switcher.querySelector('[data-lang="es"]');
+            if (btnEs) btnEs.setAttribute('href', `/${tSlug}`);
+          }
         }
-      }
+      }, 50);
     }
 
-    // 1. Cache local
+    // 1. Cargar estadísticas locales optimistas instantáneas
     const cached = getls(`wi_stats_${slug}`) || getls(`wi_post_${slug}`);
     if (cached) {
       document.querySelectorAll('.po_vistas_count_text').forEach((el: any) => el.textContent = String(cached.vistas || 0));
       document.querySelectorAll('.po_likes_count_text').forEach((el: any)  => el.textContent = String(cached.likes  || 0));
     }
 
-    // 2. Progress bar de lectura
+    // 2. Barra de progreso de lectura
     const progress = document.getElementById('po_progress');
     if (progress) {
       scrollListener = () => {
@@ -144,7 +130,7 @@ const keywords = seoMeta.keywords || '';
       window.addEventListener('scroll', scrollListener);
     }
 
-    // 3. Likes toggle instantáneo
+    // 3. Sistema de likes optimistas y RPC
     document.querySelectorAll('.po_like_sync').forEach((btn: any) => {
       if (localStorage.getItem(`wi_like_${slug}`)) btn.classList.add('active');
 
@@ -160,24 +146,21 @@ const keywords = seoMeta.keywords || '';
           document.querySelectorAll('.po_like_sync').forEach((b: any) => b.classList.add('active'));
         }
 
-        // UI inmediata
         document.querySelectorAll('.po_likes_count_text').forEach((el: any) => {
           el.textContent = String(Math.max(0, (parseInt(el.textContent || '0') || 0) + diff));
         });
 
-        // Cache local inmediata
         const cur = getls(`wi_stats_${slug}`) || { vistas: 0, likes: 0 };
         cur.likes = Math.max(0, (cur.likes || 0) + diff);
         savels(`wi_stats_${slug}`, cur, 1);
 
-        // RPC Supabase atómica
         if (diff > 0) {
           getDb().then((db: any) => db.rpc('incrementar_likes_blog', { post_slug: slug }));
         }
       });
     });
 
-    // 4. Copiar enlace
+    // 4. Copiar Enlace
     document.querySelectorAll('.po_copy').forEach((btn: any) => {
       btn.addEventListener('click', () => {
         const postEl = document.querySelector('.po_wrap') as HTMLElement;
@@ -187,11 +170,11 @@ const keywords = seoMeta.keywords || '';
       });
     });
 
-    // 5. Modales: YouTube lightbox + Galería de imágenes estilo Picasa
+    // 5. Inicializar modales
     initYtModal();
     initModalImgs('.po_contenido');
 
-    // 6. wiSmart → vistas + stats reales + Realtime WebSocket
+    // 6. wiSmart → Contador de vistas local/remoto + Canal WebSocket Realtime
     wiSmart({
       fn: [
         async () => {
@@ -203,33 +186,27 @@ const keywords = seoMeta.keywords || '';
             const viewMarkKey = `wi_view_${slug}`;
             let viewIncremented = false;
 
-            // 1. Registro de vistas único usando localStorage (1 hora de expiración)
             if (!getls(viewMarkKey)) {
               savels(viewMarkKey, '1', 1);
               viewIncremented = true;
 
-              // Incremento optimista instantáneo en la UI
               const statsCached = getls(`wi_stats_${slug}`) || { vistas: 0, likes: 0 };
               statsCached.vistas = (statsCached.vistas || 0) + 1;
               savels(`wi_stats_${slug}`, statsCached, 1);
               
-              // Reflejar de inmediato en el DOM
               document.querySelectorAll('.po_vistas_count_text').forEach((el: any) => {
                 el.textContent = String(statsCached.vistas);
               });
             }
 
-            // 2. Si se incrementó la vista local, esperar que el rpc termine en Supabase
             if (viewIncremented) {
               await db.rpc('incrementar_vistas_blog', { post_slug: slug });
             }
 
-            // 3. Consultar estadísticas reales desde Supabase
             if (postId) {
               const { data } = await db.from('blog').select('likes, vistas').eq('id', postId).maybeSingle();
               if (isPostCleanedUp) return;
               if (data) {
-                // Sincronizar: elegir el número mayor entre base de datos y nuestro optimista local
                 const localStats = getls(`wi_stats_${slug}`) || { vistas: 0 };
                 const finalVistas = Math.max(data.vistas, localStats.vistas || 0);
 
@@ -238,7 +215,6 @@ const keywords = seoMeta.keywords || '';
                 savels(`wi_stats_${slug}`, { likes: data.likes, vistas: finalVistas }, 1);
               }
 
-              // 4. Realtime WebSocket — actualizaciones instantáneas concurrentes (tipo Facebook)
               if (isPostCleanedUp) return;
               realtimeChannel = db.channel(`stats_${postId}`)
                 .on('postgres_changes', {
@@ -259,13 +235,12 @@ const keywords = seoMeta.keywords || '';
               }
             }
           } catch (e: any) {
-            console.error('[slug] Supabase init:', e);
+            console.error('[slug] Supabase init error:', e);
           }
         }
       ]
     });
 
-    // 7. Efectos de entrada
     if (typeof herowi === 'function') herowi();
     if (typeof showi  === 'function') showi();
   };

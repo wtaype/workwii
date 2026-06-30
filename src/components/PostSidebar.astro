@@ -2,8 +2,8 @@
 // src/components/PostSidebar.astro
 import { app, icon } from '../wii.js';
 import { imgwii } from '../lib/widev/widev.js';
-import { useTranslations, getRelativeLocaleUrl } from '../lib/i18n/utils.js';
-import { idiomaPost, getCategoryLabel } from '../lib/todos/blog/post/idiomaPost.js';
+import { getRelativeLocaleUrl } from '../lib/i18n/utils.js';
+import { idiomaSlug, getCategoryLabel } from '../lib/todos/blog/slug/idiomaSlug.js';
 
 interface Props {
   post: any;
@@ -13,7 +13,7 @@ interface Props {
 }
 
 const { post, latest = [], related = [], lang = 'es' } = Astro.props;
-const lg = useTranslations(lang, idiomaPost);
+const lg = idiomaSlug[lang as 'es' | 'en'];
 
 const formatShortDate = (dateVal: any) => {
   if (!dateVal) return '';
@@ -26,7 +26,7 @@ const formatShortDate = (dateVal: any) => {
 <aside class="po_sidebar">
   <!-- Tarjeta del Autor -->
   <div class="po_side_card po_fade po_visible" style="--d:.15s">
-    <div class="po_side_title"><i class="fas fa-user-pen"></i> {lg('author')}</div>
+    <div class="po_side_title"><i class="fas fa-user-pen"></i> {lg.meta.author}</div>
     <div class="po_autor_box">
       <div class="po_autor_av">
         <img src="/smile.avif" alt={post.autor} />
@@ -41,7 +41,7 @@ const formatShortDate = (dateVal: any) => {
   <!-- Últimas Historias -->
   {latest.length > 0 && (
     <div class="po_side_card po_fade po_visible" style="--d:.2s">
-      <div class="po_side_title"><i class="fas fa-clock"></i> {lg('latest')}</div>
+      <div class="po_side_title"><i class="fas fa-clock"></i> {lg.meta.latest}</div>
       <div class="po_relacionados" data-showi="100">
         {latest.map(r => (
           <a href={getRelativeLocaleUrl(lang, `/${r.slug || r.id}`)} class="po_rel_card" data-witip={r.resumen || r.titulo}>
@@ -64,7 +64,7 @@ const formatShortDate = (dateVal: any) => {
   <!-- Artículos Relacionados -->
   {related.length > 0 && (
     <div class="po_side_card po_fade po_visible" style="--d:.25s">
-      <div class="po_side_title"><i class="fas fa-heart"></i> {lg('related')} {getCategoryLabel(post.categoria, lang)}</div>
+      <div class="po_side_title"><i class="fas fa-heart"></i> {lg.meta.related} {getCategoryLabel(post.categoria, lang)}</div>
       <div class="po_relacionados" data-showi="100">
         {related.map(r => (
           <a href={getRelativeLocaleUrl(lang, `/${r.slug || r.id}`)} class="po_rel_card" data-witip={r.resumen || r.titulo}>
@@ -90,7 +90,7 @@ const formatShortDate = (dateVal: any) => {
     document.addEventListener('astro:page-load', async () => {
       const el = document.getElementById('po_ad_sidebar');
       if (el) {
-        const { adLeft, wiadCSS } = await import('../lib/todos/blog/post/wiad.js');
+        const { adLeft, wiadCSS } = await import('../lib/todos/blog/slug/wiad.js');
         wiadCSS();
         el.innerHTML = adLeft;
       }

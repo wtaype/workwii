@@ -1,0 +1,618 @@
+---
+// src/lib/todos/blog/blog/blogPage.astro
+// Componente de Listado del Blog optimizado en rendimiento, internacionalización y estabilidad
+
+import { app } from '../../../../wii.js';
+import { supabase } from '../../../supabase.js';
+import { imgwii } from '../../../widev/widev.js';
+import { getRelativeLocaleUrl } from '../../../i18n/utils.js';
+import { idiomaBlog } from './idiomaBlog.js';
+import { getCategoryLabel } from '../post/idiomaPost.js';
+import estilosBlog from './blog.css?inline';
+
+const lang = Astro.locals.lang;
+const lg   = idiomaBlog[lang];
+
+let initialPosts: any[] = [];
+let categories: any[] = [];
+
+try {
+  // Obtener posts activos de Supabase en el servidor para pre-renderizar
+  const { data: postsData } = await supabase
+    .from('blog')
+    .select('id, slug, activo, lang, titulo, descripcion, categoria, imagen, imagenTop, tags, vistas, likes, lecturaTM, pin, usuario, autor, email, creado, actualizado, metaSEO')
+    .eq('activo', true)
+    .order('creado', { ascending: false });
+
+  if (postsData) {
+    // Filtrar en memoria por idioma
+    const filtered = postsData.filter((p: any) => lang === 'en' ? p.lang === 'en' : (p.lang === 'es' || !p.lang));
+    initialPosts = filtered.slice(0, 16);
+    const catList = filtered.map(p => p.categoria).filter(Boolean);
+    categories = [...new Set(catList)].sort();
+  }
+} catch (e) {
+  console.error('[blogPage.astro Server Error]', e);
+}
+
+const SERVER_CATS = [
+  { id: 'todo',           icon: 'fa-grip',         label: lg.cats.all,          color: 'var(--mco)' },
+  { id: 'Cv',             icon: 'fa-address-card', label: getCategoryLabel('Cv', lang),     color: '#ff3849' },
+  { id: 'ATS',            icon: 'fa-robot',        label: getCategoryLabel('ATS', lang),            color: '#0EBEFF' },
+  { id: 'Entrevistas',    icon: 'fa-comments',     label: getCategoryLabel('Entrevistas', lang),    color: '#25b62a' },
+  { id: 'Teletrabajo',    icon: 'fa-house-laptop', label: getCategoryLabel('Teletrabajo', lang),    color: '#6a00f5' },
+  { id: 'Marca personal', icon: 'fa-award',        label: getCategoryLabel('Marca personal', lang), color: '#ffa726' },
+  { id: 'Buscar trabajo', icon: 'fa-search',       label: getCategoryLabel('Buscar trabajo', lang), color: '#ffa726' },
+  { id: 'Empleo',         icon: 'fa-briefcase',    label: getCategoryLabel('Empleo', lang),         color: '#ffa726' },
+];
+
+const getCatInfo = (c: string) => {
+  if (!c) return { id: '', icon: 'fa-briefcase', label: '', color: 'var(--mco)' };
+  return SERVER_CATS.find(x => x.id.toLowerCase() === c.toLowerCase()) || { id: c, icon: 'fa-briefcase', label: c, color: 'var(--mco)' };
+};
+
+---
+
+<style slot="head" is:global set:html={estilosBlog}></style>
+
+<div class="bl_wrap" data-locale={lang}>
+    <!-- Cabecera del Blog -->
+    <div class="bl_hero" data-herowi="100">
+      <h1 class="bl_hero_tit" set:html={lg.hero.title}></h1>
+      <p class="bl_hero_sub">{lg.hero.subtitle}</p>
+    </div>
+    
+    <!-- Barra de Búsqueda -->
+    <div class="bl_search_bar" id="bl_search_bar" style="display:none">
+      <div class="bl_search_inner">
+        <i class="fas fa-search bl_search_ico"></i>
+        <input id="bl_search_inp" type="text" placeholder={lg.search.placeholder} autocomplete="off" spellcheck="false"/>
+        <button id="bl_search_close" class="bl_search_close"><i class="fas fa-xmark"></i></button>
+      </div>
+    </div>
+    
+    <!-- Filtros de Categorías y Ordenación -->
+    <div class="bl_bar">
+      <div class="bl_cats" id="bl_cats">
+        <button class="bl_cat_btn active" data-cat="todo" style="--cc:var(--mco)">
+          <i class="fas fa-grip"></i><span>{lg.cats.all}</span>
+        </button>
+        {categories.map(c => {
+          const info = getCatInfo(c);
+          return (
+            <button class="bl_cat_btn" data-cat={c} style={`--cc:${info.color}`}>
+              <i class={`fas ${info.icon}`}></i><span>{getCategoryLabel(c, lang)}</span>
+            </button>
+          );
+        })}
+      </div>
+      
+      <div class="bl_bar_right">
+        <div class="bl_orden">
+          <button class="bl_ord_btn active" data-ord="nuevo"><i class="fas fa-clock"></i><span>{lg.cats.recent}</span></button>
+          <button class="bl_ord_btn" data-ord="vistas"><i class="fas fa-fire"></i><span>{lg.cats.popular}</span></button>
+        </div>
+        <button class="bl_icon_btn" id="bl_search_toggle" data-witip={lg.search.btn}><i class="fas fa-search"></i></button>
+        <button class="bl_icon_btn" id="bl_refresh" data-witip={lg.search.refresh}><i class="fas fa-rotate"></i></button>
+      </div>
+    </div>
+    
+    <!-- Info de resultados -->
+    <div class="bl_result_bar" id="bl_result_bar"></div>
+    
+    <!-- Grilla de Cards del Blog -->
+    <div class="bl_grid" id="bl_grid" data-herowi="140">
+      {initialPosts.length > 0 ? (
+        initialPosts.map((p) => {
+          const c = getCatInfo(p.categoria);
+          const creadoFecha = p.creado ? new Date(p.creado).toLocaleDateString(lg.meta.dateLocale, { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+          return (
+            <a href={getRelativeLocaleUrl(lang, `/${p.slug || p.id}`)} class="bl_card bl_fade bl_visible">
+              <div class="bl_card_img">
+                <img src={imgwii.svg} data-src={p.imagen || '/poster.webp'} alt={p.imagenAlt || p.titulo} class="wi_skeleton img_fade" />
+                <div class="bl_card_over">
+                  <span class="bl_card_cat" style={`--cc:${c.color}`}><i class={`fas ${c.icon}`}></i> {getCategoryLabel(p.categoria, lang) || '—'}</span>
+                  {p.pin && <span class="bl_card_dest" data-witip={lg.meta.pin}><i class="fas fa-thumbtack"></i></span>}
+                </div>
+              </div>
+              <div class="bl_card_body">
+                <h2 class="bl_card_tit">{p.titulo}</h2>
+                <p class="bl_card_res">{p.descripcion || ''}</p>
+                <div class="bl_card_footer">
+                  <div class="bl_card_meta">
+                    <span data-witip={lang === 'en' ? 'Date' : 'Fecha'}><i class="fas fa-calendar-alt"></i> {creadoFecha}</span>
+                    <span data-witip={lg.meta.views}><i class="fas fa-eye"></i> {p.vistas || 0}</span>
+                    <span data-witip={lg.meta.likes}><i class="fas fa-heart" style="color:#fe0149"></i> {p.likes || 0}</span>
+                  </div>
+                  <span class="bl_card_leer">{lg.actions.readMore} <i class="fas fa-arrow-right"></i></span>
+                </div>
+              </div>
+            </a>
+          );
+        })
+      ) : (
+        <>
+          <div class="bl_card_sk"><div class="bl_sk_img shimmer"></div><div class="bl_sk_body"><div class="bl_sk_cat shimmer"></div><div class="bl_sk_tit shimmer"></div><div class="bl_sk_tit bl_sk_t2 shimmer"></div><div class="bl_sk_p shimmer"></div><div class="bl_sk_p bl_sk_p2 shimmer"></div><div class="bl_sk_foot shimmer"></div></div></div>
+          <div class="bl_card_sk"><div class="bl_sk_img shimmer"></div><div class="bl_sk_body"><div class="bl_sk_cat shimmer"></div><div class="bl_sk_tit shimmer"></div><div class="bl_sk_tit bl_sk_t2 shimmer"></div><div class="bl_sk_p shimmer"></div><div class="bl_sk_p bl_sk_p2 shimmer"></div><div class="bl_sk_foot shimmer"></div></div></div>
+          <div class="bl_card_sk"><div class="bl_sk_img shimmer"></div><div class="bl_sk_body"><div class="bl_sk_cat shimmer"></div><div class="bl_sk_tit shimmer"></div><div class="bl_sk_tit bl_sk_t2 shimmer"></div><div class="bl_sk_p shimmer"></div><div class="bl_sk_p bl_sk_p2 shimmer"></div><div class="bl_sk_foot shimmer"></div></div></div>
+        </>
+      )}
+    </div>
+    
+    <!-- Botón Cargar Más -->
+    <div class="bl_mas_wrap" id="bl_mas_wrap" style="display:none">
+      <button class="bl_mas_btn" id="bl_mas"><i class="fas fa-plus"></i> {lg.actions.more}</button>
+    </div>
+    
+    <!-- Estado Vacío -->
+    <div class="bl_empty" id="bl_empty" style="display:none; text-align:center; padding:10vh 0;">
+      <i class="fas fa-folder-open" style="font-size: 8vh; color: var(--mco); opacity: 0.25; margin-bottom: 2vh; display:block;"></i>
+      <h3>{lg.empty.title}</h3>
+      <p>{lg.empty.text}</p>
+    </div>
+  </div>
+
+<script>
+  import { supabase } from '../../../supabase.js';
+  import { savels, getls, Notificacion, imgwii } from '../../../widev/widev.js';
+  import { getCategoryLabel } from '../post/idiomaPost.js';
+  import { idiomaBlog } from './idiomaBlog.js';
+
+  const PAG_INI = 16, PAG_MAS = 8;
+  
+  const CATS = [
+    { id: 'todo',           icon: 'fa-grip',         color: 'var(--mco)' },
+    { id: 'Cv',             icon: 'fa-address-card', color: '#ff3849' },
+    { id: 'ATS',            icon: 'fa-robot',        color: '#0EBEFF' },
+    { id: 'Entrevistas',    icon: 'fa-comments',     color: '#25b62a' },
+    { id: 'Teletrabajo',    icon: 'fa-house-laptop', color: '#6a00f5' },
+    { id: 'Marca personal', icon: 'fa-award',        color: '#ffa726' },
+    { id: 'Buscar trabajo', icon: 'fa-search',       color: '#ffa726' },
+    { id: 'Empleo',         icon: 'fa-briefcase',    color: '#ffa726' },
+  ];
+
+  // BUGFIX: toLowerCase() null-safety
+  const catInfo = (c: string) => {
+    if (!c) return { id: '', icon: 'fa-briefcase', color: 'var(--mco)' };
+    return CATS.find(x => x.id.toLowerCase() === c.toLowerCase()) || { id: c, icon: 'fa-briefcase', color: 'var(--mco)' };
+  };
+  
+  const toMs = (v: any) => v ? new Date(v).getTime() : null;
+  const ser = (d: any) => {
+    if (!d) return null;
+    return {
+      ...d,
+      resumen: d.descripcion || '',
+      creado: toMs(d.creado)
+    };
+  };
+
+  const skCard = () => `<div class="bl_card_sk"><div class="bl_sk_img shimmer"></div><div class="bl_sk_body"><div class="bl_sk_cat shimmer"></div><div class="bl_sk_tit shimmer"></div><div class="bl_sk_tit bl_sk_t2 shimmer"></div><div class="bl_sk_p shimmer"></div><div class="bl_sk_p bl_sk_p2 shimmer"></div><div class="bl_sk_foot shimmer"></div></div></div>`;
+
+  const getLang = () => document.querySelector('.bl_wrap')?.getAttribute('data-locale') || 'es';
+  const getDict = () => idiomaBlog[getLang() as 'es' | 'en'] || idiomaBlog.es;
+
+  const srcBadge = (fc: boolean) => {
+    const labelVeloz = getLang() === 'en' ? 'Speedy' : 'Veloz';
+    const labelOnline = getLang() === 'en' ? 'Online' : 'Online';
+    return fc
+      ? `<span class="bl_cache_tag" data-witip="⚡ ${labelVeloz}"><i class="fas fa-bolt"></i> ${labelVeloz}</span>`
+      : `<span class="bl_fire_tag"  data-witip="☁️ ${labelOnline}"><i class="fas fa-cloud"></i> ${labelOnline}</span>`;
+  };
+
+  const formatCardDate = (creadoMs: any) => {
+    if (!creadoMs) return '—';
+    const d = new Date(creadoMs);
+    return d.toLocaleDateString(getDict().meta.dateLocale, { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  const tplCard = (p: any) => {
+    const c = catInfo(p.categoria);
+    const lang = getLang();
+    const dict = getDict();
+    const pathPrefix = lang === 'en' ? '/en' : '';
+    const labelDate = lang === 'en' ? 'Date' : 'Fecha';
+    return `
+      <a href="${pathPrefix}/${p.slug || p.id}" class="bl_card">
+        <div class="bl_card_img">
+          <img src="${imgwii.svg}" data-src="${p.imagen || '/poster.webp'}" alt="${p.imagenAlt || p.titulo}" class="wi_skeleton img_fade" />
+          <div class="bl_card_over">
+            <span class="bl_card_cat" style="--cc:${c.color}"><i class="fas ${c.icon}"></i> ${getCategoryLabel(p.categoria, lang) || '—'}</span>
+            ${p.pin ? `<span class="bl_card_dest" data-witip="${dict.meta.pin}"><i class="fas fa-thumbtack"></i></span>` : ''}
+          </div>
+        </div>
+        <div class="bl_card_body">
+          <h2 class="bl_card_tit">${p.titulo}</h2>
+          <p class="bl_card_res">${p.resumen || ''}</p>
+          <div class="bl_card_footer">
+            <div class="bl_card_meta">
+              <span data-witip="${labelDate}"><i class="fas fa-calendar-alt"></i> ${formatCardDate(p.creado)}</span>
+              <span data-witip="${dict.meta.views}"><i class="fas fa-eye"></i> ${p.vistas || 0}</span>
+              <span data-witip="${dict.meta.likes}"><i class="fas fa-heart" style="color:#fe0149"></i> ${p.likes || 0}</span>
+            </div>
+            <span class="bl_card_leer">${dict.actions.readMore} <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </div>
+      </a>`;
+  };
+
+  // LRU cache cleanup to keep memory optimized
+  const cleanCacheLRU = () => {
+    try {
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('wi_blogs') || k.startsWith('wi_post_') || k.startsWith('wi_mas_') || k.startsWith('ultimosposts'));
+      if (keys.length > 25) {
+        const items = keys.map(k => {
+          const raw = localStorage.getItem(k);
+          if (!raw) return { k, e: 0 };
+          try { const p = JSON.parse(raw); return { k, e: p.e || 0 }; } catch { return { k, e: 0 }; }
+        }).sort((a, b) => a.e - b.e);
+        items.slice(0, 10).forEach(i => localStorage.removeItem(i.k));
+      }
+    } catch {}
+  };
+
+  // Cache fetching logic
+  const getCache = (key: string, expiryMs = 3600000) => {
+    try {
+      cleanCacheLRU();
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
+      const data = JSON.parse(raw);
+      if (Date.now() - data.t > expiryMs) {
+        localStorage.removeItem(key);
+        return null;
+      }
+      data.e = Date.now();
+      localStorage.setItem(key, JSON.stringify(data));
+      return data.v;
+    } catch {
+      return null;
+    }
+  };
+
+  const setCache = (key: string, val: any) => {
+    try {
+      localStorage.setItem(key, JSON.stringify({ v: val, t: Date.now(), e: Date.now() }));
+    } catch {}
+  };
+
+  // State variables
+  let lista: any[] = [];
+  let currentCat = 'todo';
+  let currentOrd = 'nuevo';
+  let lastSnap: any = null;
+  let hasMore = true;
+  let isFirstLoad = true;
+  let eventListeners: { target: EventTarget; type: string; handler: EventListener }[] = [];
+
+  const listen = (target: EventTarget, type: string, handler: EventListener) => {
+    target.addEventListener(type, handler);
+    eventListeners.push({ target, type, handler });
+  };
+
+  // API Call helper
+  const getPostsPaginated = async (cat: string, ord: string, force: boolean, last: any, limit: number) => {
+    const lang = getLang();
+    const cKey = `wi_blogs_${lang}_${cat}_${ord}_${limit}_${last ? last.creado : 'first'}`;
+    
+    if (!force) {
+      const cached = getCache(cKey);
+      if (cached) return { lista: cached.lista, lastSnap: cached.lastSnap, fromCache: true };
+    }
+
+    let q = supabase
+      .from('blog')
+      .select('id, slug, titulo, descripcion, categoria, creado, imagen, vistas, likes, pin')
+      .eq('activo', true);
+
+    if (lang === 'en') {
+      q = q.eq('lang', 'en');
+    } else {
+      q = q.or('lang.eq.es,lang.is.null');
+    }
+
+    if (cat !== 'todo') {
+      q = q.eq('categoria', cat);
+    }
+
+    if (ord === 'vistas') {
+      q = q.order('vistas', { ascending: false }).order('creado', { ascending: false });
+    } else {
+      q = q.order('creado', { ascending: false });
+    }
+
+    if (last) {
+      if (ord === 'vistas') {
+        q = q.lt('vistas', last.vistas);
+      } else {
+        q = q.lt('creado', last.creadoRaw);
+      }
+    }
+
+    q = q.limit(limit);
+    const { data, error } = await q;
+    if (error) throw error;
+
+    const formattedList = (data || []).map((p: any) => ser(p));
+    let nextLastSnap = null;
+    if (formattedList.length > 0) {
+      const lastItem = data[data.length - 1];
+      nextLastSnap = {
+        id: lastItem.id,
+        creado: toMs(lastItem.creado),
+        creadoRaw: lastItem.creado,
+        vistas: lastItem.vistas || 0
+      };
+    }
+
+    const res = { lista: formattedList, lastSnap: nextLastSnap, fromCache: false };
+    setCache(cKey, res);
+    return res;
+  };
+
+  // Render cards grid
+  const grid = (append: boolean, items: any[]) => {
+    const gridEl = document.getElementById('bl_grid');
+    if (!gridEl) return;
+    
+    const html = items.map(p => tplCard(p)).join('');
+    if (append) {
+      gridEl.innerHTML += html;
+    } else {
+      gridEl.innerHTML = html;
+    }
+    
+    imgwii.ver('#bl_grid');
+    
+    // Animation trigger
+    setTimeout(() => {
+      gridEl.querySelectorAll('.bl_card').forEach(c => c.classList.add('bl_visible'));
+    }, 50);
+  };
+
+  // Filter categories dynamic counter
+  const buildCats = (totalList: any[]) => {
+    const btns = document.querySelectorAll('.bl_cat_btn');
+    btns.forEach(btn => {
+      const cat = btn.getAttribute('data-cat');
+      const span = btn.querySelector('span');
+      if (span && cat) {
+        const count = cat === 'todo' ? totalList.length : totalList.filter(x => x.categoria === cat).length;
+        const baseName = cat === 'todo' ? getDict().cats.all : getCategoryLabel(cat, getLang());
+        span.innerHTML = `${baseName} <strong class="bl_cat_count">${count}</strong>`;
+      }
+    });
+  };
+
+  // Main loader
+  const cargar = async (append: boolean, force: boolean) => {
+    const cat = currentCat;
+    const ord = currentOrd;
+    const limitCount = append ? PAG_MAS : PAG_INI;
+    
+    const emptyEl = document.getElementById('bl_empty');
+    const masWrapEl = document.getElementById('bl_mas_wrap');
+    
+    if (!append) {
+      if (emptyEl) emptyEl.style.display = 'none';
+      if (masWrapEl) masWrapEl.style.display = 'none';
+      lastSnap = null;
+    }
+    
+    try {
+      const r = await getPostsPaginated(cat, ord, force, lastSnap, limitCount);
+      const gridEl = document.getElementById('bl_grid');
+      const hasSkeletons = gridEl && gridEl.querySelector('.bl_card_sk');
+      
+      if (isFirstLoad || hasSkeletons || JSON.stringify(append ? [] : lista) !== JSON.stringify(r.lista)) {
+        lista = append ? [...lista, ...r.lista] : r.lista;
+        buildCats(lista);
+        grid(append, r.lista);
+      }
+      lastSnap = r.lastSnap;
+      hasMore = r.lista.length === limitCount;
+      
+      const resultBar = document.getElementById('bl_result_bar');
+      if (resultBar) {
+        const lang = getLang();
+        const wordStories = lang === 'en' ? (lista.length === 1 ? 'story' : 'stories') : (lista.length === 1 ? 'historia' : 'historias');
+        resultBar.innerHTML = `<span><strong>${lista.length}</strong> ${wordStories}</span>${srcBadge(r.fromCache)}`;
+      }
+    } catch(e) {
+      console.error('[blogPage Error]', e);
+      const labelError = getLang() === 'en' ? 'Failed to load' : 'Error al cargar';
+      Notificacion(labelError, 'error');
+    } finally {
+      isFirstLoad = false;
+      if (masWrapEl) masWrapEl.style.display = hasMore ? 'block' : 'none';
+      if (lista.length === 0 && emptyEl) emptyEl.style.display = 'block';
+    }
+  };
+
+  // Instant render from server variables
+  const renderInstantaneo = () => {
+    const wrap = document.querySelector('.bl_wrap') as HTMLElement;
+    if (!wrap) return false;
+    const raw = wrap.dataset.initial;
+    if (!raw) return false;
+    try {
+      const data = JSON.parse(raw);
+      lista = data.map((p: any) => ser(p));
+      buildCats(lista);
+      grid(false, lista);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // Search filter
+  let searchTimer: any = null;
+  const doSearch = (query: string) => {
+    if (searchTimer) clearTimeout(searchTimer);
+    searchTimer = setTimeout(async () => {
+      const q = query.trim().toLowerCase();
+      const gridEl = document.getElementById('bl_grid');
+      const masWrapEl = document.getElementById('bl_mas_wrap');
+      const emptyEl = document.getElementById('bl_empty');
+      
+      if (!q) {
+        currentCat = 'todo';
+        await cargar(false, false);
+        return;
+      }
+      
+      if (masWrapEl) masWrapEl.style.display = 'none';
+      if (gridEl) gridEl.innerHTML = Array(8).fill(skCard()).join('');
+      
+      try {
+        const { data, error } = await supabase
+          .from('blog')
+          .select('id, slug, titulo, descripcion, categoria, creado, imagen, vistas, likes, pin')
+          .eq('activo', true)
+          .ilike('titulo', `%${q}%`);
+          
+        if (error) throw error;
+        
+        const filtered = (data || []).filter((p: any) => getLang() === 'en' ? p.lang === 'en' : (p.lang === 'es' || !p.lang));
+        const res = filtered.map((p: any) => ser(p));
+        grid(false, res);
+        
+        if (res.length === 0 && emptyEl) emptyEl.style.display = 'block';
+      } catch (e) {
+        console.error('[Search error]', e);
+      }
+    }, 300);
+  };
+
+  // Prefetching links for 0ms transitions
+  const prefetchPost = (slug: string) => {
+    const key = `wi_post_${getLang()}_${slug}`;
+    if (localStorage.getItem(key)) return;
+    
+    setTimeout(async () => {
+      try {
+        const { data } = await supabase
+          .from('blog')
+          .select('id, slug, titulo, descripcion, categoria, creado, imagen, imagenTop, tags, vistas, likes, lecturaTM, pin, usuario, autor, email, metaSEO, contenido')
+          .eq('slug', slug)
+          .single();
+        if (data) setCache(key, data);
+      } catch {}
+    }, 2000);
+  };
+
+  // Initializer
+  const init = async () => {
+    const wrap = document.querySelector('.bl_wrap');
+    if (!wrap) return;
+    
+    // Category buttons triggers
+    const catsEl = document.getElementById('bl_cats');
+    if (catsEl) {
+      listen(catsEl, 'click', async (e) => {
+        const btn = (e.target as HTMLElement).closest('.bl_cat_btn');
+        if (!btn) return;
+        catsEl.querySelectorAll('.bl_cat_btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCat = btn.getAttribute('data-cat') || 'todo';
+        await cargar(false, false);
+      });
+    }
+
+    // Sort buttons triggers
+    const ordEl = document.querySelector('.bl_orden');
+    if (ordEl) {
+      listen(ordEl, 'click', async (e) => {
+        const btn = (e.target as HTMLElement).closest('.bl_ord_btn');
+        if (!btn) return;
+        ordEl.querySelectorAll('.bl_ord_btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentOrd = btn.getAttribute('data-ord') || 'nuevo';
+        await cargar(false, false);
+      });
+    }
+
+    // Refresh trigger
+    const refBtn = document.getElementById('bl_refresh');
+    if (refBtn) {
+      listen(refBtn, 'click', () => cargar(false, true));
+    }
+
+    // Load More trigger
+    const masBtn = document.getElementById('bl_mas');
+    if (masBtn) {
+      listen(masBtn, 'click', () => cargar(true, false));
+    }
+
+    // Search Toggle trigger
+    const searchToggle = document.getElementById('bl_search_toggle');
+    const searchBar = document.getElementById('bl_search_bar');
+    if (searchToggle && searchBar) {
+      listen(searchToggle, 'click', () => {
+        const isHidden = searchBar.style.display === 'none';
+        searchBar.style.display = isHidden ? 'block' : 'none';
+        if (isHidden) {
+          const inp = document.getElementById('bl_search_inp');
+          if (inp) inp.focus();
+        }
+      });
+    }
+
+    const searchClose = document.getElementById('bl_search_close');
+    if (searchClose && searchBar) {
+      listen(searchClose, 'click', async () => {
+        searchBar.style.display = 'none';
+        const inp = document.getElementById('bl_search_inp') as HTMLInputElement;
+        if (inp) inp.value = '';
+        currentCat = 'todo';
+        await cargar(false, false);
+      });
+    }
+
+    // Prefetch hooks on cards hover
+    const gridEl = document.getElementById('bl_grid');
+    if (gridEl) {
+      listen(gridEl, 'mouseover', (e) => {
+        const card = (e.target as HTMLElement).closest('.bl_card') as HTMLAnchorElement;
+        if (card && card.href) {
+          const url = new URL(card.href);
+          let slug = url.pathname.substring(1); // remove initial slash
+          if (slug.startsWith('en/')) {
+            slug = slug.substring(3);
+          }
+          prefetchPost(slug);
+        }
+      });
+    }
+
+    // Search input listener
+    const searchInp = document.getElementById('bl_search_inp') as HTMLInputElement;
+    if (searchInp) {
+      listen(searchInp, 'input', () => {
+        doSearch(searchInp.value);
+      });
+    }
+
+    if (gridEl && gridEl.querySelectorAll('.bl_card').length === 0) {
+      renderInstantaneo() || (gridEl.innerHTML = Array(16).fill(skCard()).join(''));
+    }
+    
+    // Only query database if server did not render items
+    if (lista.length === 0) {
+      await cargar(false, false);
+    } else {
+      imgwii.ver('#bl_grid');
+    }
+  };
+
+  const cleanup = () => {
+    eventListeners.forEach(({ target, type, handler }) => {
+      target.removeEventListener(type, handler);
+    });
+    eventListeners = [];
+  };
+
+  document.addEventListener('astro:page-load', init);
+  document.addEventListener('astro:before-preparation', cleanup);
+</script>

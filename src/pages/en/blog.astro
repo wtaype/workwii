@@ -2,7 +2,11 @@
 // src/pages/en/blog.astro
 // English wrapper for the blog listing page
 
-import BlogList from '../../lib/todos/blog/listas/BlogList.astro';
+import Layout from '../../layouts/Layout.astro';
+import BlogPage from '../../lib/todos/blog/blog/blogPage.astro';
+import { seo } from '../../lib/seo.js';
 ---
 
-<BlogList lang="en" />
+<Layout {...seo.blog.en}>
+  <BlogPage />
+</Layout>
