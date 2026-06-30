@@ -4,21 +4,20 @@
 export const langwii = {
   /**
    * Opción 1: Obtener idioma activo ('es' o 'en')
-   * Prioriza: 1. Parámetro explícito, 2. Atributo HTML lang, 3. Preferencia del navegador
+   * Prioriza: 1. Param explícito o Astro.currentLocale, 2. window.__l (0ms, Layout inline),
+   *           3. document.documentElement.lang, 4. Fallback 'es'
    */
   get(l = '') {
-    // Si l es el objeto Astro global, extraemos su locale
-    if (l && typeof l === 'object' && 'currentLocale' in l) {
-      l = l.currentLocale;
-    }
+    // 1a. Objeto Astro global → extraemos currentLocale
+    if (l && typeof l === 'object' && 'currentLocale' in l) l = l.currentLocale;
+    // 1b. String explícito (prop pasada directamente)
     if (l && typeof l === 'string') return l.startsWith('en') ? 'en' : 'es';
-    if (typeof document !== 'undefined') {
-      const htmlLang = document.documentElement.lang;
-      if (htmlLang) return htmlLang.startsWith('en') ? 'en' : 'es';
-    }
-    if (typeof navigator !== 'undefined') {
-      return navigator.language?.startsWith('en') ? 'en' : 'es';
-    }
+    // 2. Cliente: variable inyectada en 0ms por Layout.astro inline script
+    if (typeof window !== 'undefined' && window.__l) return window.__l;
+    // 3. Fallback DOM (html lang=)
+    if (typeof document !== 'undefined' && document.documentElement.lang)
+      return document.documentElement.lang.startsWith('en') ? 'en' : 'es';
+    // 4. Fallback seguro
     return 'es';
   },
 
@@ -82,6 +81,11 @@ export const langwii = {
     });
   }
 };
+
+/** getLang — alias atómico tipado. Importación directa recomendada en scripts cliente.
+ *  import { getLang } from '../widev/langwii.js';
+ */
+export const getLang = () => langwii.get();
 
 /* ─────────────────────────────────────────────────────────────────────────────
    📖 GUÍA DE USO DE LANGWII (6 OPCIONES DE INTEGRACIÓN)

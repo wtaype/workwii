@@ -25,4 +25,4 @@ export { wiSmart } from './wismart.js';
 export { wiSuma, adrm, adtm, adup } from './more.js';
 export { wiMd } from './wimd.js';
 export { wiInit } from './wiinit.js';
-export { langwii } from './langwii.js';
+export { langwii, getLang } from './langwii.js';
