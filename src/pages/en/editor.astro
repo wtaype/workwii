@@ -1,0 +1,15 @@
+---
+// src/pages/en/editor.astro
+import Layout from '../../layouts/Layout.astro';
+import EditorPage from '../../lib/editor/editorPage.astro';
+import { app } from '../../wii.js';
+import estilosEditor from '../../lib/editor/editor.css?inline';
+---
+
+<Layout title="Writing Dashboard" name={app} robots="noindex, nofollow">
+  <!-- ⚡ Guardia y estilos inyectados en el head -->
+  <script is:inline slot="head">localStorage.wiSmile||location.replace('/')</script>
+  <style is:global set:html={estilosEditor} slot="head"></style>
+  
+  <EditorPage />
+</Layout>

@@ -1,0 +1,499 @@
+---
+// src/lib/editor/editorPage.astro
+import { app } from '../../wii.js';
+import { idiomaEditor } from './idiomaEditor.js';
+
+const lang = Astro.locals.lang || Astro.currentLocale || 'es';
+const lg = (idiomaEditor as any)[lang] || idiomaEditor['es'];
+---
+
+<div class="ed_container">
+  
+  <div id="ed_card" style="display: flex; flex-direction: column; gap: 3vh;">
+    
+    <!-- ══ ENCABEZADO ══ -->
+    <header class="ed_header">
+      <div class="ed_header_glow"></div>
+      <div class="ed_header_content">
+        <div class="ed_welcome_box">
+          <div class="ed_welcome_av" id="ed_av">?</div>
+          <div class="ed_welcome_txt">
+            <h1 id="ed_saludo">{lg['editor.cargando']}</h1>
+            <p id="ed_role_lbl"><i class="fas fa-pen-nib"></i> {lg['editor.editorWorkwii']}</p>
+          </div>
+        </div>
+        <div class="ed_header_actions">
+          <a href="/nuevo" class="ed_btn btn_pri"><i class="fas fa-plus"></i> {lg['editor.nuevaHistoria']}</a>
+          <a href="/gestor" class="ed_btn btn_sec dpn" id="ed_btn_gestor"><i class="fas fa-shield-alt"></i> {lg['editor.panelGestor']}</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ══ KPIS REDACCIÓN ══ -->
+    <div class="ed_kpi_grid">
+      <div class="ed_kpi_card">
+        <div class="ed_kpi_icon total"><i class="fas fa-book"></i></div>
+        <div class="ed_kpi_info">
+          <span class="ed_kpi_label">{lg['editor.misHistorias']}</span>
+          <span class="ed_kpi_val" id="kpi_total">0</span>
+        </div>
+      </div>
+      <div class="ed_kpi_card">
+        <div class="ed_kpi_icon active"><i class="fas fa-globe"></i></div>
+        <div class="ed_kpi_info">
+          <span class="ed_kpi_label">{lg['editor.publicas']}</span>
+          <span class="ed_kpi_val" id="kpi_active">0</span>
+        </div>
+      </div>
+      <div class="ed_kpi_card">
+        <div class="ed_kpi_icon drafts"><i class="fas fa-file-signature"></i></div>
+        <div class="ed_kpi_info">
+          <span class="ed_kpi_label">{lg['editor.borradores']}</span>
+          <span class="ed_kpi_val" id="kpi_drafts">0</span>
+        </div>
+      </div>
+      <div class="ed_kpi_card">
+        <div class="ed_kpi_icon pins"><i class="fas fa-thumbtack"></i></div>
+        <div class="ed_kpi_info">
+          <span class="ed_kpi_label">{lg['editor.fijados']}</span>
+          <span class="ed_kpi_val" id="kpi_pins">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TABLA DE PUBLICACIONES ══ -->
+    <div class="ed_card_main">
+      <div class="ed_card_title_row">
+        <h2><i class="fas fa-align-left"></i> {lg['editor.administrarContenido']}</h2>
+        <span style="font-size: var(--fz_s3); color:var(--tx3); font-weight: 500;" id="list_count_lbl">0</span>
+      </div>
+
+      <!-- Controles de búsqueda y filtros -->
+      <div class="ed_filters_row">
+        <div class="ed_search_wrapper">
+          <i class="fas fa-search"></i>
+          <input 
+            type="text" 
+            id="ed_search" 
+            class="ed_search_input" 
+            placeholder={lg['editor.buscarTitulo']} 
+            autocomplete="off"
+          />
+        </div>
+        <div class="ed_filter_tags">
+          <button class="ed_filter_btn active" data-filter="todos">{lg['editor.todos']}</button>
+          <button class="ed_filter_btn" data-filter="activo">{lg['editor.publicos']}</button>
+          <button class="ed_filter_btn" data-filter="borrador">{lg['editor.borradores']}</button>
+        </div>
+        <div class="ed_filter_tags" style="display: flex; gap: 1vh; align-items: center; margin-left: auto;">
+          <span style="font-size: var(--fz_s3); color: var(--tx3); font-weight: 600; display: flex; align-items: center; gap: 0.5vh;"><i class="fas fa-language"></i> {lg['editor.idioma']}</span>
+          <select id="ed_filter_lang" class="ed_select" style="padding: 0.6vh 1.4vh; border-radius: 5vh; border: 1px solid var(--brd); background: var(--wb); color: var(--tx2); font-family: inherit; font-size: var(--fz_s4); font-weight: 600; cursor: pointer; outline: none; transition: border-color 0.2s;">
+            <option value="todos">{lg['editor.todos']}</option>
+            <option value="es">Español</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- LISTADOS (Desktop Table / Mobile Cards) -->
+      <div id="ed_list_container">
+        
+        <!-- Vista Desktop -->
+        <div class="ed_table_wrapper">
+          <table class="ed_table">
+            <thead>
+              <tr>
+                <th>{lg['editor.articulo']}</th>
+                <th>{lg['editor.categoria']}</th>
+                <th>{lg['editor.idioma']}</th>
+                <th>{lg['editor.estado']}</th>
+                <th>{lg['editor.publicado']}</th>
+                <th>{lg['editor.acciones']}</th>
+              </tr>
+            </thead>
+            <tbody id="ed_table_body">
+              <tr>
+                <td colspan="6" style="text-align: center; padding: 3rem;">
+                  <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--mco); margin-bottom: 1rem;"></i>
+                  <p style="color: var(--tx3); font-weight: 500;">{lg['editor.cargandoEspacio']}</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Vista Móvil -->
+        <div class="ed_mobile_list" id="ed_mobile_list">
+          <div style="text-align: center; padding: 3rem; width: 100%;">
+            <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--mco); margin-bottom: 1rem;"></i>
+            <p style="color: var(--tx3); font-weight: 500;">{lg['editor.cargandoEspacio']}</p>
+          </div>
+        </div>
+
+        <!-- Estado Vacío -->
+        <div class="ed_empty_state dpn" id="ed_empty">
+          <i class="fas fa-feather"></i>
+          <h3>{lg['editor.sinResultados']}</h3>
+          <p id="ed_empty_desc">{lg['editor.primerPost']}</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ══ MODAL DE CONFIRMACIÓN DE BORRADO ══ -->
+<div class="ed_modal_overlay dpn" id="delete_modal">
+  <div class="ed_modal_card">
+    <h3 class="ed_modal_title">{lg['editor.eliminarArticulo']}</h3>
+    <p class="ed_modal_text" id="delete_modal_text">
+      <!-- Se inyecta dinámicamente el mensaje traducido -->
+    </p>
+    <div class="ed_modal_actions">
+      <button class="ed_btn btn_sec" id="delete_btn_cancel">{lg['editor.cancelar']}</button>
+      <button class="ed_btn btn_danger" id="delete_btn_confirm">{lg['editor.siEliminar']}</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { supabase } from '../../lib/supabase.js';
+  import { protegerRuta } from '../../lib/wiauth/sesion.js';
+  import { getNombre, Saludar, Notificacion } from '../../lib/widev/widev.js';
+  import { idiomaEditor } from './idiomaEditor.js';
+
+  const clientLang = document.documentElement.lang || 'es';
+  const lg = (idiomaEditor as any)[clientLang] || idiomaEditor['es'];
+
+  let u: any = null;
+  let posts: any[] = [];
+  let filterState: 'todos' | 'activo' | 'borrador' = 'todos';
+  let filterLang = 'todos';
+  let busqueda = '';
+  let activeDeletePost: any = null;
+
+  const formatTime = (ts: any) => {
+    if (!ts) return '—';
+    const date = new Date(ts);
+    if (isNaN(date.getTime())) return '—';
+    return date.toLocaleDateString(clientLang === 'en' ? 'en-US' : 'es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  const getFiltered = () => {
+    return posts.filter(p => {
+      // 1. Filtro por Estado
+      if (filterState === 'activo') {
+        if (p.activo !== true) return false;
+      } else if (filterState === 'borrador') {
+        if (p.activo === true) return false;
+      }
+
+      // 2. Filtro por Idioma
+      if (filterLang !== 'todos') {
+        const pLang = p.lang || 'es';
+        if (pLang !== filterLang) return false;
+      }
+
+      // 3. Filtro por Buscador
+      if (busqueda.trim()) {
+        const queryStr = busqueda.toLowerCase().trim();
+        const titStr = (p.titulo || '').toLowerCase();
+        if (!titStr.includes(queryStr)) return false;
+      }
+
+      return true;
+    });
+  };
+
+  const updateKPIs = () => {
+    const total = posts.length;
+    const active = posts.filter(p => p.activo === true).length;
+    const drafts = posts.filter(p => p.activo !== true).length;
+    const pins = posts.filter(p => !!p.pin).length;
+
+    const lblTotal = document.getElementById('kpi_total');
+    const lblActive = document.getElementById('kpi_active');
+    const lblDrafts = document.getElementById('kpi_drafts');
+    const lblPins = document.getElementById('kpi_pins');
+
+    if (lblTotal) lblTotal.textContent = String(total);
+    if (lblActive) lblActive.textContent = String(active);
+    if (lblDrafts) lblDrafts.textContent = String(drafts);
+    if (lblPins) lblPins.textContent = String(pins);
+  };
+
+  const renderPosts = () => {
+    const list = getFiltered();
+    const tableBody = document.getElementById('ed_table_body');
+    const mobileList = document.getElementById('ed_mobile_list');
+    const emptySec = document.getElementById('ed_empty');
+    const countLbl = document.getElementById('list_count_lbl');
+
+    if (countLbl) {
+      const template = list.length === 1 ? lg['editor.articuloEncontrado'] : lg['editor.articulosEncontrados'];
+      countLbl.textContent = template.replace('{count}', String(list.length));
+    }
+
+    if (list.length === 0) {
+      if (tableBody) tableBody.innerHTML = '';
+      if (mobileList) mobileList.innerHTML = '';
+      if (emptySec) {
+        emptySec.classList.remove('dpn');
+        const emptyDesc = document.getElementById('ed_empty_desc');
+        if (emptyDesc) {
+          if (busqueda.trim()) {
+            emptyDesc.textContent = lg['editor.coincidencia'];
+          } else {
+            emptyDesc.textContent = lg['editor.primerPost'];
+          }
+        }
+      }
+      return;
+    }
+
+    if (emptySec) emptySec.classList.add('dpn');
+
+    // ── VISTA DESKTOP (TABLA) ──
+    if (tableBody) {
+      tableBody.innerHTML = list.map(p => {
+        const thumb = p.imagen || 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=300';
+        const dateStr = formatTime(p.creado);
+        
+        let statusHtml = '';
+        if (p.pin) {
+          statusHtml = `<span class="ed_badge_status pinned"><i class="fas fa-thumbtack"></i> ${lg['editor.pin']}</span>`;
+        } else if (p.activo) {
+          statusHtml = `<span class="ed_badge_status public"><i class="fas fa-globe"></i> ${lg['editor.publico']}</span>`;
+        } else {
+          statusHtml = `<span class="ed_badge_status draft"><i class="fas fa-file"></i> ${lg['editor.borrador']}</span>`;
+        }
+
+        return `
+          <tr id="row_${p.id}">
+            <td>
+              <div class="ed_post_cell">
+                <div class="ed_post_thumb" style="background-image: url('${thumb}')"></div>
+                <div class="ed_post_title_info">
+                  <a href="/${p.slug || p.id}" target="_blank" class="ed_post_title">${p.titulo || 'Sin título'}</a>
+                  <span class="ed_post_url">/${p.slug || p.id}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="ed_badge_cat">${p.categoria || lg['editor.general']}</span>
+            </td>
+            <td>
+              <span class="ed_badge_lang ${p.lang || 'es'}">${(p.lang || 'es').toUpperCase()}</span>
+            </td>
+            <td>
+              ${statusHtml}
+            </td>
+            <td>
+              <span style="font-size:0.85rem;color:var(--tx3);font-weight:600">${dateStr}</span>
+            </td>
+            <td>
+              <div class="ed_actions_col">
+                <a href="/nuevo?edit=${p.slug || p.id}" class="ed_btn_icon btn_edit" title="Editar"><i class="fas fa-pen"></i></a>
+                <button class="ed_btn_icon btn_delete" data-id="${p.id}" title="Eliminar"><i class="fas fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ── VISTA MÓVIL (TARJETAS) ──
+    if (mobileList) {
+      mobileList.innerHTML = list.map(p => {
+        const thumb = p.imagen || 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=300';
+        const dateStr = formatTime(p.creado);
+        
+        let statusHtml = '';
+        if (p.pin) {
+          statusHtml = `<span class="ed_badge_status pinned"><i class="fas fa-thumbtack"></i> ${lg['editor.pin']}</span>`;
+        } else if (p.activo) {
+          statusHtml = `<span class="ed_badge_status public"><i class="fas fa-globe"></i> ${lg['editor.publico']}</span>`;
+        } else {
+          statusHtml = `<span class="ed_badge_status draft"><i class="fas fa-file"></i> ${lg['editor.borrador']}</span>`;
+        }
+
+        return `
+          <div class="ed_card_item" id="row_mob_${p.id}">
+            <div class="ed_mob_header">
+              <div class="ed_mob_thumb" style="background-image: url('${thumb}')"></div>
+              <div class="ed_mob_title_box">
+                <a href="/${p.slug || p.id}" target="_blank" class="ed_mob_title">${p.titulo || 'Sin título'}</a>
+                <div style="display:flex; gap:0.5rem; align-items:center; margin-top:0.25rem;">
+                  <span class="ed_badge_cat">${p.categoria || lg['editor.general']}</span>
+                  <span class="ed_badge_lang ${p.lang || 'es'}">${(p.lang || 'es').toUpperCase()}</span>
+                </div>
+              </div>
+            </div>
+            <div class="ed_mob_meta">
+              <div>
+                ${statusHtml}
+                <small style="font-size:0.75rem;color:var(--tx3);display:block;margin-top:0.25rem">${dateStr}</small>
+              </div>
+              <div class="ed_actions_col">
+                <a href="/nuevo?edit=${p.slug || p.id}" class="ed_btn_icon btn_edit"><i class="fas fa-pen"></i></a>
+                <button class="ed_btn_icon btn_delete" data-id="${p.id}"><i class="fas fa-trash"></i></button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  };
+
+  const handleBorrarPost = async () => {
+    if (!activeDeletePost) return;
+    const p = activeDeletePost;
+
+    const modal = document.getElementById('delete_modal');
+    if (modal) modal.classList.add('dpn');
+
+    try {
+      // 1. Borrar de Supabase
+      const { error } = await supabase.from('blog').delete().eq('id', p.id);
+      if (error) throw error;
+
+      // 2. Limpiar cache local del post y blog
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem(`wi_post_${p.slug || p.id}`);
+        Object.keys(localStorage)
+          .filter(k => k.startsWith('wi_blogs') || k.startsWith('wi_draft_edit_' + (p.slug || p.id)))
+          .forEach(k => localStorage.removeItem(k));
+      }
+
+      // 3. Remover de la lista en memoria y re-renderizar
+      posts = posts.filter(item => item.id !== p.id);
+      updateKPIs();
+      renderPosts();
+      Notificacion(lg['editor.eliminado'], 'success');
+    } catch(e) {
+      console.error(e);
+      Notificacion(lg['editor.errorEliminar'], 'error');
+    } finally {
+      activeDeletePost = null;
+    }
+  };
+
+  const setupEvents = () => {
+    // Escuchar clics en el botón de borrar
+    document.addEventListener('click', (e: Event) => {
+      const target = e.target as HTMLElement;
+      
+      const btnDel = target.closest('.btn_delete');
+      if (btnDel) {
+        const id = btnDel.getAttribute('data-id');
+        const p = posts.find(item => item.id === id);
+        if (p) {
+          activeDeletePost = p;
+          const modalText = document.getElementById('delete_modal_text');
+          const modal = document.getElementById('delete_modal');
+          if (modalText) {
+            modalText.innerHTML = lg['editor.confirmarBorrado'].replace('{title}', `<strong id="delete_post_title">"${p.titulo || 'Sin título'}"</strong>`);
+          }
+          if (modal) modal.classList.remove('dpn');
+        }
+      }
+    });
+
+    // Cancelar/Confirmar borrado
+    const btnCancel = document.getElementById('delete_btn_cancel');
+    const btnConfirm = document.getElementById('delete_btn_confirm');
+    const modal = document.getElementById('delete_modal');
+
+    if (btnCancel && modal) {
+      btnCancel.addEventListener('click', () => {
+        modal.classList.add('dpn');
+        activeDeletePost = null;
+      });
+    }
+
+    if (btnConfirm) {
+      btnConfirm.addEventListener('click', handleBorrarPost);
+    }
+
+    // Buscador
+    const searchInp = document.getElementById('ed_search');
+    if (searchInp) {
+      searchInp.addEventListener('input', (e: Event) => {
+        busqueda = (e.target as HTMLInputElement).value;
+        renderPosts();
+      });
+    }
+
+    // Filtros
+    const filters = document.querySelectorAll('.ed_filter_btn');
+    filters.forEach(btn => {
+      btn.addEventListener('click', (e: Event) => {
+        filters.forEach(b => b.classList.remove('active'));
+        const activeBtn = e.currentTarget as HTMLElement;
+        activeBtn.classList.add('active');
+        filterState = (activeBtn.getAttribute('data-filter') as any) || 'todos';
+        renderPosts();
+      });
+    });
+
+    const langFilter = document.getElementById('ed_filter_lang');
+    if (langFilter) {
+      langFilter.addEventListener('change', (e: Event) => {
+        filterLang = (e.target as HTMLSelectElement).value;
+        renderPosts();
+      });
+    }
+  };
+
+  const init = async () => {
+    u = await protegerRuta(['editor', 'gestor', 'admin']);
+    if (!u) return;
+
+    // Iniciales
+    const iniciales = `${(u.nombre || '?')[0]}${(u.apellidos || '')[0] || ''}`.toUpperCase();
+    const avEl = document.getElementById('ed_av');
+    if (avEl) avEl.textContent = iniciales;
+
+    // Saludo
+    const saludoEl = document.getElementById('ed_saludo');
+    if (saludoEl) saludoEl.innerHTML = `${Saludar()} <strong>${getNombre(u.nombre || u.usuario || '')}</strong>`;
+
+    // Role Label
+    const roleLbl = document.getElementById('ed_role_lbl');
+    if (roleLbl) {
+      if (u.rol === 'admin') roleLbl.innerHTML = `<i class="fas fa-crown"></i> ${lg['editor.administrador']}`;
+      else if (u.rol === 'gestor') roleLbl.innerHTML = `<i class="fas fa-shield-alt"></i> ${lg['editor.gestorEditorial']}`;
+      else roleLbl.innerHTML = `<i class="fas fa-pen-fancy"></i> ${lg['editor.editorWorkwii']}`;
+    }
+
+    // Botón Gestor si rol es gestor o admin
+    const btnGestor = document.getElementById('ed_btn_gestor');
+    if (btnGestor && (u.rol === 'gestor' || u.rol === 'admin')) {
+      btnGestor.classList.remove('dpn');
+    }
+
+    try {
+      // 1. Consultar posts de Supabase
+      let query = supabase.from('blog').select('*');
+      if (u.rol !== 'admin') {
+        query = query.or(`usuario.eq.${u.usuario},email.eq.${u.email}`);
+      }
+      
+      const { data, error } = await query.order('creado', { ascending: false });
+      if (error) throw error;
+      posts = data || [];
+
+      updateKPIs();
+      renderPosts();
+      setupEvents();
+    } catch(e) {
+      console.error(e);
+      Notificacion(lg['editor.errorCarga'], 'error');
+    }
+  };
+
+  document.addEventListener('astro:page-load', init);
+</script>
