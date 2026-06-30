@@ -1,9 +1,9 @@
 ---
-// src/pages/smile.astro
-import Layout from '../layouts/Layout.astro';
-import SmilePage from '../lib/usuarios/smile/smilePage.astro';
-import { app } from '../wii.js';
-import estilosSmile from '../lib/usuarios/smile/smile.css?inline';
+// src/pages/en/smile.astro
+import Layout from '../../layouts/Layout.astro';
+import SmilePage from '../../lib/usuarios/smile/smilePage.astro';
+import { app } from '../../wii.js';
+import estilosSmile from '../../lib/usuarios/smile/smile.css?inline';
 ---
 
 <Layout title="Dashboard" name={app} robots="noindex, nofollow">
@@ -11,5 +11,5 @@ import estilosSmile from '../lib/usuarios/smile/smile.css?inline';
   <script is:inline slot="head">localStorage.wiSmile||location.replace('/')</script>
   <style is:global set:html={estilosSmile} slot="head"></style>
   
-  <SmilePage/>
+  <SmilePage />
 </Layout>

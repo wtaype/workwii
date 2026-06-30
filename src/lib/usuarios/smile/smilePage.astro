@@ -1,0 +1,232 @@
+---
+// src/lib/usuarios/smile/smilePage.astro
+import { app } from '../../../wii.js';
+import { idiomaSmile } from './idiomaSmile.js';
+
+const lang = Astro.locals.lang || Astro.currentLocale || 'es';
+const lg = (idiomaSmile as any)[lang] || idiomaSmile['es'];
+---
+
+<div class="smw_dash">
+  
+  <!-- ══ HEADER PREMIUM (Glassmorphism Hero) ══ -->
+  <header class="smw_hero wi_fadeUp">
+    <div class="smw_hero_glow"></div>
+    <div class="smw_hero_content">
+      <div class="smw_hero_left">
+        <div class="smw_avatar_wrap">
+           <div class="smw_avatar" id="smwAvatar"></div>
+           <div class="smw_avatar_ring"></div>
+        </div>
+        <div class="smw_welcome">
+          <h1 id="smwSaludo">Cargando...</h1>
+          <p id="smwPlan"><i class="fas fa-crown"></i> {lg['smile.plan']} Cargando...</p>
+        </div>
+      </div>
+      <div class="smw_hero_quote" id="smwQuote">
+        <i class="fas fa-quote-left"></i>
+        <div class="smw_quote_body">
+          <p id="smwQuoteTxt">...</p>
+          <span id="smwQuoteRef">...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══ DASHBOARD DOS COLUMNAS ══ -->
+  <main class="smw_main">
+    
+    <!-- COLUMNA IZQUIERDA: HERRAMIENTAS Y POSTULACIONES -->
+    <section class="smw_col smw_tools">
+      <div class="smw_sec_head">
+        <div class="smw_sec_info">
+          <h2><i class="fas fa-briefcase"></i> {lg['smile.misHerramientas']}</h2>
+          <p>{lg['smile.misHerramientasDesc']}</p>
+        </div>
+      </div>
+
+      <div class="smw_tools_grid">
+        
+        <!-- Crear CV ATS -->
+        <a href="/crear" class="smw_tool_card">
+          <div class="smw_tool_left">
+            <div class="smw_tool_ico"><i class="fas fa-file-signature"></i></div>
+            <div class="smw_tool_body">
+              <h3>{lg['smile.crearCv']}</h3>
+              <p>{lg['smile.crearCvDesc']}</p>
+            </div>
+          </div>
+          <div class="smw_tool_arrow"><i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <!-- Analizar CV con IA -->
+        <a href="/analisar" class="smw_tool_card">
+          <div class="smw_tool_left">
+            <div class="smw_tool_ico"><i class="fas fa-robot"></i></div>
+            <div class="smw_tool_body">
+              <h3>{lg['smile.analisarCv']}</h3>
+              <p>{lg['smile.analisarCvDesc']}</p>
+            </div>
+          </div>
+          <div class="smw_tool_arrow"><i class="fas fa-arrow-right"></i></div>
+        </a>
+
+      </div>
+
+      <!-- Kanban de Postulaciones -->
+      <div class="smw_kb_widget">
+        <div class="smw_kb_head">
+          <h4><i class="fas fa-list-check"></i> {lg['smile.postulaciones']}</h4>
+          <a href="/editor" class="smw_kb_link">{lg['smile.irKanban']} <i class="fas fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="smw_kb_stats">
+          <div class="smw_kb_stat_card">
+            <div class="smw_kb_stat_num">0</div>
+            <div class="smw_kb_stat_lbl">{lg['smile.postulado']}</div>
+          </div>
+          <div class="smw_kb_stat_card">
+            <div class="smw_kb_stat_num">0</div>
+            <div class="smw_kb_stat_lbl">{lg['smile.entrevista']}</div>
+          </div>
+          <div class="smw_kb_stat_card">
+            <div class="smw_kb_stat_num">0</div>
+            <div class="smw_kb_stat_lbl">{lg['smile.oferta']}</div>
+          </div>
+          <div class="smw_kb_stat_card">
+            <div class="smw_kb_stat_num">0</div>
+            <div class="smw_kb_stat_lbl">{lg['smile.rechazado']}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLUMNA DERECHA: PLANTILLAS Y ACTIVIDAD -->
+    <section class="smw_col smw_side">
+      
+      <!-- Plantillas Favoritas -->
+      <div class="smw_sec_head">
+        <div class="smw_sec_info">
+          <h2><i class="fas fa-palette"></i> {lg['smile.plantillasFav']}</h2>
+          <p>{lg['smile.plantillasDesc']}</p>
+        </div>
+      </div>
+
+      <div class="smw_templates_grid">
+        
+        <div class="smw_tpl_card">
+          <div class="smw_tpl_info">
+            <div class="smw_tpl_thumb"><i class="fas fa-file-alt"></i></div>
+            <div class="smw_tpl_meta">
+              <h4>{lg['smile.clasica']}</h4>
+              <span class="smw_tpl_tag popular">{lg['smile.popular']}</span>
+            </div>
+          </div>
+          <a href="/crear?template=clasica" class="smw_tpl_action"><i class="fas fa-plus"></i></a>
+        </div>
+
+        <div class="smw_tpl_card">
+          <div class="smw_tpl_info">
+            <div class="smw_tpl_thumb"><i class="fas fa-file-invoice"></i></div>
+            <div class="smw_tpl_meta">
+              <h4>{lg['smile.moderna']}</h4>
+              <span class="smw_tpl_tag rec">{lg['smile.recomendada']}</span>
+            </div>
+          </div>
+          <a href="/crear?template=moderna" class="smw_tpl_action"><i class="fas fa-plus"></i></a>
+        </div>
+
+        <div class="smw_tpl_card">
+          <div class="smw_tpl_info">
+            <div class="smw_tpl_thumb"><i class="fas fa-columns"></i></div>
+            <div class="smw_tpl_meta">
+              <h4>{lg['smile.minimalista']}</h4>
+              <span class="smw_tpl_tag new">{lg['smile.nueva']}</span>
+            </div>
+          </div>
+          <a href="/crear?template=minimalista" class="smw_tpl_action"><i class="fas fa-plus"></i></a>
+        </div>
+
+      </div>
+
+      <!-- Actividad Reciente -->
+      <div class="smw_sec_head" style="margin-top: 1vh;">
+        <div class="smw_sec_info">
+          <h2><i class="fas fa-clock-rotate-left"></i> {lg['smile.actividadReciente']}</h2>
+          <p>{lg['smile.actividadDesc']}</p>
+        </div>
+      </div>
+
+      <div class="smw_activity_feed">
+        <div class="smw_activity_list">
+          
+          <div class="smw_activity_item">
+            <div class="smw_act_bullet"><i class="fas fa-user-plus"></i></div>
+            <div class="smw_act_body">
+              <p set:html={lg['smile.actividadRegistro'].replace('{app}', app)}></p>
+              <span class="smw_act_time">{lg['smile.recienRegistrado']}</span>
+            </div>
+          </div>
+
+          <div class="smw_activity_item">
+            <div class="smw_act_bullet"><i class="fas fa-lightbulb"></i></div>
+            <div class="smw_act_body">
+              <p>{lg['smile.actividadListo']}</p>
+              <span class="smw_act_time">{lg['smile.pendiente']}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<script>
+  import { protegerRuta } from '../../../lib/wiauth/sesion.js';
+  import { getNombre, Saludar } from '../../../lib/widev/widev.js';
+
+  const initDashboard = async () => {
+    // 1. Proteger ruta usando el guard centralizado de Supabase + localStorage
+    const wi = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
+    if (!wi) return;
+
+    const nombre = getNombre(wi.nombre || wi.usuario || '');
+    const iniciales = `${(wi.nombre || '?')[0]}${(wi.apellidos || '')[0] || ''}`.toUpperCase();
+
+    // 2. RENDER HERO
+    const heroEl = document.querySelector('.smw_hero');
+    if (heroEl) heroEl.classList.add('visible');
+
+    const avatarEl = document.getElementById('smwAvatar');
+    if (avatarEl) avatarEl.textContent = iniciales;
+
+    const saludoEl = document.getElementById('smwSaludo');
+    if (saludoEl) saludoEl.innerHTML = `${Saludar()} <strong>${nombre}</strong>`;
+
+    const planEl = document.getElementById('smwPlan');
+    if (planEl) {
+      planEl.innerHTML = `<i class="fas fa-crown"></i> Plan: ${wi.plan?.toUpperCase() || 'FREE'}`;
+    }
+
+    // 4. FRASES DE SUPERACIÓN PROFESIONAL
+    const quotes = [
+      { txt: "El único modo de hacer un gran trabajo es amar lo que haces.", ref: "Steve Jobs" },
+      { txt: "El éxito no es la clave de la felicidad. La felicidad es la clave del éxito.", ref: "Albert Schweitzer" },
+      { txt: "Cree que puedes y casi lo habrás logrado.", ref: "Theodore Roosevelt" },
+      { txt: "No cuentes los días, haz que los días cuenten.", ref: "Muhammad Ali" },
+      { txt: "Tu currículum muestra tu pasado; tu actitud determina tu futuro.", ref: "Workwii" },
+      { txt: "La preparación es la clave del éxito.", ref: "Alexander Graham Bell" },
+      { txt: "El éxito es la suma de pequeños esfuerzos repetidos día tras día.", ref: "Robert Collier" }
+    ];
+    
+    const q = quotes[Math.floor(Math.random() * quotes.length)];
+    const quoteTxtEl = document.getElementById('smwQuoteTxt');
+    const quoteRefEl = document.getElementById('smwQuoteRef');
+    if (quoteTxtEl) quoteTxtEl.textContent = `"${q.txt}"`;
+    if (quoteRefEl) quoteRefEl.textContent = q.ref;
+  };
+
+  document.addEventListener('astro:page-load', initDashboard);
+</script>
