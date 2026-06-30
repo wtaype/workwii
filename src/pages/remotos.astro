@@ -1,6 +1,10 @@
 ---
 // src/pages/remotos.astro
+import Layout from '../layouts/Layout.astro';
 import RemotosPage from '../lib/remotos/remotosPage.astro';
+import { seo } from '../lib/seo.js';
 ---
 
-<RemotosPage lang="es" />
+<Layout {...seo.remotos.es}>
+  <RemotosPage lang="es" />
+</Layout>

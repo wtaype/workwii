@@ -1,31 +1,16 @@
 ---
 // src/lib/crear/crearPage.astro
 // Creador de CV ATS interactivo con Optimización de IA (Gemini) y soporte de Supabase
-import Layout from '../../layouts/Layout.astro';
 import { app } from '../../wii.js';
-import { seo } from '../../lib/seo.js';
 import estilos from './crear.css?inline';
 import estilosChat from './chatwii/estilo.css?inline';
 import Consejos from './consejos.astro';
-import { useTranslations } from '../i18n/utils.js';
 import { idiomaCrear } from './idiomaCrear.js';
 
-interface Props {
-  lang: string;
-}
-
-const { lang } = Astro.props;
-const lg = useTranslations(lang, idiomaCrear);
-
-// Configurar el SEO adaptado al idioma
-const seoData = lang === 'en' ? {
-  title: 'ATS CV Builder | Workwii',
-  description: 'Write and optimize your resume with artificial intelligence to beat selection algorithms.',
-  keywords: ['cv builder', 'ats resume', 'ats checker', 'cv maker', 'workwii']
-} : seo.crear;
+interface Props {lang: string;}
+const { lang } = Astro.props as { lang: 'es' | 'en' };
+const lg = idiomaCrear[lang] || idiomaCrear['es'];
 ---
-
-<Layout {...seoData}>
   <!-- Inyección interna en el HEAD para evitar parpadeos visuales (Layout Shift) -->
   <style slot="head" is:global set:html={estilos}></style>
   <style slot="head" is:global set:html={estilosChat}></style>
@@ -35,34 +20,34 @@ const seoData = lang === 'en' ? {
     <header class="conv_header">
       <div class="cr_header_flex">
         <div class="cr_header_left">
-          <h1><i class="fas fa-file-signature cr_header_icon"></i>{lg('crear.titulo')} <span>{lg('crear.subtitulo')}</span></h1>
-          <p class="cr_header_sub">{lg('crear.desc')}</p>
+          <h1><i class="fas fa-file-signature cr_header_icon"></i>{lg['crear.titulo']} <span>{lg['crear.subtitulo']}</span></h1>
+          <p class="cr_header_sub">{lg['crear.desc']}</p>
         </div>
         <div class="cr_header_right">
           <!-- Hidden file input for resume parser -->
           <input type="file" id="cr_header_cv_file" accept=".pdf,.docx" class="dpn" />
           
           <!-- Upload button (Carga diferida Mammoth/PDF.js en click) -->
-          <button id="cr_btn_upload_cv" class="conv_btn_sec cr_btn_upload_dash" data-witip={lg('crear.subirBtnHelp')}>
-            <i class="fas fa-magic"></i> {lg('crear.subirBtn')}
+          <button id="cr_btn_upload_cv" class="conv_btn_sec cr_btn_upload_dash" data-witip={lg['crear.subirBtnHelp']}>
+            <i class="fas fa-magic"></i> {lg['crear.subirBtn']}
           </button>
           
           <!-- New CV button -->
-          <button id="cr_btn_reset_all" class="conv_btn_sec" data-witip={lg('crear.nuevoBtnHelp')}><i class="fas fa-file-circle-plus"></i> {lg('crear.nuevoBtn')}</button>
+          <button id="cr_btn_reset_all" class="conv_btn_sec" data-witip={lg['crear.nuevoBtnHelp']}><i class="fas fa-file-circle-plus"></i> {lg['crear.nuevoBtn']}</button>
           
           <!-- Download dropdown -->
           <div class="conv_download_dropdown">
-            <button class="conv_btn" id="cr_btn_download_final" data-witip={lg('crear.descargarBtnHelp')}><i class="fas fa-download"></i> {lg('crear.descargarBtn')}</button>
+            <button class="conv_btn" id="cr_btn_download_final" data-witip={lg['crear.descargarBtnHelp']}><i class="fas fa-download"></i> {lg['crear.descargarBtn']}</button>
             <button class="conv_btn_dropdown_toggle" id="crBtnDownloadToggle" aria-haspopup="true" aria-expanded="false" title="Más formatos de descarga">
               <i class="fas fa-chevron-down"></i>
             </button>
             <div class="conv_dropdown_menu" id="crDownloadMenu">
-              <button class="conv_dropdown_item" id="cr_btn_print"><i class="fas fa-print"></i> {lg('crear.printBtn')}</button>
-              <button class="conv_dropdown_item" id="cr_btn_dw_pdf"><i class="fas fa-file-pdf"></i> {lg('crear.dwPdfBtn')}</button>
-              <button class="conv_dropdown_item" id="cr_btn_dw_docx"><i class="fas fa-file-word"></i> {lg('crear.dwDocxBtn')}</button>
-              <button class="conv_dropdown_item" id="cr_btn_dw_txt"><i class="fas fa-file-alt"></i> {lg('crear.dwTxtBtn')}</button>
-              <button class="conv_dropdown_item" id="cr_btn_dw_md"><i class="fab fa-markdown"></i> {lg('crear.dwMdBtn')}</button>
-              <button class="conv_dropdown_item" id="cr_btn_dw_json"><i class="fas fa-file-code"></i> {lg('crear.dwJsonBtn')}</button>
+              <button class="conv_dropdown_item" id="cr_btn_print"><i class="fas fa-print"></i> {lg['crear.printBtn']}</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_pdf"><i class="fas fa-file-pdf"></i> {lg['crear.dwPdfBtn']}</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_docx"><i class="fas fa-file-word"></i> {lg['crear.dwDocxBtn']}</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_txt"><i class="fas fa-file-alt"></i> {lg['crear.dwTxtBtn']}</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_md"><i class="fab fa-markdown"></i> {lg['crear.dwMdBtn']}</button>
+              <button class="conv_dropdown_item" id="cr_btn_dw_json"><i class="fas fa-file-code"></i> {lg['crear.dwJsonBtn']}</button>
             </div>
           </div>
         </div>
@@ -78,31 +63,31 @@ const seoData = lang === 'en' ? {
         <div class="conv_tabs_header" id="crTabsHeader">
           <button class="conv_tab_btn active" data-tab="contacto">
             <i class="fas fa-address-card"></i>
-            <span>{lg('crear.tabs.contacto')}</span>
+            <span>{lg['crear.tabs.contacto']}</span>
           </button>
           <button class="conv_tab_btn" data-tab="perfil">
             <i class="fas fa-user"></i>
-            <span>{lg('crear.tabs.perfil')}</span>
+            <span>{lg['crear.tabs.perfil']}</span>
           </button>
           <button class="conv_tab_btn" data-tab="experiencia">
             <i class="fas fa-briefcase"></i>
-            <span>{lg('crear.tabs.experiencia')}</span>
+            <span>{lg['crear.tabs.experiencia']}</span>
           </button>
           <button class="conv_tab_btn" data-tab="educacion">
             <i class="fas fa-graduation-cap"></i>
-            <span>{lg('crear.tabs.educacion')}</span>
+            <span>{lg['crear.tabs.educacion']}</span>
           </button>
           <button class="conv_tab_btn" data-tab="proyectos">
             <i class="fas fa-project-diagram"></i>
-            <span>{lg('crear.tabs.proyectos')}</span>
+            <span>{lg['crear.tabs.proyectos']}</span>
           </button>
           <button class="conv_tab_btn" data-tab="certificados">
             <i class="fas fa-certificate"></i>
-            <span>{lg('crear.tabs.certificados')}</span>
+            <span>{lg['crear.tabs.certificados']}</span>
           </button>
           <button class="conv_tab_btn" data-tab="skills">
             <i class="fas fa-sliders-h"></i>
-            <span>{lg('crear.tabs.skills')}</span>
+            <span>{lg['crear.tabs.skills']}</span>
           </button>
         </div>
 
@@ -110,38 +95,38 @@ const seoData = lang === 'en' ? {
         <form id="crFormContent" onsubmit="return false;">
           <div class="conv_form_grid">
             <div class="conv_field">
-              <label for="contacto_nombre">{lg('crear.contacto.nombre')} *</label>
-              <input type="text" id="contacto_nombre" class="conv_input" placeholder={lg('crear.contacto.placeholderNombre')} />
+              <label for="contacto_nombre">{lg['crear.contacto.nombre']} *</label>
+              <input type="text" id="contacto_nombre" class="conv_input" placeholder={lg['crear.contacto.placeholderNombre']} />
             </div>
             <div class="conv_field">
-              <label for="contacto_titulo">{lg('crear.contacto.titulo')} *</label>
-              <input type="text" id="contacto_titulo" class="conv_input" placeholder={lg('crear.contacto.placeholderTitulo')} />
+              <label for="contacto_titulo">{lg['crear.contacto.titulo']} *</label>
+              <input type="text" id="contacto_titulo" class="conv_input" placeholder={lg['crear.contacto.placeholderTitulo']} />
             </div>
             <div class="conv_field">
-              <label for="contacto_email">{lg('crear.contacto.email')} *</label>
-              <input type="email" id="contacto_email" class="conv_input" placeholder={lg('crear.contacto.placeholderEmail')} />
+              <label for="contacto_email">{lg['crear.contacto.email']} *</label>
+              <input type="email" id="contacto_email" class="conv_input" placeholder={lg['crear.contacto.placeholderEmail']} />
             </div>
             <div class="conv_field">
-              <label for="contacto_telefono">{lg('crear.contacto.telefono')} *</label>
-              <input type="tel" id="contacto_telefono" class="conv_input" placeholder={lg('crear.contacto.placeholderTelefono')} />
+              <label for="contacto_telefono">{lg['crear.contacto.telefono']} *</label>
+              <input type="tel" id="contacto_telefono" class="conv_input" placeholder={lg['crear.contacto.placeholderTelefono']} />
             </div>
             <div class="conv_field">
-              <label for="contacto_ubicacion">{lg('crear.contacto.ubicacion')} *</label>
-              <input type="text" id="contacto_ubicacion" class="conv_input" placeholder={lg('crear.contacto.placeholderUbicacion')} />
+              <label for="contacto_ubicacion">{lg['crear.contacto.ubicacion']} *</label>
+              <input type="text" id="contacto_ubicacion" class="conv_input" placeholder={lg['crear.contacto.placeholderUbicacion']} />
             </div>
             <div class="conv_field">
-              <label for="contacto_linkedin">{lg('crear.contacto.linkedin')}</label>
-              <input type="url" id="contacto_linkedin" class="conv_input" placeholder={lg('crear.contacto.placeholderLinkedin')} />
+              <label for="contacto_linkedin">{lg['crear.contacto.linkedin']}</label>
+              <input type="url" id="contacto_linkedin" class="conv_input" placeholder={lg['crear.contacto.placeholderLinkedin']} />
             </div>
             <div class="conv_field">
-              <label for="contacto_web">{lg('crear.contacto.web')}</label>
-              <input type="url" id="contacto_web" class="conv_input" placeholder={lg('crear.contacto.placeholderWeb')} />
+              <label for="contacto_web">{lg['crear.contacto.web']}</label>
+              <input type="url" id="contacto_web" class="conv_input" placeholder={lg['crear.contacto.placeholderWeb']} />
             </div>
             <div class="conv_field">
-              <label for="contacto_idioma">{lg('crear.contacto.idioma')}</label>
+              <label for="contacto_idioma">{lg['crear.contacto.idioma']}</label>
               <select id="contacto_idioma" class="conv_select">
-                <option value="es" selected={lang === 'es'}>{lg('crear.idiomaEs')}</option>
-                <option value="en" selected={lang === 'en'}>{lg('crear.idiomaEn')}</option>
+                <option value="es" selected={lang === 'es'}>{lg['crear.idiomaEs']}</option>
+                <option value="en" selected={lang === 'en'}>{lg['crear.idiomaEn']}</option>
               </select>
             </div>
           </div>
@@ -150,12 +135,12 @@ const seoData = lang === 'en' ? {
         <!-- Scorecard ATS al final del panel izquierdo -->
         <div class="cr_scorecard_bottom">
           <div class="cr_score_header">
-            <span class="cr_score_title">{lg('crear.compatibilidad')}</span>
+            <span class="cr_score_title">{lg['crear.compatibilidad']}</span>
             <div class="cr_score_actions">
-              <button id="cr_btn_optimize_all" class="cr_btn_optimize_botwii" data-witip={lg('crear.optimizarBtnHelp')}>
-                <i class="fas fa-wand-magic-sparkles"></i> {lg('crear.optimizarBtn')}
+              <button id="cr_btn_optimize_all" class="cr_btn_optimize_botwii" data-witip={lg['crear.optimizarBtnHelp']}>
+                <i class="fas fa-wand-magic-sparkles"></i> {lg['crear.optimizarBtn']}
               </button>
-              <div class="cr_score_badge" data-witip={lg('crear.scoreHelp')}>
+              <div class="cr_score_badge" data-witip={lg['crear.scoreHelp']}>
                 <span id="cr_score_val">0</span>/100
               </div>
             </div>
@@ -174,7 +159,7 @@ const seoData = lang === 'en' ? {
       <!-- Panel Derecho: Vista previa -->
       <section class="conv_right_pane">
         <!-- Escritorio de Vista Previa -->
-        <div class="conv_a4_wrapper" data-witip={lg('crear.templateHelp')}>
+        <div class="conv_a4_wrapper" data-witip={lg['crear.templateHelp']}>
           <div id="cr_cv_printable_area" class="cr_printable_pages_container">
             <!-- Hoja A4 Skeleton estática para evitar parpadeo gris de primera carga -->
             <div class="cr_a4_page">
@@ -204,22 +189,22 @@ const seoData = lang === 'en' ? {
   <div id="cr_ai_modal" class="cr_modal">
     <div class="cr_modal_content">
       <div class="cr_modal_header">
-        <h3><i class="fas fa-wand-magic-sparkles"></i> {lg('crear.modalIaTitulo')}</h3>
+        <h3><i class="fas fa-wand-magic-sparkles"></i> {lg['crear.modalIaTitulo']}</h3>
         <button id="cr_btn_close_modal" class="cr_modal_close">&times;</button>
       </div>
       <div class="cr_modal_body">
-        <p>{lg('crear.modalIaDesc')}</p>
+        <p>{lg['crear.modalIaDesc']}</p>
         <div class="cr_ai_diff_grid">
           <div class="cr_ai_diff_card">
-            <h4>{lg('crear.modalIaOriginal')}</h4>
+            <h4>{lg['crear.modalIaOriginal']}</h4>
             <div id="cr_ai_original_text" class="cr_ai_text_box"></div>
           </div>
           <div class="cr_ai_diff_card">
-            <h4>{lg('crear.modalIaSugerencia')}</h4>
+            <h4>{lg['crear.modalIaSugerencia']}</h4>
             <div id="cr_ai_optimized_container">
               <div id="cr_ai_loading" class="cr_ai_loading dpn">
                 <i class="fas fa-spinner fa-spin"></i>
-                <p>{lg('crear.modalIaCargando')}</p>
+                <p>{lg['crear.modalIaCargando']}</p>
               </div>
               <div id="cr_ai_optimized_text" class="cr_ai_text_box success dpn" contenteditable="true"></div>
             </div>
@@ -227,8 +212,8 @@ const seoData = lang === 'en' ? {
         </div>
       </div>
       <div class="cr_modal_footer">
-        <button id="cr_btn_discard_ai" class="cr_btn outline small">{lg('crear.modalIaDescartar')}</button>
-        <button id="cr_btn_apply_ai" class="cr_btn primary small" disabled>{lg('crear.modalIaAplicar')}</button>
+        <button id="cr_btn_discard_ai" class="cr_btn outline small">{lg['crear.modalIaDescartar']}</button>
+        <button id="cr_btn_apply_ai" class="cr_btn primary small" disabled>{lg['crear.modalIaAplicar']}</button>
       </div>
     </div>
   </div>
@@ -241,16 +226,15 @@ const seoData = lang === 'en' ? {
         <div class="cr_confirm_icon_wrapper">
           <i class="fas fa-exclamation-triangle"></i>
         </div>
-        <h3>{lg('crear.modalResetTitulo')}</h3>
-        <p>{lg('crear.modalResetDesc')}</p>
+        <h3>{lg['crear.modalResetTitulo']}</h3>
+        <p>{lg['crear.modalResetDesc']}</p>
         <div class="cr_confirm_actions">
-          <button id="cr_btn_confirm_reset" class="cr_btn_confirm_yes">{lg('crear.modalResetConfirmar')}</button>
-          <button id="cr_btn_cancel_reset" class="cr_btn_confirm_no">{lg('crear.modalResetCancelar')}</button>
+          <button id="cr_btn_confirm_reset" class="cr_btn_confirm_yes">{lg['crear.modalResetConfirmar']}</button>
+          <button id="cr_btn_cancel_reset" class="cr_btn_confirm_no">{lg['crear.modalResetCancelar']}</button>
         </div>
       </div>
     </div>
   </div>
-</Layout>
 
 <script>
   import { initVisual } from './visual.js';

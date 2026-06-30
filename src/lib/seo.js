@@ -68,6 +68,68 @@ export const seo = {
       intent: 'analyze resume compatibility'
     }
   },
+  remotos: {
+    es: {
+      title: "Trabajos Remotos Seguros | Portales Reales 2026",
+      description: "Encuentra trabajo remoto seguro en 2026. Analizamos las mejores plataformas con pros y contras para que postules con éxito y evites estafas en la red.",
+      path: '/remotos',
+      keywords: [
+        'trabajo remoto',
+        'empleo remoto seguro',
+        'mejores plataformas',
+        'evitar estafas',
+        'workwii'
+      ],
+      audience: ['candidatos', 'profesionales', 'desempleados', 'estudiantes'],
+      intent: 'encontrar trabajo remoto seguro y evitar estafas'
+    },
+    en: {
+      title: `Secure Remote Jobs | Real Job Boards 2026`,
+      description: "Find secure remote jobs in 2026. We analyze the best platforms with pros and cons so you can apply successfully and avoid scams online.",
+      path: '/en/remotos',
+      keywords: ['remote jobs', 'secure remote work', 'best job boards', 'avoid scams', 'workwii'],
+      audience: ['candidates', 'professionals', 'unemployed', 'students'],
+      intent: 'find secure remote jobs and avoid scams'
+    }
+  },
+  convertirAts: {
+    es: {
+      title: `Conversión de CV a Formato ATS con IA | ${app}`,
+      description: "Convierte tu currículum de PDF o Word a un formato optimizado para ATS con nuestra Inteligencia Artificial. Pasa los filtros de contratación en 2026.",
+      path: '/convertir-ats',
+      keywords: [
+        'convertir cv a ats',
+        'cv compatible con ats',
+        'optimizar curriculum ia',
+        'formato cv ats gratis',
+        'pasar filtros de contratacion'
+      ],
+      audience: ['candidatos', 'profesionales', 'desempleados', 'estudiantes'],
+      intent: 'convertir curriculum vitae a formato ats'
+    },
+    en: {
+      title: `Convert Resume to ATS Format with AI | ${app}`,
+      description: "Convert your resume from PDF or Word to an ATS optimized format with our AI. Pass recruitment filters in 2026.",
+      path: '/en/convertir-ats',
+      keywords: ['convert resume to ats', 'ats compatible resume', 'optimize cv ai', 'free ats cv format', 'pass hiring filters'],
+      audience: ['candidates', 'professionals', 'unemployed', 'students'],
+      intent: 'convert resume to ats format'
+    }
+  },
+  comparar: {
+    title: `Comparativa de Creadores de CV y Filtros ATS | ${app}`,
+    description: "Compara de manera transparente a Workwii frente a otras herramientas como Rezi, Resume.io, Novoresume y Jobscan. Descubre por qué somos la mejor opción.",
+    path: '/comparar',
+    keywords: [
+      'comparativa creadores cv',
+      'rezi vs workwii',
+      'resume io alternativa gratis',
+      'ats checker gratuito',
+      'mejor creador de curriculum'
+    ],
+    audience: ['candidatos', 'profesionales', 'reclutadores'],
+    intent: 'comparar plataformas de curriculum vitae y herramientas de empleo'
+  },
   blog: {
     es: {
       title: `Blog de Empleo e IA: Consejos y Guías | ${app}`,
@@ -280,66 +342,4 @@ export const seo = {
       intent: 'submit feedback'
     }
   },
-  remotos: {
-    es: {
-      title: "Trabajos Remotos Seguros | Portales Reales 2026",
-      description: "Encuentra trabajo remoto seguro en 2026. Analizamos las mejores plataformas con pros y contras para que postules con éxito y evites estafas en la red.",
-      path: '/remotos',
-      keywords: [
-        'trabajo remoto',
-        'empleo remoto seguro',
-        'mejores plataformas',
-        'evitar estafas',
-        'workwii'
-      ],
-      audience: ['candidatos', 'profesionales', 'desempleados', 'estudiantes'],
-      intent: 'encontrar trabajo remoto seguro y evitar estafas'
-    },
-    en: {
-      title: `Secure Remote Jobs | Real Job Boards 2026`,
-      description: "Find secure remote jobs in 2026. We analyze the best platforms with pros and cons so you can apply successfully and avoid scams online.",
-      path: '/en/remotos',
-      keywords: ['remote jobs', 'secure remote work', 'best job boards', 'avoid scams', 'workwii'],
-      audience: ['candidates', 'professionals', 'unemployed', 'students'],
-      intent: 'find secure remote jobs and avoid scams'
-    }
-  },
-  convertirAts: {
-    es: {
-      title: `Convertir CV a Formato ATS con IA | ${app}`,
-      description: "Convierte tu currículum de PDF o Word a un formato optimizado para ATS con nuestra Inteligencia Artificial. Pasa los filtros de contratación en 2026.",
-      path: '/convertir-ats',
-      keywords: [
-        'convertir cv a ats',
-        'cv compatible con ats',
-        'optimizar curriculum ia',
-        'formato cv ats gratis',
-        'pasar filtros de contratacion'
-      ],
-      audience: ['candidatos', 'profesionales', 'desempleados', 'estudiantes'],
-      intent: 'convertir curriculum vitae a formato ats'
-    },
-    en: {
-      title: `Convert Resume to ATS Format with AI | ${app}`,
-      description: "Convert your resume from PDF or Word to an ATS optimized format with our AI. Pass recruitment filters in 2026.",
-      path: '/en/convertir-ats',
-      keywords: ['convert resume to ats', 'ats compatible resume', 'optimize cv ai', 'free ats cv format', 'pass hiring filters'],
-      audience: ['candidates', 'professionals', 'unemployed', 'students'],
-      intent: 'convert resume to ats format'
-    }
-  },
-  comparar: {
-    title: `Comparativa de Creadores de CV y Filtros ATS | ${app}`,
-    description: "Compara de manera transparente a Workwii frente a otras herramientas como Rezi, Resume.io, Novoresume y Jobscan. Descubre por qué somos la mejor opción.",
-    path: '/comparar',
-    keywords: [
-      'comparativa creadores cv',
-      'rezi vs workwii',
-      'resume io alternativa gratis',
-      'ats checker gratuito',
-      'mejor creador de curriculum'
-    ],
-    audience: ['candidatos', 'profesionales', 'reclutadores'],
-    intent: 'comparar plataformas de curriculum vitae y herramientas de empleo'
-  }
 };

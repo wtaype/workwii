@@ -1,28 +1,18 @@
 ---
 // src/lib/convertir/convertirPage.astro
-import Layout from '../../layouts/Layout.astro';
+
 import { app } from '../../wii.js';
-import { seo } from '../seo.js';
+
 import estilosConvertir from './convertir.css?inline';
 import { idiomaConvertir } from './idiomaConvertir.js';
 import FooterConvertir from './footerConvertir.astro';
 
-interface Props {
-  lang: string;
-}
-
+interface Props {lang: string;}
 const { lang } = Astro.props as { lang: 'es' | 'en' };
-const t = idiomaConvertir[lang] || idiomaConvertir['es'];
-
-// Configurar SEO adaptado al idioma
-const seoData = lang === 'en' ? {
-  title: 'ATS Resume Converter | Workwii',
-  description: 'Upload your resume (PDF or Word) and convert it instantly to a clean ATS-friendly format.',
-  keywords: ['ats converter', 'ats resume template', 'ats resume format', 'workwii']
-} : seo.convertirAts;
+const lg = idiomaConvertir[lang] || idiomaConvertir['es'];
 ---
 
-<Layout {...(lang === 'en' ? (seoData as any) : (seo.convertirAts as any))}>
+
   <style slot="head" is:global set:html={estilosConvertir}></style>
 
   <div class="conv_wrap">
@@ -31,29 +21,29 @@ const seoData = lang === 'en' ? {
     <header class="conv_header">
       <div class="ats_header_glow"></div>
       <div class="ats_header_content">
-        <h1 set:html={t.header.tit}></h1>
-        <p>{t.header.desc}</p>
+        <h1 set:html={lg.header.tit}></h1>
+        <p>{lg.header.desc}</p>
       </div>
     </header>
 
     <!-- PASO 1: SUBIR / PEGAR -->
     <section class="conv_step_card" id="convStep1">
-      <h2 class="conv_card_tit"><i class="fas fa-file-invoice"></i> {t.step1.tit}</h2>
+      <h2 class="conv_card_tit"><i class="fas fa-file-invoice"></i> {lg.step1.tit}</h2>
       
       <div class="conv_field">
         
         <!-- Dropzone de archivo -->
         <div class="conv_dropzone" id="convDropzone">
           <i class="fas fa-cloud-arrow-up"></i>
-          <span class="conv_dz_tit">{t.step1.dzTit}</span>
-          <span class="conv_dz_sub">{t.step1.dzSub}</span>
+          <span class="conv_dz_tit">{lg.step1.dzTit}</span>
+          <span class="conv_dz_sub">{lg.step1.dzSub}</span>
           <input type="file" id="convFileInput" accept=".pdf,.docx" class="dpn">
         </div>
 
         <!-- Progreso de lectura -->
         <div id="convProgressContainer" class="upload_progress_container">
           <div class="upload_progress_header">
-            <span><i class="fas fa-spinner fa-spin"></i> {t.step1.progress}</span>
+            <span><i class="fas fa-spinner fa-spin"></i> {lg.step1.progress}</span>
             <span id="convProgressPercent">0%</span>
           </div>
           <div class="upload_progress_bar_bg">
@@ -67,45 +57,45 @@ const seoData = lang === 'en' ? {
 
       <!-- Textarea de revisión de texto extraído bruto -->
       <div class="conv_textarea_container" id="convTextareaContainer">
-        <label for="convTextarea">{t.step1.textareaLabel}</label>
-        <textarea id="convTextarea" class="conv_field conv_raw_textarea" placeholder={t.step1.textareaPl}></textarea>
+        <label for="convTextarea">{lg.step1.textareaLabel}</label>
+        <textarea id="convTextarea" class="conv_field conv_raw_textarea" placeholder={lg.step1.textareaPl}></textarea>
       </div>
 
       <!-- Fila de Puesto Deseado e Idioma de Optimización -->
       <div class="conv_row_fields">
         <div class="conv_field flex_2">
           <label for="convTargetRole">
-            {t.step1.roleLabel}
-            <i class="fas fa-circle-info ats_info_icon" data-witip={t.step1.roleHelp} data-wtipo="info" data-wtiempo="4000"></i>
+            {lg.step1.roleLabel}
+            <i class="fas fa-circle-info ats_info_icon" data-witip={lg.step1.roleHelp} data-wtipo="info" data-wtiempo="4000"></i>
           </label>
-          <input type="text" id="convTargetRole" placeholder={t.step1.rolePl} />
+          <input type="text" id="convTargetRole" placeholder={lg.step1.rolePl} />
         </div>
         <div class="conv_field flex_1">
           <label for="convTargetLang">
-            {t.step1.langLabel}
-            <i class="fas fa-circle-info ats_info_icon" data-witip={t.step1.langHelp} data-wtipo="info" data-wtiempo="4000"></i>
+            {lg.step1.langLabel}
+            <i class="fas fa-circle-info ats_info_icon" data-witip={lg.step1.langHelp} data-wtipo="info" data-wtiempo="4000"></i>
           </label>
           <select id="convTargetLang" class="conv_select">
-            <option value="es" selected={lang === 'es'}>{t.step1.langEs}</option>
-            <option value="en" selected={lang === 'en'}>{t.step1.langEn}</option>
+            <option value="es" selected={lang === 'es'}>{lg.step1.langEs}</option>
+            <option value="en" selected={lang === 'en'}>{lg.step1.langEn}</option>
           </select>
         </div>
       </div>
 
       <!-- Botón de Envío -->
       <button class="conv_btn" id="convBtnSubmit" disabled>
-        <i class="fas fa-wand-magic-sparkles"></i> {t.step1.btnSubmit}
+        <i class="fas fa-wand-magic-sparkles"></i> {lg.step1.btnSubmit}
       </button>
     </section>
 
     <!-- PASO 2: CARGANDO -->
     <section class="conv_loader" id="convLoader">
-      <h3 class="loader_title"><i class="fas fa-brain" style="color:var(--mco); margin-right: 8px;"></i> <span id="convLoaderMsg">{t.loader.tit}</span></h3>
-      <p class="loader_eta" id="convLoaderEta">{t.loader.desc}</p>
+      <h3 class="loader_title"><i class="fas fa-brain" style="color:var(--mco); margin-right: 8px;"></i> <span id="convLoaderMsg">{lg.loader.tit}</span></h3>
+      <p class="loader_eta" id="convLoaderEta">{lg.loader.desc}</p>
 
       <div class="loader_bar_wrap">
         <div class="loader_bar_header">
-          <span>{t.loader.progress}</span>
+          <span>{lg.loader.progress}</span>
           <span id="convLoaderBarPct" style="color:var(--mco);font-family:var(--ff_O);font-weight:800;">0%</span>
         </div>
         <div class="loader_bar_bg">
@@ -116,8 +106,8 @@ const seoData = lang === 'en' ? {
       <div id="convLoaderStepper"></div>
 
       <div class="loader_tip_wrap">
-        <span class="loader_tip_label"><i class="fas fa-lightbulb"></i> {t.loader.tip}</span>
-        <div id="convLoaderTipContent">{t.loader.cargandoTip}</div>
+        <span class="loader_tip_label"><i class="fas fa-lightbulb"></i> {lg.loader.tip}</span>
+        <div id="convLoaderTipContent">{lg.loader.cargandoTip}</div>
       </div>
     </section>
 
@@ -143,8 +133,8 @@ const seoData = lang === 'en' ? {
         <!-- Barra de Herramientas -->
         <div class="conv_preview_tools">
           <div class="conv_preview_tools_left">
-            <span><i class="fas fa-circle-check"></i> {t.workspace.previewATS}</span>
-            <button class="conv_tip_btn_icon" id="convPreviewTipFoto" title={t.workspace.tipFoto} data-witip={t.workspace.tipFotoDesc} data-wtipo="info" data-wtiempo="6000">
+            <span><i class="fas fa-circle-check"></i> {lg.workspace.previewATS}</span>
+            <button class="conv_tip_btn_icon" id="convPreviewTipFoto" title={lg.workspace.tipFoto} data-witip={lg.workspace.tipFotoDesc} data-wtipo="info" data-wtiempo="6000">
               <i class="fas fa-circle-info"></i>
             </button>
           </div>
@@ -182,19 +172,19 @@ const seoData = lang === 'en' ? {
         </button>
         <div class="ats_float_dropdown_menu" id="convDownloadMenu">
           <button class="ats_dropdown_item" id="convBtnDownloadPdfDirect">
-            <i class="fas fa-file-pdf"></i> {t.workspace.btnPdf}
+            <i class="fas fa-file-pdf"></i> {lg.workspace.btnPdf}
           </button>
           <button class="ats_dropdown_item" id="convBtnDownloadDocx">
-            <i class="fas fa-file-word"></i> {t.workspace.btnWord}
+            <i class="fas fa-file-word"></i> {lg.workspace.btnWord}
           </button>
           <button class="ats_dropdown_item" id="convBtnDownloadTxt">
-            <i class="fas fa-file-lines"></i> {t.workspace.btnTxt}
+            <i class="fas fa-file-lines"></i> {lg.workspace.btnTxt}
           </button>
           <button class="ats_dropdown_item" id="convBtnDownloadMd">
-            <i class="fab fa-markdown"></i> {t.workspace.btnMd}
+            <i class="fab fa-markdown"></i> {lg.workspace.btnMd}
           </button>
           <button class="ats_dropdown_item" id="convBtnDownloadJson">
-            <i class="fas fa-file-code"></i> {t.workspace.btnJson}
+            <i class="fas fa-file-code"></i> {lg.workspace.btnJson}
           </button>
         </div>
       </div>
@@ -204,15 +194,15 @@ const seoData = lang === 'en' ? {
     <div class="wiModal" id="convModalConfirmReset">
       <div class="wiModal-content">
         <div class="modal_header">
-          <h3 class="modal_title">{t.workspace.confirmNewTitle}</h3>
+          <h3 class="modal_title">{lg.workspace.confirmNewTitle}</h3>
           <button class="modalX" data-wimodal-close>&times;</button>
         </div>
         <div class="modal_body">
-          <p>{t.workspace.confirmNewDesc}</p>
+          <p>{lg.workspace.confirmNewDesc}</p>
         </div>
         <div class="modal_actions">
-          <button class="modal_cancel_btn" data-wimodal-close>{t.workspace.confirmCancel}</button>
-          <button class="modal_confirm_btn" id="convBtnConfirmReset">{t.workspace.confirmOk}</button>
+          <button class="modal_cancel_btn" data-wimodal-close>{lg.workspace.confirmCancel}</button>
+          <button class="modal_confirm_btn" id="convBtnConfirmReset">{lg.workspace.confirmOk}</button>
         </div>
       </div>
     </div>
@@ -220,7 +210,7 @@ const seoData = lang === 'en' ? {
   </div>
 
   <FooterConvertir lang={lang} />
-</Layout>
+
 
 <script>
   import { initEntrada, removeFile } from './entrada.js';
@@ -239,7 +229,7 @@ const seoData = lang === 'en' ? {
   let loaderMsg: HTMLElement | null;
   const workspace = document.getElementById('convWorkspace');
   const pageLang = workspace?.getAttribute('data-locale') || 'es';
-  const t = (idiomaConvertir as any)[pageLang] || idiomaConvertir['es'];
+  const lg = (idiomaConvertir as any)[pageLang] || idiomaConvertir['es'];
 
   const init = () => {
     step1 = document.getElementById('convStep1');
@@ -313,7 +303,7 @@ const seoData = lang === 'en' ? {
     const targetRoleInp = document.getElementById('convTargetRole') as HTMLInputElement;
 
     if (!rawTextarea || !rawTextarea.value.trim()) {
-      Notificacion(t.step1.textareaPl, 'warning');
+      Notificacion(lg.step1.textareaPl, 'warning');
       return;
     }
 
@@ -485,7 +475,7 @@ const seoData = lang === 'en' ? {
 
         initVisual(structuredCv);
 
-        Notificacion(t.workspace.successMsg, 'success', 4000);
+        Notificacion(lg.workspace.successMsg, 'success', 4000);
       }, 500);
     } catch (err: any) {
       console.error(err);

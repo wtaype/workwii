@@ -1,6 +1,9 @@
 ---
 // src/pages/en/crear.astro
-// English wrapper for the ATS CV Builder
+import Layout from '../../layouts/Layout.astro';
 import CrearPage from '../../lib/crear/crearPage.astro';
+import { seo } from '../../lib/seo.js';
 ---
-<CrearPage lang="en" />
+<Layout {...seo.crear.en}>
+  <CrearPage lang="en" />
+</Layout>

@@ -1,5 +1,9 @@
 ---
 // src/pages/convertir-ats.astro
+import Layout from '../layouts/Layout.astro';
 import ConvertirPage from '../lib/convertir/convertirPage.astro';
+import { seo } from '../lib/seo.js';
 ---
-<ConvertirPage lang="es" />
+<Layout {...seo.convertirAts.es}>
+  <ConvertirPage lang="es" />
+</Layout>

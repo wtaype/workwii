@@ -1,14 +1,12 @@
 ---
 // src/lib/remotos/remotosPage.astro
-import Layout from '../../layouts/Layout.astro';
+
 import { app } from '../../wii.js';
-import { seo } from '../seo.js';
+
 import estilosRemotos from './remotos.css?inline';
 import { idiomaRemotos } from './idiomaRemotos.js';
 
-interface Props {
-  lang: string;
-}
+interface Props {lang: string;}
 
 interface Plataforma {
   id: string;
@@ -35,15 +33,8 @@ interface Plataforma {
 }
 
 const { lang } = Astro.props as { lang: 'es' | 'en' };
-const t = idiomaRemotos[lang] || idiomaRemotos['es'];
-const plataformas = t.plataformas as Plataforma[];
-
-// SEO
-const seoData = lang === 'en' ? {
-  title: 'Secure Remote Jobs | Workwii',
-  description: 'Finding remote work shouldn\'t be a Russian roulette of virtual scams. We honestly analyze the best real platforms in 2026.',
-  keywords: ['remote work', 'work from home', 'remote jobs', 'workwii']
-} : seo.remotos;
+const lg = idiomaRemotos[lang] || idiomaRemotos['es'];
+const plataformas = lg.plataformas as Plataforma[];
 
 // Helper functions for PageSpeed circular metrics
 const getScoreClass = (score: number) => {
@@ -57,15 +48,15 @@ const circumference = 2 * Math.PI * radius; // ~314.16
 const getOffset = (score: number) => circumference - (circumference * score) / 100;
 ---
 
-<Layout {...(lang === 'en' ? (seoData as any) : (seo.remotos as any))}>
+
   <style slot="head" is:global set:html={estilosRemotos}></style>
 
   <div class="remoto_ct" data-locale={lang}>
     
     <!-- Cabecera Integrada y Minimalista -->
     <header class="re_header_ct">
-      <h1 set:html={t.header.tit}></h1>
-      <p>{t.header.desc}</p>
+      <h1 set:html={lg.header.tit}></h1>
+      <p>{lg.header.desc}</p>
     </header>
 
     <!-- Layout de Dos Columnas (Sidebar Collapsible | Main Content) -->
@@ -75,9 +66,9 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
       <aside class="remoto_sidebar">
         <div class="sidebar_header">
           <span class="sidebar_title">
-            <i class="fas fa-list-check"></i> {t.sidebar.index}
+            <i class="fas fa-list-check"></i> {lg.sidebar.index}
           </span>
-          <button class="btn_collapse" id="toggle-sidebar" aria-label={t.sidebar.toggle}>
+          <button class="btn_collapse" id="toggle-sidebar" aria-label={lg.sidebar.toggle}>
             <i class="fas fa-angles-left" id="collapse-icon"></i>
           </button>
         </div>
@@ -93,8 +84,8 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
           <div class="sidebar_divider"></div>
           <a href="#advice-section" class="sidebar_item sidebar_advice_item" data-id="advice-section">
             <span class="sidebar_rank rank_advice"><i class="fas fa-lightbulb"></i></span>
-            <span class="sidebar_name">{t.sidebar.advice}</span>
-            <span class="sidebar_tag tag_advice">{t.sidebar.adviceTag}</span>
+            <span class="sidebar_name">{lg.sidebar.advice}</span>
+            <span class="sidebar_tag tag_advice">{lg.sidebar.adviceTag}</span>
           </a>
         </div>
       </aside>
@@ -105,13 +96,13 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
         <!-- Buscador Superior -->
         <div class="re_search_wrap">
           <i class="fas fa-magnifying-glass re_search_ico"></i>
-          <input type="text" id="re-search" class="re_search" placeholder={t.sidebar.searchPlaceholder} autocomplete="off" />
-          <span class="re_search_count">{plataformas.length} {t.sidebar.searchCount}</span>
+          <input type="text" id="re-search" class="re_search" placeholder={lg.sidebar.searchPlaceholder} autocomplete="off" />
+          <span class="re_search_count">{plataformas.length} {lg.sidebar.searchCount}</span>
         </div>
 
         <div id="re-empty-msg" class="re_empty" style="display: none;">
           <i class="fas fa-circle-exclamation"></i>
-          <span> {t.sidebar.empty}</span>
+          <span> {lg.sidebar.empty}</span>
         </div>
 
         <!-- Lista Vertical de Plataformas -->
@@ -138,7 +129,7 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
                   <!-- Pros & Contras -->
                   <div class="re_pros_cons_list">
                     <div class="re_list_group">
-                      <strong class="pros_title"><i class="fas fa-circle-check"></i> {t.card.pros}</strong>
+                      <strong class="pros_title"><i class="fas fa-circle-check"></i> {lg.card.pros}</strong>
                       <ul>
                         {plat.pros.map(pro => (
                           <li>
@@ -149,7 +140,7 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
                       </ul>
                     </div>
                     <div class="re_list_group">
-                      <strong class="contras_title"><i class="fas fa-circle-xmark"></i> {t.card.contras}</strong>
+                      <strong class="contras_title"><i class="fas fa-circle-xmark"></i> {lg.card.contras}</strong>
                       <ul>
                         {plat.contras?.map(contra => (
                           <li>
@@ -164,22 +155,22 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
                   <!-- Países e Inglés -->
                   <div class="re_location_line">
                     <i class="fas fa-earth-americas"></i>
-                    <span><strong>{t.card.paises}:</strong> {plat.paises}</span>
+                    <span><strong>{lg.card.paises}:</strong> {plat.paises}</span>
                     <span style="margin: 0 1.5vh; color: var(--brd);">|</span>
                     <i class="fas fa-language"></i>
-                    <span><strong>{t.card.ingles}:</strong> {plat.ingles}</span>
+                    <span><strong>{lg.card.ingles}:</strong> {plat.ingles}</span>
                   </div>
 
                   <!-- Requisitos clave -->
                   <div class="re_requirements">
-                    <strong>{t.card.requisitos}:</strong> {plat.requisitos}
+                    <strong>{lg.card.requisitos}:</strong> {plat.requisitos}
                   </div>
                 </div>
 
                 <!-- Columna Derecha: Círculos de Métricas PageSpeed y Acciones -->
                 <div class="remoto_row_right">
                   <div class="re_metrics_box">
-                    <h4 class="re_metrics_title">{t.card.metricsTitle}</h4>
+                    <h4 class="re_metrics_title">{lg.card.metricsTitle}</h4>
                     <div class="re_metrics_row">
                       
                       <!-- Seguridad -->
@@ -198,7 +189,7 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
                           ></circle>
                           <text class={`ps_circle_text ${getScoreClass(plat.metrics.seguridad)}`} x="60" y="70" text-anchor="middle">{plat.metrics.seguridad}</text>
                         </svg>
-                        <span>{t.card.metrics.seguridad}</span>
+                        <span>{lg.card.metrics.seguridad}</span>
                       </div>
 
                       <!-- Vacantes -->
@@ -217,7 +208,7 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
                           ></circle>
                           <text class={`ps_circle_text ${getScoreClass(plat.metrics.vacantes)}`} x="60" y="70" text-anchor="middle">{plat.metrics.vacantes}</text>
                         </svg>
-                        <span>{t.card.metrics.vacantes}</span>
+                        <span>{lg.card.metrics.vacantes}</span>
                       </div>
 
                       <!-- Soporte -->
@@ -236,7 +227,7 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
                           ></circle>
                           <text class={`ps_circle_text ${getScoreClass(plat.metrics.soporte)}`} x="60" y="70" text-anchor="middle">{plat.metrics.soporte}</text>
                         </svg>
-                        <span>{t.card.metrics.soporte}</span>
+                        <span>{lg.card.metrics.soporte}</span>
                       </div>
 
                       <!-- Gratis -->
@@ -255,7 +246,7 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
                           ></circle>
                           <text class={`ps_circle_text ${getScoreClass(plat.metrics.gratuito)}`} x="60" y="70" text-anchor="middle">{plat.metrics.gratuito}</text>
                         </svg>
-                        <span>{t.card.metrics.gratuito}</span>
+                        <span>{lg.card.metrics.gratuito}</span>
                       </div>
 
                     </div>
@@ -267,14 +258,14 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
                       <img src={plat.logo} alt={`Logo de ${plat.nombre}`} />
                     </div>
                     <div class="re_expert_opinion">
-                      <strong><i class="fas fa-user-tie"></i> {t.card.tip}</strong>
+                      <strong><i class="fas fa-user-tie"></i> {lg.card.tip}</strong>
                       <p>{plat.tipExperto}</p>
                     </div>
                   </div>
 
                   <!-- Evitar Estafas -->
                   <div class="re_safety_tip">
-                    <strong><i class="fas fa-shield-halved"></i> {t.card.estafas}</strong>
+                    <strong><i class="fas fa-shield-halved"></i> {lg.card.estafas}</strong>
                     <p>{plat.evitarEstafas}</p>
                   </div>
 
@@ -282,11 +273,11 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
                   <div class="re_actions_row">
                     {plat.guiaUrl && (
                       <a href={plat.guiaUrl} class="re_btn_guide_main">
-                        <i class="fas fa-book"></i> {t.card.howToApply}
+                        <i class="fas fa-book"></i> {lg.card.howToApply}
                       </a>
                     )}
                     <a href={plat.url} target="_blank" rel="noopener noreferrer" class="re_btn_visit_main">
-                      <i class="fas fa-arrow-up-right-from-square"></i> {t.card.visit}
+                      <i class="fas fa-arrow-up-right-from-square"></i> {lg.card.visit}
                     </a>
                   </div>
 
@@ -302,38 +293,38 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
           <div class="re_advice_card">
             <h2 class="re_advice_title">
               <i class="fas fa-shield-halved"></i>
-              <span class="gradient_text">{t.advice.tit}</span>
+              <span class="gradient_text">{lg.advice.tit}</span>
             </h2>
-            <p class="re_advice_subtitle">{t.advice.sub}</p>
+            <p class="re_advice_subtitle">{lg.advice.sub}</p>
 
             <div class="re_advice_list">
               <div class="re_advice_item">
                 <div class="re_advice_num rank_1">1</div>
                 <div class="re_advice_item_content">
-                  <h3 class="re_advice_item_title">{t.advice.item1.tit}</h3>
-                  <p class="re_advice_reason">{t.advice.item1.desc}</p>
-                  <p class="re_advice_gold_tip"><strong>{t.advice.goldTip}</strong> {t.advice.item1.tip}</p>
+                  <h3 class="re_advice_item_title">{lg.advice.item1.tit}</h3>
+                  <p class="re_advice_reason">{lg.advice.item1.desc}</p>
+                  <p class="re_advice_gold_tip"><strong>{lg.advice.goldTip}</strong> {lg.advice.item1.tip}</p>
                 </div>
               </div>
               <div class="re_advice_item">
                 <div class="re_advice_num rank_2">2</div>
                 <div class="re_advice_item_content">
-                  <h3 class="re_advice_item_title">{t.advice.item2.tit}</h3>
-                  <p class="re_advice_reason">{t.advice.item2.desc}</p>
-                  <p class="re_advice_gold_tip"><strong>{t.advice.goldTip}</strong> {t.advice.item2.tip}</p>
+                  <h3 class="re_advice_item_title">{lg.advice.item2.tit}</h3>
+                  <p class="re_advice_reason">{lg.advice.item2.desc}</p>
+                  <p class="re_advice_gold_tip"><strong>{lg.advice.goldTip}</strong> {lg.advice.item2.tip}</p>
                 </div>
               </div>
               <div class="re_advice_item">
                 <div class="re_advice_num rank_3">3</div>
                 <div class="re_advice_item_content">
-                  <h3 class="re_advice_item_title">{t.advice.item3.tit}</h3>
-                  <p class="re_advice_reason">{t.advice.item3.desc}</p>
-                  <p class="re_advice_gold_tip"><strong>{t.advice.goldTip}</strong> {t.advice.item3.tip}</p>
+                  <h3 class="re_advice_item_title">{lg.advice.item3.tit}</h3>
+                  <p class="re_advice_reason">{lg.advice.item3.desc}</p>
+                  <p class="re_advice_gold_tip"><strong>{lg.advice.goldTip}</strong> {lg.advice.item3.tip}</p>
                 </div>
               </div>
             </div>
 
-            <p class="re_advice_closing">{t.advice.closing}</p>
+            <p class="re_advice_closing">{lg.advice.closing}</p>
           </div>
         </section>
 
@@ -341,7 +332,7 @@ const getOffset = (score: number) => circumference - (circumference * score) / 1
     </div>
 
   </div>
-</Layout>
+
 
 <script>
   const initPage = () => {
