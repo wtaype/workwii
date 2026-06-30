@@ -4,17 +4,13 @@
 import { Saludar, imgwii } from '../widev/widev.js';
 import { app } from '../../wii.js';
 import { supabase } from '../supabase.js';
-import { locales } from './idiomaInicio.js';
-import { useTranslations } from '../i18n/utils.js';
+import { idiomaInicio } from './idiomaInicio.js';
 import { getCategoryLabel } from '../blog/post/idiomaPost.js';
 import estilos from './inicio.css?inline';
 
-interface Props {
-  lang?: 'es' | 'en';
-}
-
-const { lang = 'es' } = Astro.props;
-const lg = useTranslations(lang, locales);
+interface Props {lang: string;}
+const { lang } = Astro.props as { lang: 'es' | 'en' };
+const lg = idiomaInicio[lang] || idiomaInicio['es'];
 
 // We fetch blog posts dynamically on the server side
 let posts: any[] = [];
@@ -52,27 +48,27 @@ try {
   <section class="hero">
     <div class="hero_txt">
       <div class="hero_saludo">
-        <span>{Saludar()} {lg('inicio.saludo')}</span><span class="hero_wave"><i class="fa-regular fa-hand"></i></span>
+        <span>{Saludar()} {lg['inicio.saludo']}</span><span class="hero_wave"><i class="fa-regular fa-hand"></i></span>
       </div>
-      <h1 class="font_o mainh">{lg('inicio.heroTitle')}</h1>
-      <span class="gradiente hero_sub_tit font_o">{lg('inicio.heroSubtitle')}</span>
+      <h1 class="font_o mainh">{lg['inicio.heroTitle']}</h1>
+      <span class="gradiente hero_sub_tit font_o">{lg['inicio.heroSubtitle']}</span>
       <div class="hero_roles">
-        <span class="role active">{lg('inicio.roles')[0]} <i class="fas fa-rocket"></i></span>
-        <span class="role">{lg('inicio.roles')[1]} <i class="fas fa-expand"></i></span>
-        <span class="role">{lg('inicio.roles')[2]} <i class="fas fa-comments"></i></span>
-        <span class="role">{lg('inicio.roles')[3]} <i class="fab fa-linkedin"></i></span>
+        <span class="role active">{lg['inicio.roles'][0]} <i class="fas fa-rocket"></i></span>
+        <span class="role">{lg['inicio.roles'][1]} <i class="fas fa-expand"></i></span>
+        <span class="role">{lg['inicio.roles'][2]} <i class="fas fa-comments"></i></span>
+        <span class="role">{lg['inicio.roles'][3]} <i class="fab fa-linkedin"></i></span>
       </div>
       <div class="hero_oracion font_o">
-        <p class="hero_pregunta">{lg('inicio.heroQuestion')}</p>
-        <p>{lg('inicio.heroDescription1')}</p>
-        <p set:html={lg('inicio.heroDescription2')}></p>
+        <p class="hero_pregunta">{lg['inicio.heroQuestion']}</p>
+        <p>{lg['inicio.heroDescription1']}</p>
+        <p set:html={lg['inicio.heroDescription2']}></p>
       </div>
       <div class="hero_ctas" data-herowi="50">
         <button class="btn_sec btn_principal font_o bt_auth registrar" id="btn-hero-cta">
-          <i class="fas fa-rocket"></i><span>{lg('inicio.btnStart')}</span>
+          <i class="fas fa-rocket"></i><span>{lg['inicio.btnStart']}</span>
         </button>
         <a href="#dolores" class="btn_sec font_o">
-          <span>{lg('inicio.btnLearnMore')}</span><i class="fas fa-arrow-down"></i>
+          <span>{lg['inicio.btnLearnMore']}</span><i class="fas fa-arrow-down"></i>
         </a>
       </div>
     </div>
@@ -121,8 +117,8 @@ try {
   </section>
 
   <section class="sec_ib" id="sec_blog">
-    <h2 class="mainh1"><i class="fas fa-graduation-cap"></i> {lg('inicio.blogTitle')}</h2>
-    <p class="sec_desc">{lg('inicio.blogSubtitle')}</p>
+    <h2 class="mainh1"><i class="fas fa-graduation-cap"></i> {lg['inicio.blogTitle']}</h2>
+    <p class="sec_desc">{lg['inicio.blogSubtitle']}</p>
     <div class="ib_grid" id="ib_grid" data-herowi="100">
       {posts.length > 0 ? (
         posts.map((p) => {
@@ -156,24 +152,24 @@ try {
           );
         })
       ) : (
-        <p class="ib_empty"><i class="fas fa-dove"></i> {lg('inicio.blogEmpty')}</p>
+        <p class="ib_empty"><i class="fas fa-dove"></i> {lg['inicio.blogEmpty']}</p>
       )}
     </div>
     <div class="ib_footer">
       <a class="btn_sec ib_ver_mas font_o" href={lang === 'en' ? "/en/blog" : "/blog"}>
-        <i class="fas fa-arrow-right"></i><span>{lg('inicio.blogVerMas')}</span>
+        <i class="fas fa-arrow-right"></i><span>{lg['inicio.blogVerMas']}</span>
       </a>
     </div>
   </section>
 
   <section class="sec_preguntas" id="dolores">
     <div class="sec_head">
-      <h2><i class="fas fa-circle-question"></i> {lg('inicio.preguntasTitle')}</h2>
+      <h2><i class="fas fa-circle-question"></i> {lg['inicio.preguntasTitle']}</h2>
       <div class="sec_line"></div>
     </div>
-    <p class="sec_desc">{lg('inicio.preguntasDesc')}</p>
+    <p class="sec_desc">{lg['inicio.preguntasDesc']}</p>
     <div class="preg_grid" data-herowi="100">
-      {lg('inicio.preguntas').map((p: any, idx: number) => (
+      {lg['inicio.preguntas'].map((p: any, idx: number) => (
         <div class="preg_card">
           <div class="preg_num font_o">0{idx + 1}</div>
           <p>{p}</p>
@@ -184,14 +180,14 @@ try {
 
   <section class="sec_ej" id="beneficios">
     <div class="sec_head">
-      <h2><i class="fas fa-award"></i> {lg('inicio.beneficiosTitle')}</h2>
+      <h2><i class="fas fa-award"></i> {lg['inicio.beneficiosTitle']}</h2>
       <div class="sec_line"></div>
     </div>
-    <p class="sec_desc">{lg('inicio.beneficiosDesc')}</p>
+    <p class="sec_desc">{lg['inicio.beneficiosDesc']}</p>
     <div class="ej_grid" data-herowi="100">
-      {lg('inicio.beneficios').map((b: any) => (
+      {lg['inicio.beneficios'].map((b: any) => (
         <div class="ej_item" style={`--x:${b[3]}`}>
-          <div class="ej_top"><span><i class={`fas ${b[0]}`}></i></span><span class="ej_tag font_o">{lg('inicio.beneficiosTag')}</span></div>
+          <div class="ej_top"><span><i class={`fas ${b[0]}`}></i></span><span class="ej_tag font_o">{lg['inicio.beneficiosTag']}</span></div>
           <h3 class="font_o ej_title">{b[1]}</h3>
           <p class="font_o ej_desc">{b[2]}</p>
         </div>
@@ -201,10 +197,10 @@ try {
 
   <!-- Nueva Sección de Testimonios Latam -->
   <section class="sec_testimonios" id="testimonios">
-    <h2 class="mainh1"><i class="fas fa-star" style="color: #FFB800;"></i> {lg('inicio.testimoniosTitle')}</h2>
-    <p class="sec_desc">{lg('inicio.testimoniosDesc')}</p>
+    <h2 class="mainh1"><i class="fas fa-star" style="color: #FFB800;"></i> {lg['inicio.testimoniosTitle']}</h2>
+    <p class="sec_desc">{lg['inicio.testimoniosDesc']}</p>
     <div class="test_grid" data-herowi="120">
-      {lg('inicio.testimonios').map((test: any) => (
+      {lg['inicio.testimonios'].map((test: any) => (
         <div class="test_card">
           <div class="test_header">
             <div class="test_avatar" style={`background: ${test.avatarColor}; color: ${test.avatarTextColor};`}><i class={`fas ${test.avatarIcon}`}></i></div>
@@ -223,10 +219,10 @@ try {
   </section>
 
   <section class="sec_feat" id="sec_funcionamiento">
-    <div class="sec_head"><h2><i class="fas fa-circle-nodes"></i> {lg('inicio.pasosTitle')}</h2><div class="sec_line"></div></div>
-    <p class="sec_desc">{lg('inicio.pasosDesc')}</p>
+    <div class="sec_head"><h2><i class="fas fa-circle-nodes"></i> {lg['inicio.pasosTitle']}</h2><div class="sec_line"></div></div>
+    <p class="sec_desc">{lg['inicio.pasosDesc']}</p>
     <div class="feat_grid" data-herowi="150">
-      {lg('inicio.pasos').map(([num, title, desc]: any) => (
+      {lg['inicio.pasos'].map(([num, title, desc]: any) => (
         <div class="feat_card paso_card">
           <div class="feat_ico paso_num font_o">{num}</div>
           <h3 class="font_o">{title}</h3>
@@ -240,12 +236,12 @@ try {
     <div class="test_bg">
       <div class="test_inner_single">
         <div class="test_left">
-          <h2 class="font_o"><i class="fas fa-briefcase"></i> {lg('inicio.acercaTitle')}</h2>
+          <h2 class="font_o"><i class="fas fa-briefcase"></i> {lg['inicio.acercaTitle']}</h2>
           <div class="about_text">
-            <p set:html={lg('inicio.acercaP1')}></p>
-            <p set:html={lg('inicio.acercaP2')}></p>
+            <p set:html={lg['inicio.acercaP1']}></p>
+            <p set:html={lg['inicio.acercaP2']}></p>
             <div class="sec_cta">
-              <a href={lang === 'en' ? "/en/acerca" : "/acerca"} class="btn_sec font_o sec_cta_btn"><i class="fas fa-arrow-right"></i><span>{lg('inicio.acercaLink')}</span></a>
+              <a href={lang === 'en' ? "/en/acerca" : "/acerca"} class="btn_sec font_o sec_cta_btn"><i class="fas fa-arrow-right"></i><span>{lg['inicio.acercaLink']}</span></a>
             </div>
           </div>
         </div>

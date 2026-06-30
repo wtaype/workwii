@@ -1,7 +1,7 @@
 // src/lib/inicio/idiomaInicio.js
 // Diccionario descentralizado de traducciones para la Página de Inicio (Home)
 
-export const locales = {
+export const idiomaInicio = {
   es: {
     'inicio.saludo': 'Campeon@',
     'inicio.heroTitle': 'Impulsa tu carrera profesional',
