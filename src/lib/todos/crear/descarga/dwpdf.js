@@ -3,7 +3,7 @@
 
 // Configuración de estilos tipográficos y maquetación del PDF
 const estilosPdf = {
-  margenes: [40, 45, 40, 45], // [izquierda, arriba, derecha, abajo] en puntos (pt)
+  margenes: [40, 35, 40, 35], // [izquierda, arriba, derecha, abajo] en puntos (pt)
   fuenteDefault: 'Roboto',
   interlineado: 1.35,
   
