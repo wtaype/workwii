@@ -87,10 +87,13 @@ const formatShortDate = (dateVal: any) => {
   <!-- Custom Ad Target -->
   <div class="po_ad_sticky po_fade po_visible" style="--d:.3s;" id="po_ad_sidebar"></div>
   <script>
-    import { wiSmart } from '../lib/widev/widev.js';
-    wiSmart({ fn: [async () => {
+    document.addEventListener('astro:page-load', async () => {
       const el = document.getElementById('po_ad_sidebar');
-      if (el) el.innerHTML = (await import('../lib/blog/post/wiad.js')).adLeft;
-    }] });
+      if (el) {
+        const { adLeft, wiadCSS } = await import('../lib/blog/post/wiad.js');
+        wiadCSS();
+        el.innerHTML = adLeft;
+      }
+    });
   </script>
 </aside>

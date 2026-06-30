@@ -1,7 +1,9 @@
-if (typeof document !== 'undefined' && !document.getElementById('wiad_styles')) {
-  const style = document.createElement('style');
-  style.id = 'wiad_styles';
-  style.textContent = `
+export const wiadCSS = () => {
+  if (typeof document !== 'undefined' && !document.getElementById('wiad_styles')) {
+    const style = document.createElement('style');
+    style.id = 'wiad_styles';
+    style.setAttribute('data-astro-transition-persist', 'wiad-styles');
+    style.textContent = `
 .po_ad_sticky {
   position: sticky;
   top: 7vh;
@@ -22,7 +24,12 @@ if (typeof document !== 'undefined' && !document.getElementById('wiad_styles')) 
     .wi_ad_link:hover { opacity:1!important; transform:scale(1.02); }
     .wi_ad_img { width:100%; height:100%; object-fit:cover; border-radius:1vh; display:block; }
   `;
-  document.head.appendChild(style);
+    document.head.appendChild(style);
+  }
+};
+
+if (typeof document !== 'undefined') {
+  wiadCSS();
 }
 
 export const adLeft = `
