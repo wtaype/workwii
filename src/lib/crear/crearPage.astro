@@ -7,9 +7,8 @@ import estilosChat from './chatwii/estilo.css?inline';
 import Consejos from './consejos.astro';
 import { idiomaCrear } from './idiomaCrear.js';
 
-interface Props {lang: string;}
-const { lang } = Astro.props as { lang: 'es' | 'en' };
-const lg = idiomaCrear[lang] || idiomaCrear['es'];
+const lang = Astro.locals.lang;
+const lg   = idiomaCrear[lang];
 ---
   <!-- Inyección interna en el HEAD para evitar parpadeos visuales (Layout Shift) -->
   <style slot="head" is:global set:html={estilos}></style>
