@@ -119,6 +119,40 @@ export default defineConfig({
           }
         }
       }
+    },
+    {
+      name: 'minify-html-critical',
+      hooks: {
+        'astro:build:done': async ({ dir }) => {
+          const distDir = fileURLToPath(dir);
+          const getHtmlFiles = (dirPath) => fs.readdirSync(dirPath, { withFileTypes: true })
+            .flatMap(e => e.isDirectory()
+              ? getHtmlFiles(path.join(dirPath, e.name))
+              : e.name.endsWith('.html') ? [path.join(dirPath, e.name)] : []
+            );
+
+          // minijs: Minifica código JS en línea eliminando comentarios y espacios
+          const minijs = (js) => js
+            .replace(/\/\*[\s\S]*?\*\//g, '')
+            .split('\n')
+            .map(l => l.replace(/(?:^|[^:])\/\/.*$/, '').trim())
+            .filter(Boolean)
+            .join(' ');
+
+          // minihtml: Minifica HTML removiendo comentarios, saltos de línea y espacios dobles
+          const minihtml = (html) => html
+            .replace(/<script([^>]*)>([\s\S]*?)<\/script>/gi, (m, a, c) => a.includes('src=') ? m : `<script${a}>${minijs(c)}</script>`)
+            .replace(/\n\s*/g, '')
+            .replace(/>\s+</g, '><')
+            .replace(/\s{2,}/g, ' ')
+            .replace(/<!--.*?-->/g, '')
+            .trim();
+
+          for (const file of getHtmlFiles(distDir)) {
+            fs.writeFileSync(file, minihtml(fs.readFileSync(file, 'utf-8')), 'utf-8');
+          }
+        }
+      }
     }
   ]
 });
