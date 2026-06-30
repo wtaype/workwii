@@ -318,7 +318,7 @@ color: var(--tx);
 }
 
 /* ══════════════════ ACERCA DE NOSOTROS ══════════════════ */
-.sec_test { padding: 0; margin-top: 4vh; margin-bottom: 8vh; }
+.sec_test { padding: 0; margin-top: 4vh; margin-bottom: 0; }
 .test_bg {
   background: linear-gradient(108deg, var(--mbg), var(--mco));
   border-radius: 3vh;
@@ -583,6 +583,39 @@ color: var(--tx);
 .sec_cta_btn {
   color: white !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ══════════════════ DECLARACIÓN DE TRANSPARENCIA GOOGLE ══════════════════ */
+.sec_disclosure {
+  padding: 1vh 0 5vh 0!important;
+  display: flex;
+  justify-content: center;
+}
+.disclosure_card {
+  background: var(--bg4);
+  border: 1px solid var(--brd);
+  border-radius: 2vh;
+  padding: 4vh;
+  width: 100%;
+  text-align: left;
+}
+.disclosure_card h3 {
+  font-size: var(--fz_m4);
+  font-weight: 800;
+  color: var(--tx1);
+  margin-bottom: 1.5vh;
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+}
+.disclosure_card h3 i {
+  color: var(--mco);
+}
+.disclosure_card p {
+  font-size: var(--fz_m1);
+  color: var(--tx2);
+  line-height: 1.65;
+  margin-bottom: 0;
 }
 
 /* ══════════════════ DISPOSITIVOS MÓVILES EXTRAS (<= 500px) ══════════════════ */

@@ -96,7 +96,11 @@ export const idiomaInicio = {
     'inicio.acercaTitle': 'Sobre Workwii',
     'inicio.acercaP1': '<strong>Workwii</strong> nació de la frustración real de no saber por qué los CVs eran ignorados automáticamente. Creemos firmemente que ningún talento debe quedar en la sombra debido a un mal formato o la falta de palabras clave.',
     'inicio.acercaP2': 'Nuestra misión es empoderar a cada profesional con inteligencia artificial gratuita y accesible para potenciar sus fortalezas. ¡Queremos que postules con la seguridad y confianza de que pasarás cualquier filtro!',
-    'inicio.acercaLink': 'Conoce nuestra historia'
+    'inicio.acercaLink': 'Conoce nuestra historia',
+
+    // Transparencia Google OAuth
+    'inicio.disclosureTitle': 'Propósito de la Aplicación y Declaración de Google OAuth',
+    'inicio.disclosureText': 'Workwii es una plataforma de carrera profesional impulsada por inteligencia artificial diseñada para ayudar a los candidatos a optimizar sus currículums (CV) para sistemas de seguimiento de candidatos (ATS), simular entrevistas de trabajo y acceder a ofertas de empleo remoto. Utilizamos el inicio de sesión de Google OAuth únicamente para verificar tu identidad, registrar tu perfil seguro de usuario y guardar tus currículums generados en tu espacio privado de cuenta. No compartimos tu información de perfil ni tus datos personales con terceros.'
   },
   en: {
     'inicio.saludo': 'Champion',
@@ -192,6 +196,10 @@ export const idiomaInicio = {
     'inicio.acercaTitle': 'About Workwii',
     'inicio.acercaP1': '<strong>Workwii</strong> was born from the real frustration of not knowing why resumes were ignored automatically. We firmly believe that no talent should stay in the dark due to a bad layout or a lack of keywords.',
     'inicio.acercaP2': 'Our mission is to empower every professional with free and accessible artificial intelligence to boost their strengths. We want you to apply with the security and confidence that you will pass any filter!',
-    'inicio.acercaLink': 'Learn our story'
+    'inicio.acercaLink': 'Learn our story',
+
+    // Google OAuth Disclosure
+    'inicio.disclosureTitle': 'App Purpose & Google OAuth Disclosure',
+    'inicio.disclosureText': 'Workwii is an AI-powered professional career platform designed to help job seekers optimize their resumes (CV) for Applicant Tracking Systems (ATS), simulate mock interviews, and access remote job listings. We use Google OAuth login solely to verify your identity, register your secure user profile, and save your generated CVs in your private user space. We do not share your profile information or personal data with any third parties.'
   }
 };
