@@ -299,7 +299,7 @@ try {
     });
   };
 
-  const syncCache = async () => {
+  const syncCache = () => {
     const lang = getLanguage();
     const cacheKey = `ultimosposts_${lang}`;
     let cached = getls(cacheKey);
@@ -307,32 +307,24 @@ try {
       updateDOMWithCache(cached);
       return;
     }
-    try {
-      const { supabase } = await import('../supabase.js');
-      const { data } = await supabase
-        .from('blog')
-        .select('id, slug, titulo, descripcion, categoria, creado, imagen, vistas, likes')
-        .eq('activo', true)
-        .eq('lang', lang)
-        .order('creado', { ascending: false })
-        .limit(16);
-      if (data) {
-        const mapped = data.map(p => ({
-          id: p.id,
-          slug: p.slug,
-          titulo: p.titulo,
-          resumen: p.descripcion || '',
-          categoria: p.categoria,
-          creado: p.creado,
-          imagen: p.imagen || '/poster.webp',
-          vistas: p.vistas || 0,
-          likes: p.likes || 0
-        }));
-        savels(cacheKey, mapped, 24);
-        updateDOMWithCache(mapped);
-      }
-    } catch (e) {
-      console.error(e);
+    
+    // Extraer datos iniciales del DOM renderizado por el servidor para la caché
+    const cards = document.querySelectorAll('.ib_card');
+    if (cards.length) {
+      const extracted = Array.from(cards).map(card => {
+        const slug = card.getAttribute('data-slug');
+        const viewsText = card.querySelector('.fa-eye')?.nextSibling?.textContent || '0';
+        const likesText = card.querySelector('.fa-heart')?.nextSibling?.textContent || '0';
+        const dateText = card.querySelector('.fa-calendar-alt')?.nextSibling?.textContent || '';
+        
+        return {
+          slug,
+          vistas: parseInt(viewsText.trim()) || 0,
+          likes: parseInt(likesText.trim()) || 0,
+          creado: dateText.trim()
+        };
+      });
+      savels(cacheKey, extracted, 24);
     }
   };
 
