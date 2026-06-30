@@ -1,0 +1,332 @@
+  /* Animación de flotado para orbes decorativos */
+  @keyframes comp_float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(20px, -40px) scale(1.05); }
+  }
+
+  /* Contenedor principal */
+  .comp_wrap {
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: color-mix(in srgb, var(--mco) 2%, var(--bg));
+    color: var(--tx1);
+    font-family: var(--ff_P), sans-serif;
+    padding-bottom: 10vh;
+  }
+
+  /* ── HERO DE COMPARATIVA ── */
+  .comp_hero {
+    position: relative;
+    padding: 12vh 6vw 8vh;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .comp_hero_orb {
+    position: absolute;
+    filter: blur(90px);
+    z-index: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  .comp_orb1 { width: 35vw; height: 35vw; background: rgba(112, 0, 255, 0.12); top: -10vh; right: -5vw; animation: comp_float 18s infinite ease-in-out; }
+  .comp_orb2 { width: 30vw; height: 30vw; background: rgba(14, 190, 255, 0.1); bottom: -5vh; left: -5vw; animation: comp_float 22s infinite ease-in-out reverse; }
+
+  .comp_hero_body {
+    position: relative;
+    z-index: 1;
+    max-width: 850px;
+    margin: 0 auto;
+  }
+
+  .comp_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 1vh;
+    padding: 0.8vh 2vh;
+    background: var(--wb);
+    border: 1px solid var(--brd);
+    border-radius: 4vh;
+    font-size: var(--fz_s2);
+    font-weight: 700;
+    color: var(--mco);
+    margin-bottom: 3.5vh;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  }
+
+  .comp_hero_tit {
+    font-size: clamp(2.2rem, 6vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 2.5vh;
+    background: linear-gradient(135deg, var(--tx1), var(--mco));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1.5px;
+  }
+
+  .comp_hero_sub {
+    font-size: var(--fz_m2);
+    color: var(--tx2);
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* ── SECCIONES DE TABLAS ── */
+  .comp_container {
+    margin: 0 auto;
+    padding: 0 5vw;
+    position: relative;
+    z-index: 2;
+  }
+
+  .comp_section {
+    margin-bottom: 8vh;
+  }
+
+  .comp_sect_header {
+    margin-bottom: 4vh;
+    text-align: left;
+  }
+
+  .comp_sect_title {
+    font-size: var(--fz_l1);
+    font-weight: 800;
+    color: var(--tx1);
+    margin-bottom: 1.5vh;
+    display: flex;
+    align-items: center;
+    gap: 1.5vh;
+  }
+  .comp_sect_title i {
+    color: var(--mco);
+  }
+
+  .comp_sect_desc {
+    font-size: var(--fz_m1);
+    color: var(--tx3);
+    line-height: 1.5;
+  }
+
+  /* ── ESTILOS PREMIUM PARA TABLAS ── */
+  .comp_table_card {
+    background: var(--wb);
+    border: 1px solid var(--brd);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    overflow: hidden;
+    margin-bottom: 4vh;
+  }
+
+  .comp_table_wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .comp_table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    min-width: 800px;
+  }
+
+  .comp_table th {
+    background: color-mix(in srgb, var(--mco) 4%, var(--wb));
+    padding: 2.2vh 3vh;
+    font-size: var(--fz_m1);
+    font-weight: 800;
+    color: var(--tx1);
+    border-bottom: 2px solid var(--brd);
+  }
+
+  .comp_table td {
+    padding: 2.2vh 3vh;
+    font-size: var(--fz_m1);
+    color: var(--tx2);
+    border-bottom: 1px solid var(--brd);
+    vertical-align: middle;
+    transition: background-color 0.2s ease;
+  }
+
+  .comp_table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .comp_table tr:hover td {
+    background: color-mix(in srgb, var(--mco) 1.5%, var(--wb));
+  }
+
+  /* Destacado de la columna de Workwii */
+  .comp_col_highlight {
+    background: color-mix(in srgb, var(--mco) 2.5%, var(--wb)) !important;
+    font-weight: 700;
+    color: var(--tx1);
+  }
+  .comp_col_highlight_header {
+    background: color-mix(in srgb, var(--mco) 8%, var(--wb)) !important;
+    color: var(--mco) !important;
+    font-weight: 900 !important;
+    border-bottom: 2px solid var(--mco) !important;
+  }
+
+  /* Badges para los estados de la comparativa */
+  .comp_status_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 1vh;
+    padding: 0.6vh 1.4vh;
+    border-radius: 8px;
+    font-size: var(--fz_s3);
+    font-weight: 700;
+    line-height: 1;
+  }
+  
+  .comp_status_badge.good {
+    background: color-mix(in srgb, var(--success) 12%, transparent);
+    color: var(--success);
+  }
+  .comp_status_badge.warning {
+    background: color-mix(in srgb, var(--warning) 12%, transparent);
+    color: var(--warning);
+  }
+  .comp_status_badge.danger {
+    background: color-mix(in srgb, var(--error) 12%, transparent);
+    color: var(--error);
+  }
+
+  /* Estilos de precios */
+  .comp_price_tag {
+    font-size: var(--fz_m1);
+    font-weight: 800;
+    color: var(--tx1);
+  }
+  .comp_price_tag.highlight {
+    color: var(--mco);
+  }
+  .comp_price_tag.success {
+    color: var(--success);
+  }
+  .comp_price_tag.warning {
+    color: var(--warning);
+  }
+  .comp_price_tag.danger {
+    color: var(--error);
+  }
+  .comp_price_detail {
+    font-size: var(--fz_s3);
+    color: var(--tx3);
+    display: block;
+    margin-top: 0.4vh;
+    font-weight: 500;
+  }
+
+  /* ── SECCIÓN LO QUE NOS HACE ÚNICOS ── */
+  .comp_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 3vh;
+    margin-top: 4vh;
+  }
+
+  .comp_card {
+    background: var(--wb);
+    border: 1px solid var(--brd);
+    border-radius: 18px;
+    padding: 4vh 3.5vh;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2vh;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+  }
+
+  .comp_card:hover {
+    transform: translateY(-5px);
+    border-color: var(--mco);
+    box-shadow: 0 12px 30px color-mix(in srgb, var(--mco) 8%, rgba(0,0,0,0.04));
+  }
+
+  .comp_card_icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--mco) 8%, var(--wb));
+    color: var(--mco);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  .comp_card h3 {
+    font-size: var(--fz_m2);
+    font-weight: 800;
+    color: var(--tx1);
+    margin: 0;
+  }
+
+  .comp_card p {
+    font-size: var(--fz_s2);
+    color: var(--tx2);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* ── BOTÓN FLOTANTE/CALL TO ACTION ── */
+  .comp_cta_banner {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--mco) 90%, #000), #7000FF);
+    border-radius: 24px;
+    padding: 6vh 5vw;
+    text-align: center;
+    color: #fff;
+    margin-top: 6vh;
+    box-shadow: 0 15px 40px color-mix(in srgb, var(--mco) 25%, transparent);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .comp_cta_banner h2 {
+    font-size: var(--fz_l1);
+    font-weight: 900;
+    margin: 0 0 2vh;
+    letter-spacing: -1px;
+  }
+
+  .comp_cta_banner p {
+    font-size: var(--fz_m1);
+    max-width: 600px;
+    margin: 0 auto 4vh;
+    opacity: 0.9;
+    line-height: 1.5;
+    color: var(--txa);
+  }
+
+  .comp_cta_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.5vh;
+    background: #fff;
+    color: #5b00d6;
+    padding: 1.8vh 4.5vh;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: var(--fz_m1);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  }
+
+  .comp_cta_btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    filter: brightness(1.05);
+  }
+
+  .comp_cta_btn:active {
+    transform: translateY(0);
+  }

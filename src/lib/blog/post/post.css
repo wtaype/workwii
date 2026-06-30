@@ -97,7 +97,9 @@
 .po_contenido,
 .po_tags,
 .po_share { padding-left: 3vh; padding-right: 3vh; }
-
+.po_contenido *:not(i){
+  font-family: var(--ff_O);
+}
 /* ── 6. CACHE BADGE ──────────────────────────────── */
 .po_cache_badge {
   display: inline-flex !important;

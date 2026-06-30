@@ -377,3 +377,107 @@
   .bl_cat_btn span, .bl_ord_btn span { display: none; }
   .bl_hero_sub { max-width: 90%; }
 }
+@media (max-width: 500px) {
+  .bl_hero {
+    padding: 3vh 1.5vh 2vh;
+  }
+  .bl_hero_tit {
+    font-size: var(--fz_l1);
+    line-height: 1.2;
+  }
+  .bl_hero_sub {
+    font-size: var(--fz_s4);
+    max-width: 95%;
+  }
+  .bl_search_bar {
+    padding: 0 1vh;
+    margin-bottom: 2.5vh;
+  }
+  .bl_search_inner {
+    padding: 1vh 2vh;
+  }
+  .bl_bar {
+    gap: 1vh;
+  }
+  /* Restore horizontal scroll category pills for a cleaner mobile experience */
+  .bl_cats {
+    gap: 1vh;
+    padding: 0.5vh 1vh;
+  }
+  .bl_cat_btn {
+    width: auto !important;
+    height: auto !important;
+    border-radius: 5vh !important;
+    padding: 0.8vh 1.4vh !important;
+  }
+  .bl_cat_btn i {
+    font-size: var(--fz_s3) !important;
+  }
+  .bl_cat_btn span {
+    display: inline !important;
+    font-size: var(--fz_s2) !important;
+  }
+  /* Restore active status for category pill */
+  .bl_cat_btn.active {
+    box-shadow: 0 3px 8px rgba(0,0,0,.12);
+  }
+  /* Smooth scroll for order buttons and list controls */
+  .bl_ord_btn {
+    width: auto !important;
+    height: auto !important;
+    border-radius: 5vh !important;
+    padding: 0.6vh 1.2vh !important;
+  }
+  .bl_ord_btn i {
+    font-size: var(--fz_s3) !important;
+  }
+  .bl_ord_btn span {
+    display: inline !important;
+    font-size: var(--fz_s2) !important;
+  }
+  .bl_grid {
+    grid-template-columns: 1fr;
+    gap: 2vh;
+    padding: 0 1.5vh;
+  }
+  .bl_card {
+    border-radius: 1.4vh;
+  }
+  .bl_card:hover {
+    transform: translateY(-0.4vh);
+    box-shadow: 0 8px 24px rgba(0,0,0,.06);
+  }
+  .bl_card_body {
+    padding: 1.8vh;
+  }
+  .bl_card_tit {
+    font-size: var(--fz_m1);
+    line-height: 1.25;
+    margin-bottom: 0.6vh;
+    -webkit-line-clamp: 2;
+  }
+  .bl_card_res {
+    font-size: var(--fz_s3);
+    margin-bottom: 1.5vh;
+    -webkit-line-clamp: 2;
+  }
+  .bl_card_footer {
+    padding-top: 1.2vh;
+  }
+  .bl_card_meta {
+    gap: 0.6vh;
+    font-size: var(--fz_s1);
+  }
+  .bl_card_leer {
+    font-size: var(--fz_s2);
+  }
+  .bl_empty {
+    padding: 6vh 0 !important;
+  }
+  .bl_empty h3 {
+    font-size: var(--fz_m4);
+  }
+  .bl_empty p {
+    font-size: var(--fz_s4);
+  }
+}

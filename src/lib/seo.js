@@ -117,18 +117,34 @@ export const seo = {
     }
   },
   comparar: {
-    title: `Comparativa de Creadores de CV y Filtros ATS | ${app}`,
-    description: "Compara de manera transparente a Workwii frente a otras herramientas como Rezi, Resume.io, Novoresume y Jobscan. Descubre por qué somos la mejor opción.",
-    path: '/comparar',
-    keywords: [
-      'comparativa creadores cv',
-      'rezi vs workwii',
-      'resume io alternativa gratis',
-      'ats checker gratuito',
-      'mejor creador de curriculum'
-    ],
-    audience: ['candidatos', 'profesionales', 'reclutadores'],
-    intent: 'comparar plataformas de curriculum vitae y herramientas de empleo'
+    es: {
+      title: `Comparativa de Creadores de CV y Filtros ATS | ${app}`,
+      description: "Compara de manera transparente a Workwii frente a otras herramientas como Rezi, Resume.io, Novoresume y Jobscan. Descubre por qué somos la mejor opción.",
+      path: '/comparar',
+      keywords: [
+        'comparativa creadores cv',
+        'rezi vs workwii',
+        'resume io alternativa gratis',
+        'ats checker gratuito',
+        'mejor creador de curriculum'
+      ],
+      audience: ['candidatos', 'profesionales', 'reclutadores'],
+      intent: 'comparar plataformas de curriculum vitae y herramientas de empleo'
+    },
+    en: {
+      title: `Compare CV Builders & ATS Filters | ${app}`,
+      description: "Transparently compare Workwii against other tools like Rezi, Resume.io, Novoresume, and Jobscan. Discover why we are the best choice.",
+      path: '/en/comparar',
+      keywords: [
+        'cv builders comparison',
+        'rezi vs workwii',
+        'free resume io alternative',
+        'free ats checker',
+        'best resume builder'
+      ],
+      audience: ['candidates', 'professionals', 'recruiters'],
+      intent: 'compare curriculum vitae platforms and employment tools'
+    }
   },
   blog: {
     es: {
