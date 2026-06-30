@@ -30,6 +30,8 @@ const locales = {
       perfil: 'Perfil',
       experiencia: 'Experiencia',
       educacion: 'Educación',
+      proyectos: 'Proyectos',
+      certificados: 'Certificados',
       skills: 'Habilidades'
     },
     contacto: {
@@ -68,29 +70,55 @@ const locales = {
       ubicacion: 'Ubicación',
       inicio: 'Fecha de Inicio *',
       fin: 'Fecha de Fin *',
-      logros: 'Logros y Funciones (Una viñeta por línea) *',
+      logros: 'Logros y Responsabilidades Clave (Un logro por línea) *',
       placeholderCargo: 'Ej: Desarrollador Backend',
       placeholderEmpresa: 'Ej: Tech Solutions',
       placeholderUbicacion: 'Ej: Remoto / Madrid, España',
       placeholderInicio: 'Ej: Ene 2023',
       placeholderFin: 'Ej: Presente o Dic 2024',
-      placeholderLogros: '- Lideré el desarrollo de la API rest...'
+      placeholderLogros: '- Lideré el desarrollo de la API REST...'
     },
     educacion: {
-      titulo: 'Historial Educativo',
-      agregar: 'Añadir Estudio',
-      estudioNum: 'Estudio',
+      titulo: 'Historial Académico',
+      agregar: 'Añadir Educación',
+      estudioNum: 'Educación',
       eliminar: 'Eliminar',
-      institucion: 'Institución Educativa *',
-      grado: 'Grado / Carrera / Certificación *',
+      institucion: 'Institución / Universidad *',
+      grado: 'Grado / Carrera / Certificado *',
       ubicacion: 'Ubicación',
       inicio: 'Fecha de Inicio *',
       fin: 'Fecha de Fin *',
       placeholderInstitucion: 'Ej: Universidad Nacional',
-      placeholderGrado: 'Ej: Lic. en Administración',
+      placeholderGrado: 'Ej: Bachiller en Ingeniería de Sistemas',
       placeholderUbicacion: 'Ej: Lima, Perú',
       placeholderInicio: 'Ej: Mar 2018',
       placeholderFin: 'Ej: Dic 2022 o En Curso'
+    },
+    proyectos: {
+      titulo: 'Proyectos Destacados',
+      agregar: 'Añadir Proyecto',
+      proyectoNum: 'Proyecto',
+      eliminar: 'Eliminar',
+      nombre: 'Nombre del Proyecto *',
+      descripcion: 'Descripción del Proyecto *',
+      tecnologias: 'Tecnologías utilizadas',
+      link: 'Enlace al proyecto (Opcional)',
+      placeholderNombre: 'Ej: Sistema de Gestión de Inventarios',
+      placeholderDesc: 'Ej: Desarrollé una plataforma web para automatizar el inventario...',
+      placeholderTecnologias: 'Ej: React, Node.js, MongoDB',
+      placeholderLink: 'Ej: https://github.com/usuario/proyecto'
+    },
+    certificados: {
+      titulo: 'Certificaciones / Cursos',
+      agregar: 'Añadir Certificado',
+      certificadoNum: 'Certificación',
+      eliminar: 'Eliminar',
+      nombre: 'Nombre de la Certificación *',
+      emisor: 'Entidad Emisora *',
+      fecha: 'Fecha de Obtención *',
+      placeholderNombre: 'Ej: AWS Certified Solutions Architect',
+      placeholderEmisor: 'Ej: Amazon Web Services',
+      placeholderFecha: 'Ej: En 2023 o Ene 2023'
     },
     skills: {
       titulo: 'Habilidades (Separadas por comas) *',
@@ -107,6 +135,8 @@ const locales = {
       perfil: 'Summary',
       experiencia: 'Experience',
       educacion: 'Education',
+      proyectos: 'Projects',
+      certificados: 'Certifications',
       skills: 'Skills'
     },
     contacto: {
@@ -169,6 +199,32 @@ const locales = {
       placeholderInicio: 'e.g., Mar 2018',
       placeholderFin: 'e.g., Dec 2022 or Ongoing'
     },
+    proyectos: {
+      titulo: 'Featured Projects',
+      agregar: 'Add Project',
+      proyectoNum: 'Project',
+      eliminar: 'Delete',
+      nombre: 'Project Name *',
+      descripcion: 'Project Description *',
+      tecnologias: 'Technologies used',
+      link: 'Project Link (Optional)',
+      placeholderNombre: 'e.g., Inventory Management System',
+      placeholderDesc: 'e.g., Developed a web platform to automate inventory tracking...',
+      placeholderTecnologias: 'e.g., React, Node.js, MongoDB',
+      placeholderLink: 'e.g., https://github.com/username/project'
+    },
+    certificados: {
+      titulo: 'Certifications & Courses',
+      agregar: 'Add Certification',
+      certificadoNum: 'Certification',
+      eliminar: 'Delete',
+      nombre: 'Certification Name *',
+      emisor: 'Issuing Organization *',
+      fecha: 'Date Obtained *',
+      placeholderNombre: 'e.g., AWS Certified Solutions Architect',
+      placeholderEmisor: 'e.g., Amazon Web Services',
+      placeholderFecha: 'e.g., In 2023 or Jan 2023'
+    },
     skills: {
       titulo: 'Skills (Separated by commas) *',
       placeholder: 'e.g., React, Node.js, SQL, Teamwork, Leadership',
@@ -180,6 +236,8 @@ const locales = {
   }
 };
 
+export const convertir_limites = 5;
+
 export const initVisual = (initialData) => {
   convertedCvData = { ...convertedCvData, ...initialData };
   
@@ -187,12 +245,17 @@ export const initVisual = (initialData) => {
     convertedCvData.idioma = 'es';
   }
 
-  // Set default empty lists if none exist
   if (!convertedCvData.experiencias || convertedCvData.experiencias.length === 0) {
     convertedCvData.experiencias = [crearEstructuraExp()];
   }
   if (!convertedCvData.educacion || convertedCvData.educacion.length === 0) {
     convertedCvData.educacion = [crearEstructuraEdu()];
+  }
+  if (!convertedCvData.proyectos) {
+    convertedCvData.proyectos = [];
+  }
+  if (!convertedCvData.certificaciones) {
+    convertedCvData.certificaciones = [];
   }
   if (!convertedCvData.idiomas) {
     convertedCvData.idiomas = [];
@@ -203,6 +266,23 @@ export const initVisual = (initialData) => {
   renderFormContent();
   updateA4Preview();
   setupGlobalListeners();
+
+  // Activar barra flotante y calcular límites
+  const floatBar = document.getElementById('botonesConvertir');
+  if (floatBar) {
+    floatBar.classList.add('show');
+    const limitItem = localStorage.getItem('limiteHoy_ats_cv_conversion');
+    let usedCount = 0;
+    if (limitItem) {
+      try {
+        const parsed = JSON.parse(limitItem);
+        usedCount = parsed.n || 0;
+      } catch (_) {}
+    }
+    const remaining = Math.max(0, convertir_limites - usedCount);
+    const countEl = document.getElementById('convFreeCount');
+    if (countEl) countEl.textContent = `${remaining}/${convertir_limites}`;
+  }
 };
 
 const crearEstructuraExp = () => ({
@@ -224,6 +304,21 @@ const crearEstructuraEdu = () => ({
   fin: ''
 });
 
+const crearEstructuraProj = () => ({
+  id: 'proj_' + Math.random().toString(36).substr(2, 9),
+  nombre: '',
+  descripcion: '',
+  tecnologias: '',
+  link: ''
+});
+
+const crearEstructuraCert = () => ({
+  id: 'cert_' + Math.random().toString(36).substr(2, 9),
+  nombre: '',
+  emisor: '',
+  fecha: ''
+});
+
 const renderTabs = () => {
   const container = document.getElementById('convTabsHeader');
   if (!container) return;
@@ -236,6 +331,8 @@ const renderTabs = () => {
     { id: 'perfil', label: tabLang.perfil, icon: 'fa-user' },
     { id: 'experiencia', label: tabLang.experiencia, icon: 'fa-briefcase' },
     { id: 'educacion', label: tabLang.educacion, icon: 'fa-graduation-cap' },
+    { id: 'proyectos', label: tabLang.proyectos, icon: 'fa-project-diagram' },
+    { id: 'certificados', label: tabLang.certificados, icon: 'fa-certificate' },
     { id: 'skills', label: tabLang.skills, icon: 'fa-sliders-h' }
   ];
 
@@ -416,6 +513,12 @@ const renderFormContent = () => {
 
   } else if (activeTab === 'educacion') {
     renderEducacionForm(container);
+
+  } else if (activeTab === 'proyectos') {
+    renderProyectosForm(container);
+
+  } else if (activeTab === 'certificados') {
+    renderCertificadosForm(container);
 
   } else if (activeTab === 'skills') {
     container.innerHTML = `
@@ -709,6 +812,188 @@ const renderEducacionForm = (container) => {
   });
 };
 
+const renderProyectosForm = (container) => {
+  const isEn = convertedCvData.idioma === 'en';
+  const lang = isEn ? locales.en.proyectos : locales.es.proyectos;
+
+  container.innerHTML = `
+    <div class="conv_header_row conv_form_header_row">
+      <h3>${lang.titulo}</h3>
+      <button type="button" class="conv_btn_small" id="btnAddProj"><i class="fas fa-plus"></i> ${lang.agregar}</button>
+    </div>
+    <div class="conv_list_items" id="convProjList">
+      <!-- render projects here -->
+    </div>
+  `;
+
+  const projListContainer = document.getElementById('convProjList');
+  if (!projListContainer) return;
+
+  const renderList = () => {
+    projListContainer.innerHTML = '';
+    
+    if (!convertedCvData.proyectos || convertedCvData.proyectos.length === 0) {
+      projListContainer.innerHTML = `<p style="padding: 3vh; color: var(--tx3); text-align: center; font-weight: 500;">${isEn ? 'No projects added yet.' : 'No has añadido ningún proyecto aún.'}</p>`;
+      return;
+    }
+
+    convertedCvData.proyectos.forEach((proj, idx) => {
+      const card = document.createElement('div');
+      card.className = 'conv_item_card';
+      card.dataset.id = proj.id;
+      card.innerHTML = `
+        <div class="conv_item_card_header">
+          <h4>${lang.proyectoNum} #${idx + 1}</h4>
+          <button class="conv_btn_danger_small btn_del_proj" data-id="${proj.id}"><i class="fas fa-trash"></i> ${lang.eliminar}</button>
+        </div>
+        <div class="conv_form_grid">
+          <div class="conv_field">
+            <label>${lang.nombre}</label>
+            <input type="text" class="proj_nombre" value="${proj.nombre || ''}" placeholder="${lang.placeholderNombre}" required />
+          </div>
+          <div class="conv_field">
+            <label>${lang.link}</label>
+            <input type="text" class="proj_link" value="${proj.link || ''}" placeholder="${lang.placeholderLink}" />
+          </div>
+          <div class="conv_field full_width">
+            <label>${lang.tecnologias}</label>
+            <input type="text" class="proj_tecnologias" value="${proj.tecnologias || ''}" placeholder="${lang.placeholderTecnologias}" />
+          </div>
+          <div class="conv_field full_width">
+            <label>${lang.descripcion}</label>
+            <textarea class="proj_descripcion" rows="4" placeholder="${lang.placeholderDesc}" required>${proj.descripcion || ''}</textarea>
+          </div>
+        </div>
+      `;
+      projListContainer.appendChild(card);
+    });
+
+    // Bind fields dynamically
+    projListContainer.querySelectorAll('.conv_item_card').forEach(card => {
+      const id = card.dataset.id;
+      const index = convertedCvData.proyectos.findIndex(p => p.id === id);
+      if (index === -1) return;
+
+      const fields = ['nombre', 'link', 'tecnologias', 'descripcion'];
+      fields.forEach(field => {
+        const element = card.querySelector(`.proj_${field}`);
+        element?.addEventListener('input', () => {
+          convertedCvData.proyectos[index][field] = element.value;
+          updateA4Preview();
+        });
+      });
+    });
+
+    // Bind deletes
+    projListContainer.querySelectorAll('.btn_del_proj').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        convertedCvData.proyectos = convertedCvData.proyectos.filter(p => p.id !== id);
+        renderList();
+        updateA4Preview();
+      });
+    });
+  };
+
+  renderList();
+
+  document.getElementById('btnAddProj')?.addEventListener('click', () => {
+    if (!convertedCvData.proyectos) convertedCvData.proyectos = [];
+    convertedCvData.proyectos.push(crearEstructuraProj());
+    renderList();
+    updateA4Preview();
+  });
+};
+
+const renderCertificadosForm = (container) => {
+  const isEn = convertedCvData.idioma === 'en';
+  const lang = isEn ? locales.en.certificados : locales.es.certificados;
+
+  container.innerHTML = `
+    <div class="conv_header_row conv_form_header_row">
+      <h3>${lang.titulo}</h3>
+      <button type="button" class="conv_btn_small" id="btnAddCert"><i class="fas fa-plus"></i> ${lang.agregar}</button>
+    </div>
+    <div class="conv_list_items" id="convCertList">
+      <!-- render certifications here -->
+    </div>
+  `;
+
+  const certListContainer = document.getElementById('convCertList');
+  if (!certListContainer) return;
+
+  const renderList = () => {
+    certListContainer.innerHTML = '';
+
+    if (!convertedCvData.certificaciones || convertedCvData.certificaciones.length === 0) {
+      certListContainer.innerHTML = `<p style="padding: 3vh; color: var(--tx3); text-align: center; font-weight: 500;">${isEn ? 'No certifications added yet.' : 'No has añadido ninguna certificación aún.'}</p>`;
+      return;
+    }
+
+    convertedCvData.certificaciones.forEach((cert, idx) => {
+      const card = document.createElement('div');
+      card.className = 'conv_item_card';
+      card.dataset.id = cert.id;
+      card.innerHTML = `
+        <div class="conv_item_card_header">
+          <h4>${lang.certificadoNum} #${idx + 1}</h4>
+          <button class="conv_btn_danger_small btn_del_cert" data-id="${cert.id}"><i class="fas fa-trash"></i> ${lang.eliminar}</button>
+        </div>
+        <div class="conv_form_grid">
+          <div class="conv_field">
+            <label>${lang.nombre}</label>
+            <input type="text" class="cert_nombre" value="${cert.nombre || ''}" placeholder="${lang.placeholderNombre}" required />
+          </div>
+          <div class="conv_field">
+            <label>${lang.emisor}</label>
+            <input type="text" class="cert_emisor" value="${cert.emisor || ''}" placeholder="${lang.placeholderEmisor}" required />
+          </div>
+          <div class="conv_field">
+            <label>${lang.fecha}</label>
+            <input type="text" class="cert_fecha" value="${cert.fecha || ''}" placeholder="${lang.placeholderFecha}" required />
+          </div>
+        </div>
+      `;
+      certListContainer.appendChild(card);
+    });
+
+    // Bind fields dynamically
+    certListContainer.querySelectorAll('.conv_item_card').forEach(card => {
+      const id = card.dataset.id;
+      const index = convertedCvData.certificaciones.findIndex(c => c.id === id);
+      if (index === -1) return;
+
+      const fields = ['nombre', 'emisor', 'fecha'];
+      fields.forEach(field => {
+        const element = card.querySelector(`.cert_${field}`);
+        element?.addEventListener('input', () => {
+          convertedCvData.certificaciones[index][field] = element.value;
+          updateA4Preview();
+        });
+      });
+    });
+
+    // Bind deletes
+    certListContainer.querySelectorAll('.btn_del_cert').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        convertedCvData.certificaciones = convertedCvData.certificaciones.filter(c => c.id !== id);
+        renderList();
+        updateA4Preview();
+      });
+    });
+  };
+
+  renderList();
+
+  document.getElementById('btnAddCert')?.addEventListener('click', () => {
+    if (!convertedCvData.certificaciones) convertedCvData.certificaciones = [];
+    convertedCvData.certificaciones.push(crearEstructuraCert());
+    renderList();
+    updateA4Preview();
+  });
+};
+
 const renderLanguages = () => {
   const container = document.getElementById('convLanguagesList');
   if (!container) return;
@@ -894,13 +1179,20 @@ export const updateA4Preview = () => {
   const textIdiomasLabel = isEn ? 'Languages' : 'Idiomas';
   const textPresente = isEn ? 'Present' : 'Presente';
 
+  const getHref = (url) => {
+    if (!url) return '';
+    const clean = url.trim();
+    if (clean.startsWith('http://') || clean.startsWith('https://')) return clean;
+    return `https://${clean}`;
+  };
+
   // Header Contact Section
   const contacts = [];
-  if (convertedCvData.email) contacts.push(`<span><i class="fas fa-envelope"></i> ${convertedCvData.email}</span>`);
+  if (convertedCvData.email) contacts.push(`<span><i class="fas fa-envelope"></i> <a href="mailto:${convertedCvData.email}" style="color: inherit; text-decoration: none;">${convertedCvData.email}</a></span>`);
   if (convertedCvData.telefono) contacts.push(`<span><i class="fas fa-phone"></i> ${convertedCvData.telefono}</span>`);
   if (convertedCvData.ubicacion) contacts.push(`<span><i class="fas fa-location-dot"></i> ${convertedCvData.ubicacion}</span>`);
-  if (convertedCvData.linkedin) contacts.push(`<span><i class="fab fa-linkedin"></i> ${convertedCvData.linkedin}</span>`);
-  if (convertedCvData.web) contacts.push(`<span><i class="fas fa-globe"></i> ${convertedCvData.web}</span>`);
+  if (convertedCvData.linkedin) contacts.push(`<span><i class="fab fa-linkedin"></i> <a href="${getHref(convertedCvData.linkedin)}" target="_blank" style="color: inherit; text-decoration: none;">${convertedCvData.linkedin}</a></span>`);
+  if (convertedCvData.web) contacts.push(`<span><i class="fas fa-globe"></i> <a href="${getHref(convertedCvData.web)}" target="_blank" style="color: inherit; text-decoration: none;">${convertedCvData.web}</a></span>`);
 
   const contactsHTML = contacts.join(' &bull; ');
 
@@ -991,6 +1283,67 @@ export const updateA4Preview = () => {
           <div class="cr_cv_item_subrow">
             <span class="cr_prev_editable" data-edit-field="edu_institucion" data-edu-id="${edu.id}">${edu.institucion || 'Institución'}</span>
             <span class="cr_prev_editable" data-edit-field="edu_ubicacion" data-edu-id="${edu.id}">${edu.ubicacion || ''}</span>
+          </div>
+        </div>
+      `;
+      blocks.push({ html: itemHTML, type: 'item' });
+    });
+  }
+
+  // 4b. Projects Blocks
+  const hasProj = convertedCvData.proyectos && convertedCvData.proyectos.some(proj => proj.nombre || proj.descripcion);
+  if (hasProj) {
+    const textProyectos = isEn ? 'Featured Projects' : 'Proyectos Destacados';
+    const projTitleHTML = `
+      <h2 class="cr_cv_section_title" data-click-tab="proyectos" style="margin-bottom: 8px !important;">${textProyectos}</h2>
+    `;
+    blocks.push({ html: projTitleHTML, type: 'section_title' });
+
+    convertedCvData.proyectos.forEach(proj => {
+      if (!proj.nombre && !proj.descripcion) return;
+
+      const itemHTML = `
+        <div class="cr_cv_item" data-click-tab="proyectos">
+          <div class="cr_cv_item_row">
+            <strong class="cr_prev_editable" data-edit-field="proj_nombre" data-proj-id="${proj.id}">${proj.nombre || 'Nombre del Proyecto'}</strong>
+            ${proj.link ? `<span><a href="${getHref(proj.link)}" target="_blank" style="color: inherit; text-decoration: none;"><i class="fas fa-link"></i> ${proj.link}</a></span>` : ''}
+          </div>
+          ${proj.tecnologias ? `
+            <div class="cr_prev_editable" style="font-size: 11px; color: var(--tx2); margin-top: 3px;" data-edit-field="proj_tecnologias" data-proj-id="${proj.id}">
+              <strong>${isEn ? 'Technologies:' : 'Tecnologías:'}</strong> ${proj.tecnologias}
+            </div>
+          ` : ''}
+          ${proj.descripcion ? `
+            <div class="cr_cv_item_desc" style="margin-top: 5px;">
+              <p class="cr_prev_editable" style="margin: 0; line-height: 1.4;" data-edit-field="proj_descripcion" data-proj-id="${proj.id}">${proj.descripcion}</p>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      blocks.push({ html: itemHTML, type: 'item' });
+    });
+  }
+
+  // 4c. Certifications Blocks
+  const hasCert = convertedCvData.certificaciones && convertedCvData.certificaciones.some(cert => cert.nombre || cert.emisor);
+  if (hasCert) {
+    const textCertificados = isEn ? 'Certifications' : 'Certificaciones';
+    const certTitleHTML = `
+      <h2 class="cr_cv_section_title" data-click-tab="certificados" style="margin-bottom: 8px !important;">${textCertificados}</h2>
+    `;
+    blocks.push({ html: certTitleHTML, type: 'section_title' });
+
+    convertedCvData.certificaciones.forEach(cert => {
+      if (!cert.nombre && !cert.emisor) return;
+
+      const itemHTML = `
+        <div class="cr_cv_item" data-click-tab="certificados">
+          <div class="cr_cv_item_row">
+            <strong class="cr_prev_editable" data-edit-field="cert_nombre" data-cert-id="${cert.id}">${cert.nombre || 'Nombre de la Certificación'}</strong>
+            <span>${cert.fecha || ''}</span>
+          </div>
+          <div class="cr_cv_item_subrow">
+            <span class="cr_prev_editable" data-edit-field="cert_emisor" data-cert-id="${cert.id}">${cert.emisor || 'Emisor'}</span>
           </div>
         </div>
       `;
@@ -1140,37 +1493,19 @@ const addSafeListener = (id, event, callback) => {
 };
 
 const setupGlobalListeners = () => {
-  // Configurar botón principal de PDF (Descargar directamente)
-  addSafeListener('convBtnPrint', 'click', () => {
-    descargarPdfDirecto(convertedCvData);
+  // Alternar el menú desplegable de descargas flotante
+  addSafeListener('convBtnDownloadDropdown', 'click', (e) => {
+    e.stopPropagation();
+    const downloadMenu = document.getElementById('convDownloadMenu');
+    if (downloadMenu) {
+      downloadMenu.classList.toggle('show');
+    }
   });
 
-  // Botón de descarga directa en el dropdown
+  // Botón de descarga directa en el dropdown (PDF)
   addSafeListener('convBtnDownloadPdfDirect', 'click', () => {
     descargarPdfDirecto(convertedCvData);
     closeDropdown();
-  });
-
-  // Botón de impresión nativa en el dropdown (Recomendado ATS)
-  addSafeListener('convBtnPrintNative', 'click', () => {
-    imprimirPdf();
-    closeDropdown();
-  });
-
-  // Alternar el menú desplegable de descargas
-  addSafeListener('convBtnDownloadToggle', 'click', (e) => {
-    e.stopPropagation();
-    const downloadMenu = document.getElementById('convDownloadMenu');
-    const dropdownToggle = document.getElementById('convBtnDownloadToggle');
-    if (downloadMenu && dropdownToggle) {
-      const isShown = downloadMenu.classList.contains('show');
-      if (!isShown) {
-        downloadMenu.classList.add('show');
-        dropdownToggle.setAttribute('aria-expanded', 'true');
-      } else {
-        closeDropdown();
-      }
-    }
   });
 
   // Conectar acciones de descarga
@@ -1200,7 +1535,7 @@ const setupGlobalListeners = () => {
     document.addEventListener('click', (e) => {
       const target = e.target;
       if (target instanceof Element) {
-        const isInsideDropdown = target.closest('.conv_download_dropdown');
+        const isInsideDropdown = target.closest('.ats_float_dropdown_wrap');
         if (!isInsideDropdown) {
           closeDropdown();
         }

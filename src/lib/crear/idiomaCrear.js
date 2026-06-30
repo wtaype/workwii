@@ -68,7 +68,35 @@ export const idiomaCrear = {
     'crear.consejos.mitTexto': '"El uso de negrita clara en cargos y nombres de empresa clave reduce el tiempo de revisión humana (promedio de 6 segundos) y duplica la tasa de retención visual del reclutador."',
     'crear.consejos.mitAutor': 'Estudio de empleabilidad y ergonomía visual',
     'crear.consejos.googleTexto': '"Los algoritmos ATS ignoran de forma sistemática el texto ubicado dentro de encabezados, pies de página o cuadros de texto separados, resultando en descartes prematuros."',
-    'crear.consejos.googleAutor': 'Recomendaciones oficiales para procesos de ingeniería'
+    'crear.consejos.googleAutor': 'Recomendaciones oficiales para procesos de ingeniería',
+    
+    // Pestañas
+    'crear.tabs.contacto': 'Contacto',
+    'crear.tabs.perfil': 'Perfil',
+    'crear.tabs.experiencia': 'Experiencia',
+    'crear.tabs.educacion': 'Educación',
+    'crear.tabs.proyectos': 'Proyectos',
+    'crear.tabs.certificados': 'Certificados',
+    'crear.tabs.skills': 'Habilidades',
+
+    // Formulario de Contacto
+    'crear.contacto.nombre': 'Nombre Completo',
+    'crear.contacto.titulo': 'Título Profesional',
+    'crear.contacto.email': 'Correo Electrónico',
+    'crear.contacto.telefono': 'Teléfono',
+    'crear.contacto.ubicacion': 'Ubicación (Ciudad, País)',
+    'crear.contacto.linkedin': 'Enlace LinkedIn',
+    'crear.contacto.web': 'Sitio Web o Portafolio',
+    'crear.contacto.idioma': 'Idioma del CV',
+    'crear.contacto.placeholderNombre': 'Ej: Juan Pérez Gómez',
+    'crear.contacto.placeholderTitulo': 'Ej: Ingeniero de Software',
+    'crear.contacto.placeholderEmail': 'Ej: juan.perez@email.com',
+    'crear.contacto.placeholderTelefono': 'Ej: +51 000 000 000',
+    'crear.contacto.placeholderUbicacion': 'Ej: Madrid, España',
+    'crear.contacto.placeholderLinkedin': 'Ej: linkedin.com/in/juanperez',
+    'crear.contacto.placeholderWeb': 'Ej: github.com/juanperez',
+    'crear.idiomaEs': 'Español',
+    'crear.idiomaEn': 'Inglés'
   },
   en: {
     'crear.titulo': 'CV Builder',
@@ -136,6 +164,34 @@ export const idiomaCrear = {
     'crear.consejos.mitTexto': '"The use of clear bolding on key job titles and company names reduces human review time (average of 6 seconds) and doubles the recruiter\'s visual retention rate."',
     'crear.consejos.mitAutor': 'Study of employability and visual ergonomics',
     'crear.consejos.googleTexto': '"ATS algorithms systematically ignore text located inside headers, footers, or separate text boxes, resulting in premature rejections."',
-    'crear.consejos.googleAutor': 'Official recommendations for engineering processes'
+    'crear.consejos.googleAutor': 'Official recommendations for engineering processes',
+    
+    // Tabs
+    'crear.tabs.contacto': 'Contact Info',
+    'crear.tabs.perfil': 'Summary',
+    'crear.tabs.experiencia': 'Experience',
+    'crear.tabs.educacion': 'Education',
+    'crear.tabs.proyectos': 'Projects',
+    'crear.tabs.certificados': 'Certifications',
+    'crear.tabs.skills': 'Skills',
+
+    // Contact Form
+    'crear.contacto.nombre': 'Full Name',
+    'crear.contacto.titulo': 'Professional Title',
+    'crear.contacto.email': 'Email Address',
+    'crear.contacto.telefono': 'Phone Number',
+    'crear.contacto.ubicacion': 'Location (City, Country)',
+    'crear.contacto.linkedin': 'LinkedIn Link',
+    'crear.contacto.web': 'Website or Portfolio',
+    'crear.contacto.idioma': 'CV Language',
+    'crear.contacto.placeholderNombre': 'e.g., John Doe',
+    'crear.contacto.placeholderTitulo': 'e.g., Software Engineer',
+    'crear.contacto.placeholderEmail': 'e.g., john.doe@email.com',
+    'crear.contacto.placeholderTelefono': 'e.g., +34 600 000 000',
+    'crear.contacto.placeholderUbicacion': 'e.g., Madrid, Spain',
+    'crear.contacto.placeholderLinkedin': 'e.g., linkedin.com/in/johndoe',
+    'crear.contacto.placeholderWeb': 'e.g., github.com/johndoe',
+    'crear.idiomaEs': 'Spanish',
+    'crear.idiomaEn': 'English'
   }
 };

@@ -1,0 +1,695 @@
+---
+// src/lib/convertir/footerConvertir.astro
+interface Props {
+  lang: 'es' | 'en';
+}
+
+const { lang } = Astro.props;
+
+const content = {
+  es: {
+    badgeText: 'GUÍA Y CONSEJOS ATS',
+    guideTitle: 'Estructuración del Perfil Profesional',
+    steps: [
+      {
+        num: '1',
+        title: 'Sube tu currículum',
+        desc: 'Sube tu documento PDF o Word. El lector IA procesará el contenido extrayendo todo el texto.'
+      },
+      {
+        num: '2',
+        title: 'Formateo y Limpieza',
+        desc: 'La IA limpia elementos incompatibles y organiza los datos en secciones estandarizadas.'
+      },
+      {
+        num: '3',
+        title: 'Optimización de Contenido',
+        desc: 'Revisa y ajusta logros, tecnologías y datos clave directamente desde tu panel.'
+      },
+      {
+        num: '4',
+        title: 'Descarga Directa',
+        desc: 'Obtén tu archivo PDF vectorial o Markdown optimizado, 100% listo para los motores ATS.'
+      }
+    ],
+    tableTitle: 'Directrices del Filtro ATS: Qué Usar vs. Qué Evitar',
+    tableHeaders: ['Criterio', 'Recomendado', 'Evitar'],
+    tableRows: [
+      {
+        cat: 'Tipografía',
+        rec: 'Fuentes estándar legibles (Arial, Calibri, Garamond) de 10-12pt.',
+        evit: 'Fuentes decorativas, símbolos en lugar de letras o fuentes menores de 10pt.'
+      },
+      {
+        cat: 'Formato',
+        rec: 'Diseño limpio de columna única con márgenes estándar de 2.5 cm.',
+        evit: 'Tablas complejas, dos columnas, cuadros de texto o cabeceras ocultas.'
+      },
+      {
+        cat: 'Secciones',
+        rec: 'Títulos tradicionales y legibles como "Experiencia" o "Educación".',
+        evit: 'Títulos creativos como "Mi Trayectoria" o "Dónde he estado".'
+      },
+      {
+        cat: 'Elementos',
+        rec: 'Texto en formato vectorial interactivo y enlaces limpios.',
+        evit: 'Fotos, gráficos de nivel, barras de progreso o archivos escaneados.'
+      }
+    ],
+    faqTitle: 'Preguntas Frecuentes',
+    faqs: [
+      {
+        q: '¿Qué es un sistema ATS y por qué filtra mi CV?',
+        a: 'Un ATS (Applicant Tracking System) es un software que las empresas usan para filtrar currículums automáticamente antes de que lleguen a un humano. Cerca del 75% de los currículums son descartados por tener formatos ilegibles para estos sistemas. Nuestro convertidor reestructura tu información para garantizar una legibilidad perfecta.'
+      },
+      {
+        q: '¿Por qué la plantilla predeterminada no incluye foto?',
+        a: 'Los filtros de contratación automática ATS en EE.UU., Europa y grandes multinacionales penalizan o directamente descartan currículums con fotos debido a regulaciones de no discriminación y porque los algoritmos no leen imágenes. Te recomendamos usar siempre un diseño limpio de columna única sin foto.'
+      },
+      {
+        q: '¿Qué diferencia hay entre el formato PDF y Word para el ATS?',
+        a: 'Tanto el PDF vectorial (exportado directamente) como el Word (.docx) son perfectamente compatibles. Sin embargo, el PDF mantiene intacto el diseño visual cuando lo abre un reclutador humano. Evita exportar currículums como imágenes PDF escaneadas, ya que son invisibles para los filtros.'
+      },
+      {
+        q: '¿Cómo puedo maximizar la compatibilidad de mi CV?',
+        a: 'Asegúrate de incluir palabras clave relevantes del anuncio de empleo en tus secciones de habilidades y logros. Utiliza viñetas simples y verbos de acción ("Lideré", "Implementé", "Desarrollé") para comenzar cada uno de tus logros profesionales.'
+      }
+    ]
+  },
+  en: {
+    badgeText: 'ATS GUIDE & TIPS',
+    guideTitle: 'ATS Optimization Process',
+    steps: [
+      {
+        num: '1',
+        title: 'Upload CV',
+        desc: 'Upload your PDF or Word document. The AI reader extracts raw text instantly.'
+      },
+      {
+        num: '2',
+        title: 'Format & Clean',
+        desc: 'The AI cleans incompatible elements and structures text into standard sections.'
+      },
+      {
+        num: '3',
+        title: 'Content Enhancement',
+        desc: 'Review and refine achievements, technologies, and fields directly on the dashboard.'
+      },
+      {
+        num: '4',
+        title: 'Direct Download',
+        desc: 'Download clean vector PDF, Docx, or Markdown files ready for hiring filters.'
+      }
+    ],
+    tableTitle: 'ATS Guidelines: What to Use vs. What to Avoid',
+    tableHeaders: ['Category', 'Recommended', 'Avoid'],
+    tableRows: [
+      {
+        cat: 'Typography',
+        rec: 'Standard clear fonts (Arial, Calibri, Garamond) in size 10-12pt.',
+        evit: 'Decorative fonts, graphic symbols instead of letters, or sizes below 10pt.'
+      },
+      {
+        cat: 'Layout',
+        rec: 'Clean single-column template design with 1-inch margins.',
+        evit: 'Two-column grids, complex tables, text boxes, headers, or footers.'
+      },
+      {
+        cat: 'Sections',
+        rec: 'Standard headers like "Work History" or "Education".',
+        evit: 'Creative titles like "Where I\'ve Been" which confuse parser software.'
+      },
+      {
+        cat: 'Elements',
+        rec: 'Selectable vector text and clean URL hyperlinks.',
+        evit: 'Photos, skill progress bars, charts, graphics, or scanned images.'
+      }
+    ],
+    faqTitle: 'Frequently Asked Questions',
+    faqs: [
+      {
+        q: 'What is an ATS and why does it filter my CV?',
+        a: 'An Applicant Tracking System scans and filters applications automatically. About 75% of CVs are rejected because they use incompatible formats.'
+      },
+      {
+        q: 'Why should I exclude my photo from an ATS resume?',
+        a: 'Discrimination laws in the US and Europe penalize resumes with images. Additionally, images break the software parsing logic.'
+      },
+      {
+        q: 'What is the difference between PDF and Word for ATS?',
+        a: 'Both vector PDF and Word (.docx) files are fully readable by modern ATS. However, PDF is preferred because it locks the formatting for the human recruiter. Avoid scanned PDF images, which appear blank to recruitment filters.'
+      },
+      {
+        q: 'How do I add key skills and keywords effectively?',
+        a: 'Analyze the target job description and naturally inject technical terms and tools into your professional history.'
+      }
+    ]
+  }
+};
+
+const t = lang === 'en' ? content.en : content.es;
+---
+
+<div class="conv_footer_wrap">
+  <div class="conv_footer_container">
+    
+    <!-- 1. Guía Paso a Paso en Bento Layout (Mockup Escáner CSS + Stepper Vertical) -->
+    <section class="conv_footer_section">
+      <div class="consejos_title_sec">
+        <div class="consejos_badge">
+          <i class="fas fa-graduation-cap"></i>
+          <span>{t.badgeText}</span>
+        </div>
+        <h2>{t.guideTitle}</h2>
+      </div>
+
+      <div class="conv_bento_upper">
+        <!-- Columna Izquierda: Mockup Escáner ATS Animado por CSS -->
+        <div class="conv_mockup_scanner_card">
+          <div class="conv_scanner_screen">
+            <div class="conv_mockup_cv">
+              <div class="conv_laser_beam"></div>
+              <div class="conv_mcv_header">
+                <div class="conv_mcv_avatar_stub"></div>
+                <div class="conv_mcv_text_block">
+                  <div class="conv_mcv_line head_line_1"></div>
+                  <div class="conv_mcv_line head_line_2"></div>
+                </div>
+              </div>
+              <div class="conv_mcv_body">
+                <div class="conv_mcv_section_title_line"></div>
+                <div class="conv_mcv_line body_line_1"></div>
+                <div class="conv_mcv_line body_line_2"></div>
+                <div class="conv_mcv_line body_line_3"></div>
+                <div class="conv_mcv_section_title_line"></div>
+                <div class="conv_mcv_line body_line_1"></div>
+                <div class="conv_mcv_line body_line_4"></div>
+              </div>
+            </div>
+            <!-- Placa flotante de Score ATS -->
+            <div class="conv_score_badge">
+              <div class="conv_score_icon"><i class="fas fa-shield-halved"></i></div>
+              <div class="conv_score_text">
+                <span class="lbl">ATS SCORE</span>
+                <span class="val">98%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Cronología Vertical -->
+        <div class="conv_timeline_stepper">
+          {t.steps.map((step, idx) => (
+            <div class="conv_timeline_step">
+              <div class="conv_step_indicator">
+                <div class="conv_step_num_circle">{step.num}</div>
+                {idx < t.steps.length - 1 && <div class="conv_step_connector"></div>}
+              </div>
+              <div class="conv_step_content">
+                <h3>{step.title}</h3>
+                <p>{step.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Bento Inferior (Tabla Comparativa 60% + FAQs 40%) -->
+    <div class="conv_bento_lower">
+      <!-- Columna Izquierda: Tabla Comparativa -->
+      <section class="conv_footer_section bento_table_section">
+        <div class="consejos_title_sec align_left">
+          <h2>{t.tableTitle}</h2>
+        </div>
+        <div class="consejos_table_card">
+          <div class="consejos_table_wrapper">
+            <table class="consejos_table">
+              <thead>
+                <tr>
+                  <th>{t.tableHeaders[0]}</th>
+                  <th class="consejos_col_green">{t.tableHeaders[1]} <i class="fas fa-circle-check"></i></th>
+                  <th class="consejos_col_red">{t.tableHeaders[2]} <i class="fas fa-circle-xmark"></i></th>
+                </tr>
+              </thead>
+              <tbody>
+                {t.tableRows.map(row => (
+                  <tr>
+                    <td class="consejos_cat_cell"><strong>{row.cat}</strong></td>
+                    <td>{row.rec}</td>
+                    <td class="consejos_evit_cell">{row.evit}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Columna Derecha: FAQs -->
+      <section class="conv_footer_section bento_faqs_section">
+        <div class="consejos_title_sec align_left">
+          <h2>{t.faqTitle}</h2>
+        </div>
+        <div class="conv_faqs_list">
+          {t.faqs.map(faq => (
+            <details class="conv_faq_details">
+              <summary class="conv_faq_summary">
+                <span>{faq.q}</span>
+                <i class="fas fa-chevron-down conv_faq_arrow"></i>
+              </summary>
+              <div class="conv_faq_content">
+                <p>{faq.a}</p>
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+    </div>
+
+  </div>
+</div>
+
+<style is:global>
+  .conv_footer_wrap {
+    width: 100%;
+    background: var(--bg);
+    border-top: 1px solid var(--brd);
+    padding: 6vh 0;
+    margin-top: 6vh;
+    font-family: var(--ff_P);
+  }
+  .conv_footer_container {
+    margin: 0 auto;
+    padding: 0 2vw;
+    display: flex;
+    flex-direction: column;
+    gap: 8vh;
+  }
+  .conv_footer_section {
+    width: 100%;
+  }
+
+  /* Cabecera de Secciones */
+  .consejos_title_sec {
+    text-align: center;
+    margin-bottom: 4vh;
+  }
+  .consejos_title_sec.align_left {
+    text-align: left;
+    margin-bottom: 3vh;
+  }
+  .consejos_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8vh;
+    background: var(--bg3);
+    color: var(--mco);
+    padding: 0.6vh 1.5vh;
+    border-radius: 30px;
+    font-size: var(--fz_s3);
+    font-weight: 700;
+    margin-bottom: 1.5vh;
+    border: 1px solid var(--brd);
+  }
+  .consejos_title_sec h2 {
+    font-size: var(--fz_l1);
+    font-weight: 800;
+    color: var(--tx1);
+    margin: 0;
+    line-height: 1.25;
+    letter-spacing: -0.5px;
+    font-family: var(--ff_O);
+  }
+
+  /* Bento Layout Superior (Escáner + Timeline) */
+  .conv_bento_upper {
+    display: grid;
+    grid-template-columns: 1.1fr 1.3fr;
+    gap: 5vw;
+    align-items: center;
+    background: var(--wb);
+    border: 1px solid var(--brd);
+    border-radius: 16px;
+    padding: 5vh;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+  }
+
+  /* Columna Izquierda: Escáner ATS Animado por CSS */
+  .conv_mockup_scanner_card {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .conv_scanner_screen {
+    width: 100%;
+    max-width: 380px;
+    height: 330px;
+    background: var(--bg);
+    border: 1px solid var(--brd);
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3vh;
+  }
+  .conv_laser_beam {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #fff;
+    box-shadow: 0 0 4px var(--mco), 0 0 8px var(--mco);
+    z-index: 10;
+    animation: laserScan 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes laserScan {
+    0%, 100% { top: 0%; }
+    50% { top: 100%; }
+  }
+
+  /* Currículum Virtual Skeleton */
+  .conv_mockup_cv {
+    width: 100%;
+    height: 100%;
+    background: var(--wb);
+    border: 1px solid var(--brd);
+    border-radius: 8px;
+    padding: 2.2vh;
+    display: flex;
+    flex-direction: column;
+    gap: 1.8vh;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    position: relative;
+    overflow: hidden;
+  }
+  .conv_mcv_header {
+    display: flex;
+    gap: 1.5vh;
+    align-items: center;
+  }
+  .conv_mcv_avatar_stub {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--brd);
+  }
+  .conv_mcv_text_block {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8vh;
+  }
+  .conv_mcv_line {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--bg3);
+  }
+  .head_line_1 { width: 65%; }
+  .head_line_2 { width: 45%; }
+  
+  .conv_mcv_body {
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+  }
+  .conv_mcv_section_title_line {
+    height: 8px;
+    width: 30%;
+    background: color-mix(in srgb, var(--mco) 25%, var(--bg3));
+    border-radius: 4px;
+    margin-bottom: 0.5vh;
+  }
+  .body_line_1 { width: 90%; }
+  .body_line_2 { width: 85%; }
+  .body_line_3 { width: 75%; }
+  .body_line_4 { width: 50%; }
+
+  /* Placa Flotante Score ATS */
+  .conv_score_badge {
+    position: absolute;
+    bottom: 2.5vh;
+    right: 2.5vh;
+    background: var(--wb);
+    border: 1px solid var(--brd);
+    border-radius: 10px;
+    padding: 1.2vh 1.8vh;
+    display: flex;
+    gap: 1.2vh;
+    align-items: center;
+    box-shadow: var(--bs_l);
+    animation: floatingEffect 3s ease-in-out infinite;
+  }
+  @keyframes floatingEffect {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .conv_score_icon {
+    font-size: 1.4rem;
+    color: var(--success);
+  }
+  .conv_score_text {
+    display: flex;
+    flex-direction: column;
+  }
+  .conv_score_text .lbl {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--tx3);
+  }
+  .conv_score_text .val {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--tx1);
+    line-height: 1;
+    font-family: var(--ff_O);
+  }
+
+  /* Columna Derecha: Cronología Vertical */
+  .conv_timeline_stepper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vh;
+  }
+  .conv_timeline_step {
+    display: flex;
+    gap: 2.2vh;
+  }
+  .conv_step_indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .conv_step_num_circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg3);
+    color: var(--tx1);
+    font-weight: 800;
+    font-size: var(--fz_s4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--brd);
+    transition: all 0.25s ease-in-out;
+  }
+  .conv_timeline_step:hover .conv_step_num_circle {
+    background: var(--mco);
+    color: var(--txa);
+    border-color: var(--mco);
+  }
+  .conv_step_connector {
+    width: 2px;
+    flex-grow: 1;
+    background: var(--brd);
+    margin: 0.8vh 0;
+  }
+  .conv_step_content {
+    padding-bottom: 2vh;
+  }
+  .conv_step_content h3 {
+    font-size: var(--fz_m1);
+    font-weight: 800;
+    color: var(--tx1);
+    margin: 0 0 0.8vh;
+  }
+  .conv_step_content p {
+    font-size: var(--fz_s4);
+    color: var(--tx2);
+    margin: 0;
+    line-height: 1.45;
+    font-weight: 500;
+  }
+
+  /* Bento Inferior (Tabla Comparativa 60% + FAQs 40% en Grid) */
+  .conv_bento_lower {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 3.5vh;
+  }
+  
+  /* Tabla Comparativa */
+  .bento_table_section {
+    display: flex;
+    flex-direction: column;
+  }
+  .consejos_table_card {
+    border-radius: 12px;
+    border: 1px solid var(--brd);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
+    background: var(--wb);
+    overflow: hidden;
+    height: 100%;
+  }
+  .consejos_table_wrapper {
+    overflow-x: auto;
+    width: 100%;
+  }
+  .consejos_table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  .consejos_table th {
+    background: var(--bg3);
+    color: var(--tx1);
+    font-weight: 800;
+    padding: 1.6vh 2.5vh;
+    font-size: var(--fz_m);
+    border-bottom: 2px solid var(--brd);
+  }
+  .consejos_col_green {
+    color: var(--success) !important;
+  }
+  .consejos_col_green i {
+    margin-left: 0.5vh;
+  }
+  .consejos_col_red {
+    color: var(--error) !important;
+  }
+  .consejos_col_red i {
+    margin-left: 0.5vh;
+  }
+  .consejos_table td {
+    padding: 1.6vh 2.5vh;
+    font-size: var(--fz_s4);
+    color: var(--tx2);
+    border-bottom: 1px solid var(--brd);
+    vertical-align: middle;
+    line-height: 1.45;
+  }
+  .consejos_cat_cell {
+    color: var(--tx1) !important;
+    white-space: nowrap;
+  }
+  .consejos_evit_cell {
+    color: var(--tx3);
+  }
+  .consejos_table tr:hover td {
+    background: var(--bg4);
+  }
+
+  /* FAQs */
+  .bento_faqs_section {
+    display: flex;
+    flex-direction: column;
+  }
+  .conv_faqs_list {
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+    height: 100%;
+  }
+  .conv_faq_details {
+    background: var(--wb);
+    border: 1px solid var(--brd);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.25s ease-in-out;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
+  }
+  .conv_faq_details[open] {
+    border-color: var(--mco);
+    box-shadow: var(--bs_l);
+  }
+  .conv_faq_summary {
+    padding: 2vh 2.5vh;
+    font-weight: 800;
+    color: var(--tx1);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    font-size: var(--fz_m1);
+    user-select: none;
+  }
+  .conv_faq_summary::-webkit-details-marker {
+    display: none;
+  }
+  .conv_faq_arrow {
+    transition: transform 0.3s ease;
+    color: var(--tx3);
+    font-size: var(--fz_s3);
+  }
+  .conv_faq_details[open] .conv_faq_arrow {
+    transform: rotate(180deg);
+    color: var(--mco);
+  }
+  .conv_faq_content {
+    padding: 0 2.5vh 2vh;
+    border-top: 1px solid transparent;
+  }
+  .conv_faq_details[open] .conv_faq_content {
+    border-top-color: var(--brd);
+  }
+  .conv_faq_content p {
+    font-size: var(--fz_s3);
+    color: var(--tx2);
+    margin: 0;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+
+  /* Responsivo para Bento Layout */
+  @media (max-width: 992px) {
+    .conv_bento_upper {
+      grid-template-columns: 1fr;
+      gap: 4vh;
+      padding: 4vh;
+    }
+    .conv_bento_lower {
+      grid-template-columns: 1fr;
+      gap: 4vh;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .conv_footer_wrap {
+      padding: 5vh 0;
+      margin-top: 5vh;
+    }
+    .conv_footer_container {
+      gap: 5vh;
+      padding: 0 3vh;
+    }
+    .consejos_title_sec h2 {
+      font-size: var(--fz_m5);
+    }
+    .consejos_title_sec.align_left {
+      text-align: center;
+    }
+    .conv_faq_summary {
+      padding: 1.8vh 2vh;
+      font-size: var(--fz_m);
+    }
+    .conv_faq_content {
+      padding: 0 2vh 1.8vh;
+    }
+  }
+</style>

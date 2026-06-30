@@ -1,3 +1,6 @@
+// src/lib/convertir/entrada.js
+// Lógica de carga de archivos y extracción de texto bilingüe (i18n)
+
 import { wiSmart, Notificacion } from '../widev/widev.js';
 
 // Carga bajo demanda desde CDN cuando el usuario interactúa
@@ -18,6 +21,11 @@ let onResetCallback = null;
 // Referencias de elementos DOM
 let dropzone, fileInput, previewContainer, cvTextarea, progressContainer, progressBar, progressPercent;
 
+const getLang = () => {
+  const workspace = document.getElementById('convWorkspace');
+  return workspace?.getAttribute('data-locale') || 'es';
+};
+
 export const initEntrada = (onTextExtracted, onReset) => {
   onTextExtractedCallback = onTextExtracted;
   onResetCallback = onReset;
@@ -34,7 +42,6 @@ export const initEntrada = (onTextExtracted, onReset) => {
 };
 
 const setupListeners = () => {
-  // Cargar librerías al pasar el cursor sobre el dropzone
   dropzone?.addEventListener('mouseenter', cargarLibreriasExtraccion, { once: true });
   dropzone?.addEventListener('click', () => {
     cargarLibreriasExtraccion();
@@ -69,17 +76,23 @@ const setupListeners = () => {
 };
 
 const handleFileSelection = async (file) => {
-  const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
   const isPdf = file.type === 'application/pdf' || file.name.endsWith('.pdf');
   const isDocx = file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.docx');
+  const isEn = getLang() === 'en';
 
   if (!isPdf && !isDocx) {
-    Notificacion('Formato no válido. Solo se admiten archivos PDF y Word (.docx)', 'error');
+    const errorMsg = isEn 
+      ? 'Invalid format. Only PDF and Word (.docx) files are supported.' 
+      : 'Formato no válido. Solo se admiten archivos PDF y Word (.docx)';
+    Notificacion(errorMsg, 'error');
     return;
   }
 
   if (file.size > 4 * 1024 * 1024) {
-    Notificacion('El tamaño del archivo supera el límite de 4MB.', 'error');
+    const errorMsg = isEn 
+      ? 'The file size exceeds the 4MB limit.' 
+      : 'El tamaño del archivo supera el límite de 4MB.';
+    Notificacion(errorMsg, 'error');
     return;
   }
 
@@ -96,19 +109,20 @@ const handleFileSelection = async (file) => {
     }
 
     if (!extractedText.trim()) {
-      throw new Error('No se pudo extraer texto del archivo o el documento está vacío.');
+      throw new Error(isEn ? 'Could not extract text from the file or document is empty.' : 'No se pudo extraer texto del archivo o el documento está vacío.');
     }
 
     renderProgressState(false);
     renderPreview();
     if (cvTextarea) {
       cvTextarea.value = extractedText;
-      cvTextarea.dispatchEvent(new Event('input')); // Actualizar contadores y habilitar botón
+      cvTextarea.dispatchEvent(new Event('input'));
     }
     onTextExtractedCallback?.(extractedText);
   } catch (err) {
     console.error(err);
-    Notificacion(err.message || 'Error al procesar el archivo.', 'error');
+    const failMsg = isEn ? 'Error processing file.' : 'Error al procesar el archivo.';
+    Notificacion(err.message || failMsg, 'error');
     removeFile();
   }
 };
@@ -169,6 +183,7 @@ const renderPreview = () => {
   document.getElementById('btnRemoveConvFile')?.addEventListener('click', removeFile);
 };
 
+// Renombrado para compatibilidad con page y reseteo
 export const removeFile = () => {
   selectedFile = null;
   extractedText = '';
@@ -184,33 +199,35 @@ export const removeFile = () => {
 };
 
 const parseDocx = (file) => {
+  const isEn = getLang() === 'en';
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsArrayBuffer(file);
     reader.onload = (e) => {
-      const arrayBuffer = e.target.result;
+      const arrayBuffer = e.target?.result;
       if (window.mammoth) {
         window.mammoth.extractRawText({ arrayBuffer })
           .then((res) => resolve(res.value || ''))
-          .catch((err) => reject(new Error('Mammoth falló al extraer texto de Word.')));
+          .catch(() => reject(new Error(isEn ? 'Mammoth failed to extract text from Word.' : 'Mammoth falló al extraer texto de Word.')));
       } else {
-        reject(new Error('Librería de Word no está cargada en el cliente. Intenta nuevamente.'));
+        reject(new Error(isEn ? 'Word library is not loaded. Try again.' : 'Librería de Word no está cargada en el cliente. Intenta nuevamente.'));
       }
     };
-    reader.onerror = () => reject(new Error('Error al leer el archivo Word.'));
+    reader.onerror = () => reject(new Error(isEn ? 'Error reading Word file.' : 'Error al leer el archivo Word.'));
   });
 };
 
 const parsePdf = (file) => {
+  const isEn = getLang() === 'en';
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsArrayBuffer(file);
     reader.onload = async (e) => {
-      const arrayBuffer = e.target.result;
+      const arrayBuffer = e.target?.result;
       const pdfjsLib = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
 
       if (!pdfjsLib) {
-        reject(new Error('Librería PDF no está lista en el cliente. Intenta de nuevo.'));
+        reject(new Error(isEn ? 'PDF library is not ready. Try again.' : 'Librería PDF no está lista en el cliente. Intenta de nuevo.'));
         return;
       }
 
@@ -228,9 +245,9 @@ const parsePdf = (file) => {
         resolve(fullText);
       } catch (err) {
         console.error('Pdfjs error:', err);
-        reject(new Error('Error al decodificar las páginas del PDF. Asegúrate de que no esté protegido.'));
+        reject(new Error(isEn ? 'Error decoding PDF pages. Make sure it is not protected.' : 'Error al decodificar las páginas del PDF. Asegúrate de que no esté protegido.'));
       }
     };
-    reader.onerror = () => reject(new Error('Error al leer el archivo PDF.'));
+    reader.onerror = () => reject(new Error(isEn ? 'Error reading PDF file.' : 'Error al leer el archivo PDF.'));
   });
 };

@@ -16,7 +16,7 @@
     }
 
     .conv_header h1 span {
-      background: linear-gradient(135deg, var(--mco), #7000FF);
+      background: linear-gradient(135deg, var(--mco), var(--hva));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -537,7 +537,7 @@
       gap: 1.5vh;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       border: none;
-      background: linear-gradient(135deg, var(--mco), #7000FF);
+      background: linear-gradient(135deg, var(--mco), var(--hva));
       color: #fff;
       box-shadow: 0 6px 20px color-mix(in srgb, var(--mco) 25%, transparent);
       text-decoration: none;
@@ -1534,7 +1534,7 @@
       line-height: 1;
     }
     .cr_btn_optimize_botwii {
-      background: linear-gradient(135deg, var(--mco), #7000FF);
+      background: linear-gradient(135deg, var(--mco), var(--hva));
       color: #fff;
       border: none;
       padding: 0.8vh 1.8vh;
@@ -1685,7 +1685,7 @@
     .cr_loader_progress_fill {
       width: 10%;
       height: 100%;
-      background: linear-gradient(90deg, var(--mco), #7000FF);
+      background: linear-gradient(90deg, var(--mco), var(--hva));
       transition: width 0.4s ease;
       border-radius: 99px;
     }
@@ -1757,3 +1757,57 @@
     .cr_loader_step.done .cr_loader_step_check {
       opacity: 1;
     }
+
+    /* ==================== SKELETON STUBS (PRIMERA CARGA) ==================== */
+    .cr_a4_page {
+      background: #fff !important;
+      color: #333 !important;
+      width: 100%;
+      aspect-ratio: 1 / 1.4142;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      padding: 4vh;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5vh;
+    }
+    .cr_preview_cv_name_stub {
+      height: 20px;
+      width: 40%;
+      background: var(--bg3);
+      border-radius: 4px;
+      margin: 0 auto;
+    }
+    .cr_preview_cv_title_stub {
+      height: 12px;
+      width: 25%;
+      background: var(--bg3);
+      border-radius: 3px;
+      margin: 0 auto;
+    }
+    .cr_preview_cv_divider_stub {
+      height: 1px;
+      width: 100%;
+      background: var(--brd);
+    }
+    .cr_preview_cv_body_stub {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5vh;
+    }
+    .cr_preview_cv_section_stub {
+      height: 14px;
+      width: 20%;
+      background: color-mix(in srgb, var(--mco) 20%, var(--bg3));
+      border-radius: 3px;
+      margin-bottom: 0.5vh;
+    }
+    .cr_preview_cv_line_stub {
+      height: 8px;
+      background: var(--bg3);
+      border-radius: 3px;
+    }
+    .cr_preview_cv_line_stub.l1 { width: 95%; }
+    .cr_preview_cv_line_stub.l2 { width: 85%; }
+    .cr_preview_cv_line_stub.l3 { width: 60%; }

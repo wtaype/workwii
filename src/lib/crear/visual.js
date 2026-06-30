@@ -35,9 +35,16 @@ export const initVisual = () => {
   subscribe(onStateChange);
   setupGlobalListeners();
   setAbrirModalIA(abrirModalIA); // Inyectar callback de modal IA en renderForms
-  cargarLibreriasExtraccion();
 
-  // Inicializar Chatwii
+  // Inicializar Chatwii diferido (Optimiza el hilo principal de renderizado)
+  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    window.requestIdleCallback(() => inicializarChatwii(pageLang));
+  } else {
+    setTimeout(() => inicializarChatwii(pageLang), 1500);
+  }
+};
+
+const inicializarChatwii = (pageLang) => {
   try {
     if (typeof localStorage !== 'undefined' && localStorage.getItem('wiSmile')) {
       initChat(pageLang, getCvData, updateCvData);

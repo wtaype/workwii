@@ -59,7 +59,22 @@ Devuelve ÚNICAMENTE el reporte JSON que cumpla EXACTAMENTE con esta estructura 
     }
   ],
   "skills": "Habilidad1, Habilidad2, Habilidad3...",
-  "idiomas": ["Idioma 1 (Nivel)", "Idioma 2 (Nivel)"]
+  "idiomas": ["Idioma 1 (Nivel)", "Idioma 2 (Nivel)"],
+  "proyectos": [
+    {
+      "nombre": "Nombre del proyecto destacado",
+      "descripcion": "Descripción detallada del proyecto y aportes optimizados...",
+      "tecnologias": "Tecnologías utilizadas (ej: React, Node.js, PostgreSQL)",
+      "link": "https://github.com/... (dejar vacío si no hay)"
+    }
+  ],
+  "certificaciones": [
+    {
+      "nombre": "Nombre de la certificación o curso",
+      "emisor": "Organización emisora (ej: Google, Coursera, Udemy)",
+      "fecha": "Fecha de obtención (ej: 2023)"
+    }
+  ]
 }`;
 
   const userText = `CURRÍCULUM BRUTO DEL CANDIDATO:
@@ -91,6 +106,27 @@ Por favor, estructura, traduce (si el idioma de destino es inglés) y optimiza e
 
     const parsedJson = JSON.parse(rawResponse);
     parsedJson.idioma = idiomaDestino;
+
+    // Sanitizar campos principales para evitar marcadores de posición de Gemini (No detectado, null, etc.)
+    const fieldsToClean = ['nombre', 'titulo', 'email', 'telefono', 'ubicacion', 'linkedin', 'web', 'resumen', 'skills'];
+    fieldsToClean.forEach(field => {
+      if (parsedJson[field]) {
+        const val = String(parsedJson[field]).trim();
+        const lower = val.toLowerCase();
+        if (
+          lower === 'null' ||
+          lower === 'no detectado' ||
+          lower === 'not detected' ||
+          lower === 'no especificado' ||
+          lower === 'not specified' ||
+          lower === 'no encontrado' ||
+          lower === 'not found' ||
+          lower === '—'
+        ) {
+          parsedJson[field] = '';
+        }
+      }
+    });
     
     // Asegurar compatibilidad agregando IDs únicos a experiencias y educación para el renderizado del editor
     if (parsedJson.experiencias && Array.isArray(parsedJson.experiencias)) {
@@ -109,6 +145,53 @@ Por favor, estructura, traduce (si el idioma de destino es inglés) y optimiza e
       }));
     } else {
       parsedJson.educacion = [];
+    }
+
+    if (parsedJson.proyectos && Array.isArray(parsedJson.proyectos)) {
+      parsedJson.proyectos = parsedJson.proyectos.map(proj => {
+        // Limpiar placeholders
+        const cleanProj = {
+          id: 'proj_' + Math.random().toString(36).substr(2, 9),
+          nombre: proj.nombre || '',
+          descripcion: proj.descripcion || '',
+          tecnologias: proj.tecnologias || '',
+          link: proj.link || ''
+        };
+        const fields = ['nombre', 'descripcion', 'tecnologias', 'link'];
+        fields.forEach(f => {
+          const val = String(cleanProj[f]).trim();
+          const lower = val.toLowerCase();
+          if (lower === 'null' || lower === 'no detectado' || lower === 'not detected' || lower === 'no especificado' || lower === 'not specified' || lower === 'no encontrado' || lower === 'not found' || lower === '—') {
+            cleanProj[f] = '';
+          }
+        });
+        return cleanProj;
+      });
+    } else {
+      parsedJson.proyectos = [];
+    }
+
+    if (parsedJson.certificaciones && Array.isArray(parsedJson.certificaciones)) {
+      parsedJson.certificaciones = parsedJson.certificaciones.map(cert => {
+        // Limpiar placeholders
+        const cleanCert = {
+          id: 'cert_' + Math.random().toString(36).substr(2, 9),
+          nombre: cert.nombre || '',
+          emisor: cert.emisor || '',
+          fecha: cert.fecha || ''
+        };
+        const fields = ['nombre', 'emisor', 'fecha'];
+        fields.forEach(f => {
+          const val = String(cleanCert[f]).trim();
+          const lower = val.toLowerCase();
+          if (lower === 'null' || lower === 'no detectado' || lower === 'not detected' || lower === 'no especificado' || lower === 'not specified' || lower === 'no encontrado' || lower === 'not found' || lower === '—') {
+            cleanCert[f] = '';
+          }
+        });
+        return cleanCert;
+      });
+    } else {
+      parsedJson.certificaciones = [];
     }
 
     if (!parsedJson.idiomas || !Array.isArray(parsedJson.idiomas)) {

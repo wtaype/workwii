@@ -1,9 +1,13 @@
+// src/lib/analisar/resultado.js
+// Renderizado de la sección de resultados del análisis con soporte bilingüe (i18n)
+
 import { Mensaje, Notificacion, wiTip } from '../widev/widev.js';
 import { getCvTextContent, getJobDescription } from './entrada.js';
 import { initTipsRotator, renderScoreTips } from './tips_ats.js';
 
-// ─── Clave de persistencia ─────────────────────────────────────────────────
 const STORAGE_KEY = 'ats_last_report';
+
+export const LIMITE_ANALISIS = 5;
 
 let atsWorkspace, atsLoader, atsResults, atsHeader;
 let gaugeCircle, gaugeNum, gaugeStatus, resultSummary;
@@ -18,6 +22,11 @@ let btnOptimizeEditor;
 
 // Plan + Auditoría
 let atsAuditList, planProgressWrap, planProgressPercent, planProgressBar, planProgressText;
+
+const getLang = () => {
+  const workspace = document.getElementById('atsWorkspace');
+  return workspace?.getAttribute('data-locale') || 'es';
+};
 
 export const initResultado = () => {
   atsWorkspace  = document.getElementById('atsWorkspace');
@@ -68,28 +77,32 @@ const _restoreFromStorage = () => {
   }
 };
 
-// ─── Stepper loader ────────────────────────────────────────────────────────
-const LOADER_STEPS = [
-  { icon: 'fa-file-import',      label: 'Leyendo el documento...',                sub: 'Verificando formato y estructura del archivo' },
-  { icon: 'fa-sitemap',          label: 'Identificando secciones...',             sub: 'Mapeando Experiencia, Educación, Habilidades' },
-  { icon: 'fa-brain',            label: 'Extrayendo habilidades y logros...',     sub: 'Analizando verbos de acción y logros cuantificados' },
-  { icon: 'fa-magnifying-glass-chart', label: 'Comparando con el puesto objetivo...', sub: 'Buscando coincidencias de keywords críticas' },
-  { icon: 'fa-wand-magic-sparkles', label: 'Generando tu reporte personalizado...', sub: 'Calculando score, plan de acción y recomendaciones' },
-];
+// ─── Stepper loader dinámico e internacionalizado ─────────────────────────
+const getLoaderSteps = () => {
+  const isEn = getLang() === 'en';
+  return [
+    { icon: 'fa-file-import',      label: isEn ? 'Reading document...' : 'Leyendo el documento...',                sub: isEn ? 'Verifying file format and structure' : 'Verificando formato y estructura del archivo' },
+    { icon: 'fa-sitemap',          label: isEn ? 'Identifying sections...' : 'Identificando secciones...',             sub: isEn ? 'Mapping Experience, Education, Skills' : 'Mapeando Experiencia, Educación, Habilidades' },
+    { icon: 'fa-brain',            label: isEn ? 'Extracting skills and achievements...' : 'Extrayendo habilidades y logros...',     sub: isEn ? 'Analyzing action verbs and quantified achievements' : 'Analizando verbos de acción y logros cuantificados' },
+    { icon: 'fa-magnifying-glass-chart', label: isEn ? 'Comparing with target role...' : 'Comparando con el puesto objetivo...', sub: isEn ? 'Matching critical keywords' : 'Buscando coincidencias de keywords críticas' },
+    { icon: 'fa-wand-magic-sparkles', label: isEn ? 'Generating personalized report...' : 'Generando tu reporte personalizado...', sub: isEn ? 'Calculating score, action plan and recommendations' : 'Calculando score, plan de acción y recomendaciones' },
+  ];
+};
 
 export const startLoader = () => {
   if (atsWorkspace) atsWorkspace.style.display = 'none';
   if (atsHeader) atsHeader.classList.add('ats_header_hidden');
   if (atsLoader) atsLoader.style.display = 'flex';
 
-  // Render stepper
   const stepperEl = document.getElementById('loaderStepper');
   const barFill   = document.getElementById('loaderBarFill');
   const barPct    = document.getElementById('loaderBarPct');
   const etaEl     = document.getElementById('loaderEta');
 
+  const steps = getLoaderSteps();
+
   if (stepperEl) {
-    stepperEl.innerHTML = LOADER_STEPS.map((s, i) => `
+    stepperEl.innerHTML = steps.map((s, i) => `
       <div class="loader_step" id="lstep_${i}">
         <div class="loader_step_icon pending"><i class="fas ${s.icon}"></i></div>
         <div class="loader_step_body">
@@ -103,12 +116,11 @@ export const startLoader = () => {
 
   let currentStep = 0;
   let pct = 0;
-  const totalSteps = LOADER_STEPS.length;
+  const totalSteps = steps.length;
   const stepDuration = 2800; // ms por paso
   const totalDuration = stepDuration * totalSteps;
 
   const activateStep = (idx) => {
-    // Marcar el paso anterior como completado
     if (idx > 0) {
       const prev = document.getElementById(`lstep_${idx - 1}`);
       if (prev) {
@@ -129,13 +141,17 @@ export const startLoader = () => {
     if (barPct)  barPct.textContent  = `${pct}%`;
 
     const remaining = Math.max(0, Math.round((totalDuration - elapsed) / 1000));
-    if (etaEl) etaEl.textContent = remaining > 0 ? `~${remaining}s restantes` : 'Finalizando...';
+    const isEn = getLang() === 'en';
+    if (etaEl) {
+      etaEl.textContent = remaining > 0 
+        ? (isEn ? `~${remaining}s remaining` : `~${remaining}s restantes`) 
+        : (isEn ? 'Finishing...' : 'Finalizando...');
+    }
 
     if (pct < 95) requestAnimationFrame(animBar);
   };
   requestAnimationFrame(animBar);
 
-  // Activar pasos secuencialmente
   activateStep(0);
   const stepTimers = [];
   for (let i = 1; i < totalSteps; i++) {
@@ -143,10 +159,8 @@ export const startLoader = () => {
     stepTimers.push(t);
   }
 
-  // Tips rotator
   stopTipsRotator = initTipsRotator('loaderTipContent');
 
-  // Retornar función para limpiar
   return { stepTimers, barFill, barPct, etaEl };
 };
 
@@ -154,12 +168,14 @@ export const finishLoader = ({ stepTimers, barFill, barPct, etaEl }) => {
   stepTimers.forEach(t => clearTimeout(t));
   if (stopTipsRotator) { stopTipsRotator(); stopTipsRotator = null; }
 
-  // Completar el último step y la barra
-  const lastStep = document.getElementById(`lstep_${LOADER_STEPS.length - 1}`);
+  const steps = getLoaderSteps();
+  const lastStep = document.getElementById(`lstep_${steps.length - 1}`);
   if (lastStep) { lastStep.classList.remove('active'); lastStep.classList.add('done'); }
   if (barFill) barFill.style.width = '100%';
   if (barPct)  barPct.textContent  = '100%';
-  if (etaEl)   etaEl.textContent   = '¡Análisis completado!';
+  
+  const isEn = getLang() === 'en';
+  if (etaEl) etaEl.textContent = isEn ? 'Analysis completed!' : '¡Análisis completado!';
 };
 
 // ─── Eventos del dashboard ─────────────────────────────────────────────────
@@ -183,15 +199,24 @@ const setupDashboardEvents = () => {
     const roleEl = document.getElementById('atsTargetRole');
     const targetRole = roleEl ? roleEl.value : '';
 
+    const isEn = getLang() === 'en';
+
     if (!text?.trim()) {
-      Notificacion('No se detectó texto extraído del CV. Por favor analiza un archivo primero.', 'warning');
+      const warnMsg = isEn 
+        ? 'No resume text extracted. Please analyze a file first.' 
+        : 'No se detectó texto extraído del CV. Por favor analiza un archivo primero.';
+      Notificacion(warnMsg, 'warning');
       return;
     }
     localStorage.setItem('convertir_ats_raw_text', text);
     localStorage.setItem('convertir_ats_target_role', targetRole || jobDesc);
     localStorage.setItem('convertir_ats_job_desc', jobDesc);
-    Notificacion('¡Datos de CV listos! Redirigiendo al optimizador con IA...', 'success', 3000);
-    setTimeout(() => { window.location.href = '/convertir-ats'; }, 850);
+
+    const redirectMsg = isEn 
+      ? 'Resume data ready! Redirecting to AI optimizer...' 
+      : '¡Datos de CV listos! Redirigiendo al optimizador con IA...';
+    Notificacion(redirectMsg, 'success', 3000);
+    setTimeout(() => { window.location.href = isEn ? '/en/convertir-ats' : '/convertir-ats'; }, 850);
   });
 };
 
@@ -208,13 +233,39 @@ export const displayResults = (report, saveToStorage = true) => {
   if (atsWorkspace) atsWorkspace.style.display = 'none';
   if (atsResults)   atsResults.style.display = 'flex';
 
+  // Mostrar panel flotante de acciones y actualizar contador de límites
+  const floatingActions = document.getElementById('atsFloatingActions');
+  if (floatingActions) {
+    floatingActions.classList.add('show');
+    const isLogged = localStorage.getItem('wiSmile');
+    const limitKey = isLogged ? 'ats_cv_analysis' : 'guest_ats_cv_analysis';
+    const limitItem = localStorage.getItem(`limiteHoy_${limitKey}`);
+    let usedCount = 0;
+    if (limitItem) {
+      try {
+        const parsed = JSON.parse(limitItem);
+        usedCount = parsed.n || 0;
+      } catch (_) {}
+    }
+    const used = Math.min(LIMITE_ANALISIS, usedCount);
+    const countEl = document.getElementById('atsFreeCount');
+    if (countEl) countEl.textContent = `${used}/${LIMITE_ANALISIS}`;
+  }
+
   const score = parseInt(report.score) || 0;
+  const isEn = getLang() === 'en';
 
   // 1. Gauge + badge
   setGaugeValue(score);
   if (gaugeStatus) {
-    const label = score >= 90 ? 'Excelente Match' : score >= 75 ? 'Buen Match' : score >= 50 ? 'Match Regular' : 'Coincidencia Baja';
-    const cls   = score >= 75 ? 'ats_status_excelente' : score >= 50 ? 'ats_status_aceptable' : 'ats_status_critico';
+    const label = score >= 90 
+      ? (isEn ? 'Excellent Match' : 'Excelente Match') 
+      : score >= 75 
+        ? (isEn ? 'Good Match' : 'Buen Match') 
+        : score >= 50 
+          ? (isEn ? 'Average Match' : 'Match Regular') 
+          : (isEn ? 'Low Match' : 'Coincidencia Baja');
+    const cls = score >= 75 ? 'ats_status_excelente' : score >= 50 ? 'ats_status_aceptable' : 'ats_status_critico';
     gaugeStatus.textContent = label;
     gaugeStatus.className = `ats_status_badge ${cls}`;
   }
@@ -223,14 +274,14 @@ export const displayResults = (report, saveToStorage = true) => {
   const contextEl = document.getElementById('scoreContextBand');
   if (contextEl) {
     const bands = [
-      { min: 90, label: '🏆 Listo para postular — Top candidatos', cls: 'band_excellent' },
-      { min: 75, label: '✅ Supera la mayoría de filtros ATS',     cls: 'band_good'      },
-      { min: 50, label: '⚠️ Puede pasar algunos filtros',          cls: 'band_medium'    },
-      { min: 0,  label: '🔴 Necesita revisión urgente',            cls: 'band_critical'  },
+      { min: 90, label: isEn ? '<i class="fas fa-trophy"></i> Ready to apply — Top candidate' : '<i class="fas fa-trophy"></i> Listo para postular — Top candidatos', cls: 'band_excellent' },
+      { min: 75, label: isEn ? '<i class="fas fa-circle-check"></i> Passes most ATS filters' : '<i class="fas fa-circle-check"></i> Supera la mayoría de filtros ATS',     cls: 'band_good'      },
+      { min: 50, label: isEn ? '<i class="fas fa-exclamation-triangle"></i> May pass some filters' : '<i class="fas fa-exclamation-triangle"></i> Puede pasar algunos filtros',          cls: 'band_medium'    },
+      { min: 0,  label: isEn ? '<i class="fas fa-circle-exclamation"></i> Urgent review required' : '<i class="fas fa-circle-exclamation"></i> Necesita revisión urgente',            cls: 'band_critical'  },
     ];
-    const band = bands.find(b => score >= b.min);
+    const band = bands.find(b => score >= b.min) || bands[3];
     contextEl.className = `score_context_band ${band.cls}`;
-    contextEl.textContent = band.label;
+    contextEl.innerHTML = band.label;
   }
 
   // 3. Mini stat chips
@@ -245,7 +296,7 @@ export const displayResults = (report, saveToStorage = true) => {
 
   // 6. Resumen
   if (resultSummary) {
-    resultSummary.textContent = report.summary || 'Análisis completado.';
+    resultSummary.textContent = report.summary || (isEn ? 'Analysis completed.' : 'Análisis completado.');
   }
 
   // 7. Perfil detectado por ATS
@@ -274,14 +325,15 @@ export const displayResults = (report, saveToStorage = true) => {
 const _renderStatChips = (score, profile) => {
   const el = document.getElementById('statChips');
   if (!el) return;
+  const isEn = getLang() === 'en';
   const pages   = profile.estimatedPages || 1;
   const words   = profile.totalWords || '—';
   const sects   = profile.sectionsFound?.length || 0;
   const sectMax = 6;
   el.innerHTML = `
-    <span class="stat_chip"><i class="fas fa-file-lines"></i> ${pages} ${pages === 1 ? 'página' : 'páginas'}</span>
-    <span class="stat_chip"><i class="fas fa-align-left"></i> ${words} palabras</span>
-    <span class="stat_chip"><i class="fas fa-layer-group"></i> ${sects}/${sectMax} secciones</span>
+    <span class="stat_chip"><i class="fas fa-file-lines"></i> ${pages} ${isEn ? (pages === 1 ? 'page' : 'pages') : (pages === 1 ? 'página' : 'páginas')}</span>
+    <span class="stat_chip"><i class="fas fa-align-left"></i> ${words} ${isEn ? 'words' : 'palabras'}</span>
+    <span class="stat_chip"><i class="fas fa-layer-group"></i> ${sects}/${sectMax} ${isEn ? 'sections' : 'secciones'}</span>
   `;
 };
 
@@ -290,10 +342,11 @@ const _renderSemaforo = (profile) => {
   const el = document.getElementById('atsSemaforo');
   if (!el) return;
   const ok = profile.atsParseable !== false;
+  const isEn = getLang() === 'en';
   el.className = `ats_semaforo ${ok ? 'sem_ok' : 'sem_error'}`;
   el.innerHTML = `
     <span class="sem_dot"></span>
-    <span>${ok ? 'Texto extraíble — Alta legibilidad ATS' : 'Problemas de parseo detectados'}</span>
+    <span>${ok ? (isEn ? 'Extractable text — High ATS readability' : 'Texto extraíble — Alta legibilidad ATS') : (isEn ? 'Parsing issues detected' : 'Problemas de parseo detectados')}</span>
   `;
 };
 
@@ -301,28 +354,33 @@ const _renderSemaforo = (profile) => {
 const _renderBenchmark = (score, bench) => {
   const el = document.getElementById('benchmarkCard');
   if (!el) return;
+  const isEn = getLang() === 'en';
   const avg = bench?.sectorAverage  || 61;
   const top = bench?.topCandidates  || 88;
   const thr = bench?.passThreshold  || 75;
 
-  const vsAvg = score > avg ? `<span class="bch_up">+${score - avg}% sobre la media ✅</span>` : `<span class="bch_down">${score - avg}% bajo la media</span>`;
-  const vsTop = score >= top ? `<span class="bch_up">¡Estás entre los mejores! 🏆</span>` : `<span class="bch_neutral">Meta: alcanzar ${top}% 🎯</span>`;
+  const vsAvg = score > avg 
+    ? `<span class="bch_up">${isEn ? `+${score - avg}% above average` : `+${score - avg}% sobre la media`} <i class="fas fa-circle-check"></i></span>` 
+    : `<span class="bch_down">${score - avg}% ${isEn ? 'below average' : 'bajo la media'}</span>`;
+  const vsTop = score >= top 
+    ? `<span class="bch_up">${isEn ? 'You are among the best!' : '¡Estás entre los mejores!'} <i class="fas fa-trophy"></i></span>` 
+    : `<span class="bch_neutral">${isEn ? `Goal: reach ${top}%` : `Meta: alcanzar ${top}%`} <i class="fas fa-bullseye"></i></span>`;
 
   el.innerHTML = `
     <div class="bch_row">
-      <span class="bch_label"><i class="fas fa-users"></i> Media del sector</span>
+      <span class="bch_label"><i class="fas fa-users"></i> ${isEn ? 'Sector average' : 'Media del sector'}</span>
       <span class="bch_val">${avg}%</span>
       ${vsAvg}
     </div>
     <div class="bch_row">
-      <span class="bch_label"><i class="fas fa-trophy"></i> Top candidatos</span>
+      <span class="bch_label"><i class="fas fa-trophy"></i> ${isEn ? 'Top candidates' : 'Top candidatos'}</span>
       <span class="bch_val">${top}%</span>
       ${vsTop}
     </div>
     <div class="bch_row bch_threshold">
-      <span class="bch_label"><i class="fas fa-flag-checkered"></i> Umbral recomendado</span>
+      <span class="bch_label"><i class="fas fa-flag-checkered"></i> ${isEn ? 'Recommended threshold' : 'Umbral recomendado'}</span>
       <span class="bch_val">${thr}%</span>
-      ${score >= thr ? '<span class="bch_up">Superado ✅</span>' : '<span class="bch_down">Aún no alcanzado</span>'}
+      ${score >= thr ? `<span class="bch_up">${isEn ? 'Passed' : 'Superado'} <i class="fas fa-circle-check"></i></span>` : `<span class="bch_down">${isEn ? 'Not reached' : 'Aún no alcanzado'}</span>`}
     </div>
   `;
 };
@@ -332,12 +390,28 @@ const _renderDetectedProfile = (profile) => {
   const el = document.getElementById('detectedProfileCard');
   if (!el) return;
 
-  // Inicializar wiTip para los tooltips del perfil
+  const isEn = getLang() === 'en';
+
+  // Inicializar wiTip para los tooltips
   wiTip();
+
+  const isValidValue = (val) => {
+    if (!val) return false;
+    const lower = String(val).toLowerCase().trim();
+    return lower !== 'null' && 
+           lower !== 'no detectado' && 
+           lower !== 'not detected' && 
+           lower !== 'no especificado' && 
+           lower !== 'not specified' && 
+           lower !== 'no encontrado' && 
+           lower !== 'not found' && 
+           lower !== '—' && 
+           lower !== '';
+  };
 
   // Helper: fila de dato extraído
   const dataRow = (icon, label, value, tipOk, tipMissing) => {
-    const hasValue = value && String(value).trim() && value !== 'null' && value !== 'No detectado';
+    const hasValue = isValidValue(value);
     const tipText  = hasValue ? tipOk : tipMissing;
     const tipAttr  = wiTip(tipText, undefined, 'top');
 
@@ -348,7 +422,7 @@ const _renderDetectedProfile = (profile) => {
         </div>
         <div class="prow_body">
           <span class="prow_label">${label}</span>
-          <span class="prow_value">${hasValue ? value : '—  No encontrado'}</span>
+          <span class="prow_value">${hasValue ? value : (isEn ? '— Not found' : '— No encontrado')}</span>
         </div>
         <div class="prow_status">
           <i class="fas ${hasValue ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
@@ -361,29 +435,29 @@ const _renderDetectedProfile = (profile) => {
   const issues = (profile.parsingIssues || []);
 
   el.innerHTML = `
-    ${dataRow('fa-user',       'Nombre completo',     profile.fullName,       'Nombre legible por el ATS ✅ El sistema puede identificarte correctamente.', 'No se encontró un nombre claro. Asegúrate de incluirlo en texto plano al inicio del CV.')}
-    ${dataRow('fa-envelope',   'Correo electrónico',  profile.email,          'Email detectado ✅ Los reclutadores pueden contactarte directamente.', 'Email no detectado. Inclúyelo en formato texto, no como imagen.')}
-    ${dataRow('fa-phone',      'Teléfono',            profile.phone,          'Teléfono encontrado ✅ Información de contacto completa.', 'Teléfono no encontrado. Añade tu número en el encabezado del CV.')}
-    ${dataRow('fa-linkedin',   'LinkedIn',            profile.linkedin,       'Perfil LinkedIn detectado ✅ Aumenta tu visibilidad ante el reclutador.', 'Sin LinkedIn. Agregar tu URL de LinkedIn puede aumentar un 10–15% tus chances.')}
-    ${dataRow('fa-briefcase',  'Puesto / Título',     profile.currentTitle,   'Título profesional detectado ✅ El ATS puede clasificarte correctamente.', 'Título no detectado. Agrega un encabezado con tu perfil profesional.')}
-    ${dataRow('fa-building',   'Empresa actual',      profile.currentCompany, 'Empresa detectada ✅ Historial laboral reconocido por el sistema.', 'Empresa actual no encontrada. Verifica que la sección de experiencia sea legible.')}
-    ${dataRow('fa-graduation-cap', 'Nivel educativo', profile.educationLevel, 'Educación detectada ✅ El sistema reconoce tu formación académica.', 'Nivel educativo no detectado. Agrega una sección de Educación clara.')}
+    ${dataRow('fa-user',       isEn ? 'Full name' : 'Nombre completo',     profile.fullName,       isEn ? 'Legible name by ATS (OK). The system can identify you correctly.' : 'Nombre legible por el ATS (Correcto). El sistema puede identificarte correctamente.', isEn ? 'No clear name found. Make sure to include it in plain text.' : 'No se encontró un nombre claro. Asegúrate de incluirlo en texto plano al inicio del CV.')}
+    ${dataRow('fa-envelope',   isEn ? 'Email address' : 'Correo electrónico',  profile.email,          isEn ? 'Email detected (OK). Recruiters can contact you directly.' : 'Email detectado (Correcto). Los reclutadores pueden contactarte directamente.', isEn ? 'Email not detected. Include it in text format.' : 'Email no detectado. Inclúyelo en formato texto, no como imagen.')}
+    ${dataRow('fa-phone',      isEn ? 'Phone number' : 'Teléfono',            profile.phone,          isEn ? 'Phone found (OK). Contact info complete.' : 'Teléfono encontrado (Correcto). Información de contacto completa.', isEn ? 'Phone not found. Add your number in the header.' : 'Teléfono no encontrado. Añade tu número en el encabezado del CV.')}
+    ${dataRow('fa-linkedin',   'LinkedIn',            profile.linkedin,       isEn ? 'LinkedIn profile detected (OK). Increases visibility.' : 'Perfil LinkedIn detectado (Correcto). Aumenta tu visibilidad ante el reclutador.', isEn ? 'No LinkedIn. Adding LinkedIn URL increases chances by 10-15%.' : 'Sin LinkedIn. Agregar tu URL de LinkedIn puede aumentar un 10–15% tus chances.')}
+    ${dataRow('fa-briefcase',  isEn ? 'Job Title' : 'Puesto / Título',     profile.currentTitle,   isEn ? 'Job title detected (OK). ATS can categorize you correctly.' : 'Título profesional detectado (Correcto). El ATS puede clasificarte correctamente.', isEn ? 'Job title not detected. Add a header with your summary.' : 'Título no detectado. Agrega un encabezado con tu perfil profesional.')}
+    ${dataRow('fa-building',   isEn ? 'Current company' : 'Empresa actual',      profile.currentCompany, isEn ? 'Company detected (OK). Work history recognized.' : 'Empresa detectada (Correcto). Historial laboral reconocido por el sistema.', isEn ? 'Current company not found. Verify experience section.' : 'Empresa actual no encontrada. Verifica que la sección de experiencia sea legible.')}
+    ${dataRow('fa-graduation-cap', isEn ? 'Education level' : 'Nivel educativo', profile.educationLevel, isEn ? 'Education detected (OK). System recognizes formation.' : 'Educación detectada (Correcto). El sistema reconoce tu formación académica.', isEn ? 'Education level not detected. Add clear Education section.' : 'Nivel educativo no detectado. Agrega una sección de Educación clara.')}
 
     <div class="prow_chips_wrap">
-      <span class="prow_chip neutral" ${wiTip('Años de experiencia estimados por la IA según el historial laboral del CV', undefined, 'top')}>
-        <i class="fas fa-clock"></i> ${profile.estimatedYearsExp != null ? profile.estimatedYearsExp + ' años exp.' : '—'}
+      <span class="prow_chip neutral" ${wiTip(isEn ? 'Estimated years of experience by AI' : 'Años de experiencia estimados por la IA', undefined, 'top')}>
+        <i class="fas fa-clock"></i> ${profile.estimatedYearsExp != null && isValidValue(profile.estimatedYearsExp) ? profile.estimatedYearsExp + (isEn ? ' years exp.' : ' años exp.') : '—'}
       </span>
-      <span class="prow_chip neutral" ${wiTip('Número de palabras detectadas en el CV. +500 palabras mejora la detección de keywords.', undefined, 'top')}>
-        <i class="fas fa-align-left"></i> ${profile.totalWords || '—'} palabras
+      <span class="prow_chip neutral" ${wiTip(isEn ? 'Number of words detected.' : 'Número de palabras detectadas.', undefined, 'top')}>
+        <i class="fas fa-align-left"></i> ${profile.totalWords || '—'} ${isEn ? 'words' : 'palabras'}
       </span>
-      <span class="prow_chip neutral" ${wiTip('Páginas estimadas del documento. Lo ideal es 1 página para perfiles con menos de 5 años de experiencia.', undefined, 'top')}>
-        <i class="fas fa-file-lines"></i> ${profile.estimatedPages || 1} ${profile.estimatedPages === 1 ? 'página' : 'páginas'}
+      <span class="prow_chip neutral" ${wiTip(isEn ? 'Estimated pages.' : 'Páginas estimadas.', undefined, 'top')}>
+        <i class="fas fa-file-lines"></i> ${profile.estimatedPages || 1} ${isEn ? (profile.estimatedPages === 1 ? 'page' : 'pages') : (profile.estimatedPages === 1 ? 'página' : 'páginas')}
       </span>
     </div>
 
     ${sects.length > 0 ? `
       <div class="prow_sections">
-        <span class="prow_sections_label"><i class="fas fa-layer-group"></i> Secciones reconocidas:</span>
+        <span class="prow_sections_label"><i class="fas fa-layer-group"></i> ${isEn ? 'Recognized sections:' : 'Secciones reconocidas:'}</span>
         <div class="prow_sections_tags">
           ${sects.map(s => `<span class="prow_sect_tag">${s}</span>`).join('')}
         </div>
@@ -404,7 +478,13 @@ const _renderLanguageQuality = (lq) => {
   const el = document.getElementById('languageQualityCard');
   if (!el || !lq) return;
 
-  const density = lq.keywordDensity === 'low' ? '⚠️ Baja' : lq.keywordDensity === 'high' ? '⚠️ Alta (riesgo de spam)' : '✅ Óptima';
+  const isEn = getLang() === 'en';
+
+  const density = lq.keywordDensity === 'low' 
+    ? (isEn ? '<i class="fas fa-exclamation-triangle" style="color:var(--warning);margin-right:0.6vh;"></i> Low' : '<i class="fas fa-exclamation-triangle" style="color:var(--warning);margin-right:0.6vh;"></i> Baja') 
+    : lq.keywordDensity === 'high' 
+      ? (isEn ? '<i class="fas fa-exclamation-triangle" style="color:var(--warning);margin-right:0.6vh;"></i> High (spam risk)' : '<i class="fas fa-exclamation-triangle" style="color:var(--warning);margin-right:0.6vh;"></i> Alta (riesgo de spam)') 
+      : (isEn ? '<i class="fas fa-circle-check" style="color:var(--success);margin-right:0.6vh;"></i> Optimal' : '<i class="fas fa-circle-check" style="color:var(--success);margin-right:0.6vh;"></i> Óptima');
   const verbsFound   = (lq.actionVerbsFound || []).join(', ') || '—';
   const verbsMissing = (lq.actionVerbsMissing || []).map(v => `<span class="verb_missing">${v}</span>`).join('') || '<span class="verb_none">—</span>';
 
@@ -412,28 +492,28 @@ const _renderLanguageQuality = (lq) => {
     <div class="lq_row">
       <i class="fas fa-bolt"></i>
       <div>
-        <span class="lq_label">Verbos de acción detectados</span>
+        <span class="lq_label">${isEn ? 'Action verbs detected' : 'Verbos de acción detectados'}</span>
         <span class="lq_val">${verbsFound}</span>
       </div>
     </div>
     <div class="lq_row">
       <i class="fas fa-plus-circle" style="color: var(--warning);"></i>
       <div>
-        <span class="lq_label">Verbos recomendados a agregar</span>
+        <span class="lq_label">${isEn ? 'Recommended verbs to add' : 'Verbos recomendados a agregar'}</span>
         <div class="verb_missing_wrap">${verbsMissing}</div>
       </div>
     </div>
     <div class="lq_row">
       <i class="fas fa-chart-pie"></i>
       <div>
-        <span class="lq_label">Logros cuantificados</span>
-        <span class="lq_val">${lq.quantifiedAchievements || 0} encontrados</span>
+        <span class="lq_label">${isEn ? 'Quantified achievements' : 'Logros cuantificados'}</span>
+        <span class="lq_val">${lq.quantifiedAchievements || 0} ${isEn ? 'found' : 'encontrados'}</span>
       </div>
     </div>
     <div class="lq_row">
       <i class="fas fa-percent"></i>
       <div>
-        <span class="lq_label">Densidad de keywords</span>
+        <span class="lq_label">${isEn ? 'Keyword density' : 'Densidad de keywords'}</span>
         <span class="lq_val">${density}</span>
       </div>
     </div>
@@ -442,15 +522,16 @@ const _renderLanguageQuality = (lq) => {
 
 // ─── Keywords ─────────────────────────────────────────────────────────────
 const _renderKeywords = (matched = [], missing = []) => {
+  const isEn = getLang() === 'en';
   if (matchedKeywordsContainer) {
     matchedKeywordsContainer.innerHTML = matched.length > 0
       ? matched.map(kw => `<span class="ats_badge matched"><i class="fas fa-check-circle"></i> ${kw}</span>`).join('')
-      : '<span class="kw_empty">No se detectaron palabras clave coincidentes con el puesto.</span>';
+      : `<span class="kw_empty">${isEn ? 'No matched keywords detected.' : 'No se detectaron palabras clave coincidentes.'}</span>`;
   }
   if (missingKeywordsContainer) {
     missingKeywordsContainer.innerHTML = missing.length > 0
       ? missing.map(kw => `<span class="ats_badge missing"><i class="fas fa-plus-circle"></i> ${kw}</span>`).join('')
-      : '<span class="kw_empty">¡Buen trabajo! No faltan palabras clave importantes.</span>';
+      : `<span class="kw_empty">${isEn ? 'Good job! No important keywords missing.' : '¡Buen trabajo! No faltan palabras clave importantes.'}</span>`;
   }
 };
 
@@ -459,7 +540,9 @@ const _renderPlan = (recs = []) => {
   if (!recommendationsContainer) return;
   recommendationsContainer.innerHTML = '';
 
-  const priorityWeight = { 'Alta': 3, 'Media': 2, 'Baja': 1 };
+  const isEn = getLang() === 'en';
+
+  const priorityWeight = { 'Alta': 3, 'High': 3, 'Media': 2, 'Medium': 2, 'Baja': 1, 'Low': 1 };
   recs.sort((a, b) => (priorityWeight[b.priority] || 0) - (priorityWeight[a.priority] || 0));
 
   const totalRecs = recs.length;
@@ -471,7 +554,11 @@ const _renderPlan = (recs = []) => {
     const pct = Math.round((completedRecs / totalRecs) * 100);
     if (planProgressPercent) planProgressPercent.textContent = `${pct}%`;
     if (planProgressBar)     planProgressBar.style.width     = `${pct}%`;
-    if (planProgressText)    planProgressText.textContent    = `Has completado ${completedRecs} de ${totalRecs} mejoras sugeridas.`;
+    if (planProgressText) {
+      planProgressText.textContent = isEn 
+        ? `You have completed ${completedRecs} of ${totalRecs} recommended improvements.` 
+        : `Has completado ${completedRecs} de ${totalRecs} mejoras sugeridas.`;
+    }
   };
 
   if (recs.length > 0) {
@@ -486,7 +573,7 @@ const _renderPlan = (recs = []) => {
         </div>` : '';
 
       const card = document.createElement('div');
-      card.className = `rec_card pri_${rec.priority}`;
+      card.className = `rec_card pri_${rec.priority === 'High' ? 'Alta' : rec.priority === 'Medium' ? 'Media' : rec.priority === 'Low' ? 'Baja' : rec.priority}`;
       card.innerHTML = `
         <div class="rec_checkbox_wrap">
           <div class="rec_checkbox" id="chk_rec_${idx}"><i class="fas fa-check"></i></div>
@@ -510,7 +597,7 @@ const _renderPlan = (recs = []) => {
           card.classList.add('completed');
           cb?.classList.add('checked');
           completedRecs = Math.min(totalRecs, completedRecs + 1);
-          Mensaje('¡Tarea completada! 🎉', 'success');
+          Mensaje(isEn ? 'Task completed!' : '¡Tarea completada!', 'success');
         }
         updateProgress();
       });
@@ -518,7 +605,7 @@ const _renderPlan = (recs = []) => {
     });
   } else {
     if (planProgressWrap) planProgressWrap.style.display = 'none';
-    recommendationsContainer.innerHTML = '<div class="rec_card" style="border-left:5px solid var(--success);"><p class="rec_advice">Tu currículum cumple perfectamente con los requisitos sugeridos.</p></div>';
+    recommendationsContainer.innerHTML = `<div class="rec_card" style="border-left:5px solid var(--success);"><p class="rec_advice">${isEn ? 'Your resume perfectly matches all guidelines.' : 'Tu currículum cumple perfectamente con los requisitos sugeridos.'}</p></div>`;
   }
 };
 
@@ -527,7 +614,16 @@ const _renderAudit = (warnings = []) => {
   if (!atsAuditList) return;
   atsAuditList.innerHTML = '';
 
-  const formatChecks = [
+  const isEn = getLang() === 'en';
+
+  const formatChecks = isEn ? [
+    { id: 'fonts',   title: 'Typography & Fonts',           desc: 'Legible fonts (Arial, Calibri, Times New Roman) for maximum compatibility.', keywords: ['font','fonts','typography','serif','sans'], successMsg: 'Compatible fonts detected. Perfect legibility.' },
+    { id: 'tables',  title: 'Data Tables',                  desc: 'Absence of complex tables that break ATS reading flow.',             keywords: ['table','tables','cell','grid'], successMsg: 'No conflicting tables. Information flows cleanly.' },
+    { id: 'columns', title: 'Columns & Layout',                desc: 'Single column layout to guarantee correct reading order.',         keywords: ['column','columns','layout','split'], successMsg: 'Compatible layout. Text blocks in chronological order.' },
+    { id: 'graphics',title: 'Graphic Elements',   desc: 'Absence of images, icons, or graphic skill rating bars.',                   keywords: ['image','graphic','icon','visual','rating bar'],   successMsg: 'Clean structure. No graphics blocking critical data.' },
+    { id: 'contact', title: 'Readable Contact Details',       desc: 'Email, phone, and LinkedIn in plain text format in the header.',              keywords: ['contact','email','phone','linkedin','link'], successMsg: 'Contact details identified correctly.' },
+    { id: 'headers', title: 'Standard Section Titles',      desc: 'Recognizable section names (Experience, Education, Skills).',          keywords: ['header','title','section','sections','structure'], successMsg: 'Standard sections detected. ATS will categorize with precision.' },
+  ] : [
     { id: 'fonts',   title: 'Tipografías y Fuentes',           desc: 'Fuentes legibles (Arial, Calibri, Times New Roman) para máxima compatibilidad.', keywords: ['fuente','letra','tipografía','sans','serif','font'], successMsg: 'Fuentes compatibles detectadas. Texto perfectamente legible.' },
     { id: 'tables',  title: 'Tablas de Datos',                  desc: 'Ausencia de tablas complejas que rompen el flujo de lectura del ATS.',             keywords: ['tabla','celda','grid','cuadrícula'],                    successMsg: 'Sin tablas conflictivas. La información fluye sin interrupciones.' },
     { id: 'columns', title: 'Columnas y Layout',                desc: 'Diseño de una sola columna para garantizar el orden correcto de lectura.',         keywords: ['columna','dos columnas','columnas','layout','distribución'], successMsg: 'Distribución compatible. Bloques de texto en orden cronológico correcto.' },
@@ -556,7 +652,7 @@ const _renderAudit = (warnings = []) => {
       <div style="flex:1;">
         <div style="display:flex;align-items:center;gap:1.2vh;flex-wrap:wrap;margin-bottom:0.8vh;">
           <span style="font-weight:800;font-size:var(--fz_m1);color:var(--tx1);">${check.title}</span>
-          <span style="font-size:var(--fz_s3);font-weight:800;padding:0.3vh 1.2vh;border-radius:50px;text-transform:uppercase;letter-spacing:0.5px;background:${ok ? 'rgba(60,215,65,0.1)' : 'rgba(255,167,38,0.1)'};color:${ok ? 'var(--success)' : 'var(--warning)'};">${ok ? 'Correcto' : 'Sugerencia'}</span>
+          <span style="font-size:var(--fz_s3);font-weight:800;padding:0.3vh 1.2vh;border-radius:50px;text-transform:uppercase;letter-spacing:0.5px;background:${ok ? 'rgba(60,215,65,0.1)' : 'rgba(255,167,38,0.1)'};color:${ok ? 'var(--success)' : 'var(--warning)'};">${ok ? (isEn ? 'Correct' : 'Correcto') : (isEn ? 'Suggestion' : 'Sugerencia')}</span>
         </div>
         <p style="font-size:var(--fz_s3);color:var(--tx3);margin:0 0 1vh;font-weight:500;line-height:1.5;">${check.desc}</p>
         <div style="font-size:var(--fz_m1);color:var(--tx2);font-weight:600;line-height:1.6;">
@@ -580,8 +676,8 @@ const _renderAudit = (warnings = []) => {
       <div style="margin-top:0.3vh;font-size:var(--fz_m4);color:var(--warning);"><i class="fas fa-circle-exclamation"></i></div>
       <div style="flex:1;">
         <div style="display:flex;align-items:center;gap:1.2vh;margin-bottom:0.8vh;">
-          <span style="font-weight:800;font-size:var(--fz_m1);color:var(--tx1);">Observaciones Adicionales</span>
-          <span style="font-size:var(--fz_s3);font-weight:800;padding:0.3vh 1.2vh;border-radius:50px;text-transform:uppercase;background:rgba(255,167,38,0.1);color:var(--warning);">Advertencia</span>
+          <span style="font-weight:800;font-size:var(--fz_m1);color:var(--tx1);">${isEn ? 'Additional Observations' : 'Observaciones Adicionales'}</span>
+          <span style="font-size:var(--fz_s3);font-weight:800;padding:0.3vh 1.2vh;border-radius:50px;text-transform:uppercase;background:rgba(255,167,38,0.1);color:var(--warning);">${isEn ? 'Warning' : 'Advertencia'}</span>
         </div>
         <div style="font-size:var(--fz_m1);color:var(--tx2);font-weight:600;line-height:1.6;">
           ${orphans.map(w => `<div style="display:flex;gap:1vh;align-items:start;margin-bottom:0.8vh;"><i class="fas fa-exclamation-triangle" style="color:var(--warning);margin-top:0.3vh;flex-shrink:0;"></i><span>${w}</span></div>`).join('')}
@@ -636,31 +732,33 @@ const _renderBreakdown = (score, breakdown) => {
 // ─── Copiar Guía ──────────────────────────────────────────────────────────
 export const copyActionPlan = () => {
   if (!activeReport) return;
+  const isEn = getLang() === 'en';
   const { score = 0, summary = '', missingKeywords = [], recommendations = [], atsWarnings = [] } = activeReport;
+
   const text = `================================================
-REPORTE ATS DE COMPATIBILIDAD - WORKWII
+${isEn ? 'ATS COMPATIBILITY REPORT - WORKWII' : 'REPORTE ATS DE COMPATIBILIDAD - WORKWII'}
 ================================================
-Puntaje de Match: ${score}%
-Diagnóstico: ${summary}
+${isEn ? 'Match Score' : 'Puntaje de Match'}: ${score}%
+${isEn ? 'Diagnosis' : 'Diagnóstico'}: ${summary}
 
-PALABRAS CLAVE QUE DEBES AGREGAR:
-${missingKeywords.join(', ') || 'Ninguna (¡Buen trabajo!)'}
+${isEn ? 'KEYWORDS YOU SHOULD ADD' : 'PALABRAS CLAVE QUE DEBES AGREGAR'}:
+${missingKeywords.join(', ') || (isEn ? 'None (Good job!)' : 'Ninguna (¡Buen trabajo!)')}
 
-PLAN DE CAMBIOS RECOMENDADOS:
-${recommendations.map(r => `[${r.priority}] ${r.section}: ${r.advice}${r.estimatedMinutes ? ` (~${r.estimatedMinutes} min)` : ''}`).join('\n') || 'Tu CV está óptimo.'}
-${atsWarnings.length ? `\nADVERTENCIAS DE FORMATO:\n${atsWarnings.map(w => `- ${w}`).join('\n')}` : ''}
+${isEn ? 'RECOMMENDED CHANGES PLAN' : 'PLAN DE CAMBIOS RECOMENDADOS'}:
+${recommendations.map(r => `[${r.priority}] ${r.section}: ${r.advice}${r.estimatedMinutes ? ` (~${r.estimatedMinutes} min)` : ''}`).join('\n') || (isEn ? 'Your CV is optimal.' : 'Tu CV está óptimo.')}
+${atsWarnings.length ? `\n${isEn ? 'FORMAT WARNINGS' : 'ADVERTENCIAS DE FORMATO'}:\n${atsWarnings.map(w => `- ${w}`).join('\n')}` : ''}
 ================================================`;
 
   const btn = document.getElementById('btnCopyReport');
   navigator.clipboard.writeText(text).then(() => {
     if (btn) {
       const prev = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-check-circle"></i> ¡Copiado!';
+      btn.innerHTML = isEn ? '<i class="fas fa-check-circle"></i> Copied!' : '<i class="fas fa-check-circle"></i> ¡Copiado!';
       btn.style.cssText = 'background:var(--success);color:#fff;border-color:var(--success);';
       setTimeout(() => { btn.innerHTML = prev; btn.style.cssText = ''; }, 2200);
     }
-    Mensaje('Informe de mejoras copiado ✅', 'success');
-  }).catch(() => Notificacion('Error al copiar al portapapeles.', 'error'));
+    Mensaje(isEn ? 'Improvement report copied' : 'Informe de mejoras copiado', 'success');
+  }).catch(() => Notificacion(isEn ? 'Error copying to clipboard.' : 'Error al copiar al portapapeles.', 'error'));
 };
 
 // ─── Reset ─────────────────────────────────────────────────────────────────
@@ -673,6 +771,9 @@ export const resetResults = () => {
   if (atsLoader)    atsLoader.style.display     = 'none';
   if (atsWorkspace) atsWorkspace.style.display  = 'grid';
   if (atsHeader)    atsHeader.classList.remove('ats_header_hidden');
+
+  const floatingActions = document.getElementById('atsFloatingActions');
+  if (floatingActions) floatingActions.classList.remove('show');
 
   document.querySelectorAll('.ats_dash_tab').forEach((t, i) => {
     if (i === 0) t.classList.add('active'); else t.classList.remove('active');
