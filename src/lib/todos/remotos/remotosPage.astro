@@ -1,0 +1,459 @@
+---
+// src/lib/remotos/remotosPage.astro
+
+import { app } from '../../../wii.js';
+
+import estilosRemotos from './remotos.css?inline';
+import { idiomaRemotos } from './idiomaRemotos.js';
+
+interface Props {lang: string;}
+
+interface Plataforma {
+  id: string;
+  nombre: string;
+  url: string;
+  logo: string;
+  categoria: string;
+  categoriaLabel: string;
+  ingles: string;
+  paises: string;
+  descripcion: string;
+  pros: string[];
+  contras?: string[];
+  requisitos: string;
+  tipExperto: string;
+  evitarEstafas: string;
+  guiaUrl?: string;
+  metrics: {
+    seguridad: number;
+    vacantes: number;
+    soporte: number;
+    gratuito: number;
+  };
+}
+
+const { lang } = Astro.props as { lang: 'es' | 'en' };
+const lg = idiomaRemotos[lang] || idiomaRemotos['es'];
+const plataformas = lg.plataformas as Plataforma[];
+
+// Helper functions for PageSpeed circular metrics
+const getScoreClass = (score: number) => {
+  if (score >= 90) return 'score-high';
+  if (score >= 60) return 'score-med';
+  return 'score-low';
+};
+
+const radius = 50;
+const circumference = 2 * Math.PI * radius; // ~314.16
+const getOffset = (score: number) => circumference - (circumference * score) / 100;
+---
+
+
+  <style slot="head" is:global set:html={estilosRemotos}></style>
+
+  <div class="remoto_ct" data-locale={lang}>
+    
+    <!-- Cabecera Integrada y Minimalista -->
+    <header class="re_header_ct">
+      <h1 set:html={lg.header.tit}></h1>
+      <p>{lg.header.desc}</p>
+    </header>
+
+    <!-- Layout de Dos Columnas (Sidebar Collapsible | Main Content) -->
+    <div class="remoto_layout" id="remoto-layout">
+      
+      <!-- Barra Lateral / Índice Curado (25%) -->
+      <aside class="remoto_sidebar">
+        <div class="sidebar_header">
+          <span class="sidebar_title">
+            <i class="fas fa-list-check"></i> {lg.sidebar.index}
+          </span>
+          <button class="btn_collapse" id="toggle-sidebar" aria-label={lg.sidebar.toggle}>
+            <i class="fas fa-angles-left" id="collapse-icon"></i>
+          </button>
+        </div>
+
+        <div class="sidebar_nav">
+          {plataformas.map((plat, idx) => (
+            <a href={`#${plat.id}`} class={`sidebar_item ${plat.categoria}`} data-id={plat.id}>
+              <span class={`sidebar_rank rank_${idx + 1 <= 3 ? idx + 1 : 'other'}`}>{idx + 1}</span>
+              <span class="sidebar_name">{plat.nombre}</span>
+              <span class={`sidebar_tag tag_${plat.categoria}`}>{plat.categoriaLabel}</span>
+            </a>
+          ))}
+          <div class="sidebar_divider"></div>
+          <a href="#advice-section" class="sidebar_item sidebar_advice_item" data-id="advice-section">
+            <span class="sidebar_rank rank_advice"><i class="fas fa-lightbulb"></i></span>
+            <span class="sidebar_name">{lg.sidebar.advice}</span>
+            <span class="sidebar_tag tag_advice">{lg.sidebar.adviceTag}</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- Contenido Principal (75%) -->
+      <div class="remoto_content">
+        
+        <!-- Buscador Superior -->
+        <div class="re_search_wrap">
+          <i class="fas fa-magnifying-glass re_search_ico"></i>
+          <input type="text" id="re-search" class="re_search" placeholder={lg.sidebar.searchPlaceholder} autocomplete="off" />
+          <span class="re_search_count">{plataformas.length} {lg.sidebar.searchCount}</span>
+        </div>
+
+        <div id="re-empty-msg" class="re_empty" style="display: none;">
+          <i class="fas fa-circle-exclamation"></i>
+          <span> {lg.sidebar.empty}</span>
+        </div>
+
+        <!-- Lista Vertical de Plataformas -->
+        <div class="remoto_list_wrap">
+          {plataformas.map((plat, index) => {
+            const isReversed = index % 2 === 1;
+            const rowClass = isReversed ? 'remoto_horizontal_row row-reversed' : 'remoto_horizontal_row';
+
+            return (
+              <section class={rowClass} id={plat.id} data-id={plat.id} data-cat={plat.categoria}>
+                
+                <!-- Columna Izquierda: Información de la plataforma -->
+                <div class="remoto_row_left">
+                  <div class="remoto_row_header">
+                    <span class={`re_rank_badge rank_${index + 1 <= 3 ? index + 1 : 'other'}`}>#{index + 1}</span>
+                    <h3>
+                      <a href={plat.url} target="_blank" rel="noopener noreferrer" class="re_title_link">{plat.nombre}</a>
+                    </h3>
+                    <span class={`re_badge badge_${plat.categoria}`}>{plat.categoriaLabel}</span>
+                  </div>
+
+                  <p class="remoto_row_desc">{plat.descripcion}</p>
+
+                  <!-- Pros & Contras -->
+                  <div class="re_pros_cons_list">
+                    <div class="re_list_group">
+                      <strong class="pros_title"><i class="fas fa-circle-check"></i> {lg.card.pros}</strong>
+                      <ul>
+                        {plat.pros.map(pro => (
+                          <li>
+                            <i class="fas fa-check text-success list-icon"></i>
+                            <span>{pro}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div class="re_list_group">
+                      <strong class="contras_title"><i class="fas fa-circle-xmark"></i> {lg.card.contras}</strong>
+                      <ul>
+                        {plat.contras?.map(contra => (
+                          <li>
+                            <i class="fas fa-xmark text-error list-icon"></i>
+                            <span>{contra}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <!-- Países e Inglés -->
+                  <div class="re_location_line">
+                    <i class="fas fa-earth-americas"></i>
+                    <span><strong>{lg.card.paises}:</strong> {plat.paises}</span>
+                    <span style="margin: 0 1.5vh; color: var(--brd);">|</span>
+                    <i class="fas fa-language"></i>
+                    <span><strong>{lg.card.ingles}:</strong> {plat.ingles}</span>
+                  </div>
+
+                  <!-- Requisitos clave -->
+                  <div class="re_requirements">
+                    <strong>{lg.card.requisitos}:</strong> {plat.requisitos}
+                  </div>
+                </div>
+
+                <!-- Columna Derecha: Círculos de Métricas PageSpeed y Acciones -->
+                <div class="remoto_row_right">
+                  <div class="re_metrics_box">
+                    <h4 class="re_metrics_title">{lg.card.metricsTitle}</h4>
+                    <div class="re_metrics_row">
+                      
+                      <!-- Seguridad -->
+                      <div class="re_metric_item">
+                        <svg class="ps_circle_mini" viewBox="0 0 120 120">
+                          <circle class={`ps_circle_track track_${getScoreClass(plat.metrics.seguridad)}`} cx="60" cy="60" r="50"></circle>
+                          <circle 
+                            class={`ps_circle_val ${getScoreClass(plat.metrics.seguridad)}`} 
+                            cx="60" 
+                            cy="60" 
+                            r="50"
+                            style={{
+                              strokeDasharray: `${circumference}`,
+                              strokeDashoffset: `${getOffset(plat.metrics.seguridad)}`
+                            }}
+                          ></circle>
+                          <text class={`ps_circle_text ${getScoreClass(plat.metrics.seguridad)}`} x="60" y="70" text-anchor="middle">{plat.metrics.seguridad}</text>
+                        </svg>
+                        <span>{lg.card.metrics.seguridad}</span>
+                      </div>
+
+                      <!-- Vacantes -->
+                      <div class="re_metric_item">
+                        <svg class="ps_circle_mini" viewBox="0 0 120 120">
+                          <circle class={`ps_circle_track track_${getScoreClass(plat.metrics.vacantes)}`} cx="60" cy="60" r="50"></circle>
+                          <circle 
+                            class={`ps_circle_val ${getScoreClass(plat.metrics.vacantes)}`} 
+                            cx="60" 
+                            cy="60" 
+                            r="50"
+                            style={{
+                              strokeDasharray: `${circumference}`,
+                              strokeDashoffset: `${getOffset(plat.metrics.vacantes)}`
+                            }}
+                          ></circle>
+                          <text class={`ps_circle_text ${getScoreClass(plat.metrics.vacantes)}`} x="60" y="70" text-anchor="middle">{plat.metrics.vacantes}</text>
+                        </svg>
+                        <span>{lg.card.metrics.vacantes}</span>
+                      </div>
+
+                      <!-- Soporte -->
+                      <div class="re_metric_item">
+                        <svg class="ps_circle_mini" viewBox="0 0 120 120">
+                          <circle class={`ps_circle_track track_${getScoreClass(plat.metrics.soporte)}`} cx="60" cy="60" r="50"></circle>
+                          <circle 
+                            class={`ps_circle_val ${getScoreClass(plat.metrics.soporte)}`} 
+                            cx="60" 
+                            cy="60" 
+                            r="50"
+                            style={{
+                              strokeDasharray: `${circumference}`,
+                              strokeDashoffset: `${getOffset(plat.metrics.soporte)}`
+                            }}
+                          ></circle>
+                          <text class={`ps_circle_text ${getScoreClass(plat.metrics.soporte)}`} x="60" y="70" text-anchor="middle">{plat.metrics.soporte}</text>
+                        </svg>
+                        <span>{lg.card.metrics.soporte}</span>
+                      </div>
+
+                      <!-- Gratis -->
+                      <div class="re_metric_item">
+                        <svg class="ps_circle_mini" viewBox="0 0 120 120">
+                          <circle class={`ps_circle_track track_${getScoreClass(plat.metrics.gratuito)}`} cx="60" cy="60" r="50"></circle>
+                          <circle 
+                            class={`ps_circle_val ${getScoreClass(plat.metrics.gratuito)}`} 
+                            cx="60" 
+                            cy="60" 
+                            r="50"
+                            style={{
+                              strokeDasharray: `${circumference}`,
+                              strokeDashoffset: `${getOffset(plat.metrics.gratuito)}`
+                            }}
+                          ></circle>
+                          <text class={`ps_circle_text ${getScoreClass(plat.metrics.gratuito)}`} x="60" y="70" text-anchor="middle">{plat.metrics.gratuito}</text>
+                        </svg>
+                        <span>{lg.card.metrics.gratuito}</span>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  <!-- Logo + Opinión del Experto -->
+                  <div class="re_card_preview_box">
+                    <div class="re_logo_container">
+                      <img src={plat.logo} alt={`Logo de ${plat.nombre}`} />
+                    </div>
+                    <div class="re_expert_opinion">
+                      <strong><i class="fas fa-user-tie"></i> {lg.card.tip}</strong>
+                      <p>{plat.tipExperto}</p>
+                    </div>
+                  </div>
+
+                  <!-- Evitar Estafas -->
+                  <div class="re_safety_tip">
+                    <strong><i class="fas fa-shield-halved"></i> {lg.card.estafas}</strong>
+                    <p>{plat.evitarEstafas}</p>
+                  </div>
+
+                  <!-- Acciones -->
+                  <div class="re_actions_row">
+                    {plat.guiaUrl && (
+                      <a href={plat.guiaUrl} class="re_btn_guide_main">
+                        <i class="fas fa-book"></i> {lg.card.howToApply}
+                      </a>
+                    )}
+                    <a href={plat.url} target="_blank" rel="noopener noreferrer" class="re_btn_visit_main">
+                      <i class="fas fa-arrow-up-right-from-square"></i> {lg.card.visit}
+                    </a>
+                  </div>
+
+                </div>
+
+              </section>
+            );
+          })}
+        </div>
+
+        <!-- Centro de Consejos de Seguridad -->
+        <section class="re_advice_sec" id="advice-section" data-id="advice-section">
+          <div class="re_advice_card">
+            <h2 class="re_advice_title">
+              <i class="fas fa-shield-halved"></i>
+              <span class="gradient_text">{lg.advice.tit}</span>
+            </h2>
+            <p class="re_advice_subtitle">{lg.advice.sub}</p>
+
+            <div class="re_advice_list">
+              <div class="re_advice_item">
+                <div class="re_advice_num rank_1">1</div>
+                <div class="re_advice_item_content">
+                  <h3 class="re_advice_item_title">{lg.advice.item1.tit}</h3>
+                  <p class="re_advice_reason">{lg.advice.item1.desc}</p>
+                  <p class="re_advice_gold_tip"><strong>{lg.advice.goldTip}</strong> {lg.advice.item1.tip}</p>
+                </div>
+              </div>
+              <div class="re_advice_item">
+                <div class="re_advice_num rank_2">2</div>
+                <div class="re_advice_item_content">
+                  <h3 class="re_advice_item_title">{lg.advice.item2.tit}</h3>
+                  <p class="re_advice_reason">{lg.advice.item2.desc}</p>
+                  <p class="re_advice_gold_tip"><strong>{lg.advice.goldTip}</strong> {lg.advice.item2.tip}</p>
+                </div>
+              </div>
+              <div class="re_advice_item">
+                <div class="re_advice_num rank_3">3</div>
+                <div class="re_advice_item_content">
+                  <h3 class="re_advice_item_title">{lg.advice.item3.tit}</h3>
+                  <p class="re_advice_reason">{lg.advice.item3.desc}</p>
+                  <p class="re_advice_gold_tip"><strong>{lg.advice.goldTip}</strong> {lg.advice.item3.tip}</p>
+                </div>
+              </div>
+            </div>
+
+            <p class="re_advice_closing">{lg.advice.closing}</p>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+
+<script>
+  const initPage = () => {
+    const toggleBtn = document.getElementById('toggle-sidebar');
+    const layout = document.getElementById('remoto-layout');
+    const searchInput = document.getElementById('re-search') as HTMLInputElement | null;
+    const cards = document.querySelectorAll('.remoto_horizontal_row');
+    const spyTargets = document.querySelectorAll('.remoto_horizontal_row, .re_advice_sec');
+    const sidebarItems = document.querySelectorAll('.sidebar_item');
+    const searchCount = document.querySelector('.re_search_count');
+    const emptyMsg = document.getElementById('re-empty-msg');
+
+    // 1. Sidebar Collapse (Persistente con localStorage)
+    if (toggleBtn && layout) {
+      const isCollapsed = localStorage.getItem('wiRemotosSidebarCollapsed') === 'true';
+      if (isCollapsed) {
+        layout.classList.add('sidebar-collapsed');
+      }
+
+      toggleBtn.addEventListener('click', () => {
+        layout.classList.toggle('sidebar-collapsed');
+        const nowCollapsed = layout.classList.contains('sidebar-collapsed');
+        localStorage.setItem('wiRemotosSidebarCollapsed', nowCollapsed.toString());
+      });
+    }
+
+    // 2. Buscador Reactivo en Tiempo Real
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        const q = searchInput.value.toLowerCase().trim();
+        let vis = 0;
+
+        cards.forEach(card => {
+          const nom = card.getAttribute('data-id')?.toLowerCase() || '';
+          const cat = card.getAttribute('data-cat')?.toLowerCase() || '';
+          const title = card.querySelector('h3')?.textContent?.toLowerCase() || '';
+          const desc = card.querySelector('.remoto_row_desc')?.textContent?.toLowerCase() || '';
+          
+          const match = !q || title.includes(q) || desc.includes(q) || cat.includes(q) || nom.includes(q);
+          
+          if (match) {
+            card.classList.remove('hidden');
+            vis++;
+          } else {
+            card.classList.add('hidden');
+          }
+
+          // Filtrar también el índice de la barra lateral
+          const id = card.getAttribute('data-id');
+          const sideItem = document.querySelector(`.sidebar_item[data-id="${id}"]`) as HTMLElement | null;
+          if (sideItem) {
+            sideItem.style.display = match ? '' : 'none';
+          }
+        });
+
+        if (searchCount) {
+          const isEn = document.getElementById('remoto-layout')?.parentElement?.getAttribute('data-locale') === 'en';
+          searchCount.textContent = isEn 
+            ? `${vis} platform${vis !== 1 ? 's' : ''}` 
+            : `${vis} plataforma${vis !== 1 ? 's' : ''}`;
+        }
+
+        if (emptyMsg) {
+          emptyMsg.style.display = vis === 0 ? 'block' : 'none';
+        }
+      });
+    }
+
+    // 3. ScrollSpy con IntersectionObserver (Alto Rendimiento)
+    const spyOptions = {
+      root: null,
+      rootMargin: '-15% 0px -70% 0px',
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('data-id');
+          sidebarItems.forEach(item => {
+            item.classList.toggle('active', item.getAttribute('data-id') === id);
+          });
+        }
+      });
+    }, spyOptions);
+
+    spyTargets.forEach(target => observer.observe(target));
+
+    // Sincronizar ScrollSpy al llegar al final de la página (para viewports altos)
+    window.addEventListener('scroll', () => {
+      if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 60) {
+        sidebarItems.forEach(item => {
+          item.classList.toggle('active', item.getAttribute('data-id') === 'advice-section');
+        });
+      }
+    });
+
+    // 4. Scroll Suave al hacer clic en ítems del índice
+    sidebarItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = item.getAttribute('href');
+        if (!targetId) return;
+        const targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          const headerOffset = 90; // Evita solapamiento con el header fijo
+          const elementPosition = targetEl.getBoundingClientRect().top + window.scrollY;
+          const offsetPosition = elementPosition - headerOffset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  };
+
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('remoto-layout')) {
+      initPage();
+    }
+  });
+</script>

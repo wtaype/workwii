@@ -1,0 +1,426 @@
+---
+// src/lib/comparar/compararPage.astro
+
+import estilosComparar from './comparar.css?inline';
+import { idiomaComparar } from './idiomaComparar.js';
+
+interface Props {lang: string;}
+const { lang } = Astro.props as { lang: 'es' | 'en' };
+const lg = idiomaComparar[lang] || idiomaComparar['es'];
+---
+
+<style slot="head" is:global set:html={estilosComparar}></style>
+
+<div class="comp_wrap">
+  
+  <!-- Hero Principal -->
+  <header class="comp_hero">
+    <div class="comp_hero_orb comp_orb1"></div>
+    <div class="comp_hero_orb comp_orb2"></div>
+    
+    <div class="comp_hero_body">
+      <div class="comp_badge">
+        <i class="fas fa-chart-simple"></i> {lg.hero.badge}
+      </div>
+      <h1 class="comp_hero_tit">{lg.hero.title}</h1>
+      <p class="comp_hero_sub">
+        {lg.hero.subtitle}
+      </p>
+    </div>
+  </header>
+
+  <main class="comp_container">
+    
+    <!-- TABLA 1: FUNCIONES Y BENEFICIOS -->
+    <section class="comp_section">
+      <header class="comp_sect_header">
+        <h2 class="comp_sect_title"><i class="fas fa-screwdriver-wrench"></i> {lg.sec1.title}</h2>
+        <p class="comp_sect_desc">{lg.sec1.desc}</p>
+      </header>
+
+      <div class="comp_table_card">
+        <div class="comp_table_wrapper">
+          <table class="comp_table">
+            <thead>
+              <tr>
+                <th>{lg.sec1.table.feature}</th>
+                <th class="comp_col_highlight_header">{lg.sec1.table.workwii}</th>
+                <th>{lg.sec1.table.rezi}</th>
+                <th>{lg.sec1.table.resumeio}</th>
+                <th>{lg.sec1.table.novoresume}</th>
+                <th>{lg.sec1.table.jobscan}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>{lg.sec1.table.features.botwii.title}</strong></td>
+                <td class="comp_col_highlight">
+                  <span class="comp_status_badge good" data-witip={lg.sec1.table.features.botwii.workwii_tip}>
+                    <i class="fas fa-circle-check"></i> {lg.sec1.table.features.botwii.workwii}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge warning" data-witip={lg.sec1.table.features.botwii.rezi_tip}>
+                    <i class="fas fa-circle-exclamation"></i> {lg.sec1.table.features.botwii.rezi}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge warning" data-witip={lg.sec1.table.features.botwii.resumeio_tip}>
+                    <i class="fas fa-circle-exclamation"></i> {lg.sec1.table.features.botwii.resumeio}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.botwii.novoresume_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.botwii.novoresume}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.botwii.jobscan_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.botwii.jobscan}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>{lg.sec1.table.features.diagnosis.title}</strong></td>
+                <td class="comp_col_highlight">
+                  <span class="comp_status_badge good" data-witip={lg.sec1.table.features.diagnosis.workwii_tip}>
+                    <i class="fas fa-circle-check"></i> {lg.sec1.table.features.diagnosis.workwii}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge warning" data-witip={lg.sec1.table.features.diagnosis.rezi_tip}>
+                    <i class="fas fa-circle-exclamation"></i> {lg.sec1.table.features.diagnosis.rezi}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.diagnosis.resumeio_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.diagnosis.resumeio}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.diagnosis.novoresume_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.diagnosis.novoresume}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge good" data-witip={lg.sec1.table.features.diagnosis.jobscan_tip}>
+                    <i class="fas fa-circle-check"></i> {lg.sec1.table.features.diagnosis.jobscan}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>{lg.sec1.table.features.pdf.title}</strong></td>
+                <td class="comp_col_highlight">
+                  <span class="comp_status_badge good" data-witip={lg.sec1.table.features.pdf.workwii_tip}>
+                    <i class="fas fa-circle-check"></i> {lg.sec1.table.features.pdf.workwii}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge warning" data-witip={lg.sec1.table.features.pdf.rezi_tip}>
+                    <i class="fas fa-circle-exclamation"></i> {lg.sec1.table.features.pdf.rezi}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.pdf.resumeio_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.pdf.resumeio}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.pdf.novoresume_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.pdf.novoresume}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.pdf.jobscan_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.pdf.jobscan}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>{lg.sec1.table.features.privacy.title}</strong></td>
+                <td class="comp_col_highlight">
+                  <span class="comp_status_badge good" data-witip={lg.sec1.table.features.privacy.workwii_tip}>
+                    <i class="fas fa-circle-check"></i> {lg.sec1.table.features.privacy.workwii}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge warning" data-witip={lg.sec1.table.features.privacy.rezi_tip}>
+                    <i class="fas fa-circle-exclamation"></i> {lg.sec1.table.features.privacy.rezi}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge warning" data-witip={lg.sec1.table.features.privacy.resumeio_tip}>
+                    <i class="fas fa-circle-exclamation"></i> {lg.sec1.table.features.privacy.resumeio}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge warning" data-witip={lg.sec1.table.features.privacy.novoresume_tip}>
+                    <i class="fas fa-circle-exclamation"></i> {lg.sec1.table.features.privacy.novoresume}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge warning" data-witip={lg.sec1.table.features.privacy.jobscan_tip}>
+                    <i class="fas fa-circle-exclamation"></i> {lg.sec1.table.features.privacy.jobscan}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>{lg.sec1.table.features.interviews.title}</strong></td>
+                <td class="comp_col_highlight">
+                  <span class="comp_status_badge good" data-witip={lg.sec1.table.features.interviews.workwii_tip}>
+                    <i class="fas fa-circle-check"></i> {lg.sec1.table.features.interviews.workwii}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.interviews.rezi_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.interviews.rezi}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.interviews.resumeio_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.interviews.resumeio}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.interviews.novoresume_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.interviews.novoresume}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.interviews.jobscan_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.interviews.jobscan}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>{lg.sec1.table.features.converter.title}</strong></td>
+                <td class="comp_col_highlight">
+                  <span class="comp_status_badge good" data-witip={lg.sec1.table.features.converter.workwii_tip}>
+                    <i class="fas fa-circle-check"></i> {lg.sec1.table.features.converter.workwii}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge warning" data-witip={lg.sec1.table.features.converter.rezi_tip}>
+                    <i class="fas fa-circle-exclamation"></i> {lg.sec1.table.features.converter.rezi}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.converter.resumeio_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.converter.resumeio}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.converter.novoresume_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.converter.novoresume}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.converter.jobscan_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.converter.jobscan}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>{lg.sec1.table.features.remotes.title}</strong></td>
+                <td class="comp_col_highlight">
+                  <span class="comp_status_badge good" data-witip={lg.sec1.table.features.remotes.workwii_tip}>
+                    <i class="fas fa-circle-check"></i> {lg.sec1.table.features.remotes.workwii}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.remotes.rezi_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.remotes.rezi}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.remotes.resumeio_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.remotes.resumeio}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.remotes.novoresume_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.remotes.novoresume}
+                  </span>
+                </td>
+                <td>
+                  <span class="comp_status_badge danger" data-witip={lg.sec1.table.features.remotes.jobscan_tip}>
+                    <i class="fas fa-circle-xmark"></i> {lg.sec1.table.features.remotes.jobscan}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TABLA 2: COMPARATIVA DE PRECIOS -->
+    <section class="comp_section">
+      <header class="comp_sect_header">
+        <h2 class="comp_sect_title"><i class="fas fa-tags"></i> {lg.sec2.title}</h2>
+        <p class="comp_sect_desc">{lg.sec2.desc}</p>
+      </header>
+
+      <div class="comp_table_card">
+        <div class="comp_table_wrapper">
+          <table class="comp_table">
+            <thead>
+              <tr>
+                <th>{lg.sec2.table.platform}</th>
+                <th>{lg.sec2.table.basic}</th>
+                <th>{lg.sec2.table.pro}</th>
+                <th>{lg.sec2.table.vip}</th>
+                <th>{lg.sec2.table.recurring}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="comp_col_highlight">
+                <td class="comp_col_highlight"><strong>{lg.sec2.table.workwii.name}</strong></td>
+                <td>
+                  <span class="comp_price_tag success">{lg.sec2.table.workwii.basic}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.workwii.basic_desc}</span>
+                </td>
+                <td>
+                  <span class="comp_price_tag highlight">{lg.sec2.table.workwii.pro}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.workwii.pro_desc}</span>
+                </td>
+                <td>
+                  <span class="comp_price_tag highlight">{lg.sec2.table.workwii.vip}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.workwii.vip_desc}</span>
+                </td>
+                <td><span class="comp_status_badge good">{lg.sec2.table.no}</span> {lg.sec2.table.workwii.rec}</td>
+              </tr>
+              <tr>
+                <td><strong>{lg.sec2.table.rezi.name}</strong></td>
+                <td>
+                  <span class="comp_price_tag success">{lg.sec2.table.rezi.basic}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.rezi.basic_desc}</span>
+                </td>
+                <td>
+                  <span class="comp_price_tag">{lg.sec2.table.rezi.pro}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.rezi.pro_desc}</span>
+                </td>
+                <td>
+                  <span class="comp_price_tag danger">{lg.sec2.table.rezi.vip}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.rezi.vip_desc}</span>
+                </td>
+                <td><span class="comp_status_badge danger">{lg.sec2.table.yes}</span> {lg.sec2.table.rezi.rec}</td>
+              </tr>
+              <tr>
+                <td><strong>{lg.sec2.table.resumeio.name}</strong></td>
+                <td>
+                  <span class="comp_price_tag warning">{lg.sec2.table.resumeio.basic}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.resumeio.basic_desc}</span>
+                </td>
+                <td>
+                  <span class="comp_price_tag danger">{lg.sec2.table.resumeio.pro}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.resumeio.pro_desc}</span>
+                </td>
+                <td>
+                  <span class="comp_price_tag danger">{lg.sec2.table.resumeio.vip}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.resumeio.vip_desc}</span>
+                </td>
+                <td><span class="comp_status_badge danger">{lg.sec2.table.yes}</span> {lg.sec2.table.resumeio.rec}</td>
+              </tr>
+              <tr>
+                <td><strong>{lg.sec2.table.novoresume.name}</strong></td>
+                <td>
+                  <span class="comp_price_tag warning">{lg.sec2.table.novoresume.basic}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.novoresume.basic_desc}</span>
+                </td>
+                <td>
+                  <span class="comp_price_tag">{lg.sec2.table.novoresume.pro}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.novoresume.pro_desc}</span>
+                </td>
+                <td>
+                  <span class="comp_price_tag">{lg.sec2.table.novoresume.vip}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.novoresume.vip_desc}</span>
+                </td>
+                <td><span class="comp_status_badge danger">{lg.sec2.table.yes}</span> {lg.sec2.table.novoresume.rec}</td>
+              </tr>
+              <tr>
+                <td><strong>{lg.sec2.table.jobscan.name}</strong></td>
+                <td>
+                  <span class="comp_price_tag warning">{lg.sec2.table.jobscan.basic}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.jobscan.basic_desc}</span>
+                </td>
+                <td>
+                  <span class="comp_price_tag danger">{lg.sec2.table.jobscan.pro}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.jobscan.pro_desc}</span>
+                </td>
+                <td>
+                  <span class="comp_price_tag danger">{lg.sec2.table.jobscan.vip}</span>
+                  <span class="comp_price_detail">{lg.sec2.table.jobscan.vip_desc}</span>
+                </td>
+                <td><span class="comp_status_badge danger">{lg.sec2.table.yes}</span> {lg.sec2.table.jobscan.rec}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3: LO QUE NOS HACE ÚNICOS -->
+    <section class="comp_section">
+      <header class="comp_sect_header">
+        <h2 class="comp_sect_title"><i class="fas fa-crown"></i> {lg.sec3.title}</h2>
+        <p class="comp_sect_desc">{lg.sec3.desc}</p>
+      </header>
+
+      <div class="comp_grid">
+        <article class="comp_card" data-witip={lg.sec3.cards.parsers.tip}>
+          <div class="comp_card_icon">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h3>{lg.sec3.cards.parsers.title}</h3>
+          <p>{lg.sec3.cards.parsers.desc}</p>
+        </article>
+
+        <article class="comp_card" data-witip={lg.sec3.cards.card.tip}>
+          <div class="comp_card_icon">
+            <i class="fas fa-credit-card"></i>
+          </div>
+          <h3>{lg.sec3.cards.card.title}</h3>
+          <p>{lg.sec3.cards.card.desc}</p>
+        </article>
+
+        <article class="comp_card" data-witip={lg.sec3.cards.star.tip}>
+          <div class="comp_card_icon">
+            <i class="fas fa-award"></i>
+          </div>
+          <h3>{lg.sec3.cards.star.title}</h3>
+          <p>{lg.sec3.cards.star.desc}</p>
+        </article>
+
+        <article class="comp_card" data-witip={lg.sec3.cards.privacy.tip}>
+          <div class="comp_card_icon">
+            <i class="fas fa-user-shield"></i>
+          </div>
+          <h3>{lg.sec3.cards.privacy.title}</h3>
+          <p>{lg.sec3.cards.privacy.desc}</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Banner de Call to Action -->
+    <section class="comp_cta_banner">
+      <h2>{lg.cta.title}</h2>
+      <p>{lg.cta.desc}</p>
+      <a href="/crear" class="comp_cta_btn">
+        <i class="fas fa-wand-magic-sparkles"></i> {lg.cta.btn}
+      </a>
+    </section>
+
+  </main>
+
+</div>
+
+<script>
+  import { wiTip } from '../../widev/widev.js';
+  
+  document.addEventListener('astro:page-load', () => {
+    if (document.querySelector('.comp_wrap')) {
+      wiTip();
+    }
+  });
+</script>

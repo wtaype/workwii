@@ -1,0 +1,335 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { app } from '../../../../wii.js';
+import { seo } from '../../../../lib/seo.js';
+import { idiomaTerminos } from './idiomaTerminos.js';
+import estilosAcercas from '../acercas.css?inline';
+
+const { lang = 'es' } = Astro.props as { lang?: 'es' | 'en' };
+const t = (idiomaTerminos as any)[lang] || idiomaTerminos['es'];
+const currentYear = new Date().getFullYear();
+
+const route = (path: string) => lang === 'en' ? `/en${path}` : path;
+---
+
+<Layout {...(lang === 'en' ? (seo.terminos as any).en : (seo.terminos as any).es)}>
+  <style is:global set:html={estilosAcercas}></style>
+  <div class="ac_wrap tm_wrap">
+
+  <!-- ══ HERO ══ -->
+  <section class="ac_hero tm_hero">
+    <div class="ac_hero_orb ac_orb1"></div>
+    <div class="ac_hero_orb ac_orb2"></div>
+    <div class="ac_hero_orb ac_orb3"></div>
+    <div class="ac_hero_body">
+      <div class="ac_hero_badge"><i class="fas fa-file-contract"></i> {t.hero.badge}</div>
+      <h1 class="ac_hero_tit">{t.hero.tit1}<br><span class="ac_grad">{t.hero.titGrad}</span></h1>
+      <p class="ac_hero_sub" set:html={t.hero.sub}></p>
+      <div class="tm_hero_chips">
+        <span class="tm_chip"><i class="fas fa-shield-halved"></i> {t.hero.chip1}</span>
+        <span class="tm_chip"><i class="fas fa-heart"></i> {t.hero.chip2}</span>
+        <span class="tm_chip"><i class="fas fa-scale-balanced"></i> {t.hero.chip3}</span>
+      </div>
+      <div class="tm_last_upd">
+        <i class="fas fa-calendar-check"></i>
+        {t.hero.lastUpd} {currentYear}
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ÍNDICE RÁPIDO ══ -->
+  <div class="tm_index_band">
+    {t.indices.map((idx: any) => (
+      <a href={`#${idx.id}`} class="tm_index_item">
+        <i class={idx.ico} style={`color:${idx.color}`}></i>
+        <span>{idx.txt}</span>
+      </a>
+    ))}
+  </div>
+
+  <!-- ══ SECCIONES ══ -->
+  <section class="ac_sec tm_secciones">
+    <div class="ac_sec_head">
+      <div class="ac_sec_badge"><i class="fas fa-list-check"></i> {t.sections.badge}</div>
+      <h2 class="ac_sec_tit">{t.sections.tit}<span class="ac_grad">{t.sections.titGrad}</span></h2>
+      <p class="ac_sec_sub">{t.sections.sub}</p>
+    </div>
+    <div class="tm_secs_grid">
+      
+      <!-- SECCIÓN 1 -->
+      <div class="tm_sec_card wi_fadeUp" id="tm_sec_0">
+        <div class="tm_sec_header">
+          <div class="tm_sec_ico" style="--tc:#0EBEFF"><i class="fas fa-user-shield"></i></div>
+          <div>
+            <span class="tm_sec_num" style="color:#0EBEFF">01</span>
+            <h2 class="tm_sec_tit">{t.sections.s1_tit}</h2>
+          </div>
+        </div>
+        <div class="tm_sec_body">
+          <p>{t.sections.s1_desc}</p>
+          <ul class="tm_list">
+            <li><i class="fas fa-check"></i>{t.sections.s1_item1}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s1_item2}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s1_item3}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s1_item4}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s1_item5}</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 2 -->
+      <div class="tm_sec_card wi_fadeUp" id="tm_sec_1">
+        <div class="tm_sec_header">
+          <div class="tm_sec_ico" style="--tc:#29C72E"><i class="fas fa-cloud-bolt"></i></div>
+          <div>
+            <span class="tm_sec_num" style="color:#29C72E">02</span>
+            <h2 class="tm_sec_tit">{t.sections.s2_tit}</h2>
+          </div>
+        </div>
+        <div class="tm_sec_body">
+          <p>{t.sections.s2_desc}</p>
+          <ul class="tm_list">
+            <li><i class="fas fa-check"></i>{t.sections.s2_item1}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s2_item2}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s2_item3}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s2_item4}</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 3 -->
+      <div class="tm_sec_card wi_fadeUp" id="tm_sec_2">
+        <div class="tm_sec_header">
+          <div class="tm_sec_ico" style="--tc:#FF5C69"><i class="fas fa-bullhorn"></i></div>
+          <div>
+            <span class="tm_sec_num" style="color:#FF5C69">03</span>
+            <h2 class="tm_sec_tit">{t.sections.s3_tit}</h2>
+          </div>
+        </div>
+        <div class="tm_sec_body">
+          <p set:html={t.sections.s3_desc}></p>
+          <ul class="tm_list">
+            <li><i class="fas fa-check"></i>{t.sections.s3_item1}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s3_item2}</li>
+            <li set:html={t.sections.s3_item3}></li>
+            <li><i class="fas fa-check"></i>{t.sections.s3_item4}</li>
+          </ul>
+          <div class="tm_alert">
+            <i class="fas fa-info-circle"></i>
+            <p>{t.sections.s3_warning}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 4 -->
+      <div class="tm_sec_card wi_fadeUp" id="tm_sec_3">
+        <div class="tm_sec_header">
+          <div class="tm_sec_ico" style="--tc:#7000FF"><i class="fas fa-copyright"></i></div>
+          <div>
+            <span class="tm_sec_num" style="color:#7000FF">04</span>
+            <h2 class="tm_sec_tit">{t.sections.s4_tit}</h2>
+          </div>
+        </div>
+        <div class="tm_sec_body">
+          <p set:html={t.sections.s4_desc}></p>
+          <ul class="tm_list">
+            <li><i class="fas fa-check"></i>{t.sections.s4_item1}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s4_item2}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s4_item3}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s4_item4}</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 5 -->
+      <div class="tm_sec_card wi_fadeUp" id="tm_sec_4">
+        <div class="tm_sec_header">
+          <div class="tm_sec_ico" style="--tc:#FFDA34"><i class="fas fa-shield-heart"></i></div>
+          <div>
+            <span class="tm_sec_num" style="color:#FFDA34">05</span>
+            <h2 class="tm_sec_tit">{t.sections.s5_tit}</h2>
+          </div>
+        </div>
+        <div class="tm_sec_body">
+          <p>{t.sections.s5_desc}</p>
+          <ul class="tm_list">
+            <li><i class="fas fa-check"></i>{t.sections.s5_item1}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s5_item2}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s5_item3}</li>
+            <li><i class="fas fa-check"></i>{t.sections.s5_item4}</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 6 -->
+      <div class="tm_sec_card wi_fadeUp" id="tm_sec_5">
+        <div class="tm_sec_header">
+          <div class="tm_sec_ico" style="--tc:#FF5C69"><i class="fas fa-ban"></i></div>
+          <div>
+            <span class="tm_sec_num" style="color:#FF5C69">06</span>
+            <h2 class="tm_sec_tit">{t.sections.s6_tit}</h2>
+          </div>
+        </div>
+        <div class="tm_sec_body">
+          <p>{t.sections.s6_desc}</p>
+          <ul class="tm_list">
+            <li><i class="fas fa-times" style="color:#FF5C69"></i>{t.sections.s6_item1}</li>
+            <li><i class="fas fa-times" style="color:#FF5C69"></i>{t.sections.s6_item2}</li>
+            <li><i class="fas fa-times" style="color:#FF5C69"></i>{t.sections.s6_item3}</li>
+            <li><i class="fas fa-times" style="color:#FF5C69"></i>{t.sections.s6_item4}</li>
+            <li><i class="fas fa-times" style="color:#FF5C69"></i>{t.sections.s6_item5}</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 7 -->
+      <div class="tm_sec_card wi_fadeUp" id="tm_sec_6">
+        <div class="tm_sec_header">
+          <div class="tm_sec_ico" style="--tc:#0EBEFF"><i class="fas fa-gavel"></i></div>
+          <div>
+            <span class="tm_sec_num" style="color:#0EBEFF">07</span>
+            <h2 class="tm_sec_tit">{t.sections.s7_tit}</h2>
+          </div>
+        </div>
+        <div class="tm_sec_body">
+          <p>{t.sections.s7_desc}</p>
+          <p>{t.sections.s7_footer}</p>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 8 -->
+      <div class="tm_sec_card wi_fadeUp" id="tm_sec_7">
+        <div class="tm_sec_header">
+          <div class="tm_sec_ico" style="--tc:#29C72E"><i class="fas fa-rotate"></i></div>
+          <div>
+            <span class="tm_sec_num" style="color:#29C72E">08</span>
+            <h2 class="tm_sec_tit">{t.sections.s8_tit}</h2>
+          </div>
+        </div>
+        <div class="tm_sec_body">
+          <p>{t.sections.s8_desc}</p>
+          <p>{t.sections.s8_footer}</p>
+          <div class="tm_alert">
+            <i class="fas fa-calendar-check"></i>
+            <p>{t.hero.lastUpd} {currentYear}. {t.sections.s8_warning}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 9 -->
+      <div class="tm_sec_card wi_fadeUp" id="tm_sec_8">
+        <div class="tm_sec_header">
+          <div class="tm_sec_ico" style="--tc:#7000FF"><i class="fas fa-envelope"></i></div>
+          <div>
+            <span class="tm_sec_num" style="color:#7000FF">09</span>
+            <h2 class="tm_sec_tit">{t.sections.s9_tit}</h2>
+          </div>
+        </div>
+        <div class="tm_sec_body">
+          <p>{t.sections.s9_desc}</p>
+          <div class="tm_contact">
+            <a href={`mailto:${t.sections.s9_c1_val}`} class="tm_contact_item">
+              <i class="fas fa-envelope" style="color:#7000FF"></i>
+              <div>
+                <strong>{t.sections.s9_c1_title}</strong>
+                <span>{t.sections.s9_c1_val}</span>
+              </div>
+            </a>
+            <a href="https://github.com/wtaype/workwii/issues" target="_blank" rel="noopener" class="tm_contact_item">
+              <i class="fab fa-github" style="color:#0EBEFF"></i>
+              <div>
+                <strong>{t.sections.s9_c2_title}</strong>
+                <span>{t.sections.s9_c2_val}</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ CTA FINAL ══ -->
+  <section class="ac_cta_sec">
+    <div class="ac_cta_wrap wi_fadeUp">
+      <div class="ac_hero_orb ac_orb1"></div>
+      <div class="ac_hero_orb ac_orb2"></div>
+      <div class="ac_cta_glow"></div>
+      <div class="ac_cta_inner">
+        <span class="ac_cta_emoji"><i class="fas fa-file-contract" style="font-size:4.5rem;color:var(--mco);"></i></span>
+        <h2>{t.cta.tit}</h2>
+        <p>{t.cta.sub}</p>
+        <div class="ac_cta_btns">
+          <a href="mailto:wilder.taype@hotmail.com" class="ac_btn_p ac_btn_lg">
+            <i class="fas fa-envelope"></i> {t.cta.btnContacto}
+          </a>
+          <a href={route('/privacidad')} class="ac_btn_s ac_btn_lg tm_nav">
+            <i class="fas fa-lock"></i> {t.cta.btnPrivacidad}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</Layout>
+
+<script>
+  const initTerminos = () => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.wi_fadeUp').forEach(el => {
+      observer.observe(el);
+    });
+
+    document.querySelectorAll('.tm_index_item').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const href = link.getAttribute('href');
+        if (!href) return;
+        const target = document.querySelector(href);
+        if (target) {
+          window.scrollTo({ 
+            top: target.getBoundingClientRect().top + window.scrollY - 90, 
+            behavior: 'smooth' 
+          });
+        }
+      });
+    });
+
+  };
+
+  document.addEventListener('astro:page-load', () => {
+    if (document.querySelector('.tm_wrap')) {
+      initTerminos();
+    }
+  });
+</script>
+
+<!-- 
+errores: 
+
+Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ es: { seo: { titulo: string; description: string; }; hero: { badge: string; tit1: string; titGrad: string; sub: string; chip1: string; chip2: string; chip3: string; lastUpd: string; }; indices: { id: string; ico: string; color: string; txt: string; }[]; sections: { ...; }; cta: { ...; }; }; en: { ...; }; }'.
+Parameter 'path' implicitly has an 'any' type.
+Parameter 'idx' implicitly has an 'any' type.
+[{
+	"resource": "/c:/mipro/workwii/workwii-web/src/lib/acercas/terminos/Terminos.astro",
+	"owner": "_generated_diagnostic_collection_name_#0",
+	"code": "7006",
+	"severity": 8,
+	"message": "Parameter 'index' implicitly has an 'any' type.",
+	"source": "ts",
+	"startLineNumber": 43,
+	"startColumn": 26,
+	"endLineNumber": 43,
+	"endColumn": 31,
+	"modelVersionId": 38,
+	"origin": "extHost1"
+}]
+-->

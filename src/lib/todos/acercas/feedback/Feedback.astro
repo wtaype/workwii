@@ -1,0 +1,132 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { app } from '../../../../wii.js';
+import { seo } from '../../../../lib/seo.js';
+import { idiomaFeedback } from './idiomaFeedback.js';
+import estilosAcercas from '../acercas.css?inline';
+
+const { lang = 'es' } = Astro.props as { lang?: 'es' | 'en' };
+const t = (idiomaFeedback as any)[lang] || idiomaFeedback['es'];
+---
+
+<Layout {...(lang === 'en' ? (seo.feedback as any).en : (seo.feedback as any).es)}>
+  <style is:global set:html={estilosAcercas}></style>
+<div class="ac_wrap tm_wrap">
+  <section class="ac_hero tm_hero">
+    <div class="ac_hero_orb ac_orb1"></div>
+    <div class="ac_hero_orb ac_orb2"></div>
+    <div class="ac_hero_orb ac_orb3"></div>
+    <div class="ac_hero_body">
+      <div class="ac_hero_badge"><i class="fas fa-heart-pulse"></i> {t.hero.badge}</div>
+      <h1 class="ac_hero_tit">{t.hero.tit1}<br><span class="ac_grad">{t.hero.titGrad}</span></h1>
+      <p class="ac_hero_sub" set:html={t.hero.sub}></p>
+      <div class="tm_hero_chips">
+        <span class="tm_chip"><i class="fas fa-bolt"></i> {t.hero.chip1}</span>
+        <span class="tm_chip"><i class="fas fa-heart"></i> {t.hero.chip2}</span>
+        <span class="tm_chip"><i class="fas fa-lock"></i> {t.hero.chip3}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="ac_sec">
+    <div class="ac_sec_head">
+      <div class="ac_sec_badge"><i class="fas fa-comments"></i> {t.canales.badge}</div>
+      <h2 class="ac_sec_tit">{t.canales.tit}<span class="ac_grad">{t.canales.titGrad}</span></h2>
+      <p class="ac_sec_sub">{t.canales.sub}</p>
+    </div>
+    <div class="fb_canales">
+      <a href="https://github.com/wtaype/workwii/issues" target="_blank" rel="noopener" class="fb_canal wi_fadeUp" style="--cc:#24292e">
+        <div class="fb_canal_ico" style="background:#24292e;color:#fff"><i class="fab fa-github"></i></div>
+        <div class="fb_canal_info">
+          <strong>{t.canales.c1_title}</strong>
+          <span>{t.canales.c1_desc}</span>
+        </div>
+        <div class="fb_canal_cta" style="color:#24292e">{t.canales.c1_cta} <i class="fas fa-arrow-right"></i></div>
+      </a>
+      <a href="mailto:wilder.taype@hotmail.com" class="fb_canal wi_fadeUp" style="--cc:#0EBEFF">
+        <div class="fb_canal_ico" style="background:var(--wb);color:#0EBEFF"><i class="fas fa-envelope"></i></div>
+        <div class="fb_canal_info">
+          <strong>{t.canales.c2_title}</strong>
+          <span>{t.canales.c2_desc}</span>
+        </div>
+        <div class="fb_canal_cta" style="color:#0EBEFF">{t.canales.c2_cta} <i class="fas fa-arrow-right"></i></div>
+      </a>
+    </div>
+  </section>
+
+  <section class="ac_sec ac_sec_alt">
+    <div class="ac_sec_head">
+      <div class="ac_sec_badge"><i class="fas fa-layer-group"></i> {t.categorias.badge}</div>
+      <h2 class="ac_sec_tit">{t.categorias.tit}<span class="ac_grad">{t.categorias.titGrad}</span></h2>
+      <p class="ac_sec_sub">{t.categorias.sub}</p>
+    </div>
+    <div class="ac_feat_grid">
+      <div class="ac_feat_card wi_fadeUp" style="--sc:#FF5C69">
+        <div class="ac_feat_ico"><i class="fas fa-bug"></i></div>
+        <h3>{t.categorias.cat1_title}</h3>
+        <p>{t.categorias.cat1_desc}</p>
+      </div>
+      <div class="ac_feat_card wi_fadeUp" style="--sc:#FFDA34">
+        <div class="ac_feat_ico"><i class="fas fa-lightbulb"></i></div>
+        <h3>{t.categorias.cat2_title}</h3>
+        <p>{t.categorias.cat2_desc}</p>
+      </div>
+      <div class="ac_feat_card wi_fadeUp" style="--sc:#0EBEFF">
+        <div class="ac_feat_ico"><i class="fas fa-star"></i></div>
+        <h3>{t.categorias.cat3_title}</h3>
+        <p>{t.categorias.cat3_desc}</p>
+      </div>
+      <div class="ac_feat_card wi_fadeUp" style="--sc:#29C72E">
+        <div class="ac_feat_ico"><i class="fas fa-cloud-arrow-up"></i></div>
+        <h3>{t.categorias.cat4_title}</h3>
+        <p>{t.categorias.cat4_desc}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="ac_sec">
+    <div class="ac_cta_wrap wi_fadeUp">
+      <div class="ac_hero_orb ac_orb1"></div>
+      <div class="ac_hero_orb ac_orb2"></div>
+      <div class="ac_cta_glow"></div>
+      <div class="ac_cta_inner">
+        <span class="ac_cta_emoji">💬</span>
+        <h2 set:html={t.cta.tit}></h2>
+        <p>{t.cta.sub}</p>
+        <div class="ac_cta_btns">
+          <a href="https://github.com/wtaype/workwii/issues" target="_blank" rel="noopener" class="ac_btn_p ac_btn_lg">
+            <i class="fab fa-github"></i> {t.cta.btnGithub}
+          </a>
+          <a href="mailto:wilder.taype@hotmail.com" class="ac_btn_s ac_btn_lg">
+            <i class="fas fa-envelope"></i> {t.cta.btnCorreo}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</Layout>
+
+<script is:inline>
+const initFeedback = () => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.wi_fadeUp').forEach(el => {
+    observer.observe(el);
+  });
+
+  window.__WIREADY__ = true;
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initFeedback);
+} else {
+  initFeedback();
+}
+</script>

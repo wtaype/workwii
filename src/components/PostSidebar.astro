@@ -3,7 +3,7 @@
 import { app, icon } from '../wii.js';
 import { imgwii } from '../lib/widev/widev.js';
 import { useTranslations, getRelativeLocaleUrl } from '../lib/i18n/utils.js';
-import { idiomaPost, getCategoryLabel } from '../lib/blog/post/idiomaPost.js';
+import { idiomaPost, getCategoryLabel } from '../lib/todos/blog/post/idiomaPost.js';
 
 interface Props {
   post: any;
@@ -90,7 +90,7 @@ const formatShortDate = (dateVal: any) => {
     document.addEventListener('astro:page-load', async () => {
       const el = document.getElementById('po_ad_sidebar');
       if (el) {
-        const { adLeft, wiadCSS } = await import('../lib/blog/post/wiad.js');
+        const { adLeft, wiadCSS } = await import('../lib/todos/blog/post/wiad.js');
         wiadCSS();
         el.innerHTML = adLeft;
       }

@@ -1,0 +1,281 @@
+---
+// src/lib/acercas/contacto/pageContacto.astro
+import Layout from '../../../../layouts/Layout.astro';
+import { app } from '../../../../wii.js';
+import { seo } from '../../../../lib/seo.js';
+import { idiomaContacto } from './idiomaContacto.js';
+import estilosAcercas from '../acercas.css?inline';
+
+const { lang = 'es' } = Astro.props as { lang?: 'es' | 'en' };
+const t = (idiomaContacto as any)[lang] || idiomaContacto['es'];
+---
+
+<Layout {...(lang === 'en' ? (seo.contacto as any).en : (seo.contacto as any).es)}>
+  <style is:global set:html={estilosAcercas}></style>
+
+  <div class="ac_wrap ct_wrap">
+    <!-- ══ HERO ══ -->
+    <section class="ac_hero ct_hero">
+      <div class="ac_hero_orb ac_orb1"></div>
+      <div class="ac_hero_orb ac_orb2"></div>
+      <div class="ac_hero_orb ac_orb3"></div>
+      <div class="ac_hero_body">
+        <div class="ac_hero_badge"><i class="fas fa-paper-plane"></i> {t.hero.badge}</div>
+        <h1 class="ac_hero_tit">{t.hero.tit1}<br><span class="ac_grad">{t.hero.titGrad}</span></h1>
+        <p class="ac_hero_sub" set:html={t.hero.sub.replace('{app}', app)}></p>
+        <div class="tm_hero_chips">
+          <span class="tm_chip"><i class="fas fa-clock"></i> {t.hero.chip1}</span>
+          <span class="tm_chip"><i class="fas fa-lock"></i> {t.hero.chip2}</span>
+          <span class="tm_chip"><i class="fas fa-heart"></i> {t.hero.chip3}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SECCIÓN PRINCIPAL ══ -->
+    <section class="ac_sec ct_sec">
+      <div class="ct_grid">
+        <!-- FORMULARIO -->
+        <div class="ct_form_wrap">
+          <div class="ac_sec_head" style="text-align:left;margin-bottom:4vh">
+            <div class="ac_sec_badge"><i class="fas fa-comment-dots"></i> {t.form.badge}</div>
+            <h2 class="ac_sec_tit">{t.form.tit}<span class="ac_grad">{t.form.titGrad}</span></h2>
+          </div>
+          <form id="ctForm" class="ct_form" novalidate autocomplete="off">
+            <div class="ct_field">
+              <label for="ct_nombre"><i class="fas fa-user"></i> {t.form.nombre}</label>
+              <input type="text" id="ct_nombre" placeholder={t.form.nombrePl} required maxlength="80">
+            </div>
+            <div class="ct_field">
+              <label for="ct_email"><i class="fas fa-envelope"></i> {t.form.email}</label>
+              <input type="email" id="ct_email" placeholder={t.form.emailPl} required maxlength="120">
+            </div>
+            <div class="ct_field">
+              <label for="ct_telefono"><i class="fas fa-phone"></i> {t.form.tel}</label>
+              <input type="tel" id="ct_telefono" placeholder={t.form.telPl} maxlength="20">
+            </div>
+            <div class="ct_field">
+              <label for="ct_asunto"><i class="fas fa-tag"></i> {t.form.asunto}</label>
+              <select id="ct_asunto" required>
+                <option value="">{t.form.asuntoDef}</option>
+                <option value="Sugerencia o Idea">{t.form.motivos.sug}</option>
+                <option value="Reporte de Error">{t.form.motivos.err}</option>
+                <option value="Pregunta sobre el Editor">{t.form.motivos.edit}</option>
+                <option value="Colaboración o Alianza">{t.form.motivos.colab}</option>
+                <option value="Otro">{t.form.motivos.otro}</option>
+              </select>
+            </div>
+            <div class="ct_field">
+              <label for="ct_mensaje"><i class="fas fa-comment-dots"></i> {t.form.msg}</label>
+              <textarea id="ct_mensaje" rows="6" placeholder={t.form.msgPl} required maxlength="500"></textarea>
+              <div class="ct_chars"><span id="ct_count">0</span> / 500</div>
+            </div>
+            <div class="ct_actions">
+              <button type="submit" class="ac_btn_p ct_btn_submit">
+                <i class="fas fa-paper-plane"></i> <span>{t.form.btnEnviar}</span>
+              </button>
+              <button type="reset" class="ac_btn_s">
+                <i class="fas fa-redo"></i> <span>{t.form.btnLimpiar}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- TARJETAS DE INFO -->
+        <div class="ct_info_wrap">
+          <div class="ct_info_card wi_fadeUp">
+            <h3><i class="fas fa-address-card"></i> {t.info.tit}</h3>
+            <div class="ct_info_items">
+              <div class="ct_info_item">
+                <div class="ct_info_ico" style="background:color-mix(in srgb,#0EBEFF 15%,transparent);color:#0EBEFF">
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <div class="ct_info_data">
+                  <span class="ct_info_label">{t.info.email}</span>
+                  <span class="ct_info_value">wilder.taype@hotmail.com</span>
+                </div>
+                <button class="ct_copy" data-copy="wilder.taype@hotmail.com" title="Copiar"><i class="fas fa-copy"></i></button>
+              </div>
+              <div class="ct_info_item">
+                <div class="ct_info_ico" style="background:color-mix(in srgb,#FF5C69 15%,transparent);color:#FF5C69">
+                  <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="ct_info_data">
+                  <span class="ct_info_label">{t.info.loc}</span>
+                  <span class="ct_info_value">{t.info.locVal}</span>
+                </div>
+              </div>
+              <div class="ct_info_item">
+                <div class="ct_info_ico" style="background:color-mix(in srgb,#29C72E 15%,transparent);color:#29C72E">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="ct_info_data">
+                  <span class="ct_info_label">{t.info.resp}</span>
+                  <span class="ct_info_value">{t.info.respVal}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ct_info_card wi_fadeUp" style="margin-top:3vh">
+            <h3><i class="fas fa-share-nodes"></i> {t.info.redes}</h3>
+            <div class="ct_redes">
+              <a href="https://github.com/wtaype/workwii" target="_blank" rel="noopener" class="ct_red" style="--rc:#24292e">
+                <i class="fab fa-github"></i><span>GitHub</span>
+              </a>
+              <a href="https://wtaype.github.io/" target="_blank" rel="noopener" class="ct_red" style="--rc:#0EBEFF">
+                <i class="fas fa-globe"></i><span>Portfolio</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PREGUNTAS FRECUENTES -->
+    <section class="ac_sec ac_sec_alt">
+      <div class="ac_sec_head">
+        <div class="ac_sec_badge"><i class="fas fa-circle-question"></i> {t.faq.badge}</div>
+        <h2 class="ac_sec_tit">{t.faq.tit}<span class="ac_grad">{t.faq.titGrad}</span></h2>
+      </div>
+      <div class="ct_faq">
+        <div class="ct_faq_item wi_fadeUp">
+          <div class="ct_faq_q">
+            <i class="fas fa-circle-question"></i>
+            <h3>{t.faq.q1}</h3>
+            <i class="fas fa-chevron-down ct_faq_arr"></i>
+          </div>
+          <div class="ct_faq_a"><p>{t.faq.a1}</p></div>
+        </div>
+        <div class="ct_faq_item wi_fadeUp">
+          <div class="ct_faq_q">
+            <i class="fas fa-circle-question"></i>
+            <h3>{t.faq.q2}</h3>
+            <i class="fas fa-chevron-down ct_faq_arr"></i>
+          </div>
+          <div class="ct_faq_a"><p>{t.faq.a2}</p></div>
+        </div>
+        <div class="ct_faq_item wi_fadeUp">
+          <div class="ct_faq_q">
+            <i class="fas fa-circle-question"></i>
+            <h3>{t.faq.q3.replace('{app}', app)}</h3>
+            <i class="fas fa-chevron-down ct_faq_arr"></i>
+          </div>
+          <div class="ct_faq_a"><p>{t.faq.a3.replaceAll('{app}', app)}</p></div>
+        </div>
+        <div class="ct_faq_item wi_fadeUp">
+          <div class="ct_faq_q">
+            <i class="fas fa-circle-question"></i>
+            <h3>{t.faq.q4}</h3>
+            <i class="fas fa-chevron-down ct_faq_arr"></i>
+          </div>
+          <div class="ct_faq_a"><p>{t.faq.a4.replace('{app}', app)}</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FOOTER -->
+    <section class="ac_cta_sec">
+      <div class="ac_cta_wrap wi_fadeUp">
+        <div class="ac_hero_orb ac_orb1"></div>
+        <div class="ac_hero_orb ac_orb2"></div>
+        <div class="ac_cta_glow"></div>
+        <div class="ac_cta_inner">
+          <span class="ac_cta_emoji"><i class="fas fa-envelope-open-text" style="font-size:4.5rem;color:var(--mco);"></i></span>
+          <h2>{t.cta.tit}</h2>
+          <p>{t.cta.sub}</p>
+          <div class="ac_cta_btns">
+            <a href="mailto:wilder.taype@hotmail.com" class="ac_btn_p ac_btn_lg">
+              <i class="fas fa-envelope"></i> {t.cta.btnContacto}
+            </a>
+            <a href="https://github.com/wtaype/workwii/issues" target="_blank" rel="noopener" class="ac_btn_s ac_btn_lg">
+              <i class="fab fa-github"></i> GitHub Issues
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<script>
+  import { app } from '../../../../wii.js';
+
+  const initContacto = () => {
+    // Contador de caracteres
+    const msgField = document.getElementById('ct_mensaje') as HTMLTextAreaElement | null;
+    const countField = document.getElementById('ct_count');
+    const form = document.getElementById('ctForm');
+
+    if (msgField && countField) {
+      msgField.addEventListener('input', () => {
+        let len = msgField.value.length;
+        if (len > 500) msgField.value = msgField.value.slice(0, 500);
+        countField.textContent = Math.min(len, 500).toString();
+      });
+    }
+
+    if (form && countField) {
+      form.addEventListener('reset', () => {
+        setTimeout(() => { countField.textContent = '0'; }, 10);
+      });
+    }
+
+    // FAQ acordeón
+    document.querySelectorAll('.ct_faq_q').forEach(q => {
+      q.addEventListener('click', function(this: HTMLElement) {
+        const item = this.closest('.ct_faq_item');
+        if (!item) return;
+        const isOpen = item.classList.contains('active');
+        
+        document.querySelectorAll('.ct_faq_item').forEach(i => {
+          i.classList.remove('active');
+          const answer = i.querySelector('.ct_faq_a') as HTMLElement | null;
+          const arrow = i.querySelector('.ct_faq_arr') as HTMLElement | null;
+          if (answer) answer.style.display = 'none';
+          if (arrow) arrow.classList.remove('rotated');
+        });
+        
+        if (!isOpen) {
+          item.classList.add('active');
+          const answer = item.querySelector('.ct_faq_a') as HTMLElement | null;
+          const arrow = item.querySelector('.ct_faq_arr') as HTMLElement | null;
+          if (answer) answer.style.display = 'block';
+          if (arrow) arrow.classList.add('rotated');
+        }
+      });
+    });
+
+    // Copiar datos
+    document.querySelectorAll('.ct_copy').forEach(btn => {
+      btn.addEventListener('click', function(this: HTMLButtonElement) {
+        const text = this.dataset.copy;
+        if (!text) return;
+        navigator.clipboard.writeText(text).then(() => {
+          const originalHTML = this.innerHTML;
+          this.innerHTML = '<i class="fas fa-check"></i>';
+          setTimeout(() => { this.innerHTML = originalHTML; }, 2000);
+        });
+      });
+    });
+
+    // IntersectionObserver para animaciones
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.wi_fadeUp').forEach(el => {
+      observer.observe(el);
+    });
+
+  };
+
+  document.addEventListener('astro:page-load', () => {
+    if (document.querySelector('.ct_wrap')) {
+      initContacto();
+    }
+  });
+</script>

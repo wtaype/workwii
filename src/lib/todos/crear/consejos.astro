@@ -1,0 +1,267 @@
+---
+// src/lib/crear/consejos.astro
+// Componente de Consejos y Buenas Prácticas ATS con Citas de Autoridad
+import { useTranslations } from '../../i18n/utils.js';
+import { idiomaCrear } from './idiomaCrear.js';
+
+interface Props {
+  lang?: string;
+}
+
+const { lang = Astro.currentLocale || 'es' } = Astro.props;
+const lg = useTranslations(lang, idiomaCrear);
+---
+
+<style>
+  .consejos_container {
+    margin: 6vh auto 2vh;
+    padding: 0 2vw;
+    font-family: var(--ff_P);
+  }
+
+  /* Cabecera */
+  .consejos_title_sec {
+    text-align: center;
+    margin-bottom: 5vh;
+  }
+  .consejos_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8vh;
+    background: color-mix(in srgb, var(--mco) 8%, var(--wb));
+    color: var(--mco);
+    padding: 0.8vh 1.8vh;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 2vh;
+    border: 1px solid color-mix(in srgb, var(--mco) 15%, transparent);
+  }
+  .consejos_title_sec h2 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--tx1);
+    margin-bottom: 1.5vh;
+    line-height: 1.2;
+  }
+  .consejos_title_sec h2 span {
+    color: var(--mco);
+  }
+  .consejos_title_sec p {
+    font-size: 1.05rem;
+    color: var(--tx2);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* Estilos de Tabla Especializados */
+  .consejos_table_card {
+    border-radius: 16px;
+    border: 1px solid var(--brd);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+    margin-bottom: 6vh;
+    background: var(--wb);
+    overflow: hidden;
+  }
+  .consejos_table th {
+    background: color-mix(in srgb, var(--mco) 3%, var(--wb));
+    color: var(--tx1);
+    font-weight: 800;
+    padding: 2.2vh 3vh;
+    font-size: 1rem;
+    border-bottom: 2px solid var(--brd);
+  }
+  .consejos_col_green {
+    color: var(--success) !important;
+  }
+  .consejos_col_green i {
+    margin-left: 0.5vh;
+  }
+  .consejos_col_red {
+    color: var(--error) !important;
+  }
+  .consejos_col_red i {
+    margin-left: 0.5vh;
+  }
+  .consejos_table td {
+    padding: 2vh 3vh;
+    font-size: 0.95rem;
+    color: var(--tx2);
+    border-bottom: 1px solid var(--brd);
+    vertical-align: middle;
+    line-height: 1.45;
+  }
+  .consejos_cat_cell {
+    color: var(--tx1) !important;
+    white-space: nowrap;
+  }
+  .consejos_table tr:hover td {
+    background: color-mix(in srgb, var(--mco) 1.2%, var(--wb));
+  }
+
+  /* Sección Citas */
+  .consejos_quotes_sec h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--tx1);
+    margin-bottom: 3.5vh;
+    text-align: center;
+    position: relative;
+  }
+  .consejos_quotes_sec h3::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 3px;
+    background: var(--mco);
+    margin: 1vh auto 0;
+    border-radius: 2px;
+  }
+  .consejos_quotes_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 3.5vh;
+  }
+  .consejos_quote_card {
+    background: var(--wb);
+    border: 1px solid var(--brd);
+    border-radius: 16px;
+    padding: 4vh 3.5vh;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .consejos_quote_card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    border-color: color-mix(in srgb, var(--mco) 25%, var(--brd));
+  }
+  .quote_icon {
+    font-size: 1.6rem;
+    color: color-mix(in srgb, var(--mco) 20%, var(--wb));
+    margin-bottom: 2vh;
+  }
+  .quote_text {
+    font-size: 0.95rem;
+    color: var(--tx2);
+    line-height: 1.6;
+    margin-bottom: 3vh;
+    font-style: italic;
+    flex-grow: 1;
+  }
+  .quote_author {
+    border-top: 1px solid var(--brd);
+    padding-top: 2vh;
+  }
+  .quote_author strong {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--tx1);
+    font-weight: 700;
+  }
+  .quote_author span {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--tx3);
+    margin-top: 0.5vh;
+  }
+
+  @media (max-width: 768px) {
+    .consejos_title_sec h2 {
+      font-size: 1.7rem;
+    }
+    .consejos_quotes_grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<section class="consejos_container">
+  <!-- Encabezado de la guía -->
+  <div class="consejos_title_sec">
+    <div class="consejos_badge">
+      <i class="fas fa-graduation-cap"></i>
+      <span>{lg('crear.consejos.badge')}</span>
+    </div>
+    <h2>{lg('crear.consejos.titulo')}<span>{lg('crear.consejos.tituloSpan')}</span></h2>
+    <p>{lg('crear.consejos.desc')}</p>
+  </div>
+
+  <!-- Tabla Comparativa Premium -->
+  <div class="comp_table_card consejos_table_card">
+    <div class="comp_table_wrapper">
+      <table class="comp_table consejos_table">
+        <thead>
+          <tr>
+            <th>{lg('crear.consejos.categoria')}</th>
+            <th class="consejos_col_green">{lg('crear.consejos.recomendada')} <i class="fas fa-circle-check"></i></th>
+            <th class="consejos_col_red">{lg('crear.consejos.evitar')} <i class="fas fa-circle-xmark"></i></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="consejos_cat_cell"><strong>{lg('crear.consejos.catTipografia')}</strong></td>
+            <td>{lg('crear.consejos.recTipografia')}</td>
+            <td>{lg('crear.consejos.evitTipografia')}</td>
+          </tr>
+          <tr>
+            <td class="consejos_cat_cell"><strong>{lg('crear.consejos.catAlineacion')}</strong></td>
+            <td>{lg('crear.consejos.recAlineacion')}</td>
+            <td>{lg('crear.consejos.evitAlineacion')}</td>
+          </tr>
+          <tr>
+            <td class="consejos_cat_cell"><strong>{lg('crear.consejos.catEstructura')}</strong></td>
+            <td>{lg('crear.consejos.recEstructura')}</td>
+            <td>{lg('crear.consejos.evitEstructura')}</td>
+          </tr>
+          <tr>
+            <td class="consejos_cat_cell"><strong>{lg('crear.consejos.catVisuales')}</strong></td>
+            <td>{lg('crear.consejos.recVisuales')}</td>
+            <td>{lg('crear.consejos.evitVisuales')}</td>
+          </tr>
+          <tr>
+            <td class="consejos_cat_cell"><strong>{lg('crear.consejos.catDimensiones')}</strong></td>
+            <td>{lg('crear.consejos.recDimensiones')}</td>
+            <td>{lg('crear.consejos.evitDimensiones')}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Cuadrícula de Citas de Autoridad -->
+  <div class="consejos_quotes_sec">
+    <h3>{lg('crear.consejos.citasTitulo')}</h3>
+    <div class="consejos_quotes_grid">
+      <div class="consejos_quote_card">
+        <div class="quote_icon"><i class="fas fa-quote-left"></i></div>
+        <p class="quote_text">{lg('crear.consejos.harvardTexto')}</p>
+        <div class="quote_author">
+          <strong>Harvard Career Services</strong>
+          <span>{lg('crear.consejos.harvardAutor')}</span>
+        </div>
+      </div>
+
+      <div class="consejos_quote_card">
+        <div class="quote_icon"><i class="fas fa-quote-left"></i></div>
+        <p class="quote_text">{lg('crear.consejos.mitTexto')}</p>
+        <div class="quote_author">
+          <strong>MIT Career Development</strong>
+          <span>{lg('crear.consejos.mitAutor')}</span>
+        </div>
+      </div>
+
+      <div class="consejos_quote_card">
+        <div class="quote_icon"><i class="fas fa-quote-left"></i></div>
+        <p class="quote_text">{lg('crear.consejos.googleTexto')}</p>
+        <div class="quote_author">
+          <strong>Google Staffing Team</strong>
+          <span>{lg('crear.consejos.googleAutor')}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
