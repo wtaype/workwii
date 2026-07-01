@@ -79,19 +79,19 @@ export const crearModalConfirmacion = (idioma) => {
   const btnNo = idioma === 'en' ? 'Cancel' : 'Cancelar';
 
   modal.innerHTML = `
-    <div class="modalBody cr_confirm_modal_body" style="border-radius: 12px; padding: 25px; text-align: center; max-width: 400px; width: 90%; margin: auto;">
+    <div class="modalBody cr_modal_body">
       <button class="modalX">&times;</button>
       <div class="cr_confirm_content">
-        <div class="cr_confirm_icon_wrapper" style="font-size: 2.5rem; color: var(--warning, #f59e0b); margin-bottom: 15px;">
+        <div class="cr_modal_icon warning">
           <i class="fas fa-trash-alt"></i>
         </div>
-        <h3 style="font-size: 1.3rem; margin-bottom: 10px; font-family: 'Poppins', sans-serif; font-weight: 600;">${titConfirmar}</h3>
-        <p style="font-size: 0.95rem; margin-bottom: 20px; color: var(--tx3, #555); line-height: 1.4; font-family: 'Poppins', sans-serif;">${descConfirmar}</p>
-        <div class="cr_confirm_actions" style="display: flex; gap: 10px; justify-content: center;">
-          <button id="cr_chat_btn_confirm_clear" class="cr_btn primary small" style="background-color: var(--danger, #ef4444); border-color: var(--danger, #ef4444); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; border: 1px solid transparent; font-weight: 500; font-family: 'Poppins', sans-serif;">
+        <h3 class="cr_modal_title">${titConfirmar}</h3>
+        <p class="cr_modal_desc">${descConfirmar}</p>
+        <div class="cr_modal_actions">
+          <button id="cr_chat_btn_confirm_clear" class="cr_modal_btn danger">
             ${btnSi}
           </button>
-          <button id="cr_chat_btn_cancel_clear" class="cr_btn outline small" style="background: none; border: 1px solid var(--brd, #ccc); color: var(--tx, #555); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-family: 'Poppins', sans-serif;">
+          <button id="cr_chat_btn_cancel_clear" class="cr_modal_btn outline">
             ${btnNo}
           </button>
         </div>
@@ -108,14 +108,14 @@ export const crearModalSeguridad = (idioma) => {
   modal.className = 'wiModal';
 
   modal.innerHTML = `
-    <div class="modalBody cr_confirm_modal_body" style="border-radius: 12px; padding: 25px; text-align: center; max-width: 400px; width: 90%; margin: auto;">
+    <div class="modalBody cr_modal_body">
       <button class="modalX">&times;</button>
       <div class="cr_confirm_content">
-        <div class="cr_confirm_icon_wrapper" style="font-size: 2.5rem; color: var(--warning, #f59e0b); margin-bottom: 15px;">
+        <div class="cr_modal_icon warning">
           <i class="fas fa-exclamation-triangle"></i>
         </div>
-        <h3 style="font-size: 1.3rem; margin-bottom: 10px; font-family: 'Poppins', sans-serif; font-weight: 600;" class="warning-title"></h3>
-        <p style="font-size: 0.95rem; margin-bottom: 5px; color: var(--tx3, #555); line-height: 1.4; font-family: 'Poppins', sans-serif;" class="warning-desc"></p>
+        <h3 class="cr_modal_title warning-title"></h3>
+        <p class="cr_modal_desc warning-desc"></p>
       </div>
     </div>
   `;
@@ -129,13 +129,13 @@ export const crearModalBloqueo = (idioma) => {
   modal.className = 'wiModal';
 
   modal.innerHTML = `
-    <div class="modalBody cr_confirm_modal_body" style="border-radius: 12px; padding: 25px; text-align: center; max-width: 400px; width: 90%; margin: auto;">
+    <div class="modalBody cr_modal_body">
       <div class="cr_confirm_content">
-        <div class="cr_confirm_icon_wrapper" style="font-size: 2.5rem; color: var(--danger, #ef4444); margin-bottom: 15px;">
+        <div class="cr_modal_icon danger">
           <i class="fas fa-ban"></i>
         </div>
-        <h3 style="font-size: 1.3rem; margin-bottom: 10px; font-family: 'Poppins', sans-serif; font-weight: 600;" class="lockout-title"></h3>
-        <p style="font-size: 0.95rem; margin-bottom: 10px; color: var(--tx3, #555); line-height: 1.4; font-family: 'Poppins', sans-serif;" class="lockout-desc"></p>
+        <h3 class="cr_modal_title lockout-title"></h3>
+        <p class="cr_modal_desc lockout-desc"></p>
       </div>
     </div>
   `;

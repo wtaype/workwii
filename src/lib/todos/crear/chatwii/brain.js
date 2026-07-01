@@ -6,6 +6,9 @@
 import { llamarGeminiStream } from '../../../api/gemini.js';
 import { wiRateLimit, Notificacion } from '../../../widev/widev.js';
 import { chatwiiPersona } from './personalidad.js';
+import { promptNuevo } from './skills/nuevo.js';
+import { promptSubido } from './skills/subido.js';
+import { promptPuesto } from './skills/puesto.js';
 
 let _lang = 'es';
 let _getCvData = null;
@@ -79,112 +82,17 @@ const isCvVacio = (cv) => {
   return !tieneNombre && !tieneTitulo && !tieneResumen && !tieneExp && !tieneEdu;
 };
 
-/**
- * Módulo de Prompt para la creacion guiada (Curriculum Vacio)
- */
-const construirPromptNuevo = (cv, lang) => {
-  const idiomaNombre = lang === 'en' ? 'English' : 'Español latinoamericano';
-  const primerNombre = cv.nombre ? cv.nombre.trim().split(/\s+/)[0] : '';
-  const saludoNombre = primerNombre ? `Trata directamente a ${primerNombre} por su nombre.` : 'Llama al usuario por su nombre o dile campeon/amigo.';
-
-  const cvDataJson = JSON.stringify({
-    nombre: cv.nombre || '',
-    titulo: cv.titulo || '',
-    resumen: cv.resumen || '',
-    ubicacion: cv.ubicacion || '',
-    skills: cv.skills || '',
-    experiencias: cv.experiencias || [],
-    educacion: cv.educacion || [],
-    proyectos: cv.proyectos || [],
-    certificaciones: cv.certificaciones || []
-  }, null, 2);
-
-  return `
-DATOS DEL CV ACTUAL DEL CANDIDATO (Vacio o incompleto):
-${cvDataJson}
-
-SITUACION DEL CANDIDATO:
-El candidato tiene su curriculum en blanco o muy incompleto. Tu meta es entrevistarlo de forma muy amigable, conversacional y cercana para recopilar sus datos y poblar su CV.
-
-ROLES & PERSONA:
-Actuas como un Coach de Entrevistas y Reclutador muy cercano. Tu actitud debe ser super positiva, entusiasta, alentadora y llena de camaraderia. Hablale como a un colega al que estas coacheando para conseguir el trabajo de sus sueños.
-${saludoNombre}
-
-DIRECTRICES CONVERSACIONALES ESPECIFICAS:
-1. **Proactividad y Auto-generacion**: Si el usuario te proporciona algunos datos basicos (ej. su profesion, 2 o 3 empresas donde trabajo, o un puesto de interes), toma la iniciativa y crea de inmediato una propuesta de CV completa y profesional. Genera logros detallados con metricas realistas estimadas para cada empresa y un resumen impactante. Envia multiples parches __PATCH__ de una sola vez para poblar su CV de inmediato.
-2. **Entrevista de inicio (Solo si esta vacio)**: Si el CV esta completamente en blanco y el usuario no te proporciona ningun dato o contexto, entonces si hazle una pregunta inicial amigable (como su profesion o puesto deseado) para arrancar. No le hagas preguntas repetitivas o largas.
-3. **Estimula la creacion de logros**: Al proponer logros, sugiere metricas y porcentajes realistas para hacer el curriculum competitivo y optimizado para ATS. Indicale que puede editarlos a su realidad.
-4. **Comandos de Guardado (Patches)**:
-   - Envia inmediatamente los parches correspondientes de forma conjunta (multitasking). Ejemplo:
-     __PATCH__{"campo":"nombre","valor":"Juan Perez"}
-     __PATCH__{"campo":"titulo","valor":"Desarrollador Web Frontend"}
-   - Para nueva experiencia laboral:
-     __PATCH__{"campo":"experiencia_nueva","valor":{"puesto":"Puesto","empresa":"Empresa","logros":"- Logro 1\\n- Logro 2"}}
-   - Para educacion:
-     __PATCH__{"campo":"educacion_nueva","valor":{"institucion":"Inst","grado":"Grado"}}
-   - Para proyectos destacados o certificaciones:
-     __PATCH__{"campo":"proyecto_nuevo","valor":{"nombre":"Nombre","enlace":"https://...","descripcion":"Desc","tecnologias":"React, Firebase"}}
-     __PATCH__{"campo":"certificacion_nueva","valor":{"nombre":"Fundamentos de IA","emisor":"Credicorp","fecha":"2025"}}
-
-IDIOMA DE COMUNICACION:
-Comunicate exclusivamente en: ${idiomaNombre}.
-`.trim();
-};
-
-/**
- * Módulo de Prompt para la optimizacion de CV Existente
- */
-const construirPromptExiste = (cv, lang) => {
-  const idiomaNombre = lang === 'en' ? 'English' : 'Español latinoamericano';
-  const primerNombre = cv.nombre ? cv.nombre.trim().split(/\s+/)[0] : '';
-  const saludoNombre = primerNombre ? `Trata directamente a ${primerNombre} por su nombre.` : 'Se muy cercano y amigable.';
-
-  const cvDataJson = JSON.stringify({
-    nombre: cv.nombre || '',
-    titulo: cv.titulo || '',
-    resumen: cv.resumen || '',
-    ubicacion: cv.ubicacion || '',
-    skills: cv.skills || '',
-    experiencias: cv.experiencias || [],
-    educacion: cv.educacion || [],
-    proyectos: cv.proyectos || [],
-    certificaciones: cv.certificaciones || []
-  }, null, 2);
-
-  return `
-DATOS DEL CV ACTUAL DEL CANDIDATO:
-${cvDataJson}
-
-SITUACION DEL CANDIDATO:
-El candidato ya tiene informacion registrada en su CV. Tu meta es analizarla y proponer mejoras estelares para que supere los filtros ATS y cautive a los reclutadores.
-
-ROLES & PERSONA:
-Actuas como un Auditor ATS Experto y Coach de Carrera cercano. Se extremadamente amigable, entusiasta, empatico y constructivo. Hablale como a un amigo de confianza a quien quieres ver triunfar.
-${saludoNombre}
-
-DIRECTRICES CONVERSACIONALES ESPECIFICAS:
-1. **Propuesta Editable**: Muestra la propuesta mejorada de forma clara en bloques de codigo markdown (ej: \`\`\`text\\n- Logro mejorado 1...\\n\`\`\`) para que tu amigo pueda editarlos directamente en la burbuja del chat.
-2. **Proactividad en Optimizacion Multitarea**: Si el usuario te pasa una descripcion de puesto o te indica su meta profesional, no le hagas preguntas paso a paso. Toma la iniciativa y genera de inmediato propuestas completas para multiples secciones (Resumen, Habilidades, y Logros de cada experiencia). Sugiere metricas realistas y detalles estrategicos. Envia los parches __PATCH__ correspondientes de forma conjunta.
-3. **Optimizacion ATS con Libertad Total**:
-   - Transforma enunciados pasivos en logros potentes con verbos de accion ("lidere", "automatice", "diseñe").
-   - Cuantifica resultados. Si no hay numeros en el CV, inventa estimaciones realistas como ejemplo (indicando que tu amigo puede editarlas).
-4. **Comandos de Guardado (Patches)**:
-   - Adjunta los marcadores JSON correspondientes al final de tu respuesta de forma conjunta cuando propongas nuevos cambios. Si el cambio sugerido ya fue aplicado y aparece reflejado en los datos del CV, NO generes un parche redundante.
-   - Para logros de una experiencia laboral (indice en "expIdx"):
-     __PATCH__{"campo":"logros","expIdx":0,"valor":"- Logro mejorado 1\\n- Logro mejorado 2"}
-   - Para el resumen profesional:
-     __PATCH__{"campo":"resumen","valor":"Aqui el resumen mejorado..."}
-   - Para habilidades:
-     __PATCH__{"campo":"skills","valor":"Habilidad1, Habilidad2"}
-   - Para añadir proyectos destacados o certificaciones:
-     __PATCH__{"campo":"proyecto_nuevo","valor":{"nombre":"Nombre","enlace":"https://...","descripcion":"Desc","tecnologias":"React, Firebase"}}
-     __PATCH__{"campo":"certificacion_nueva","valor":{"nombre":"Fundamentos de IA","emisor":"Credicorp","fecha":"2025"}}
-5. **Familiaridad y Libertad**:
-   Eres libre de proponer versiones creativas e innovadoras, adaptandote al sector profesional del CV. No te limites, dale ideas frescas para que su CV resalte al maximo.
-
-IDIOMA DE COMUNICACION:
-Comunicate exclusivamente en: ${idiomaNombre}.
-`.trim();
+const contieneSolicitudPuesto = (texto) => {
+  if (!texto) return false;
+  const t = texto.toLowerCase();
+  return (
+    t.includes('puesto:') || 
+    t.includes('vacante:') || 
+    t.includes('oferta:') || 
+    t.includes('adaptar a') || 
+    t.includes('de acuerdo a') ||
+    t.includes('perfil de')
+  );
 };
 
 /**
@@ -208,10 +116,18 @@ export const enviarMensaje = async (textoUsuario, onChunk) => {
   _historial.push({ role: 'user', parts: [{ text: textoUsuario }] });
   persistirHistorial();
 
-  // Obtener contexto dinámico del CV actual
+  // Obtener contexto dinámico del CV actual y elegir prompt especifico
   const cv = _getCvData ? _getCvData() : {};
   const esVacio = isCvVacio(cv);
-  const promptEspecifico = esVacio ? construirPromptNuevo(cv, _lang) : construirPromptExiste(cv, _lang);
+  
+  let promptEspecifico = '';
+  if (esVacio) {
+    promptEspecifico = promptNuevo(cv, _lang);
+  } else if (contieneSolicitudPuesto(textoUsuario)) {
+    promptEspecifico = promptPuesto(cv, _lang);
+  } else {
+    promptEspecifico = promptSubido(cv, _lang);
+  }
 
   // Turno inicial de contexto para Gemini
   const contextTurn = {
@@ -221,7 +137,7 @@ export const enviarMensaje = async (textoUsuario, onChunk) => {
   
   const contextAckTurn = {
     role: 'model',
-    parts: [{ text: `¡Hola! Entendido perfectamente. He cargado todos los datos del curriculum. Estoy listo para ayudarte a optimizar cada seccion con total libertad, cercania y enfoque ATS. Dime, ¿por donde empezamos a mejorar tu perfil?` }]
+    parts: [{ text: `¡Hola! Entendido perfectamente. He cargado todos los datos del curriculum y el perfil objetivo. Estoy listo para ayudarte a optimizar con total libertad, cercania y enfoque ATS. Dime, ¿como empezamos a mejorar tu perfil?` }]
   };
 
   // Ventana deslizable para limitar el historial activo de la llamada a la API a un maximo de 10 mensajes
@@ -268,84 +184,46 @@ export const enviarMensaje = async (textoUsuario, onChunk) => {
       rate.fail();
     }
 
-    // Parsear respuesta y buscar todos los __PATCH__ con un extractor de llaves balanceado (soporte de JSON anidado)
+    // Extraer parches de forma compacta y limpia de la respuesta
     let textoLimpio = rawResponse;
     const patches = [];
-    const matches = [];
-    let index = 0;
+    let idx = 0;
 
-    while (true) {
-      const patchIndex = rawResponse.indexOf('__PATCH__', index);
-      if (patchIndex === -1) break;
-
-      const jsonStart = patchIndex + 9;
-      if (rawResponse[jsonStart] === '{' || rawResponse[jsonStart] === '[') {
-        let braceCount = 0;
-        let inString = false;
-        let escaped = false;
-        let jsonEnd = jsonStart;
-
-        for (let i = jsonStart; i < rawResponse.length; i++) {
-          const char = rawResponse[i];
-          if (escaped) {
-            escaped = false;
-            continue;
-          }
-          if (char === '\\') {
-            escaped = true;
-            continue;
-          }
-          if (char === '"') {
-            inString = !inString;
-            continue;
-          }
-          if (!inString) {
-            if (char === '{' || char === '[') {
-              braceCount++;
-            } else if (char === '}' || char === ']') {
-              braceCount--;
-              if (braceCount === 0) {
-                jsonEnd = i;
-                break;
-              }
-            }
+    while ((idx = rawResponse.indexOf('__PATCH__', idx)) !== -1) {
+      const start = idx + 9;
+      let depth = 0, end = start;
+      
+      for (let i = start; i < rawResponse.length; i++) {
+        const char = rawResponse[i];
+        if (char === '{' || char === '[') depth++;
+        else if (char === '}' || char === ']') {
+          if (--depth === 0) {
+            end = i;
+            break;
           }
         }
-
-        if (jsonEnd > jsonStart) {
-          const jsonStr = rawResponse.substring(jsonStart, jsonEnd + 1);
-          matches.push({
-            fullMatch: '__PATCH__' + jsonStr,
-            jsonStr: jsonStr
-          });
-          index = jsonEnd + 1;
-        } else {
-          index = jsonStart + 1;
-        }
-      } else {
-        index = jsonStart;
       }
-    }
 
-    for (const match of matches) {
-      try {
-        const parsed = JSON.parse(match.jsonStr);
-        if (Array.isArray(parsed)) {
-          patches.push(...parsed);
-        } else {
-          patches.push(parsed);
+      if (end > start) {
+        const jsonStr = rawResponse.substring(start, end + 1);
+        try {
+          const parsed = JSON.parse(jsonStr);
+          if (Array.isArray(parsed)) {
+            patches.push(...parsed);
+          } else {
+            patches.push(parsed);
+          }
+        } catch (e) {
+          console.error('Error parseando __PATCH__ de Chatwii:', e);
         }
-      } catch (e) {
-        console.error('Error parseando __PATCH__ de Chatwii:', e, match.jsonStr);
+        textoLimpio = textoLimpio.replace('__PATCH__' + jsonStr, '');
+        idx = end + 1;
+      } else {
+        idx = start + 1;
       }
     }
 
     _lastPatch = patches.length > 0 ? patches : null;
-    
-    // Limpiar todos los __PATCH__ del texto visual usando los bloques exactos encontrados
-    for (const match of matches) {
-      textoLimpio = textoLimpio.replace(match.fullMatch, '');
-    }
     textoLimpio = textoLimpio.trim();
 
     // Guardar respuesta completa del modelo en el historial persistido

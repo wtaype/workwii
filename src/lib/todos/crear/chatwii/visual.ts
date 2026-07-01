@@ -152,6 +152,10 @@ export const renderBurbuja = (tipo: string, texto: string, patches: any[] | null
             if (window.Mensaje) {
               window.Mensaje(t.mensajeDeshecho, 'success');
             }
+            const msgRevertido = _lang === 'en'
+              ? "Understood. I have reverted those changes for you. Tell me, what should we try instead?"
+              : "¡Entendido! He revertido esos cambios para ti. Dime, ¿que otra opcion te gustaria probar?";
+            renderBurbuja('chatwii', msgRevertido);
           }
         };
       }
@@ -159,10 +163,19 @@ export const renderBurbuja = (tipo: string, texto: string, patches: any[] | null
       if (window.Mensaje) {
         window.Mensaje(t.mensajeAplicado, 'success');
       }
+
+      const msgAplicado = _lang === 'en'
+        ? "Awesome! The changes have been successfully applied to your CV. What would you like to improve next?"
+        : "¡Excelente! Los cambios se han aplicado correctamente a tu CV. ¿Que te gustaria mejorar ahora?";
+      renderBurbuja('chatwii', msgAplicado);
     });
 
     accionesDiv.querySelector('.descartar')?.addEventListener('click', () => {
       accionesDiv.remove();
+      const msgDescartado = _lang === 'en'
+        ? "No problem, discarded! Let's think of another option. What would you like to adjust?"
+        : "¡De acuerdo, descartado! Busquemos otra alternativa. Cuentame, ¿que te gustaria ajustar?";
+      renderBurbuja('chatwii', msgDescartado);
     });
 
     textoDiv.appendChild(accionesDiv);
