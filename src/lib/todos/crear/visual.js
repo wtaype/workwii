@@ -4,7 +4,7 @@ import { descargarPdfDirecto, imprimirPdf, descargarDocx, descargarTxt, descarga
 import { Notificacion, wiSmart, abrirModal, cerrarModal, wiRateLimit } from '../../widev/widev.js';
 import { isEditingPreview } from './preview/editarPreview.js';
 import { updateA4Preview, updateScorecard } from './preview/renderPreview.js';
-import { initChat } from './chatwii/visual.js';
+import { initChat } from './chatwii/visual.ts';
 import {
   locales,
   setAbrirModalIA,
@@ -36,12 +36,8 @@ export const initVisual = () => {
   setupGlobalListeners();
   setAbrirModalIA(abrirModalIA); // Inyectar callback de modal IA en renderForms
 
-  // Inicializar Chatwii diferido (Optimiza el hilo principal de renderizado)
-  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-    window.requestIdleCallback(() => inicializarChatwii(pageLang));
-  } else {
-    setTimeout(() => inicializarChatwii(pageLang), 1500);
-  }
+  // Inicializar Chatwii de forma sincronica e inmediata en la pagina
+  inicializarChatwii(pageLang);
 };
 
 const inicializarChatwii = (pageLang) => {

@@ -1,16 +1,23 @@
+/**
+ * brain.js - Motor logico de Chatwii. Se conecta con Gemini API y maneja el historial.
+ * Escrito en espanol sin tildes para evitar problemas de codificacion.
+ */
+
 import { llamarGeminiStream } from '../../../api/gemini.js';
 import { wiRateLimit, Notificacion } from '../../../widev/widev.js';
-import { nuevoSkill } from './nuevo.js';
-import { existeSkill } from './existe.js';
+import { chatwiiPersona } from './personalidad.js';
 
 let _lang = 'es';
 let _getCvData = null;
 let _updateCvData = null;
 let _historial = []; // [{role: 'user'|'model', parts: [{text}]}]
-let _lastPatch = null; // último(s) patch(es) propuesto(s) (puede ser array)
+let _lastPatch = null; // ultimo(s) patch(es) propuesto(s) (puede ser array)
 
 const getCacheKey = () => `chatwii_crear_${_lang}`;
 
+/**
+ * Inicializa el estado del cerebro del chat
+ */
 export const initChatwii = (lang, getCvData, updateCvData) => {
   _lang = lang;
   _getCvData = getCvData;
@@ -26,6 +33,34 @@ export const initChatwii = (lang, getCvData, updateCvData) => {
   } catch (_) {
     _historial = [];
   }
+};
+
+/**
+ * Devuelve el ultimo parche propuesto por la IA
+ */
+export const obtenerUltimoPatch = () => _lastPatch;
+
+/**
+ * Limpia el ultimo parche propuesto
+ */
+export const limpiarUltimoPatch = () => {
+  _lastPatch = null;
+};
+
+/**
+ * Devuelve el historial actual
+ */
+export const obtenerHistorial = () => _historial;
+
+/**
+ * Limpia el historial de la conversacion de forma permanente
+ */
+export const limpiarHistorial = () => {
+  _historial = [];
+  _lastPatch = null;
+  try {
+    localStorage.removeItem(getCacheKey());
+  } catch (_) {}
 };
 
 const persistirHistorial = () => {
@@ -44,46 +79,127 @@ const isCvVacio = (cv) => {
   return !tieneNombre && !tieneTitulo && !tieneResumen && !tieneExp && !tieneEdu;
 };
 
-// Prompt de comportamiento 100% estático para activar Prompt Caching
-const buildStaticSystemPrompt = () => {
+/**
+ * Módulo de Prompt para la creacion guiada (Curriculum Vacio)
+ */
+const construirPromptNuevo = (cv, lang) => {
+  const idiomaNombre = lang === 'en' ? 'English' : 'Español latinoamericano';
+  const primerNombre = cv.nombre ? cv.nombre.trim().split(/\s+/)[0] : '';
+  const saludoNombre = primerNombre ? `Trata directamente a ${primerNombre} por su nombre.` : 'Llama al usuario por su nombre o dile campeon/amigo.';
+
+  const cvDataJson = JSON.stringify({
+    nombre: cv.nombre || '',
+    titulo: cv.titulo || '',
+    resumen: cv.resumen || '',
+    ubicacion: cv.ubicacion || '',
+    skills: cv.skills || '',
+    experiencias: cv.experiencias || [],
+    educacion: cv.educacion || [],
+    proyectos: cv.proyectos || [],
+    certificaciones: cv.certificaciones || []
+  }, null, 2);
+
   return `
-Eres Chatwii, el asistente conversacional con Inteligencia Artificial de Workwii para la sección /crear.
-Tu misión es ayudar a los candidatos a mejorar su currículum de forma súper interactiva, paso a paso, con total libertad, cercanía y camaradería.
+DATOS DEL CV ACTUAL DEL CANDIDATO (Vacio o incompleto):
+${cvDataJson}
 
-REGLAS GENERALES DE COMPORTAMIENTO Y FORMATO:
-1. **Cercanía y Empatía**: Habla de tú a tú como un gran amigo profesional. Sé empático, cercano y directo. Dirígete al usuario por su primer nombre si está disponible.
-2. **Brevedad**: Mantén tus respuestas conversacionales cortas y directas (máximo 3-4 oraciones). Haz preguntas concretas para mantener el diálogo dinámico.
-3. **Libertad y Cero Restricciones**: Tienes total libertad para actuar como un experto en redacción ATS. Ayuda al candidato a reformular logros, proponer métricas aproximadas (aclarándole amigablemente que puede editarlas si no son exactas) y pulir su resumen.
-4. **Estructura estricta para parches**: Cuando propongas un cambio, mejora u optimización de algún campo del CV, debes añadir EXACTAMENTE al final de tu respuesta (en su propia línea) el marcador JSON. Puedes proponer múltiples parches en líneas separadas.
-   - Formato individual: __PATCH__{"campo":"nombre_campo","valor":"..."}
-   - Campos permitidos: "nombre", "titulo", "ubicacion", "resumen", "skills".
-   - Para logros de una experiencia laboral usa "logros", especificando "expIdx" (el índice correspondiente, ej: 0, 1):
-     __PATCH__{"campo":"logros","expIdx":0,"valor":"- Logro mejorado 1\\n- Logro mejorado 2"}
-   - Para añadir una nueva experiencia, educación, proyecto o certificación:
-     __PATCH__{"campo":"experiencia_nueva","valor":{"puesto":"...","empresa":"...","logros":"..."}}
-     __PATCH__{"campo":"educacion_nueva","valor":{"institucion":"...","grado":"..."}}
-     __PATCH__{"campo":"proyecto_nuevo","valor":{"nombre":"...","enlace":"...","descripcion":"...","tecnologias":"..."}}
-     __PATCH__{"campo":"certificacion_nueva","valor":{"nombre":"...","emisor":"...","fecha":"..."}}
+SITUACION DEL CANDIDATO:
+El candidato tiene su curriculum en blanco o muy incompleto. Tu meta es entrevistarlo de forma muy amigable, conversacional y cercana para recopilar sus datos y poblar su CV.
 
-5. **Flujo de confirmación**:
-   - Si el usuario responde afirmativamente ("continúa", "dale", "aplica", "ok", "sí" o similar), vuelve a inyectar el bloque __PATCH__ correspondiente al final.
-   - Si el usuario te pide "otra versión" o responde negativamente, ajusta el enfoque y propón una alternativa totalmente nueva con su correspondiente __PATCH__ al final.
+ROLES & PERSONA:
+Actuas como un Coach de Entrevistas y Reclutador muy cercano. Tu actitud debe ser super positiva, entusiasta, alentadora y llena de camaraderia. Hablale como a un colega al que estas coacheando para conseguir el trabajo de sus sueños.
+${saludoNombre}
 
-6. **Privacidad ("¿Cómo sabes mi nombre?")**:
-   Si el usuario expresa preocupación por su privacidad, explícale con total naturalidad y transparencia que estás integrado en tiempo real en la página de edición de Workwii para facilitar el proceso de su currículum, y que no almacenas externamente sus datos personales.
+DIRECTRICES CONVERSACIONALES ESPECIFICAS:
+1. **Proactividad y Auto-generacion**: Si el usuario te proporciona algunos datos basicos (ej. su profesion, 2 o 3 empresas donde trabajo, o un puesto de interes), toma la iniciativa y crea de inmediato una propuesta de CV completa y profesional. Genera logros detallados con metricas realistas estimadas para cada empresa y un resumen impactante. Envia multiples parches __PATCH__ de una sola vez para poblar su CV de inmediato.
+2. **Entrevista de inicio (Solo si esta vacio)**: Si el CV esta completamente en blanco y el usuario no te proporciona ningun dato o contexto, entonces si hazle una pregunta inicial amigable (como su profesion o puesto deseado) para arrancar. No le hagas preguntas repetitivas o largas.
+3. **Estimula la creacion de logros**: Al proponer logros, sugiere metricas y porcentajes realistas para hacer el curriculum competitivo y optimizado para ATS. Indicale que puede editarlos a su realidad.
+4. **Comandos de Guardado (Patches)**:
+   - Envia inmediatamente los parches correspondientes de forma conjunta (multitasking). Ejemplo:
+     __PATCH__{"campo":"nombre","valor":"Juan Perez"}
+     __PATCH__{"campo":"titulo","valor":"Desarrollador Web Frontend"}
+   - Para nueva experiencia laboral:
+     __PATCH__{"campo":"experiencia_nueva","valor":{"puesto":"Puesto","empresa":"Empresa","logros":"- Logro 1\\n- Logro 2"}}
+   - Para educacion:
+     __PATCH__{"campo":"educacion_nueva","valor":{"institucion":"Inst","grado":"Grado"}}
+   - Para proyectos destacados o certificaciones:
+     __PATCH__{"campo":"proyecto_nuevo","valor":{"nombre":"Nombre","enlace":"https://...","descripcion":"Desc","tecnologias":"React, Firebase"}}
+     __PATCH__{"campo":"certificacion_nueva","valor":{"nombre":"Fundamentos de IA","emisor":"Credicorp","fecha":"2025"}}
+
+IDIOMA DE COMUNICACION:
+Comunicate exclusivamente en: ${idiomaNombre}.
 `.trim();
 };
 
+/**
+ * Módulo de Prompt para la optimizacion de CV Existente
+ */
+const construirPromptExiste = (cv, lang) => {
+  const idiomaNombre = lang === 'en' ? 'English' : 'Español latinoamericano';
+  const primerNombre = cv.nombre ? cv.nombre.trim().split(/\s+/)[0] : '';
+  const saludoNombre = primerNombre ? `Trata directamente a ${primerNombre} por su nombre.` : 'Se muy cercano y amigable.';
+
+  const cvDataJson = JSON.stringify({
+    nombre: cv.nombre || '',
+    titulo: cv.titulo || '',
+    resumen: cv.resumen || '',
+    ubicacion: cv.ubicacion || '',
+    skills: cv.skills || '',
+    experiencias: cv.experiencias || [],
+    educacion: cv.educacion || [],
+    proyectos: cv.proyectos || [],
+    certificaciones: cv.certificaciones || []
+  }, null, 2);
+
+  return `
+DATOS DEL CV ACTUAL DEL CANDIDATO:
+${cvDataJson}
+
+SITUACION DEL CANDIDATO:
+El candidato ya tiene informacion registrada en su CV. Tu meta es analizarla y proponer mejoras estelares para que supere los filtros ATS y cautive a los reclutadores.
+
+ROLES & PERSONA:
+Actuas como un Auditor ATS Experto y Coach de Carrera cercano. Se extremadamente amigable, entusiasta, empatico y constructivo. Hablale como a un amigo de confianza a quien quieres ver triunfar.
+${saludoNombre}
+
+DIRECTRICES CONVERSACIONALES ESPECIFICAS:
+1. **Propuesta Editable**: Muestra la propuesta mejorada de forma clara en bloques de codigo markdown (ej: \`\`\`text\\n- Logro mejorado 1...\\n\`\`\`) para que tu amigo pueda editarlos directamente en la burbuja del chat.
+2. **Proactividad en Optimizacion Multitarea**: Si el usuario te pasa una descripcion de puesto o te indica su meta profesional, no le hagas preguntas paso a paso. Toma la iniciativa y genera de inmediato propuestas completas para multiples secciones (Resumen, Habilidades, y Logros de cada experiencia). Sugiere metricas realistas y detalles estrategicos. Envia los parches __PATCH__ correspondientes de forma conjunta.
+3. **Optimizacion ATS con Libertad Total**:
+   - Transforma enunciados pasivos en logros potentes con verbos de accion ("lidere", "automatice", "diseñe").
+   - Cuantifica resultados. Si no hay numeros en el CV, inventa estimaciones realistas como ejemplo (indicando que tu amigo puede editarlas).
+4. **Comandos de Guardado (Patches)**:
+   - Adjunta los marcadores JSON correspondientes al final de tu respuesta de forma conjunta cuando propongas nuevos cambios. Si el cambio sugerido ya fue aplicado y aparece reflejado en los datos del CV, NO generes un parche redundante.
+   - Para logros de una experiencia laboral (indice en "expIdx"):
+     __PATCH__{"campo":"logros","expIdx":0,"valor":"- Logro mejorado 1\\n- Logro mejorado 2"}
+   - Para el resumen profesional:
+     __PATCH__{"campo":"resumen","valor":"Aqui el resumen mejorado..."}
+   - Para habilidades:
+     __PATCH__{"campo":"skills","valor":"Habilidad1, Habilidad2"}
+   - Para añadir proyectos destacados o certificaciones:
+     __PATCH__{"campo":"proyecto_nuevo","valor":{"nombre":"Nombre","enlace":"https://...","descripcion":"Desc","tecnologias":"React, Firebase"}}
+     __PATCH__{"campo":"certificacion_nueva","valor":{"nombre":"Fundamentos de IA","emisor":"Credicorp","fecha":"2025"}}
+5. **Familiaridad y Libertad**:
+   Eres libre de proponer versiones creativas e innovadoras, adaptandote al sector profesional del CV. No te limites, dale ideas frescas para que su CV resalte al maximo.
+
+IDIOMA DE COMUNICACION:
+Comunicate exclusivamente en: ${idiomaNombre}.
+`.trim();
+};
+
+/**
+ * Envia el mensaje del usuario a Gemini y procesa la respuesta por chunks
+ */
 export const enviarMensaje = async (textoUsuario, onChunk) => {
   const isLogged = typeof localStorage !== 'undefined' ? localStorage.getItem('wiSmile') : null;
-  const maxUses = isLogged ? 88 : 7; // Incrementado a 88 para pruebas extensas del usuario
+  const maxUses = isLogged ? 88 : 7;
   const limitKey = isLogged ? 'logged_chatwii_uses' : 'guest_chatwii_uses';
 
   const rate = wiRateLimit(limitKey, maxUses, 315360000000);
   if (!rate.ok) {
     const msgError = _lang === 'en'
       ? `You have reached the ${maxUses}-message limit. Please try again later.`
-      : `Has alcanzado el límite de ${maxUses} respuestas. ¡Por favor intenta más tarde!`;
+      : `Has alcanzado el limite de ${maxUses} respuestas. ¡Por favor intenta mas tarde!`;
     Notificacion(msgError, 'warning', 6000);
     throw new Error('Rate limit reached');
   }
@@ -95,39 +211,49 @@ export const enviarMensaje = async (textoUsuario, onChunk) => {
   // Obtener contexto dinámico del CV actual
   const cv = _getCvData ? _getCvData() : {};
   const esVacio = isCvVacio(cv);
-  const promptEspecifico = esVacio ? nuevoSkill(cv, _lang) : existeSkill(cv, _lang);
+  const promptEspecifico = esVacio ? construirPromptNuevo(cv, _lang) : construirPromptExiste(cv, _lang);
 
-  // Turno inicial de contexto (no estático) para Gemini
+  // Turno inicial de contexto para Gemini
   const contextTurn = {
     role: 'user',
-    parts: [{ text: `INFORMACIÓN Y CONTEXTO DEL CURRÍCULUM DEL CANDIDATO A AUDITAR:\n${promptEspecifico}` }]
+    parts: [{ text: `INFORMACION Y CONTEXTO DEL CURRICULUM DEL CANDIDATO A AUDITAR:\n${promptEspecifico}` }]
   };
   
   const contextAckTurn = {
     role: 'model',
-    parts: [{ text: `¡Hola! Entendido perfectamente. He cargado todos los datos del currículum. Estoy listo para ayudarte a optimizar cada sección con total libertad, cercanía y enfoque ATS. Dime, ¿por dónde empezamos a mejorar tu perfil?` }]
+    parts: [{ text: `¡Hola! Entendido perfectamente. He cargado todos los datos del curriculum. Estoy listo para ayudarte a optimizar cada seccion con total libertad, cercania y enfoque ATS. Dime, ¿por donde empezamos a mejorar tu perfil?` }]
   };
 
-  // Ventana deslizable para limitar el historial activo de la llamada a la API a un máximo de 10 mensajes
+  // Ventana deslizable para limitar el historial activo de la llamada a la API a un maximo de 10 mensajes
   const maxHistory = 10;
   let historySlice = _historial;
   if (_historial.length > maxHistory) {
     let startIdx = _historial.length - maxHistory;
-    // Asegurar que comience con un mensaje del rol 'user'
     while (startIdx > 0 && _historial[startIdx].role !== 'user') {
       startIdx--;
     }
     historySlice = _historial.slice(startIdx);
   }
 
-  // Combinar el turno de contexto inicial con la ventana deslizable de la conversación activa
+  // Limpiar parches en el historial para evitar bucles de repeticion en la API de Gemini
+  const cleanHistorySlice = historySlice.map(msg => {
+    return {
+      role: msg.role,
+      parts: msg.parts.map(p => {
+        let cleanText = p.text || '';
+        cleanText = cleanText.replace(/__PATCH__(\[.*?\]|\{.*?\})/gs, '').trim();
+        return { text: cleanText };
+      })
+    };
+  });
+
   const apiContents = [
     contextTurn,
     contextAckTurn,
-    ...historySlice
+    ...cleanHistorySlice
   ];
 
-  const systemInstruction = buildStaticSystemPrompt();
+  const systemInstruction = chatwiiPersona.actitud;
 
   try {
     const rawResponse = await llamarGeminiStream({
@@ -138,7 +264,6 @@ export const enviarMensaje = async (textoUsuario, onChunk) => {
       onChunk
     });
 
-    // Consumir el rate limit si es guest y la llamada fue exitosa
     if (rate) {
       rate.fail();
     }
@@ -229,103 +354,8 @@ export const enviarMensaje = async (textoUsuario, onChunk) => {
 
     return { texto: textoLimpio, patches };
   } catch (err) {
-    // Si falla la API, remover el último mensaje del usuario para no romper el flujo
     _historial.pop();
     persistirHistorial();
     throw err;
   }
 };
-
-export const aplicarPatch = (patch) => {
-  if (!patch || !_updateCvData) return;
-  const { campo, valor, expIdx } = patch;
-
-  if (campo === 'logros' && typeof expIdx === 'number') {
-    const cv = _getCvData();
-    const list = cv.experiencias ? [...cv.experiencias] : [];
-    if (list[expIdx]) {
-      list[expIdx].logros = valor;
-      _updateCvData({ experiencias: list });
-    }
-  } else if (campo === 'experiencia_nueva') {
-    const cv = _getCvData();
-    const list = cv.experiencias ? [...cv.experiencias] : [];
-    
-    const nuevaExp = {
-      id: 'exp_' + Math.random().toString(36).substring(2, 9),
-      puesto: valor.puesto || '',
-      empresa: valor.empresa || '',
-      ubicacion: valor.ubicacion || '',
-      inicio: valor.inicio || '',
-      fin: valor.fin || '',
-      logros: Array.isArray(valor.logros) ? valor.logros.join('\n') : (valor.logros || '')
-    };
-    
-    // Si la única experiencia que hay está completamente vacía (puesto, empresa, logros vacíos), la sobreescribimos
-    if (list.length === 1 && !list[0].puesto && !list[0].empresa && !list[0].logros) {
-      list[0] = { ...list[0], ...nuevaExp, id: list[0].id };
-    } else {
-      list.push(nuevaExp);
-    }
-    
-    _updateCvData({ experiencias: list });
-  } else if (campo === 'educacion_nueva') {
-    const cv = _getCvData();
-    const list = cv.educacion ? [...cv.educacion] : [];
-    
-    const nuevaEdu = {
-      id: 'edu_' + Math.random().toString(36).substring(2, 9),
-      institucion: valor.institucion || '',
-      grado: valor.grado || '',
-      ubicacion: valor.ubicacion || '',
-      inicio: valor.inicio || '',
-      fin: valor.fin || ''
-    };
-    
-    // Si la única educación que hay está vacía, la sobreescribimos
-    if (list.length === 1 && !list[0].institucion && !list[0].grado) {
-      list[0] = { ...list[0], ...nuevaEdu, id: list[0].id };
-    } else {
-      list.push(nuevaEdu);
-    }
-    
-    _updateCvData({ educacion: list });
-  } else if (campo === 'proyecto_nuevo') {
-    const cv = _getCvData();
-    const list = cv.proyectos ? [...cv.proyectos] : [];
-    const nuevoProj = {
-      id: 'proj_' + Math.random().toString(36).substring(2, 9),
-      nombre: valor.nombre || '',
-      enlace: valor.enlace || '',
-      descripcion: valor.descripcion || '',
-      tecnologias: valor.tecnologias || ''
-    };
-    list.push(nuevoProj);
-    _updateCvData({ proyectos: list });
-  } else if (campo === 'certificacion_nueva') {
-    const cv = _getCvData();
-    const list = cv.certificaciones ? [...cv.certificaciones] : [];
-    const nuevaCert = {
-      id: 'cert_' + Math.random().toString(36).substring(2, 9),
-      nombre: valor.nombre || '',
-      emisor: valor.emisor || '',
-      fecha: valor.fecha || ''
-    };
-    list.push(nuevaCert);
-    _updateCvData({ certificaciones: list });
-  } else {
-    _updateCvData({ [campo]: valor });
-  }
-};
-
-export const obtenerUltimoPatch = () => _lastPatch;
-
-export const limpiarChat = () => {
-  _historial = [];
-  _lastPatch = null;
-  try {
-    localStorage.removeItem(getCacheKey());
-  } catch (_) {}
-};
-
-export const getHistorial = () => _historial;
