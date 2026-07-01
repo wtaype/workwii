@@ -14,7 +14,14 @@ import {
   obtenerTiempoRestanteBloqueo
 } from './features/seguridad.js';
 import { clonar, guardarSesion, obtenerSesion } from './lib/procesarJson.js';
-import { initChatwii, enviarMensaje, limpiarHistorial, obtenerHistorial } from './brain.js';
+import { 
+  initChatwii, 
+  enviarMensaje, 
+  limpiarHistorial, 
+  obtenerHistorial,
+  CHATWII_MAX_USES,
+  CHATWII_LIMIT_KEY
+} from './brain.js';
 import { crearBotonFlotante } from './components/flotante.js';
 import { 
   crearVentanaChat, 
@@ -27,6 +34,24 @@ import { abrirModal, cerrarModal } from '../../../widev/widev.js';
 let _lang = 'es';
 let _getCvData: () => any = () => ({});
 let _updateCvData: (data: any) => void = () => {};
+
+/**
+ * Actualiza el contador visual de mensajes restantes en la cabecera del chat
+ */
+export const actualizarContadorMensajes = () => {
+  if (typeof window === 'undefined') return;
+  const counterEl = document.querySelector('.cr_chat_counter');
+  if (!counterEl) return;
+  
+  try {
+    const raw = localStorage.getItem(`limiteHoy_${CHATWII_LIMIT_KEY}`);
+    const currentUses = raw ? JSON.parse(raw).n ?? 0 : 0;
+    const remaining = Math.max(0, CHATWII_MAX_USES - currentUses);
+    counterEl.textContent = `(${remaining}/${CHATWII_MAX_USES})`;
+  } catch (_) {
+    counterEl.textContent = `(${CHATWII_MAX_USES}/${CHATWII_MAX_USES})`;
+  }
+};
 
 /**
  * Aplica la lista de parches propuestos al objeto de CV
@@ -199,6 +224,7 @@ export const mountWidget = () => {
     if (container.parentNode !== mountTarget) {
       mountTarget.appendChild(container);
     }
+    actualizarContadorMensajes();
     return;
   }
 
@@ -220,6 +246,7 @@ export const mountWidget = () => {
   container.appendChild(modalBloqueo);
 
   mountTarget.appendChild(container);
+  actualizarContadorMensajes();
 
   // --- REGISTRAR LISTENERS INTERACTIVOS ---
   const box = widget;
@@ -399,6 +426,8 @@ export const mountWidget = () => {
     } catch (err) {
       loaderBurbuja?.remove();
       renderBurbuja('chatwii', _lang === 'en' ? 'Sorry, an error occurred.' : 'Lo siento, ocurrio un error al procesar la solicitud.');
+    } finally {
+      actualizarContadorMensajes();
     }
   };
 

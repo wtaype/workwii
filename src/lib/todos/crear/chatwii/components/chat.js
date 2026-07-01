@@ -22,7 +22,7 @@ export const crearVentanaChat = (idioma, persona) => {
     <div class="cr_chat_header">
       <img src="${persona.avatar}" alt="${persona.nombre}" class="cr_chat_header_avatar" />
       <div class="cr_chat_header_info">
-        <div class="cr_chat_header_name">${persona.nombre}</div>
+        <div class="cr_chat_header_name">${persona.nombre} <span class="cr_chat_counter"></span></div>
         <div class="cr_chat_header_status">
           <span class="cr_chat_online_dot"></span>
           <span>${estadoText}</span>

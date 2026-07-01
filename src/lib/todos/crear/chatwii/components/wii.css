@@ -968,3 +968,13 @@ pre.chatwii-card-editable {
   color: var(--info, #3b82f6);
 }
 
+/* Contador de mensajes en la cabecera */
+.cr_chat_counter {
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.6;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+

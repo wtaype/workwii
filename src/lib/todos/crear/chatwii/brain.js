@@ -95,19 +95,18 @@ const contieneSolicitudPuesto = (texto) => {
   );
 };
 
+export const CHATWII_MAX_USES = 100;
+export const CHATWII_LIMIT_KEY = 'chatwii_uses';
+
 /**
  * Envia el mensaje del usuario a Gemini y procesa la respuesta por chunks
  */
 export const enviarMensaje = async (textoUsuario, onChunk) => {
-  const isLogged = typeof localStorage !== 'undefined' ? localStorage.getItem('wiSmile') : null;
-  const maxUses = isLogged ? 88 : 7;
-  const limitKey = isLogged ? 'logged_chatwii_uses' : 'guest_chatwii_uses';
-
-  const rate = wiRateLimit(limitKey, maxUses, 315360000000);
+  const rate = wiRateLimit(CHATWII_LIMIT_KEY, CHATWII_MAX_USES, 'dia');
   if (!rate.ok) {
     const msgError = _lang === 'en'
-      ? `You have reached the ${maxUses}-message limit. Please try again later.`
-      : `Has alcanzado el limite de ${maxUses} respuestas. ¡Por favor intenta mas tarde!`;
+      ? `You have reached the ${CHATWII_MAX_USES}-message limit. Please try again later.`
+      : `Has alcanzado el limite de ${CHATWII_MAX_USES} respuestas. ¡Por favor intenta mas tarde!`;
     Notificacion(msgError, 'warning', 6000);
     throw new Error('Rate limit reached');
   }
