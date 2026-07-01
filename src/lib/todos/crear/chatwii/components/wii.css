@@ -2,6 +2,9 @@
    CHATWII PRO - ESTILOS FLOTANTES PREMIUM Y COMPATIBLES
    ======================================================== */
 /* Contenedor del widget flotante */
+.cr_chat_widget *:not(i) {
+    font-family: var(--ff_O);
+}
 .cr_chat_widget_wrapper {
   position: fixed;
   bottom: 1.5vh;
@@ -26,7 +29,6 @@
   background: var(--wb);
   overflow: hidden;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-  font-family: var(--ff_P), sans-serif;
   transform: scale(0.9) translateY(30px);
   opacity: 0;
   visibility: hidden;
@@ -267,7 +269,6 @@
   cursor: pointer;
   border: 1px solid transparent;
   transition: all 0.2s ease;
-  font-family: var(--ff_P), sans-serif;
   background: var(--success);
 }
 
@@ -355,14 +356,13 @@
   outline: none !important;
   box-shadow: none !important;
   color: var(--tx);
-  font-family: var(--ff_P), sans-serif;
   font-size: 0.85rem;
   resize: none !important;
   overflow: hidden !important;
-  max-height: 90px;
-  min-height: 22px;
+  max-height: 90vh;
+  min-height: 1vh;
   line-height: 1.4;
-  padding: 0.5vh 0;
+  padding: 0vh 0 1vh 0;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -393,7 +393,7 @@
 .cr_chat_btn_send.active {
   background: var(--mco);
   border-color: var(--mco);
-  color: #000;
+  color: var(--txa);
   cursor: pointer;
 }
 
@@ -890,7 +890,7 @@ pre.chatwii-card-editable {
   margin: auto;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   position: relative;
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--ff_O), sans-serif;
 }
 
 /* Iconos de modal */
@@ -909,7 +909,7 @@ pre.chatwii-card-editable {
 .cr_modal_title {
   font-size: 1.3rem;
   margin-bottom: 10px;
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--ff_O), sans-serif;
   font-weight: 600;
   color: var(--tx, #222);
 }
@@ -918,7 +918,7 @@ pre.chatwii-card-editable {
   margin-bottom: 20px;
   color: var(--tx3, #555);
   line-height: 1.4;
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--ff_O), sans-serif;
 }
 
 /* Acciones y botones de modal */
@@ -933,7 +933,7 @@ pre.chatwii-card-editable {
   border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--ff_O), sans-serif;
   border: 1px solid transparent;
   transition: all 0.2s;
 }
@@ -986,7 +986,7 @@ pre.chatwii-card-editable {
 }
 
 .cr_patch_form_header {
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--ff_O), sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--mco, #9333ea);
@@ -1009,7 +1009,7 @@ pre.chatwii-card-editable {
 }
 
 .cr_patch_label {
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--ff_O), sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--tx3, #555);
@@ -1023,7 +1023,7 @@ pre.chatwii-card-editable {
   border: 1px solid var(--brd, #e2e8f0);
   background: var(--wb, #fff);
   color: var(--tx, #1e293b);
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--ff_O), sans-serif;
   font-size: 0.88rem;
   line-height: 1.4;
   resize: vertical;

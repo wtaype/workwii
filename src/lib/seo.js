@@ -358,4 +358,34 @@ export const seo = {
       intent: 'submit feedback'
     }
   },
+  traducir: {
+    es: {
+      title: `Traducir CV con IA: Localización ATS | ${app}`,
+      description: "Traduce y localiza tu currículum al inglés o español con nuestra IA. Optimiza la terminología técnica para pasar filtros ATS internacionales en 2026.",
+      path: '/traducir',
+      keywords: [
+        'traducir cv gratis',
+        'traducir curriculum ingles',
+        'curriculum en ingles ia',
+        'localizacion cv ats',
+        'pasar filtros ats'
+      ],
+      audience: ['candidatos', 'profesionales', 'desempleados', 'estudiantes'],
+      intent: 'traducir curriculum vitae a ingles o espanol'
+    },
+    en: {
+      title: `AI Resume Translator: ATS Localization | ${app}`,
+      description: "Translate and localize your resume into Spanish or English with our AI. Optimize technical keywords to bypass international ATS hiring filters in 2026.",
+      path: '/en/traducir',
+      keywords: [
+        'translate resume free',
+        'translate cv to spanish',
+        'resume in spanish ai',
+        'ats cv localization',
+        'bypass hiring filters'
+      ],
+      audience: ['candidates', 'professionals', 'unemployed', 'students'],
+      intent: 'translate resume to spanish or english'
+    }
+  }
 };

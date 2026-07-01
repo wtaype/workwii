@@ -51,7 +51,7 @@ export const crearVentanaChat = (idioma, persona) => {
           class="cr_chat_textarea" 
           placeholder="${placeholder}" 
           rows="1"
-          maxlength="1000"
+          maxlength="100000"
         ></textarea>
         <button class="cr_chat_btn_send" disabled>
           <i class="fas fa-paper-plane"></i>

@@ -1,16 +1,13 @@
 ---
+// src/pages/traducir.astro
+// Wrapper en español para el Traductor de CV ATS
 import Layout from '../layouts/Layout.astro';
+import TraducirPage from '../lib/todos/traducir/traducirPage.astro';
 import { seo } from '../lib/seo.js';
+import estilosTraducir from '../lib/todos/traducir/traducir.css?inline';
 ---
+<Layout {...seo.traducir.es}>
+  <style is:global set:html={estilosTraducir} slot="head"></style>
 
-<style is:global>
-
-</style>
-
-<Layout {...seo.acerca}>
-    <!-- Esto es una pagina de empleo listo para nuevo proyectos  -->
-
-    <h1> por eso yo amo a mi Dios siempre, porque el es bueno todo el tiempo.</h1>
+  <TraducirPage />
 </Layout>
-
-<script is:inline> </script>

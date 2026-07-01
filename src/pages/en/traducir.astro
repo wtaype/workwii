@@ -1,0 +1,13 @@
+---
+// src/pages/en/traducir.astro
+// Wrapper in English for the AI Resume Translator
+import Layout from '../../layouts/Layout.astro';
+import TraducirPage from '../../lib/todos/traducir/traducirPage.astro';
+import { seo } from '../../lib/seo.js';
+import estilosTraducir from '../../lib/todos/traducir/traducir.css?inline';
+---
+<Layout {...seo.traducir.en}>
+  <style is:global set:html={estilosTraducir} slot="head"></style>
+
+  <TraducirPage />
+</Layout>

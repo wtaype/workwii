@@ -1,0 +1,236 @@
+---
+// src/lib/todos/traducir/traducirPage.astro
+// Modulo de traduccion interactivo de CV con IA y previsualizacion
+import { idiomaTraducir } from './idiomaTraducir.js';
+
+const lang = Astro.locals.lang || 'es';
+const lg = idiomaTraducir[lang];
+---
+
+<div class="conv_wrap">
+  <!-- Cabecera de Controles de Edicion (Se muestra tras completar la traduccion) -->
+  <header class="conv_header dpn" id="trEditorHeader">
+    <div class="cr_header_flex">
+      <div class="cr_header_left">
+        <h1>
+          <i class="fas fa-language cr_header_icon"></i>
+          {lg['traducir.titulo']}
+        </h1>
+      </div>
+      <div class="cr_header_right">
+        <!-- Botón de Reiniciar subida -->
+        <button id="tr_btn_reset_upload" class="conv_btn_sec">
+          <i class="fas fa-upload"></i> {lg['traducir.btnReset']}
+        </button>
+
+        <!-- Dropdown de descarga -->
+        <div class="conv_download_dropdown" id="trDownloadDropdown">
+          <button class="conv_btn" id="cr_btn_download_final">
+            <i class="fas fa-download"></i> {lg['traducir.btnDescargar']}
+          </button>
+          <button class="conv_btn_dropdown_toggle" id="crBtnDownloadToggle" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="conv_dropdown_menu" id="crDownloadMenu">
+            <button class="conv_dropdown_item" id="cr_btn_dw_pdf"><i class="fas fa-file-pdf"></i> PDF Digital (.pdf)</button>
+            <button class="conv_dropdown_item" id="cr_btn_dw_docx"><i class="fas fa-file-word"></i> Word (.docx)</button>
+            <button class="conv_dropdown_item" id="cr_btn_dw_txt"><i class="fas fa-file-alt"></i> Texto Plano (.txt)</button>
+            <button class="conv_dropdown_item" id="cr_btn_dw_md"><i class="fab fa-markdown"></i> Markdown (.md)</button>
+            <button class="conv_dropdown_item" id="cr_btn_dw_json"><i class="fas fa-file-code"></i> JSON Schema</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CABECERA HERO (Igual a /analisar pero con clase propia) -->
+  <header class="header_traducir" id="trHeroHeader">
+    <div class="ats_header_glow"></div>
+    <div class="ats_header_content">
+      <h1 set:html={lg['traducir.titulo']}></h1>
+      <p>{lg['traducir.desc']}</p>
+    </div>
+  </header>
+
+  <!-- FORMULARIO DE ENTRADA -->
+  <main id="body_traducir" data-locale={lang}>
+    <div class="ats_card ats_entry_card" id="trUploadContainer">
+      <!-- Cabecera de la tarjeta con estilo head_drop -->
+      <div class="head_drop">
+        <h2>
+          <i class="fas fa-language"></i>
+          <span>{lg['traducir.titulo']}</span>
+        </h2>
+        
+        <div class="escoger_lang">
+          <label for="atsTargetLang">{lg['traducir.idiomaDestino']}</label>
+          <select id="atsTargetLang" class="ats_select">
+            <option value="en" selected={lang === 'es'}>{lg['traducir.ingles']}</option>
+            <option value="es" selected={lang === 'en'}>{lg['traducir.espanol']}</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="ats_file_field">
+        <!-- Dropzone de archivo -->
+        <div class="ats_dropzone" id="atsDropzone">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <span class="ats_dz_tit">{lg['traducir.dropzone.titulo']}</span>
+          <span class="ats_dz_sub">{lg['traducir.dropzone.sub']}</span>
+          <input type="file" id="fileInput" accept=".pdf,.docx" class="dpn" />
+        </div>
+        
+        <!-- Detalle de archivo -->
+        <div id="filePreviewContainer" class="dpn"></div>
+      </div>
+
+      <!-- Botón de Traducir -->
+      <button id="btnTranslateAction" class="ats_btn" disabled>
+        <i class="fa-solid fa-wand-magic-sparkles"></i> {lg['traducir.boton']}
+      </button>
+    </div>
+  </main>
+
+  <!-- PANTALLA DE CARGA PREMIUM CON STEPPER (Igual a /analisar) -->
+  <section class="ats_card ats_loader dpn" id="atsLoader">
+    <h3 class="loader_title"><i class="fas fa-brain"></i> {lg['traducir.cargando']}</h3>
+    <p class="loader_eta" id="loaderEta">~20s restantes</p>
+
+    <!-- Barra de progreso -->
+    <div class="loader_bar_wrap">
+      <div class="loader_bar_header">
+        <span>Progreso de Traducción</span>
+        <span id="loaderBarPct">0%</span>
+      </div>
+      <div class="loader_bar_bg">
+        <div class="loader_bar_fill" id="loaderBarFill"></div>
+      </div>
+    </div>
+
+    <!-- Stepper de 5 fases -->
+    <div id="loaderStepper"></div>
+
+    <!-- Tip rotativo -->
+    <div class="loader_tip_wrap">
+      <span class="loader_tip_label"><i class="fas fa-lightbulb"></i> Tip de optimización</span>
+      <div id="loaderTipContent">Analizando y localizando términos...</div>
+    </div>
+  </section>
+
+  <!-- Main Workspace Split (Oculto inicialmente, se muestra tras traducir) -->
+  <main class="conv_workspace_split dpn" id="traducirWorkspace" data-locale={lang}>
+    
+    <!-- Panel Izquierdo: Formularios -->
+    <section class="conv_left_pane">
+      <!-- Navegacion interna de pestanas -->
+      <div class="conv_tabs_header" id="crTabsHeader">
+        <button class="conv_tab_btn active" data-tab="contacto">
+          <i class="fas fa-address-card"></i>
+          <span>Contacto</span>
+        </button>
+        <button class="conv_tab_btn" data-tab="perfil">
+          <i class="fas fa-user"></i>
+          <span>Perfil</span>
+        </button>
+        <button class="conv_tab_btn" data-tab="experiencia">
+          <i class="fas fa-briefcase"></i>
+          <span>Experiencia</span>
+        </button>
+        <button class="conv_tab_btn" data-tab="educacion">
+          <i class="fas fa-graduation-cap"></i>
+          <span>Educacion</span>
+        </button>
+        <button class="conv_tab_btn" data-tab="proyectos">
+          <i class="fas fa-project-diagram"></i>
+          <span>Proyectos</span>
+        </button>
+        <button class="conv_tab_btn" data-tab="certificados">
+          <i class="fas fa-certificate"></i>
+          <span>Certificaciones</span>
+        </button>
+        <button class="conv_tab_btn" data-tab="skills">
+          <i class="fas fa-sliders-h"></i>
+          <span>Skills</span>
+        </button>
+      </div>
+
+      <!-- Contenido del formulario (poblado dinamicamente por renderForms.js) -->
+      <form id="crFormContent" onsubmit="return false;">
+        <div class="conv_form_grid">
+          <!-- Render dinámico del paso activo -->
+        </div>
+      </form>
+    </section>
+
+    <!-- Panel Derecho: Vista previa -->
+    <section class="conv_right_pane">
+      <div class="conv_a4_wrapper">
+        <div id="cr_cv_printable_area" class="cr_printable_pages_container">
+          <div class="cr_a4_page">
+            <div class="cr_preview_cv_name_stub"></div>
+            <div class="cr_preview_cv_title_stub"></div>
+            <div class="cr_preview_cv_divider_stub"></div>
+            <div class="cr_preview_cv_body_stub">
+              <div class="cr_preview_cv_section_stub"></div>
+              <div class="cr_preview_cv_line_stub l1"></div>
+              <div class="cr_preview_cv_line_stub l2"></div>
+              <div class="cr_preview_cv_line_stub l3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+  <!-- Modal de confirmación para crear nuevo CV (Premium) -->
+  <div id="cr_reset_modal" class="wiModal">
+    <div class="modalBody cr_confirm_modal_body">
+      <button class="modalX" id="cr_btn_close_reset_modal">&times;</button>
+      <div class="cr_confirm_content">
+        <div class="cr_confirm_icon_wrapper">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3>{lg['traducir.modalResetTitulo']}</h3>
+        <p>{lg['traducir.modalResetDesc']}</p>
+        <div class="cr_confirm_actions">
+          <button id="cr_btn_confirm_reset" class="cr_btn_confirm_yes">{lg['traducir.modalResetConfirmar']}</button>
+          <button id="cr_btn_cancel_reset" class="cr_btn_confirm_no">{lg['traducir.modalResetCancelar']}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { initTraducir } from './visualTraducir.js';
+
+  const init = () => {
+    initTraducir();
+
+    // Control del menu dropdown de descarga
+    const toggleBtn = document.getElementById('crBtnDownloadToggle');
+    const menu = document.getElementById('crDownloadMenu');
+    
+    if (toggleBtn && menu) {
+      const toggleMenu = (e: MouseEvent) => {
+        e.stopPropagation();
+        const isOpen = menu.classList.contains('show');
+        if (isOpen) {
+          menu.classList.remove('show');
+          toggleBtn.setAttribute('aria-expanded', 'false');
+        } else {
+          menu.classList.add('show');
+          toggleBtn.setAttribute('aria-expanded', 'true');
+        }
+      };
+
+      toggleBtn.addEventListener('click', toggleMenu);
+
+      document.addEventListener('click', () => {
+        menu.classList.remove('show');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      });
+    }
+  };
+
+  document.addEventListener('astro:page-load', init);
+</script>
