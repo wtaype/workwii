@@ -13,12 +13,21 @@ export const promptSubido = (cv, lang) => {
     ubicacion: cv.ubicacion || '',
     skills: cv.skills || '',
     experiencias: cv.experiencias || [],
-    educacion: cv.educacion || []
+    educacion: cv.educacion || [],
+    proyectos: cv.proyectos || [],
+    certificaciones: cv.certificaciones || []
   }, null, 2);
 
   return `
 DATOS ACTUALES DEL CV SUBIDO:
 ${cvDataJson}
+
+ESQUEMA DEL CV (Sigue este esquema exacto al generar parches):
+- experiencias: array de objetos { id (opcional), puesto, empresa, ubicacion, inicio, fin, logros (string con saltos de linea o array de strings) }
+- educacion: array de objetos { id (opcional), institucion, grado, ubicacion, inicio, fin }
+- proyectos: array de objetos { id (opcional), nombre, enlace, descripcion, tecnologias }
+- certificaciones: array de objetos { id (opcional), nombre, emisor, fecha }
+- idiomas: array de strings (ej: ["Español - Nativo", "Ingles - Intermedio"])
 
 SITUACION:
 El usuario ha cargado un archivo (PDF o Word) con su CV. El texto ha sido extraido y colocado en el formulario, pero suele carecer de un formato optimizado para ATS (Applicant Tracking Systems) o carecer de logros cuantificables y palabras clave.

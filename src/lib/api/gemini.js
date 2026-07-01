@@ -28,63 +28,73 @@ export const llamarGemini = async ({
     throw new Error('La clave API de Gemini no está configurada.');
   }
 
-  const model = GEMINI_CONFIG.MODEL;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const modelsToTry = [GEMINI_CONFIG.MODEL, 'gemini-1.5-flash', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+  let lastError = null;
 
-  const body = {
-    contents,
-    generationConfig: {
-      responseMimeType,
-      temperature,
-      maxOutputTokens: GEMINI_CONFIG.MAX_TOKENS
+  for (const model of modelsToTry) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const body = {
+        contents,
+        generationConfig: {
+          responseMimeType,
+          temperature,
+          maxOutputTokens: GEMINI_CONFIG.MAX_TOKENS
+        }
+      };
+
+      if (systemInstruction) {
+        body.systemInstruction = {
+          parts: [{ text: systemInstruction }]
+        };
+      }
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error en el servicio de IA de Gemini (${response.status}): ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.promptFeedback?.blockReason) {
+        throw new Error(`Gemini bloqueó la solicitud: ${data.promptFeedback.blockReason}`);
+      }
+
+      const candidate = data.candidates?.[0];
+      if (!candidate) {
+        throw new Error('Gemini devolvió una respuesta vacía (sin candidatos). Intenta de nuevo.');
+      }
+
+      if (candidate.finishReason && candidate.finishReason !== 'STOP' && candidate.finishReason !== 'MAX_TOKENS') {
+        throw new Error(`Gemini rechazó la respuesta: finishReason="${candidate.finishReason}"`);
+      }
+
+      const rawText = candidate.content?.parts?.[0]?.text ?? '';
+      if (!rawText) {
+        throw new Error('Gemini devolvió un candidato sin texto. El modelo no generó contenido.');
+      }
+
+      return rawText.trim().replace(/^```[a-z]*\s*/i, '').replace(/```$/, '').trim();
+    } catch (err) {
+      console.warn(`Fallo con el modelo ${model}:`, err.message);
+      lastError = err;
+      const isRetryable = err.message.includes('503') || 
+                          err.message.includes('500') || 
+                          err.message.includes('Service Unavailable') || 
+                          err.message.includes('Failed to fetch');
+      if (!isRetryable) {
+        throw err;
+      }
     }
-  };
-
-  // Añadir la instrucción de sistema si es provista
-  if (systemInstruction) {
-    body.systemInstruction = {
-      parts: [{ text: systemInstruction }]
-    };
   }
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body)
-  });
-
-  if (!response.ok) {
-    throw new Error(`Error en el servicio de IA de Gemini: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-
-  // Detectar bloqueo por filtros de seguridad a nivel de prompt
-  if (data.promptFeedback?.blockReason) {
-    throw new Error(`Gemini bloqueó la solicitud: ${data.promptFeedback.blockReason}`);
-  }
-
-  // Detectar respuesta vacía o sin candidatos
-  const candidate = data.candidates?.[0];
-  if (!candidate) {
-    throw new Error('Gemini devolvió una respuesta vacía (sin candidatos). Intenta de nuevo.');
-  }
-
-  // Detectar candidato bloqueado por finishReason (SAFETY, RECITATION, etc.)
-  if (candidate.finishReason && candidate.finishReason !== 'STOP' && candidate.finishReason !== 'MAX_TOKENS') {
-    throw new Error(`Gemini rechazó la respuesta: finishReason="${candidate.finishReason}"`);
-  }
-
-  const rawText = candidate.content?.parts?.[0]?.text ?? '';
-
-  if (!rawText) {
-    throw new Error('Gemini devolvió un candidato sin texto. El modelo no generó contenido.');
-  }
-
-  // Limpiar posibles bloques markdown del JSON si la respuesta los incluye de forma redundante
-  return rawText.trim().replace(/^```[a-z]*\s*/i, '').replace(/```$/, '').trim();
+  throw lastError;
 };
 
 /**
@@ -110,88 +120,104 @@ export const llamarGeminiStream = async ({
     throw new Error('La clave API de Gemini no está configurada.');
   }
 
-  const model = GEMINI_CONFIG.MODEL;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`;
+  const modelsToTry = [GEMINI_CONFIG.MODEL, 'gemini-1.5-flash', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+  let lastError = null;
 
-  const body = {
-    contents,
-    generationConfig: {
-      responseMimeType,
-      temperature,
-      maxOutputTokens: GEMINI_CONFIG.MAX_TOKENS
-    }
-  };
+  for (const model of modelsToTry) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`;
+      const body = {
+        contents,
+        generationConfig: {
+          responseMimeType,
+          temperature,
+          maxOutputTokens: GEMINI_CONFIG.MAX_TOKENS
+        }
+      };
 
-  if (systemInstruction) {
-    body.systemInstruction = {
-      parts: [{ text: systemInstruction }]
-    };
-  }
+      if (systemInstruction) {
+        body.systemInstruction = {
+          parts: [{ text: systemInstruction }]
+        };
+      }
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body)
-  });
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
 
-  if (!response.ok) {
-    throw new Error(`Error en el servicio de IA de Gemini (Streaming): ${response.statusText}`);
-  }
+      if (!response.ok) {
+        throw new Error(`Error en el servicio de IA de Gemini (Streaming, ${response.status}): ${response.statusText}`);
+      }
 
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder('utf-8');
-  let buffer = '';
-  let fullText = '';
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
+      let fullText = '';
 
-  try {
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
+      try {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
 
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || '';
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
 
-      for (const line of lines) {
-        const cleanLine = line.trim();
-        if (!cleanLine) continue;
+          for (const line of lines) {
+            const cleanLine = line.trim();
+            if (!cleanLine) continue;
 
-        if (cleanLine.startsWith('data: ')) {
-          const dataStr = cleanLine.slice(6).trim();
-          if (dataStr === '[DONE]') continue;
+            if (cleanLine.startsWith('data: ')) {
+              const dataStr = cleanLine.slice(6).trim();
+              if (dataStr === '[DONE]') continue;
 
-          try {
-            const parsed = JSON.parse(dataStr);
+              try {
+                const parsed = JSON.parse(dataStr);
 
-            if (parsed.promptFeedback?.blockReason) {
-              throw new Error(`Gemini bloqueó la solicitud: ${parsed.promptFeedback.blockReason}`);
-            }
-
-            const candidate = parsed.candidates?.[0];
-            if (candidate) {
-              if (candidate.finishReason && candidate.finishReason !== 'STOP' && candidate.finishReason !== 'MAX_TOKENS') {
-                throw new Error(`Gemini rechazó la respuesta: finishReason="${candidate.finishReason}"`);
-              }
-
-              const text = candidate.content?.parts?.[0]?.text || '';
-              if (text) {
-                fullText += text;
-                if (onChunk) {
-                  onChunk(text);
+                if (parsed.promptFeedback?.blockReason) {
+                  throw new Error(`Gemini bloqueó la solicitud: ${parsed.promptFeedback.blockReason}`);
                 }
+
+                const candidate = parsed.candidates?.[0];
+                if (candidate) {
+                  if (candidate.finishReason && candidate.finishReason !== 'STOP' && candidate.finishReason !== 'MAX_TOKENS') {
+                    throw new Error(`Gemini rechazó la respuesta: finishReason="${candidate.finishReason}"`);
+                  }
+
+                  const text = candidate.content?.parts?.[0]?.text || '';
+                  if (text) {
+                    fullText += text;
+                    if (onChunk) {
+                      onChunk(text);
+                    }
+                  }
+                }
+              } catch (jsonErr) {
+                // Ignorar errores menores de parsing por chunks cortados temporalmente
               }
             }
-          } catch (jsonErr) {
-            // Ignorar errores menores de parsing por chunks cortados temporalmente
           }
         }
+      } finally {
+        reader.releaseLock();
+      }
+
+      return fullText.trim().replace(/^```[a-z]*\s*/i, '').replace(/```$/, '').trim();
+    } catch (err) {
+      console.warn(`Fallo con el modelo Stream ${model}:`, err.message);
+      lastError = err;
+      const isRetryable = err.message.includes('503') || 
+                          err.message.includes('500') || 
+                          err.message.includes('Service Unavailable') || 
+                          err.message.includes('Failed to fetch');
+      if (!isRetryable) {
+        throw err;
       }
     }
-  } finally {
-    reader.releaseLock();
   }
-
-  return fullText.trim().replace(/^```[a-z]*\s*/i, '').replace(/```$/, '').trim();
+  throw lastError;
 };

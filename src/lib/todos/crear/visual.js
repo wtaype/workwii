@@ -5,6 +5,7 @@ import { Notificacion, wiSmart, abrirModal, cerrarModal, wiRateLimit } from '../
 import { isEditingPreview } from './preview/editarPreview.js';
 import { updateA4Preview, updateScorecard } from './preview/renderPreview.js';
 import { initChat } from './chatwii/visual.ts';
+import { SECCIONES } from './centralcv.js';
 import {
   locales,
   setAbrirModalIA,
@@ -84,17 +85,12 @@ const renderTabs = (cv) => {
   if (!container) return;
 
   const isEn = cv.idioma === 'en';
-  const tabLang = isEn ? locales.en.tabs : locales.es.tabs;
-
-  const tabs = [
-    { id: 'contacto',     label: tabLang.contacto,     icon: 'fa-address-card' },
-    { id: 'perfil',       label: tabLang.perfil,       icon: 'fa-user' },
-    { id: 'experiencia',  label: tabLang.experiencia,  icon: 'fa-briefcase' },
-    { id: 'educacion',    label: tabLang.educacion,    icon: 'fa-graduation-cap' },
-    { id: 'proyectos',    label: tabLang.proyectos,    icon: 'fa-project-diagram' },
-    { id: 'certificados', label: tabLang.certificados, icon: 'fa-certificate' },
-    { id: 'skills',       label: tabLang.skills,       icon: 'fa-sliders-h' }
-  ];
+  
+  const tabs = SECCIONES.map(sec => ({
+    id: sec.id,
+    label: isEn ? sec.label.en : sec.label.es,
+    icon: sec.icon
+  }));
 
   container.innerHTML = tabs.map(tab => `
     <button class="conv_tab_btn ${tab.id === activeTab ? 'active' : ''}" data-tab="${tab.id}">

@@ -9,6 +9,8 @@ import { chatwiiPersona } from './personalidad.js';
 import { promptNuevo } from './skills/nuevo.js';
 import { promptSubido } from './skills/subido.js';
 import { promptPuesto } from './skills/puesto.js';
+import { promptTraducir } from './skills/traducir.js';
+import { isCvVacio, CLAVES_VALIDAS_CV } from '../centralcv.js';
 
 let _lang = 'es';
 let _getCvData = null;
@@ -72,15 +74,7 @@ const persistirHistorial = () => {
   } catch (_) {}
 };
 
-const isCvVacio = (cv) => {
-  if (!cv) return true;
-  const tieneNombre = !!(cv.nombre && cv.nombre.trim());
-  const tieneTitulo = !!(cv.titulo && cv.titulo.trim());
-  const tieneResumen = !!(cv.resumen && cv.resumen.trim());
-  const tieneExp = cv.experiencias && cv.experiencias.some(exp => exp && (exp.puesto || exp.empresa || exp.logros));
-  const tieneEdu = cv.educacion && cv.educacion.some(edu => edu && (edu.institucion || edu.grado));
-  return !tieneNombre && !tieneTitulo && !tieneResumen && !tieneExp && !tieneEdu;
-};
+
 
 const contieneSolicitudPuesto = (texto) => {
   if (!texto) return false;
@@ -93,6 +87,30 @@ const contieneSolicitudPuesto = (texto) => {
     t.includes('de acuerdo a') ||
     t.includes('perfil de')
   );
+};
+
+const contieneSolicitudTraduccion = (texto) => {
+  if (!texto) return false;
+  const t = texto.toLowerCase();
+  return (
+    t.includes('traducir') ||
+    t.includes('traduccion') ||
+    t.includes('translate') ||
+    t.includes('translation') ||
+    t.includes('en ingles') ||
+    t.includes('en espanol') ||
+    t.includes('al ingles') ||
+    t.includes('al espanol')
+  );
+};
+
+const obtenerIdiomaDestino = (texto) => {
+  if (!texto) return 'en';
+  const t = texto.toLowerCase();
+  if (t.includes('espanol') || t.includes('spanish') || t.includes('castellano')) {
+    return 'es';
+  }
+  return 'en';
 };
 
 export const CHATWII_MAX_USES = 100;
@@ -122,6 +140,9 @@ export const enviarMensaje = async (textoUsuario, onChunk) => {
   let promptEspecifico = '';
   if (esVacio) {
     promptEspecifico = promptNuevo(cv, _lang);
+  } else if (contieneSolicitudTraduccion(textoUsuario)) {
+    const targetLang = obtenerIdiomaDestino(textoUsuario);
+    promptEspecifico = promptTraducir(cv, _lang, targetLang);
   } else if (contieneSolicitudPuesto(textoUsuario)) {
     promptEspecifico = promptPuesto(cv, _lang);
   } else {
@@ -186,44 +207,43 @@ export const enviarMensaje = async (textoUsuario, onChunk) => {
     // Extraer parches de forma compacta y limpia de la respuesta
     let textoLimpio = rawResponse;
     const patches = [];
-    let idx = 0;
-
-    while ((idx = rawResponse.indexOf('__PATCH__', idx)) !== -1) {
-      const start = idx + 9;
-      let depth = 0, end = start;
-      
-      for (let i = start; i < rawResponse.length; i++) {
-        const char = rawResponse[i];
-        if (char === '{' || char === '[') depth++;
-        else if (char === '}' || char === ']') {
-          if (--depth === 0) {
-            end = i;
-            break;
-          }
-        }
-      }
-
-      if (end > start) {
-        const jsonStr = rawResponse.substring(start, end + 1);
-        try {
-          const parsed = JSON.parse(jsonStr);
+    const rangesToRemove = [];
+    
+    // Regex para buscar bloques de código Markdown que contengan JSON
+    const codeBlockRegex = /```(?:json)?\s*([\s\S]*?)\s*```/gi;
+    let match;
+    
+    while ((match = codeBlockRegex.exec(rawResponse)) !== null) {
+      const content = match[1].replace(/__PATCH__/g, '').trim();
+      try {
+        const parsed = JSON.parse(content);
+        const target = parsed.patch || parsed;
+        
+        // Verificar si contiene claves del CV para validarlo como parche legítimo
+        const tieneClavesCv = CLAVES_VALIDAS_CV.some(k => k in target);
+        
+        if (tieneClavesCv) {
           if (Array.isArray(parsed)) {
             patches.push(...parsed);
           } else {
             patches.push(parsed);
           }
-        } catch (e) {
-          console.error('Error parseando __PATCH__ de Chatwii:', e);
+          // Registrar el rango completo del bloque de código markdown para removerlo
+          rangesToRemove.push({ from: match.index, to: match.index + match[0].length });
         }
-        textoLimpio = textoLimpio.replace('__PATCH__' + jsonStr, '');
-        idx = end + 1;
-      } else {
-        idx = start + 1;
+      } catch (e) {
+        // Si no es un JSON válido, lo ignoramos para que se renderice como texto/código común
       }
     }
 
-    _lastPatch = patches.length > 0 ? patches : null;
+    // Remover los bloques de código detectados de derecha a izquierda
+    rangesToRemove.sort((a, b) => b.from - a.from);
+    for (const r of rangesToRemove) {
+      textoLimpio = textoLimpio.substring(0, r.from) + textoLimpio.substring(r.to);
+    }
     textoLimpio = textoLimpio.trim();
+
+    _lastPatch = patches.length > 0 ? patches : null;
 
     // Guardar respuesta completa del modelo en el historial persistido
     _historial.push({ role: 'model', parts: [{ text: rawResponse }] });

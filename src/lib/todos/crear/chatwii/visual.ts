@@ -30,6 +30,7 @@ import {
   crearModalBloqueo 
 } from './components/chat.js';
 import { abrirModal, cerrarModal } from '../../../widev/widev.js';
+import { actualizarCvDatos, crearHtmlFormulario, extraerValoresFormulario } from './lib/planPropuesto.js';
 
 let _lang = 'es';
 let _getCvData: () => any = () => ({});
@@ -51,58 +52,6 @@ export const actualizarContadorMensajes = () => {
   } catch (_) {
     counterEl.textContent = `(${CHATWII_MAX_USES}/${CHATWII_MAX_USES})`;
   }
-};
-
-/**
- * Aplica la lista de parches propuestos al objeto de CV
- */
-const aplicarParchesCv = (cv: any, patches: any[]) => {
-  patches.forEach(patch => {
-    if (!patch || typeof patch !== 'object') return;
-    const campo = patch.campo;
-    const valor = patch.valor;
-
-    if (campo === 'experiencia_nueva') {
-      if (!cv.experiencias) cv.experiencias = [];
-      cv.experiencias.push({
-        id: 'exp_' + Math.random().toString(36).substring(2, 9),
-        puesto: valor.puesto || '',
-        empresa: valor.empresa || '',
-        logros: valor.logros || ''
-      });
-    } else if (campo === 'educacion_nueva') {
-      if (!cv.educacion) cv.educacion = [];
-      cv.educacion.push({
-        id: 'edu_' + Math.random().toString(36).substring(2, 9),
-        institucion: valor.institucion || '',
-        grado: valor.grado || ''
-      });
-    } else if (campo === 'proyecto_nuevo') {
-      if (!cv.proyectos) cv.proyectos = [];
-      cv.proyectos.push({
-        id: 'proj_' + Math.random().toString(36).substring(2, 9),
-        nombre: valor.nombre || '',
-        enlace: valor.enlace || '',
-        descripcion: valor.descripcion || '',
-        tecnologias: valor.tecnologias || ''
-      });
-    } else if (campo === 'certificacion_nueva') {
-      if (!cv.certificaciones) cv.certificaciones = [];
-      cv.certificaciones.push({
-        id: 'cert_' + Math.random().toString(36).substring(2, 9),
-        nombre: valor.nombre || '',
-        emisor: valor.emisor || '',
-        fecha: valor.fecha || ''
-      });
-    } else if (campo === 'logros' && 'expIdx' in patch) {
-      const idx = parseInt(patch.expIdx, 10);
-      if (cv.experiencias && cv.experiencias[idx]) {
-        cv.experiencias[idx].logros = valor;
-      }
-    } else if (['nombre', 'titulo', 'ubicacion', 'resumen', 'skills'].includes(campo)) {
-      cv[campo] = valor;
-    }
-  });
 };
 
 /**
@@ -141,9 +90,19 @@ export const renderBurbuja = (tipo: string, texto: string, patches: any[] | null
   // Agregar acciones de parche si existen
   if (patches && patches.length > 0) {
     const t = langChatwii[_lang] || langChatwii['es'];
+    
+    // 1. Crear el formulario visual con los campos editables
+    const cvActualContext = _getCvData();
+    const formHtml = crearHtmlFormulario(patches, cvActualContext, _lang);
+    if (formHtml) {
+      const formWrapper = document.createElement('div');
+      formWrapper.innerHTML = formHtml;
+      textoDiv.appendChild(formWrapper.firstElementChild as HTMLElement);
+    }
+    
+    // 2. Crear las acciones del parche
     const accionesDiv = document.createElement('div');
     accionesDiv.className = 'cr_chat_acciones';
-    
     const backupId = 'bk_' + Math.random().toString(36).substring(2, 9);
     
     accionesDiv.innerHTML = `
@@ -160,8 +119,11 @@ export const renderBurbuja = (tipo: string, texto: string, patches: any[] | null
       const backupCv = clonar(_getCvData());
       guardarSesion(backupId, backupCv);
 
+      // Reconstruir la lista de cambios modificados en base a las cajitas de texto
+      const parchesModificados = extraerValoresFormulario(textoDiv);
+
       const cvActual = clonar(_getCvData());
-      aplicarParchesCv(cvActual, patches);
+      actualizarCvDatos(cvActual, parchesModificados);
       _updateCvData(cvActual);
 
       if (btnAplicar) {

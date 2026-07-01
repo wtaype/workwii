@@ -13,12 +13,21 @@ export const promptNuevo = (cv, lang) => {
     ubicacion: cv.ubicacion || '',
     skills: cv.skills || '',
     experiencias: cv.experiencias || [],
-    educacion: cv.educacion || []
+    educacion: cv.educacion || [],
+    proyectos: cv.proyectos || [],
+    certificaciones: cv.certificaciones || []
   }, null, 2);
 
   return `
 DATOS ACTUALES DEL CV:
 ${cvDataJson}
+
+ESQUEMA DEL CV (Sigue este esquema exacto al generar parches):
+- experiencias: array de objetos { id (opcional), puesto, empresa, ubicacion, inicio, fin, logros (string con saltos de linea o array de strings) }
+- educacion: array de objetos { id (opcional), institucion, grado, ubicacion, inicio, fin }
+- proyectos: array de objetos { id (opcional), nombre, enlace, descripcion, tecnologias }
+- certificaciones: array de objetos { id (opcional), nombre, emisor, fecha }
+- idiomas: array de strings (ej: ["Español - Nativo", "Ingles - Intermedio"])
 
 SITUACION:
 El candidato tiene su CV vacio o muy incompleto.

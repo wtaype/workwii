@@ -4,8 +4,8 @@
 /* Contenedor del widget flotante */
 .cr_chat_widget_wrapper {
   position: fixed;
-  bottom: 4vh;
-  left: 2vh;
+  bottom: 1.5vh;
+  left: 1.5vh;
   right: auto;
   width: 58vh;
   max-width: calc(100vw - 50px);
@@ -46,7 +46,7 @@
 .cr_chat_widget.maximized {
   width: 46vw;
   min-width: 440px;
-  height: 76vh;
+  height: 78vh;
   max-height: 85vh;
 }
 

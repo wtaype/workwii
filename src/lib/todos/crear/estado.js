@@ -1,26 +1,7 @@
 // src/lib/crear/estado.js
 // Gestor de Estado Central (Single Source of Truth) para el Creador de CV ATS
 
-const DEFAULT_STATE = {
-  nombre: '',
-  titulo: '',
-  email: '',
-  telefono: '',
-  ubicacion: '',
-  linkedin: '',
-  web: '',
-  resumen: '',
-  experiencias: [],
-  educacion: [],
-  proyectos: [],
-  certificaciones: [],
-  skills: '',
-  idiomas: [],
-  incluirFoto: false,
-  fotoBase64: '',
-  idioma: 'es',
-  _pdfWarnings: [] // Alertas internas sobre el archivo subido (tablas, escaneo, etc.)
-};
+import { DEFAULT_STATE, crearNuevoItem } from './centralcv.js';
 
 let cvState = { ...DEFAULT_STATE };
 const subscribers = [];
@@ -32,39 +13,10 @@ const getCacheKey = () => {
   return isEn ? 'crear_cv_en' : 'crear_cv_es';
 };
 
-export const crearEstructuraExp = () => ({
-  id: 'exp_' + Math.random().toString(36).substring(2, 9),
-  puesto: '',
-  empresa: '',
-  ubicacion: '',
-  inicio: '',
-  fin: '',
-  logros: ''
-});
-
-export const crearEstructuraEdu = () => ({
-  id: 'edu_' + Math.random().toString(36).substring(2, 9),
-  institucion: '',
-  grado: '',
-  ubicacion: '',
-  inicio: '',
-  fin: ''
-});
-
-export const crearEstructuraProj = () => ({
-  id: 'proj_' + Math.random().toString(36).substring(2, 9),
-  nombre: '',
-  enlace: '',
-  descripcion: '',
-  tecnologias: ''
-});
-
-export const crearEstructuraCert = () => ({
-  id: 'cert_' + Math.random().toString(36).substring(2, 9),
-  nombre: '',
-  emisor: '',
-  fecha: ''
-});
+export const crearEstructuraExp = () => crearNuevoItem('experiencias');
+export const crearEstructuraEdu = () => crearNuevoItem('educacion');
+export const crearEstructuraProj = () => crearNuevoItem('proyectos');
+export const crearEstructuraCert = () => crearNuevoItem('certificaciones');
 
 // Obtener una copia profunda del estado actual
 export const getCvData = () => {
