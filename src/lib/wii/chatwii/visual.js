@@ -1,7 +1,18 @@
 import { initChatwii, enviarMensaje, aplicarPatch, limpiarChat, getHistorial } from './brain.js';
 import { mdToHtml } from './procesarmd.js';
 import { langChatwii } from './lang.js';
-import { abrirModal, cerrarModal, getls } from '../../../widev/widev.js';
+import { abrirModal, cerrarModal, getls } from '../../widev/widev.js';
+
+export const sanitizarMensaje = (texto) => {
+  if (!texto) return '';
+  // Eliminar etiquetas <script> y su contenido
+  let limpio = texto.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gi, '');
+  // Eliminar event handlers de inline HTML (ej: onload, onerror, onclick, etc)
+  limpio = limpio.replace(/<[^>]+(on[a-z]+)\s*=\s*["'][^"']*["']/gi, (match, event) => {
+    return match.replace(event, 'data-blocked-' + event);
+  });
+  return limpio.trim();
+};
 
 let _lang = 'es';
 let _getCvData = null;
@@ -124,7 +135,7 @@ export const mountWidget = () => {
     </div>
   `;
 
-  // 4. Inyectar los elementos en el contenedor activo
+  // Inyectar los elementos en el contenedor activo
   mountTarget.appendChild(wrapper);
   mountTarget.appendChild(launcher);
   mountTarget.appendChild(clearModal);
@@ -175,101 +186,253 @@ export const renderBurbuja = (tipo, texto, patches = null, esRestaurado = false)
     : (patches ? [patches] : []);
 
   if (activePatches.length > 0 && !isUser && !isLoader) {
-    const acciones = document.createElement('div');
-    acciones.className = 'cr_chat_acciones';
-    burbuja.querySelector('.cr_chat_texto').appendChild(acciones);
-    
     const t = langChatwii[_lang] || langChatwii['es'];
 
-    const renderAcciones = (mostrarDeshacer = false, cvBackup = null) => {
-      if (mostrarDeshacer) {
-        acciones.innerHTML = `
-          <button class="cr_chat_btn_accion deshacer" style="background:var(--error); border-color:var(--error); color:#fff;"><i class="fas fa-rotate-left"></i> ${_lang === 'en' ? 'Undo' : 'Deshacer'}</button>
-          <button class="cr_chat_btn_accion descartar" data-witip="${_lang === 'en' ? 'Discard' : 'Descartar'}"><i class="fas fa-times-circle"></i></button>
-        `;
-        const btnDeshacer = acciones.querySelector('.deshacer');
-        const btnDescartar = acciones.querySelector('.descartar');
+    // Encontrar contenedores de bloques de código en la burbuja
+    const codeBlocks = Array.from(burbuja.querySelectorAll('.chatwii-codeblock-container'));
 
-        btnDeshacer.addEventListener('click', () => {
-          if (cvBackup) _updateCvData(cvBackup);
-          const deshacerMsg = _lang === 'en' ? 'Changes reverted!' : '¡Cambios revertidos!';
-          if (window.Mensaje) window.Mensaje(deshacerMsg, 'success');
-          renderAcciones(false);
-        });
+    // Colección de backups de CV por parche para poder deshacer individualmente
+    const backups = new Map();
 
-        btnDescartar.addEventListener('click', () => {
-          deshabilitarAcciones(acciones);
-        });
-      } else {
-        acciones.innerHTML = `
-          <button class="cr_chat_btn_accion aplicar" data-witip="${_lang === 'en' ? 'Continue' : 'Continuar'}"><i class="fas fa-check"></i> ${t.aplicar}</button>
-          <button class="cr_chat_btn_accion ajustar" data-witip="${_lang === 'en' ? 'Adjust' : 'Ajustar'}"><i class="fas fa-pen"></i> ${t.ajustar}</button>
-          <button class="cr_chat_btn_accion descartar" data-witip="${_lang === 'en' ? 'Discard' : 'Descartar'}"><i class="fas fa-times-circle"></i></button>
-        `;
+    // Contenedor de acciones generales al final de la burbuja
+    const accionesGenerales = document.createElement('div');
+    accionesGenerales.className = 'cr_chat_acciones';
+    burbuja.querySelector('.cr_chat_texto').appendChild(accionesGenerales);
 
-        const btnAplicar = acciones.querySelector('.aplicar');
-        const btnAjustar = acciones.querySelector('.ajustar');
-        const btnDescartar = acciones.querySelector('.descartar');
+    // Mapear los parches y crear sus controles individuales
+    activePatches.forEach((p, idx) => {
+      // Mapear parches secuencialmente a los bloques de código disponibles
+      const codeBlock = codeBlocks.shift();
 
-        btnAplicar.addEventListener('click', () => {
-          const editables = Array.from(burbuja.querySelectorAll('code[contenteditable="true"]'));
+      if (codeBlock) {
+        // Encontrado bloque de código asociado: Inyectamos los botones individuales en su cabecera
+        const header = codeBlock.querySelector('.chatwii-codeblock-header');
+        const codeEl = codeBlock.querySelector('code[contenteditable="true"]');
+        if (header && codeEl) {
+          const btnGroup = document.createElement('div');
+          btnGroup.className = 'chatwii-inline-patch-actions';
+          btnGroup.style.display = 'flex';
+          btnGroup.style.gap = '1vh';
+          btnGroup.style.marginLeft = '1.5vh';
 
-          // Mapear los parches aplicando los textos editables en caliente
-          const patchesToApply = activePatches.map((p) => {
-            let val = p.valor;
-            if (editables.length > 0) {
-              // Emparejar parches de texto (resumen, logros) con editables
-              const textPatches = activePatches.filter(x => x.campo === 'resumen' || x.campo === 'logros');
-              const textIdx = textPatches.indexOf(p);
+          const btnApply = document.createElement('button');
+          btnApply.className = 'chatwii-codeblock-action-btn apply';
+          btnApply.innerHTML = `<i class="fas fa-check"></i> <span class="chatwii-btn-text">${esRestaurado ? t.aplicar : (_lang === 'en' ? 'Apply' : 'Aplicar')}</span>`;
+          
+          const btnUndo = document.createElement('button');
+          btnUndo.className = 'chatwii-codeblock-action-btn undo';
+          btnUndo.style.display = 'none';
+          btnUndo.innerHTML = `<i class="fas fa-undo"></i> <span class="chatwii-btn-text">${_lang === 'en' ? 'Undo' : 'Deshacer'}</span>`;
 
-              if (textIdx !== -1 && editables[textIdx]) {
-                val = editables[textIdx].innerText || editables[textIdx].textContent || p.valor;
-              } else if (editables.length === 1 && (p.campo === 'resumen' || p.campo === 'logros')) {
-                val = editables[0].innerText || editables[0].textContent || p.valor;
-              }
+          btnGroup.appendChild(btnApply);
+          btnGroup.appendChild(btnUndo);
+          header.appendChild(btnGroup);
+
+          // Event Listener para Aplicar
+          btnApply.addEventListener('click', () => {
+            const currentCvBackup = _getCvData();
+            backups.set(idx, currentCvBackup);
+
+            // Leer contenido editado en caliente y sanitizar contra scripts maliciosos (XSS)
+            const editedText = sanitizarMensaje(codeEl.innerText || codeEl.textContent || '');
+            const pToApply = JSON.parse(JSON.stringify(p));
+            
+            if (['resumen', 'logros', 'skills', 'nombre', 'titulo', 'ubicacion'].includes(pToApply.campo)) {
+              pToApply.valor = editedText.trim();
+            } else if (pToApply.campo === 'experiencia_nueva' && pToApply.valor) {
+              pToApply.valor.logros = editedText.trim();
             }
-            return { ...p, valor: typeof val === 'string' ? val.trim() : val };
+
+            aplicarPatch(pToApply);
+
+            const exitoMsg = _lang === 'en' ? 'Section applied to CV!' : '¡Sección aplicada al CV!';
+            if (window.Mensaje) window.Mensaje(exitoMsg, 'success');
+
+            btnApply.style.display = 'none';
+            btnUndo.style.display = 'inline-flex';
           });
 
-          const backup = _getCvData();
+          // Event Listener para Deshacer
+          btnUndo.addEventListener('click', () => {
+            const backup = backups.get(idx);
+            if (backup) {
+              _updateCvData(backup);
+              const deshacerMsg = _lang === 'en' ? 'Changes reverted!' : '¡Cambios revertidos!';
+              if (window.Mensaje) window.Mensaje(deshacerMsg, 'success');
+            }
+            btnApply.style.display = 'inline-flex';
+            btnUndo.style.display = 'none';
+          });
 
-          // Aplicar cada uno de los parches
-          patchesToApply.forEach(p => aplicarPatch(p));
+          if (esRestaurado) {
+            btnApply.disabled = true;
+            btnApply.style.opacity = '0.5';
+            btnApply.style.pointerEvents = 'none';
+          }
+        }
+      } else {
+        // No hay bloque de código: Renderizar una Tarjeta de Propuesta independiente al final del texto
+        const card = document.createElement('div');
+        card.className = 'chatwii-proposal-card';
+        
+        let cardTitle = '';
+        let cardContentHtml = '';
 
-          const exitoMsg = _lang === 'en' ? 'Changes applied to CV!' : '¡Cambios aplicados al CV!';
-          if (window.Mensaje) window.Mensaje(exitoMsg, 'success');
+        if (p.campo === 'experiencia_nueva') {
+          cardTitle = `${_lang === 'en' ? 'New Experience' : 'Nueva Experiencia'}`;
+          cardContentHtml = `
+            <div style="margin-bottom:0.8vh;"><strong>Empresa:</strong> <span class="chatwii-card-editable" contenteditable="true" data-field="empresa">${p.valor.empresa || ''}</span></div>
+            <div style="margin-bottom:0.8vh;"><strong>Puesto:</strong> <span class="chatwii-card-editable" contenteditable="true" data-field="puesto">${p.valor.puesto || ''}</span></div>
+            <div><strong>Logros:</strong> <pre class="chatwii-card-editable" contenteditable="true" data-field="logros" style="white-space:pre-wrap; margin:1vh 0; font-family:inherit;">${p.valor.logros || ''}</pre></div>
+          `;
+        } else if (p.campo === 'proyecto_nuevo') {
+          cardTitle = `${_lang === 'en' ? 'New Project' : 'Nuevo Proyecto'}`;
+          cardContentHtml = `
+            <div style="margin-bottom:0.8vh;"><strong>Nombre:</strong> <span class="chatwii-card-editable" contenteditable="true" data-field="nombre">${p.valor.nombre || ''}</span></div>
+            <div style="margin-bottom:0.8vh;"><strong>Enlace:</strong> <span class="chatwii-card-editable" contenteditable="true" data-field="enlace">${p.valor.enlace || ''}</span></div>
+            <div style="margin-bottom:0.8vh;"><strong>Tecnologías:</strong> <span class="chatwii-card-editable" contenteditable="true" data-field="tecnologias">${p.valor.tecnologias || ''}</span></div>
+            <div><strong>Descripción:</strong> <pre class="chatwii-card-editable" contenteditable="true" data-field="descripcion" style="white-space:pre-wrap; margin:1vh 0; font-family:inherit;">${p.valor.descripcion || ''}</pre></div>
+          `;
+        } else if (p.campo === 'certificacion_nueva') {
+          cardTitle = `${_lang === 'en' ? 'New Certification' : 'Nueva Certificación'}`;
+          cardContentHtml = `
+            <div style="margin-bottom:0.8vh;"><strong>Nombre:</strong> <span class="chatwii-card-editable" contenteditable="true" data-field="nombre">${p.valor.nombre || ''}</span></div>
+            <div style="margin-bottom:0.8vh;"><strong>Emisor:</strong> <span class="chatwii-card-editable" contenteditable="true" data-field="emisor">${p.valor.emisor || ''}</span></div>
+            <div style="margin-bottom:0.8vh;"><strong>Fecha:</strong> <span class="chatwii-card-editable" contenteditable="true" data-field="fecha">${p.valor.fecha || ''}</span></div>
+          `;
+        } else if (p.campo === 'educacion_nueva') {
+          cardTitle = `${_lang === 'en' ? 'New Education' : 'Nueva Educación'}`;
+          cardContentHtml = `
+            <div style="margin-bottom:0.8vh;"><strong>Institución:</strong> <span class="chatwii-card-editable" contenteditable="true" data-field="institucion">${p.valor.institucion || ''}</span></div>
+            <div style="margin-bottom:0.8vh;"><strong>Grado:</strong> <span class="chatwii-card-editable" contenteditable="true" data-field="grado">${p.valor.grado || ''}</span></div>
+          `;
+        } else {
+          cardTitle = `${_lang === 'en' ? 'Update' : 'Modificar'}: ${p.campo}`;
+          cardContentHtml = `<div class="chatwii-card-editable" contenteditable="true" data-field="valor">${typeof p.valor === 'string' ? p.valor : JSON.stringify(p.valor)}</div>`;
+        }
 
-          renderAcciones(true, backup);
-        });
+        card.innerHTML = `
+          <div class="chatwii-proposal-card-header">
+            <span><i class="fas fa-file-invoice"></i> ${cardTitle}</span>
+            <div class="chatwii-proposal-card-actions">
+              <button class="chatwii-codeblock-action-btn apply"><i class="fas fa-check"></i> ${_lang === 'en' ? 'Apply' : 'Aplicar'}</button>
+              <button class="chatwii-codeblock-action-btn undo" style="display:none;"><i class="fas fa-undo"></i> ${_lang === 'en' ? 'Undo' : 'Deshacer'}</button>
+            </div>
+          </div>
+          <div class="chatwii-proposal-card-body">
+            ${cardContentHtml}
+          </div>
+        `;
 
-        btnAjustar.addEventListener('click', () => {
-          const txtArea = document.querySelector('.cr_chat_textarea');
-          if (txtArea) {
-            const prefill = _lang === 'en'
-              ? `I like this version, but adjust it so that: `
-              : `Me gusta esta versión, pero ajústala para que: `;
-            txtArea.value = prefill;
-            txtArea.focus();
-            txtArea.dispatchEvent(new Event('input'));
+        // Insertar la tarjeta antes de los botones de acciones generales
+        burbuja.querySelector('.cr_chat_texto').insertBefore(card, accionesGenerales);
+
+        const btnApply = card.querySelector('.chatwii-codeblock-action-btn.apply');
+        const btnUndo = card.querySelector('.chatwii-codeblock-action-btn.undo');
+
+        if (btnApply && btnUndo) {
+          btnApply.addEventListener('click', () => {
+            const currentCvBackup = _getCvData();
+            backups.set(idx, currentCvBackup);
+
+            // Clonar el parche original para no mutarlo
+            const pToApply = JSON.parse(JSON.stringify(p));
+
+            // Leer todos los campos editados del card y sanitizarlos
+            card.querySelectorAll('.chatwii-card-editable').forEach((el) => {
+              const field = el.getAttribute('data-field');
+              const val = el.innerText || el.textContent || '';
+              if (field) {
+                if (pToApply.campo === 'valor' || pToApply.valor === undefined) {
+                  pToApply.valor = sanitizarMensaje(val.trim());
+                } else if (pToApply.valor && typeof pToApply.valor === 'object') {
+                  pToApply.valor[field] = sanitizarMensaje(val.trim());
+                }
+              }
+            });
+
+            aplicarPatch(pToApply);
+
+            const exitoMsg = _lang === 'en' ? 'Item added to CV!' : '¡Elemento agregado al CV!';
+            if (window.Mensaje) window.Mensaje(exitoMsg, 'success');
+
+            btnApply.style.display = 'none';
+            btnUndo.style.display = 'inline-flex';
+          });
+
+          btnUndo.addEventListener('click', () => {
+            const backup = backups.get(idx);
+            if (backup) {
+              _updateCvData(backup);
+              const revertedMsg = _lang === 'en' ? 'Changes reverted!' : '¡Cambios revertidos!';
+              if (window.Mensaje) window.Mensaje(revertedMsg, 'success');
+            }
+            btnApply.style.display = 'inline-flex';
+            btnUndo.style.display = 'none';
+          });
+
+          if (esRestaurado) {
+            btnApply.disabled = true;
+            btnApply.style.opacity = '0.5';
+            btnApply.style.pointerEvents = 'none';
+          }
+        }
+      }
+    });
+
+    // Renderizar acciones generales (Aplicar Todo, Ajustar, Descartar) al final de la burbuja
+    const renderAccionesGenerales = () => {
+      accionesGenerales.innerHTML = `
+        <button class="cr_chat_btn_accion aplicar-todo" data-witip="${_lang === 'en' ? 'Apply all changes' : 'Aplicar todos los cambios'}"><i class="fas fa-check-double"></i> ${_lang === 'en' ? 'Apply All' : 'Aplicar Todo'}</button>
+        <button class="cr_chat_btn_accion ajustar" data-witip="${_lang === 'en' ? 'Adjust proposal' : 'Ajustar propuesta'}"><i class="fas fa-pen"></i> ${t.ajustar}</button>
+        <button class="cr_chat_btn_accion descartar" data-witip="${_lang === 'en' ? 'Discard' : 'Descartar'}"><i class="fas fa-times-circle"></i></button>
+      `;
+
+      const btnAplicarTodo = accionesGenerales.querySelector('.aplicar-todo');
+      const btnAjustar = accionesGenerales.querySelector('.ajustar');
+      const btnDescartar = accionesGenerales.querySelector('.descartar');
+
+      if (esRestaurado) {
+        deshabilitarAcciones(accionesGenerales);
+        return;
+      }
+
+      btnAplicarTodo.addEventListener('click', () => {
+        // Ejecutar clic en todos los botones "Aplicar" individuales de las tarjetas y bloques de código de esta burbuja
+        let appliedCount = 0;
+        burbuja.querySelectorAll('.chatwii-codeblock-action-btn.apply').forEach((btn) => {
+          if (btn.style.display !== 'none') {
+            btn.click();
+            appliedCount++;
           }
         });
 
-        btnDescartar.addEventListener('click', () => {
-          deshabilitarAcciones(acciones);
-        });
-      }
+        if (appliedCount > 0) {
+          const allMsg = _lang === 'en' ? 'All changes applied!' : '¡Todos los cambios aplicados!';
+          if (window.Mensaje) window.Mensaje(allMsg, 'success');
+        }
+
+        deshabilitarAcciones(accionesGenerales);
+      });
+
+      btnAjustar.addEventListener('click', () => {
+        const txtArea = document.querySelector('.cr_chat_textarea');
+        if (txtArea) {
+          const prefill = _lang === 'en'
+            ? `I like this version, but adjust it so that: `
+            : `Me gusta esta versión, pero ajústala para que: `;
+          txtArea.value = prefill;
+          txtArea.focus();
+          txtArea.dispatchEvent(new Event('input'));
+        }
+      });
+
+      btnDescartar.addEventListener('click', () => {
+        deshabilitarAcciones(accionesGenerales);
+      });
     };
 
-    if (esRestaurado) {
-      acciones.innerHTML = `
-        <button class="cr_chat_btn_accion aplicar" data-witip="${_lang === 'en' ? 'Continue' : 'Continuar'}"><i class="fas fa-check"></i> ${t.aplicar}</button>
-        <button class="cr_chat_btn_accion ajustar" data-witip="${_lang === 'en' ? 'Adjust' : 'Ajustar'}"><i class="fas fa-pen"></i> ${t.ajustar}</button>
-        <button class="cr_chat_btn_accion descartar" data-witip="${_lang === 'en' ? 'Discard' : 'Descartar'}"><i class="fas fa-times-circle"></i></button>
-      `;
-      deshabilitarAcciones(acciones);
-    } else {
-      renderAcciones(false);
-    }
+    renderAccionesGenerales();
   }
 
   scrollAlFinal();
@@ -426,8 +589,24 @@ export const initInputListeners = () => {
   textarea.addEventListener('input', handleInput);
 
   const dispararEnvio = async () => {
-    const msg = textarea.value.trim();
-    if (!msg) return;
+    const rawMsg = textarea.value.trim();
+    if (!rawMsg) return;
+
+    // Sanitización por seguridad: Eliminar scripts y eventos inline
+    const msg = sanitizarMensaje(rawMsg);
+    if (!msg) {
+      textarea.value = '';
+      handleInput();
+      const warningMsg = _lang === 'en' 
+        ? 'Message blocked for containing unsafe scripts!' 
+        : '¡Mensaje bloqueado por contener scripts inseguros!';
+      if (window.Mensaje) {
+        window.Mensaje(warningMsg, 'warning');
+      } else {
+        alert(warningMsg);
+      }
+      return;
+    }
 
     textarea.value = '';
     handleInput();

@@ -1,0 +1,42 @@
+export const idiomaLab = {
+  es: {
+    'lab.titulo': 'Laboratorio de Pruebas Chatwii',
+    'lab.subtitulo': 'Prueba e interactúa con el asistente inteligente de CV en tiempo real.',
+    'lab.colEditor': 'Editor de CV (Simulado)',
+    'lab.colChat': 'Chatwii Asistente',
+    'lab.personal': 'Datos Personales',
+    'lab.nombre': 'Nombre Completo',
+    'lab.tituloProf': 'Título Profesional',
+    'lab.resumen': 'Resumen Profesional',
+    'lab.experiencias': 'Experiencias Laborales',
+    'lab.logros': 'Logros (uno por línea)',
+    'lab.empresa': 'Empresa',
+    'lab.puesto': 'Puesto',
+    'lab.proyectos': 'Proyectos Destacados',
+    'lab.certificaciones': 'Certificaciones',
+    'lab.verJson': 'Datos en tiempo real (JSON)',
+    'lab.limpiarDatos': 'Reiniciar CV',
+    'lab.nuevaExp': 'Añadir Experiencia',
+    'lab.guardar': 'Simular Guardado'
+  },
+  en: {
+    'lab.titulo': 'Chatwii Testing Lab',
+    'lab.subtitulo': 'Test and interact with the smart CV assistant in real-time.',
+    'lab.colEditor': 'CV Editor (Simulated)',
+    'lab.colChat': 'Chatwii Assistant',
+    'lab.personal': 'Personal Info',
+    'lab.nombre': 'Full Name',
+    'lab.tituloProf': 'Professional Title',
+    'lab.resumen': 'Professional Summary',
+    'lab.experiencias': 'Work Experiences',
+    'lab.logros': 'Achievements (one per line)',
+    'lab.empresa': 'Company',
+    'lab.puesto': 'Job Position',
+    'lab.proyectos': 'Featured Projects',
+    'lab.certificaciones': 'Certifications',
+    'lab.verJson': 'Real-time Data (JSON)',
+    'lab.limpiarDatos': 'Reset CV',
+    'lab.nuevaExp': 'Add Experience',
+    'lab.guardar': 'Simulate Save'
+  }
+};

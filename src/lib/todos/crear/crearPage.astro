@@ -2,17 +2,12 @@
 // src/lib/crear/crearPage.astro
 // Creador de CV ATS interactivo con Optimización de IA (Gemini) y soporte de Supabase
 import { app } from '../../../wii.js';
-import estilos from './crear.css?inline';
-import estilosChat from './chatwii/estilo.css?inline';
 import Consejos from './consejos.astro';
 import { idiomaCrear } from './idiomaCrear.js';
 
 const lang = Astro.locals.lang;
 const lg   = idiomaCrear[lang];
 ---
-  <!-- Inyección interna en el HEAD para evitar parpadeos visuales (Layout Shift) -->
-  <style slot="head" is:global set:html={estilos}></style>
-  <style slot="head" is:global set:html={estilosChat}></style>
 
   <div class="conv_wrap">
     <!-- Header -->

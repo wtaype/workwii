@@ -1,1304 +1,474 @@
 ---
 // src/lib/wii/Lab.astro
-// Componente de laboratorio y pruebas para todos los componentes modularizados de widev/
-
 import Layout from '../../layouts/Layout.astro';
-import labcss from './lab.css?inline';
+import './lab.css';
+import './chatwii/estilo.css';
+import { idiomaLab } from './idiomaLab.js';
 
 interface Props {
   lang?: 'es' | 'en';
 }
 
 const { lang = 'es' } = Astro.props;
+const t = idiomaLab[lang] || idiomaLab['es'];
 ---
 
-<style is:global set:html={labcss}></style>
+<Layout title={t['lab.titulo']}>
+  <div class="lab_wrapper">
+    <!-- Cabecera -->
+    <header class="lab_header_sec">
+      <h1><i class="fas fa-flask"></i> {t['lab.titulo']}</h1>
+      <p>{t['lab.subtitulo']}</p>
+    </header>
 
-<Layout title={lang === 'en' ? 'Testing Lab — widev/' : 'Laboratorio de Pruebas — widev/'}>
-  <div class="lab_container">
-    
-    <!-- Módulo 1: Cabecera de Pruebas (Ancho Completo) -->
-    <div class="lab_card lab_card--full">
-      <div class="lab_title">
-        <i class="fas fa-flask"></i> 
-        {lang === 'en' ? 'Modular Components Lab' : 'Laboratorio de Componentes Modularizados'}
-      </div>
-      <p id="lab_saludo" class="lab_saludo"></p>
-      
-      <div style="display: flex; gap: 2vh; flex-wrap: wrap; margin-top: 2vh;">
-        <!-- Botón A: Tooltip JS Modular (Inyecta el CSS internamente) -->
-        <button 
-          type="button" 
-          id="btn_tooltip" 
-          class="lab_btn_submit" 
-          data-witip={lang === 'en' ? 'This tooltip style is injected by the JS module!' : '¡Los estilos de este tooltip son inyectados por el módulo JS!'} 
-          data-wtipo="info"
-        >
-          {lang === 'en' ? 'JS Tooltip (wiTip)' : 'Tooltip JS (wiTip)'}
-        </button>
+    <!-- Layout del Laboratorio -->
+    <div class="lab_layout">
+      <!-- Columna Izquierda: Formulario Mock CV -->
+      <div class="lab_col">
+        <div class="lab_card_panel">
+          <h2><i class="fas fa-file-invoice"></i> {t['lab.colEditor']}</h2>
+          
+          <!-- Datos Personales -->
+          <fieldset style="border: none; padding: 0; margin-bottom: 3vh;">
+            <legend style="font-weight: 700; font-size: 1.1rem; margin-bottom: 2vh; color: var(--mco);"><i class="fas fa-user"></i> {t['lab.personal']}</legend>
+            
+            <div class="lab_group">
+              <label for="cv_nombre">{t['lab.nombre']}</label>
+              <input type="text" id="cv_nombre" class="lab_input" placeholder="Ej. Juan Pérez" />
+            </div>
 
-        <!-- Botón B: Tooltip 100% CSS (Sin una línea de JS) -->
-        <a 
-          href="#"
-          class="lab_btn_submit" 
-          style="background: var(--success);"
-          data-witip-css={lang === 'en' ? '100% CSS Tooltip (GPU accelerated!)' : '¡Tooltip 100% CSS (acelerado por GPU!)'}
-        >
-          {lang === 'en' ? 'CSS Tooltip' : 'Tooltip CSS'}
-        </a>
-      </div>
-    </div>
+            <div class="lab_group">
+              <label for="cv_titulo">{t['lab.tituloProf']}</label>
+              <input type="text" id="cv_titulo" class="lab_input" placeholder="Ej. Frontend Developer" />
+            </div>
 
-    <!-- Contenedor en dos columnas para pruebas lógicas -->
-    <div class="lab_grid">
-      <!-- Módulo 3: Animaciones JS (herowi) -->
-      <div class="lab_card" data-herowi="100">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-wand-magic-sparkles"></i> 
-          {lang === 'en' ? 'Header Animation (herowi)' : 'Test de Cabeceras (herowi)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Animated item 1' : 'Elemento animado incremental 1'}</p>
-        <p class="lab_text">{lang === 'en' ? 'Animated item 2' : 'Elemento animado incremental 2'}</p>
-        <p class="lab_text">{lang === 'en' ? 'Animated item 3' : 'Elemento animado incremental 3'}</p>
-      </div>
+            <div class="lab_group">
+              <label for="cv_resumen">{t['lab.resumen']}</label>
+              <textarea id="cv_resumen" class="lab_input lab_textarea" placeholder="Ej. Desarrollador con más de 2 años de experiencia..."></textarea>
+            </div>
+          </fieldset>
 
-      <!-- Módulo 4: Animaciones en Scroll (showi vs CSS Scroll-Driven) -->
-      <div class="lab_card" data-showi="150">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-eye"></i> 
-          {lang === 'en' ? 'Scroll Animation (showi)' : 'Test de Scroll (showi)'}
-        </h3>
-        <div class="lab_item">{lang === 'en' ? 'Item 1' : 'Item 1'}</div>
-        <div class="lab_item">{lang === 'en' ? 'Item 2' : 'Item 2'}</div>
-        <div class="lab_item">{lang === 'en' ? 'Item 3' : 'Item 3'}</div>
-      </div>
+          <!-- Experiencias Laborales -->
+          <div style="margin-bottom: 3vh;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2vh;">
+              <h3 style="font-weight: 700; font-size: 1.1rem; color: var(--mco); margin: 0;"><i class="fas fa-briefcase"></i> {t['lab.experiencias']}</h3>
+              <button type="button" id="btn_add_exp" class="lab_btn secondary" style="padding: 0.8vh 1.8vh; font-size: 0.8rem;">
+                <i class="fas fa-plus"></i> {t['lab.nuevaExp']}
+              </button>
+            </div>
+            
+            <div id="experiences_container">
+              <!-- Experiencias cargadas dinámicamente -->
+            </div>
+          </div>
 
-      <!-- Módulo 5: Entrada al viewport (wiVista) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-binoculars"></i> 
-          {lang === 'en' ? 'Viewport Entry (wiVista)' : 'Entrada al Viewport (wiVista)'}
-        </h3>
-        <p class="lab_text" style="font-size: var(--fz_s3);">
-          {lang === 'en' ? 'Scroll down or check the console when items light up.' : 'Haz scroll o revisa la consola cuando los elementos se iluminen.'}
-        </p>
-        <div class="lab_vista_item">{lang === 'en' ? 'Target A' : 'Objetivo A'}</div>
-        <div class="lab_vista_item">{lang === 'en' ? 'Target B' : 'Objetivo B'}</div>
+          <!-- Acciones del Formulario -->
+          <div class="lab_btn_row">
+            <button type="button" id="btn_reset_cv" class="lab_btn danger">
+              <i class="fas fa-undo"></i> {t['lab.limpiarDatos']}
+            </button>
+            <button type="button" id="btn_save_cv" class="lab_btn primary">
+              <i class="fas fa-save"></i> {t['lab.guardar']}
+            </button>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Módulo 6: Transición de contenidos (wiFade vs CSS @starting-style) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-arrows-rotate"></i> 
-          {lang === 'en' ? 'Dynamic Transition Test' : 'Test de Transiciones'}
-        </h3>
-        
-        <!-- Sub-test A: wiFade -->
-        <div id="fade_target" class="lab_fade_box">
-          {lang === 'en' ? 'Original text (wiFade)' : 'Texto original (wiFade)'}
-        </div>
-        <button type="button" id="btn_fade" class="lab_btn_submit" style="width: 100%; margin-bottom: 2.5vh;">
-          {lang === 'en' ? 'Trigger wiFade' : 'Ejecutar wiFade'}
-        </button>
-
-        <!-- Sub-test B: @starting-style -->
-        <button type="button" id="btn_add_alert" class="lab_btn_submit" style="width: 100%; background: var(--warning);">
-          {lang === 'en' ? 'Insert Alert (@starting-style)' : 'Insertar Alerta (@starting-style)'}
-        </button>
-        <div id="alert_container" class="lab_alert_container"></div>
-      </div>
-
-      <!-- Módulo 7: Copiar al Portapapeles (wicopy) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-copy"></i> 
-          {lang === 'en' ? 'Copy Clipboard (wicopy)' : 'Copiar Portapapeles (wicopy)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Copies text from the input below:' : 'Copia el texto del campo de abajo:'}</p>
-        
-        <input 
-          type="text" 
-          id="input_copy_demo" 
-          value="https://workwii.com/wilder" 
-          style="width: 100%; padding: 1.2vh 1.8vh; background: var(--bg4); border: 1px solid var(--brd); border-radius: 0.8vh; color: var(--tx1); font-weight: 500; margin-bottom: 2vh; font-size: var(--fz_s3);" 
-          readonly 
-        />
-        
-        <button type="button" id="btn_copy_input" class="lab_btn_submit" style="width: 100%; background: var(--mco);">
-          {lang === 'en' ? 'Copy Link' : 'Copiar Enlace'}
-        </button>
-      </div>
-
-      <!-- Módulo 8: Carga Diferida (imgwii) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-image"></i> 
-          {lang === 'en' ? 'Lazy Image Loader (imgwii)' : 'Carga Diferida (imgwii)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Dynamic lazy image using public placeholder:' : 'Imagen diferida usando placeholder de public/:'}</p>
-        
-        <!-- Contenedor con borde y fondo para simular carga diferida -->
-        <div style="height: 18vh; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 1vh; background: var(--bg4); border: 1px solid var(--brd);">
-          <img 
-            data-src="/perfil.webp" 
-            style="width: 100%; height: 100%; object-fit: cover;" 
-            alt="Lazy loaded user avatar" 
-          />
-        </div>
-      </div>
-
-      <!-- Módulo 9: Utilidades de Fecha (fecha.js) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-calendar-days"></i> 
-          {lang === 'en' ? 'Time & Dates (fecha.js)' : 'Fechas y Tiempo (fecha.js)'}
-        </h3>
-        
-        <!-- 1. year() -->
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>year(): </strong>
-          <span id="txt_year" style="color: var(--mco); font-weight: 600;"></span>
+      <!-- Columna Derecha: Debug Visualizador JSON y ATS Score -->
+      <div class="lab_col">
+        <!-- ATS Score Meter Panel -->
+        <div class="lab_card_panel" style="text-align: center;">
+          <h2 style="border-bottom: 1px solid var(--brd); padding-bottom: 1.5vh; margin-bottom: 2vh; text-align: left;">
+            <i class="fas fa-chart-pie"></i> Puntuación ATS (En vivo)
+          </h2>
+          <div style="display: flex; justify-content: center; align-items: center; gap: 4vh; margin: 2vh 0; flex-wrap: wrap;">
+            <!-- Círculo SVG de Score -->
+            <div style="position: relative; width: 120px; height: 120px;">
+              <svg width="120" height="120" viewBox="0 0 120 120" style="transform: rotate(-90deg);">
+                <circle cx="60" cy="60" r="50" fill="transparent" stroke="var(--bg4, #fafafa)" stroke-width="10" />
+                <circle id="ats_score_circle" cx="60" cy="60" r="50" fill="transparent" stroke="var(--success, #10b981)" stroke-width="10" 
+                        stroke-dasharray="314.16" stroke-dashoffset="314.16" style="transition: stroke-dashoffset 0.6s ease;" />
+              </svg>
+              <div id="ats_score_text" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 800; color: var(--tx1);">0%</div>
+            </div>
+            <!-- Estado ATS -->
+            <div style="text-align: left; flex: 1; min-width: 150px;">
+              <div id="ats_score_level" style="font-weight: 700; font-size: 1.1rem; margin-bottom: 1vh; color: var(--success);">Bajo</div>
+              <p style="font-size: 0.85rem; color: var(--tx3); margin: 0; line-height: 1.4;">Esta puntuación estima qué tan bien optimizado está tu CV para superar los filtros ATS.</p>
+            </div>
+          </div>
+          
+          <!-- Lista de Chequeo ATS -->
+          <div style="text-align: left; border-top: 1px solid var(--brd); padding-top: 2vh; margin-top: 2.5vh;">
+            <h3 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 1.5vh; color: var(--tx2);"><i class="fas fa-list-check"></i> Recomendaciones ATS</h3>
+            <ul id="ats_checklist" style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: var(--tx2); line-height: 1.8;">
+              <!-- Recomendaciones dinámicas -->
+            </ul>
+          </div>
         </div>
 
-        <!-- 2. fechaHoy() -->
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>fechaHoy(): </strong>
-          <span id="txt_fecha_hoy" style="color: var(--tx1); font-weight: 600;"></span>
+        <!-- Visualizador JSON -->
+        <div class="lab_card_panel" style="flex: 1; display: flex; flex-direction: column;">
+          <h2><i class="fas fa-code"></i> {t['lab.verJson']}</h2>
+          <pre class="lab_json_view" id="cv_json_debug" style="flex: 1; max-height: none; min-height: 40vh;"></pre>
         </div>
-
-        <!-- 3. wiTiempo() -->
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>wiTiempo(): </strong>
-          <span id="txt_tiempo_rel" style="color: var(--success); font-weight: 600;"></span>
-        </div>
-
-        <!-- 4. calcMeses() -->
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>calcMeses(): </strong>
-          <span id="txt_meses_diff" style="color: var(--info); font-weight: 600;"></span>
-        </div>
-
-        <!-- 5. formatearFechaHora() -->
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>formatearFechaHora(): </strong>
-          <span id="txt_fecha_hora" style="color: var(--warning); font-weight: 600;"></span>
-        </div>
-
-        <!-- 6. formatearFechaParaInput() -->
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>formatearFechaParaInput(): </strong>
-          <span id="txt_fecha_input" style="color: var(--error); font-weight: 600;"></span>
-        </div>
-
-        <!-- 7. wiDate() -->
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>wiDate() [Mock Firebase]: </strong>
-          <span id="txt_widate_mock" style="color: var(--tx2); font-weight: 600;"></span>
-        </div>
-      </div>
-
-      <!-- Módulo 10: Mensajes Flotantes (Mensaje) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-comment-dots"></i> 
-          {lang === 'en' ? 'Toasts (Mensaje)' : 'Mensajes (Mensaje)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Trigger dynamic notification toasts:' : 'Dispara alertas flotantes dinámicas:'}</p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1vh; margin-top: 1.5vh;">
-          <button type="button" class="lab_btn_submit btn-toast" data-tipo="success" style="background: var(--success);">Success</button>
-          <button type="button" class="lab_btn_submit btn-toast" data-tipo="error" style="background: var(--error);">Error</button>
-          <button type="button" class="lab_btn_submit btn-toast" data-tipo="warning" style="background: var(--warning);">Warning</button>
-          <button type="button" class="lab_btn_submit btn-toast" data-tipo="info" style="background: var(--info);">Info</button>
-        </div>
-      </div>
-
-      <!-- Módulo 11: Ventanas Modales (abrirModal) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-window-restore"></i> 
-          {lang === 'en' ? 'Modals (wiModal)' : 'Modales (wiModal)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Triggers a frosted-glass overlay dialog:' : 'Despliega una ventana emergente de pruebas:'}</p>
-        <button type="button" id="btn_open_modal" class="lab_btn_submit" style="width: 100%; background: var(--mco);">
-          {lang === 'en' ? 'Open Test Modal' : 'Abrir Modal de Pruebas'}
-        </button>
-      </div>
-
-      <!-- Módulo 12: Control de Rutas (wiPath) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-route"></i> 
-          {lang === 'en' ? 'Routes & Params (wiPath)' : 'Rutas y Params (wiPath)'}
-        </h3>
-        
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>wiPath.actual: </strong>
-          <span id="txt_wipath_actual" style="color: var(--mco); font-weight: 600;"></span>
-        </div>
-
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>wiPath.params(): </strong>
-          <span id="txt_wipath_params" style="color: var(--success); font-weight: 600;"></span>
-        </div>
-
-        <button type="button" id="btn_simular_ruta" class="lab_btn_submit" style="width: 100%; background: var(--info); margin-top: 1vh;">
-          {lang === 'en' ? 'Simulate Navigation' : 'Simular Navegación (Query)'}
-        </button>
-      </div>
-
-      <!-- Módulo 13: Formateo de Nombres (nombre.js) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-signature"></i> 
-          {lang === 'en' ? 'Name Formatter (nombre.js)' : 'Formateador de Nombres (nombre.js)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Converts messy name formats dynamically:' : 'Convierte formatos de texto dinámicamente:'}</p>
-        
-        <input 
-          type="text" 
-          id="input_nombre_demo" 
-          value="  wilder Alexander vilchez SILVA  " 
-          style="width: 100%; padding: 1.2vh 1.8vh; background: var(--bg4); border: 1px solid var(--brd); border-radius: 0.8vh; color: var(--tx1); font-weight: 500; font-size: var(--fz_s3); margin-bottom: 2.5vh; outline: none; transition: border-color 0.2s;" 
-          onfocus="this.style.borderColor='var(--mco)';"
-          onblur="this.style.borderColor='var(--brd)';"
-        />
-
-        <!-- 1. Capit() -->
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>Capit(): </strong>
-          <span id="txt_nombre_capit" style="color: var(--warning); font-weight: 600;"></span>
-        </div>
-        
-        <!-- 2. NombreApellido() -->
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>NombreApellido(): </strong>
-          <span id="txt_nombre_completo" style="color: var(--success); font-weight: 600;"></span>
-        </div>
-
-        <!-- 3. getNombre() -->
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>getNombre(): </strong>
-          <span id="txt_nombre_get" style="color: var(--info); font-weight: 600;"></span>
-        </div>
-        
-        <!-- 4. avatar() -->
-        <div class="lab_item" style="font-size: var(--fz_s3); display: flex; align-items: center; justify-content: space-between;">
-          <strong>avatar(): </strong>
-          <span id="txt_nombre_avatar" style="color: var(--txa); font-weight: 700; background: var(--mco); width: 4.5vh; height: 4.5vh; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);"></span>
-        </div>
-      </div>
-
-      <!-- Módulo 14: Notificaciones Apilables (Notificacion) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-bell"></i> 
-          {lang === 'en' ? 'Stacked Banners (Notificacion)' : 'Banners Apilables (Notificacion)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Spam these triggers to stack side banners:' : 'Presiona varias veces para apilar avisos en cascada:'}</p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1vh; margin-top: 1.5vh;">
-          <button type="button" class="lab_btn_submit btn-notif" data-tipo="success" style="background: var(--success);">Success Notif</button>
-          <button type="button" class="lab_btn_submit btn-notif" data-tipo="error" style="background: var(--error);">Error Notif</button>
-          <button type="button" class="lab_btn_submit btn-notif" data-tipo="warning" style="background: var(--warning);">Warning Notif</button>
-          <button type="button" class="lab_btn_submit btn-notif" data-tipo="info" style="background: var(--info);">Info Notif</button>
-        </div>
-      </div>
-
-      <!-- Módulo 15: Limitador de Intentos (wiRateLimit) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-shield-halved"></i> 
-          {lang === 'en' ? 'Rate Limiting (wiRateLimit)' : 'Limitador de Intentos (wiRateLimit)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Click limit test (Max 3 attempts, blocks for 1 min):' : 'Test de clics (Máx 3 intentos, bloquea por 1 min):'}</p>
-        
-        <div style="display: flex; gap: 1.5vh; align-items: center; margin-bottom: 2vh;">
-          <button type="button" id="btn_ratelimit_trigger" class="lab_btn_submit" style="flex: 1; background: var(--mco);">
-            {lang === 'en' ? 'Trigger Action' : 'Ejecutar Acción'}
-          </button>
-          <button type="button" id="btn_ratelimit_reset" class="lab_btn_submit" style="background: var(--bg4); color: var(--tx1);">
-            Reset
-          </button>
-        </div>
-
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>{lang === 'en' ? 'Remaining Attempts: ' : 'Intentos restantes: '}</strong>
-          <span id="txt_ratelimit_remaining" style="font-weight: 700; color: var(--success);">3</span>
-        </div>
-      </div>
-
-      <!-- Módulo 16: Scroll Spy (wiScroll) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-scroll"></i> 
-          {lang === 'en' ? 'Scroll Spy (wiScroll)' : 'Scroll Espía (wiScroll)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Visual navigation highlights on viewport section entry:' : 'Indicador visual de sección activa en pantalla:'}</p>
-        
-        <!-- Menú Demo Mini -->
-        <div style="display: flex; gap: 1vh; margin-bottom: 2vh; background: var(--bg4); padding: 1vh; border-radius: 0.8vh; border: 1px solid var(--brd);">
-          <a href="#lab_sec_demo1" class="lab_spy_link active" style="flex: 1; text-align: center; text-decoration: none; color: var(--tx2); padding: 0.5vh; border-radius: 0.4vh; font-size: var(--fz_s3); font-weight: 600; transition: all 0.2s;">Sec 1</a>
-          <a href="#lab_sec_demo2" class="lab_spy_link" style="flex: 1; text-align: center; text-decoration: none; color: var(--tx2); padding: 0.5vh; border-radius: 0.4vh; font-size: var(--fz_s3); font-weight: 600; transition: all 0.2s;">Sec 2</a>
-        </div>
-        
-        <!-- Contenedor con Scroll Interno para Simular Spy -->
-        <div id="spy_scroll_container" style="height: 12vh; overflow-y: scroll; border: 1px solid var(--brd); border-radius: 0.8vh; padding: 1.5vh; background: var(--bg3); scroll-behavior: smooth;">
-          <div id="lab_sec_demo1" style="height: 10vh; background: rgba(0, 112, 243, 0.1); border-radius: 0.6vh; display: flex; align-items: center; justify-content: center; margin-bottom: 2vh; font-weight: 600;">Sección 1</div>
-          <div id="lab_sec_demo2" style="height: 10vh; background: rgba(16, 185, 129, 0.1); border-radius: 0.6vh; display: flex; align-items: center; justify-content: center; font-weight: 600;">Sección 2</div>
-        </div>
-      </div>
-
-      <!-- Módulo 17: SEO y Metadatos (seometa.js) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-search"></i> 
-          {lang === 'en' ? 'SEO & Meta (seometa.js)' : 'SEO y Metadatos (seometa.js)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Simulates dynamic SEO meta-tag generation:' : 'Simulación de metadatos en el <head>:'}</p>
-        
-        <button type="button" id="btn_simular_seo" class="lab_btn_submit" style="width: 100%; background: var(--success); margin-bottom: 2vh;">
-          {lang === 'en' ? 'Generate Article Schema' : 'Generar Schema de Artículo'}
-        </button>
-
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>document.title: </strong>
-          <span id="txt_seo_title" style="color: var(--tx1); font-weight: 600;"></span>
-        </div>
-      </div>
-
-      <!-- Módulo 18: Cargando en Botones (spin.js) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-spinner"></i> 
-          {lang === 'en' ? 'Button Loader (spin.js)' : 'Cargando en Botón (spin.js)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Simulates progress animation on a button:' : 'Simula animación de progreso en un botón:'}</p>
-        
-        <button type="button" id="btn_spin_demo" class="lab_btn_submit" style="width: 100%; background: var(--mco);">
-          {lang === 'en' ? 'Send Application' : 'Enviar Postulación'}
-        </button>
-      </div>
-
-      <!-- Módulo 19: Almacenamiento (storage.js) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-database"></i> 
-          {lang === 'en' ? 'Timed Storage (storage.js)' : 'Almacenamiento (storage.js)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Tests localStorage with expiration (saves for 5 sec):' : 'Guarda datos con expiración (guardado por 5 seg):'}</p>
-        
-        <div style="display: flex; gap: 1.5vh; margin-bottom: 2vh;">
-          <button type="button" id="btn_storage_save" class="lab_btn_submit" style="flex: 1; background: var(--mco);">
-            {lang === 'en' ? 'Save Value' : 'Guardar Dato'}
-          </button>
-          <button type="button" id="btn_storage_read" class="lab_btn_submit" style="flex: 1; background: var(--success);">
-            {lang === 'en' ? 'Read Value' : 'Leer Dato'}
-          </button>
-        </div>
-
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>{lang === 'en' ? 'Saved State: ' : 'Estado Guardado: '}</strong>
-          <span id="txt_storage_state" style="color: var(--tx2); font-weight: 600;">{lang === 'en' ? 'No data' : 'Sin datos'}</span>
-        </div>
-      </div>
-
-      <!-- Módulo 20: Carga Diferida (superfun.js) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-bolt"></i> 
-          {lang === 'en' ? 'Interaction Deferred (superFun)' : 'Carga Diferida (superFun)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Postpones heavy execution until user interacts:' : 'Difiere la carga hasta la primera interacción:'}</p>
-        
-        <button type="button" id="btn_superfun_trigger" class="lab_btn_submit" style="width: 100%; background: var(--warning);">
-          {lang === 'en' ? 'Queue Heavy Script' : 'Encolar Script Pesado'}
-        </button>
-
-        <div class="lab_item" style="font-size: var(--fz_s3); margin-top: 1.5vh;">
-          <strong>{lang === 'en' ? 'Status: ' : 'Estado: '}</strong>
-          <span id="txt_superfun_status" style="font-weight: 700; color: var(--error);">{lang === 'en' ? 'Waiting for interaction...' : 'Esperando interacción...'}</span>
-        </div>
-      </div>
-
-      <!-- Módulo 21: Utilidades de Texto (texto.js) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-text-height"></i> 
-          {lang === 'en' ? 'Text Formatting (texto.js)' : 'Formateo de Texto (texto.js)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Live lowercase conversion preserving selection:' : 'Conversión a minúsculas conservando selección:'}</p>
-        
-        <input 
-          type="text" 
-          id="input_texto_minus" 
-          placeholder={lang === 'en' ? 'Type in uppercase, turns lowercase...' : 'Escribe en MAYÚSCULAS y se convertirá...'} 
-          style="width: 100%; padding: 1.2vh 1.8vh; background: var(--bg4); border: 1px solid var(--brd); border-radius: 0.8vh; color: var(--tx1); font-weight: 500; font-size: var(--fz_s3); margin-bottom: 2vh; outline: none; transition: border-color 0.2s;" 
-          onfocus="this.style.borderColor='var(--mco)';"
-          onblur="this.style.borderColor='var(--brd)';"
-        />
-
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>mis10() [Truncate]: </strong>
-          <span id="txt_texto_mis10" style="color: var(--success); font-weight: 600;"></span>
-        </div>
-      </div>
-
-      <!-- Módulo 22: Formateador de Código (wiCode) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-code"></i> 
-          {lang === 'en' ? 'Code Block Wrapper (wiCode)' : 'Formato de Código (wiCode)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Wraps pre/code tags with an interactive copy button:' : 'Envuelve etiquetas pre/code con botón flotante de copia:'}</p>
-        
-        <pre class="lab_wicode_demo" style="margin-top: 1.5vh;">const greet = () => "Hello Workwii!";</pre>
-
-        <button type="button" id="btn_wicode_trigger" class="lab_btn_submit" style="width: 100%; background: var(--mco); margin-top: 1.5vh;">
-          {lang === 'en' ? 'Apply wiCode Format' : 'Aplicar Formato wiCode'}
-        </button>
-      </div>
-
-      <!-- Módulo 23: Ubicación y Telemetría (wiIp) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-location-dot"></i> 
-          {lang === 'en' ? 'IP & Telemetry (wiIp)' : 'Ubicación y Telemetría (wiIp)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Queries client IP, device, OS, and location:' : 'Consulta la IP, dispositivo, SO y geolocalización:'}</p>
-        
-        <button type="button" id="btn_wiip_trigger" class="lab_btn_submit" style="width: 100%; background: var(--success); margin-bottom: 2vh;">
-          {lang === 'en' ? 'Query Client Data' : 'Consultar Datos Cliente'}
-        </button>
-
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>IP / Ciudad: </strong>
-          <span id="txt_wiip_city" style="color: var(--tx1); font-weight: 600;"></span>
-        </div>
-
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>OS / Browser: </strong>
-          <span id="txt_wiip_browser" style="color: var(--success); font-weight: 600;"></span>
-        </div>
-      </div>
-
-      <!-- Módulo 24: Atajos DOM (more.js) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-tags"></i> 
-          {lang === 'en' ? 'DOM Utilities (more.js)' : 'Atajos DOM (more.js)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Tests sequential clicks (wiSuma) and quick updates (adtm):' : 'Prueba clics acumulados (wiSuma) y textos rápidos (adtm):'}</p>
-        
-        <div style="display: flex; gap: 1.5vh; margin-bottom: 2vh;">
-          <button type="button" id="btn_wisuma_secret" class="lab_btn_submit" style="flex: 1; background: var(--warning);">
-            {lang === 'en' ? 'Click 5 times' : 'Clic 5 veces (Suma)'}
-          </button>
-          <button type="button" id="btn_adtm_demo" class="lab_btn_submit" style="flex: 1; background: var(--info);">
-            {lang === 'en' ? 'Save Status' : 'Guardar Estado'}
-          </button>
-        </div>
-      </div>
-
-      <!-- Módulo 25: Carga Inteligente (wiSmart) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-brain"></i> 
-          {lang === 'en' ? 'Smart Asset Loader (wiSmart)' : 'Carga Inteligente (wiSmart)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Simulates dynamic CSS font load on user interaction:' : 'Simula la carga dinámica de fuentes con la primera interacción:'}</p>
-        
-        <button type="button" id="btn_wismart_trigger" class="lab_btn_submit" style="width: 100%; background: var(--mco);">
-          {lang === 'en' ? 'Load Test Font (Lobster)' : 'Cargar Fuente de Prueba (Lobster)'}
-        </button>
-
-        <div class="lab_item" style="font-size: var(--fz_s3); margin-top: 1.5vh;">
-          <strong>{lang === 'en' ? 'Status: ' : 'Estado: '}</strong>
-          <span id="txt_wismart_status" style="font-weight: 700; color: var(--warning);">{lang === 'en' ? 'Idle' : 'Inactivo'}</span>
-        </div>
-      </div>
-
-      <!-- Módulo 26: Bus de Autenticación (wiAuth) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fas fa-user-shield"></i> 
-          {lang === 'en' ? 'Auth Reactive Bus (wiAuth)' : 'Bus de Autenticación (wiAuth)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Tests user session reactivity and updates:' : 'Prueba la reactividad ante cambios de sesión de usuario:'}</p>
-        
-        <div style="display: flex; gap: 1.5vh; margin-bottom: 2vh;">
-          <button type="button" id="btn_auth_login" class="lab_btn_submit" style="flex: 1; background: var(--success);">
-            Login Mock
-          </button>
-          <button type="button" id="btn_auth_logout" class="lab_btn_submit" style="flex: 1; background: var(--error);">
-            Logout Mock
-          </button>
-        </div>
-
-        <div class="lab_item" style="font-size: var(--fz_s3);">
-          <strong>{lang === 'en' ? 'Active session: ' : 'Sesión activa: '}</strong>
-          <span id="txt_auth_status" style="font-weight: 700; color: var(--error);">{lang === 'en' ? 'No user' : 'Sin usuario'}</span>
-        </div>
-      </div>
-
-      <!-- Módulo 27: Markdown Ligero (wiMd) -->
-      <div class="lab_card">
-        <h3 class="lab_sec_title">
-          <i class="fab fa-markdown"></i> 
-          {lang === 'en' ? 'Light Markdown (wiMd)' : 'Markdown Ligero (wiMd)'}
-        </h3>
-        <p class="lab_text">{lang === 'en' ? 'Converts syntax dynamically with XSS protection:' : 'Convierte sintaxis dinámicamente con protección contra XSS:'}</p>
-        
-        <textarea 
-          id="txt_wimd_input" 
-          style="width: 100%; height: 8vh; padding: 1.2vh 1.8vh; background: var(--bg4); border: 1px solid var(--brd); border-radius: 0.8vh; color: var(--tx1); font-weight: 500; font-size: var(--fz_s3); margin-bottom: 2vh; outline: none; resize: none; transition: border-color 0.2s;" 
-          onfocus="this.style.borderColor='var(--mco)';"
-          onblur="this.style.borderColor='var(--brd)';"
-        >{"**Hola Wilder**, visita [Google](https://google.com) o prueba `código inline` y <script>alert(1)</" + "script>"}</textarea>
-
-        <div class="lab_item" style="font-size: var(--fz_s3); max-height: 12vh; overflow-y: auto;">
-          <strong>HTML Generado: </strong>
-          <div id="txt_wimd_output" style="background: var(--bg3); padding: 1vh; border-radius: 0.6vh; margin-top: 1vh; font-family: sans-serif; color: var(--tx2);"></div>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- Modal HTML Element de Pruebas -->
-  <div id="lab_test_modal" class="wiModal">
-    <div class="wiModal-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5vh;">
-        <h3 style="font-weight: 700; margin: 0;">
-          {lang === 'en' ? 'Prueba de Modal Modular' : 'Prueba de Modal Modular'}
-        </h3>
-        <!-- Botón cerrar circular premium con icono Font Awesome -->
-        <button 
-          type="button" 
-          class="modalX" 
-          style="background: var(--bg4); border: none; width: 4.5vh; height: 4.5vh; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--tx2); transition: all 0.2s ease;"
-          onmouseover="this.style.background='var(--brd)'; this.style.color='var(--tx1)';"
-          onmouseout="this.style.background='var(--bg4)'; this.style.color='var(--tx2)';"
-        >
-          <i class="fa-solid fa-xmark" style="font-size: var(--fz_m2);"></i>
-        </button>
-      </div>
-      
-      <p class="lab_text" style="margin-bottom: 2vh;">
-        {lang === 'en' ? 'Testing input focus behavior on modal open:' : 'Comprobando auto-foco en el primer campo:'}
-      </p>
-      
-      <input 
-        type="text" 
-        placeholder={lang === 'en' ? 'This gains focus automatically...' : 'Este campo gana foco al abrir...'} 
-        style="width: 100%; padding: 1.2vh 1.8vh; background: var(--bg4); border: 1px solid var(--brd); border-radius: 0.8vh; color: var(--tx1); font-weight: 500; font-size: var(--fz_s3); margin-bottom: 2.5vh; transition: border-color 0.2s ease, box-shadow 0.2s ease; outline: none;"
-        onfocus="this.style.borderColor='var(--mco)'; this.style.boxShadow='0 0 0 3px rgba(0, 112, 243, 0.15)';"
-        onblur="this.style.borderColor='var(--brd)'; this.style.boxShadow='none';"
-      />
-      
-      <div style="display: flex; gap: 2vh; justify-content: flex-end;">
-        <button 
-          type="button" 
-          class="lab_btn_submit" 
-          data-wimodal-close
-          style="background: var(--bg4); color: var(--tx1); display: inline-flex; align-items: center; gap: 1vh;"
-        >
-          <i class="fa-solid fa-xmark"></i>
-          {lang === 'en' ? 'Cancel' : 'Cancelar'}
-        </button>
-        <button 
-          type="button" 
-          id="btn_modal_save" 
-          class="lab_btn_submit" 
-          style="background: var(--success); display: inline-flex; align-items: center; gap: 1vh;"
-        >
-          <i class="fa-solid fa-check"></i>
-          {lang === 'en' ? 'Save' : 'Aceptar'}
-        </button>
       </div>
     </div>
   </div>
 </Layout>
 
-<style>
-  .lab_spy_link.active {
-    background: var(--bg3) !important;
-    color: var(--mco) !important;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-  }
-</style>
-
 <script>
-  import { 
-    Saludar, 
-    wiTip, 
-    herowi, 
-    showi, 
-    wiVista, 
-    wiFade, 
-    wicopy, 
-    year,
-    wiDate,
-    fechaHoy, 
-    formatearFechaParaInput,
-    formatearFechaHora,
-    wiTiempo, 
-    calcMeses, 
-    imgwii,
-    Mensaje,
-    abrirModal,
-    cerrarModal,
-    cerrarTodos,
-    wiPath,
-    Capit,
-    NombreApellido,
-    getNombre,
-    avatar,
-    Notificacion,
-    wiRateLimit,
-    wiScroll,
-    setMeta,
-    wiSpin,
-    savels,
-    getls,
-    removels,
-    superFun,
-    Capi,
-    mis10,
-    minus,
-    wiCode,
-    wiIp,
-    wiSuma,
-    adtm,
-    wiSmart,
-    wiMd,
-    langwii
-  } from '../widev/widev.js';
-  import { wiAuth } from '../wiauth/sesion.js';
+  import { initChat } from './chatwii/visual.js';
 
-  const initLab = () => {
-    // 1. Ejecutar Saludo
-    const saludoEl = document.getElementById('lab_saludo');
-    if (saludoEl) {
-      saludoEl.textContent = Saludar('Wilder');
+  // Datos semilla de CV para pruebas
+  const MOCK_CV_SEED = {
+    nombre: "Wilder Vilchez",
+    titulo: "Systems Engineer and Full Stack Developer",
+    resumen: "Systems Engineer and Full Stack Developer with over 2 years of experience building scalable digital solutions using Astro, Supabase, and Firebase.",
+    ubicacion: "Lima, Perú",
+    skills: "Troubleshooting, Empathy, Technical Writing, Remote Collaboration, Problem Solving, Customer Success, JavaScript, TypeScript, PHP, REST APIs, SQL, Agile Methodologies, UI/UX Design, Artificial Intelligence",
+    experiencias: [
+      {
+        id: "exp_1",
+        puesto: "Digital Analyst / Developer",
+        empresa: "Banco de Crédito BCP",
+        logros: "- Optimized high-traffic banking applications, reducing latency by 35% and improving end-user experience.\n- Automated internal workflows, reducing technical incident response times by 50%."
+      },
+      {
+        id: "exp_2",
+        puesto: "Customer Support Agent",
+        empresa: "Covisian",
+        logros: "- Led the resolution of complex technical incidents across digital channels, prioritizing Customer Support & Success.\n- Developed 'DSCTO MOVIL', an internal tool that automated commission calculations."
+      }
+    ],
+    educacion: [],
+    proyectos: [],
+    certificaciones: []
+  };
+
+  let currentCv = JSON.parse(JSON.stringify(MOCK_CV_SEED));
+
+  // Inicializar o cargar de sessionStorage (limpieza automática al cerrar pestaña)
+  const savedCv = sessionStorage.getItem('chatwii_lab_mock_cv');
+  if (savedCv) {
+    try {
+      currentCv = JSON.parse(savedCv);
+    } catch (_) {
+      currentCv = JSON.parse(JSON.stringify(MOCK_CV_SEED));
+    }
+  }
+
+  const saveToStorage = () => {
+    sessionStorage.setItem('chatwii_lab_mock_cv', JSON.stringify(currentCv));
+  };
+
+  // Referencias DOM
+  const inputNombre = document.getElementById('cv_nombre');
+  const inputTitulo = document.getElementById('cv_titulo');
+  const inputResumen = document.getElementById('cv_resumen');
+  const expContainer = document.getElementById('experiences_container');
+  const jsonDebug = document.getElementById('cv_json_debug');
+
+  // Calcular y renderizar el ATS Score de forma reactiva en el cliente
+  const recalculateAtsScore = () => {
+    let score = 0;
+    const recommendations = [];
+
+    // 1. Datos Personales (max 20 pts)
+    if (currentCv.nombre && currentCv.nombre.trim().length > 2) {
+      score += 5;
+    } else {
+      recommendations.push(`<i class="fas fa-circle-exclamation" style="color:var(--error, #ef4444); margin-right:0.5vh;"></i> Añade tu nombre completo.`);
     }
 
-    // 2. Inicializar Tooltips, Animaciones e Imágenes
-    try {
-      wiTip();
-      herowi();
-      showi();
-      imgwii.ver();
-      
-      // 3. Inicializar wiVista
-      wiVista('.lab_vista_item', (el: Element, idx: number) => {
-        console.log(`🧪 [wiVista] Elemento index [${idx}] visible en pantalla:`, el.textContent);
-      }, { anim: 'wi_visible', threshold: 0.2 });
+    if (currentCv.titulo && currentCv.titulo.trim().length > 2) {
+      score += 5;
+    } else {
+      recommendations.push(`<i class="fas fa-circle-exclamation" style="color:var(--error, #ef4444); margin-right:0.5vh;"></i> Agrega tu título profesional (ej. Frontend Engineer).`);
+    }
 
-      // 4. Configurar botón para wiFade
-      const btnFade = document.getElementById('btn_fade');
-      const fadeTarget = document.getElementById('fade_target');
-      if (btnFade && fadeTarget) {
-        const newBtn = btnFade.cloneNode(true);
-        btnFade.parentNode?.replaceChild(newBtn, btnFade);
+    if (currentCv.resumen && currentCv.resumen.trim().length > 15) {
+      score += 5;
+      if (currentCv.resumen.trim().length < 60) {
+        recommendations.push(`<i class="fas fa-triangle-exclamation" style="color:var(--warning, #f59e0b); margin-right:0.5vh;"></i> Tu resumen profesional es muy corto, amplíalo un poco.`);
+      }
+    } else {
+      recommendations.push(`<i class="fas fa-circle-exclamation" style="color:var(--error, #ef4444); margin-right:0.5vh;"></i> Escribe un resumen profesional introductorio.`);
+    }
 
-        newBtn.addEventListener('click', async () => {
-          const isOriginal = fadeTarget.textContent.trim().toLowerCase().includes('original');
-          const newHtml = isOriginal
-            ? langwii.n('✨ ¡Cambiado suavemente con wiFade!', '✨ Swapped smoothly with wiFade!')
-            : langwii.n('Texto original (wiFade)', 'Original text (wiFade)');
-          
-          await wiFade(fadeTarget, newHtml, 150);
-        });
+    if (currentCv.ubicacion && currentCv.ubicacion.trim().length > 2) {
+      score += 5;
+    } else {
+      recommendations.push(`<i class="fas fa-circle-info" style="color:var(--info, #3b82f6); margin-right:0.5vh;"></i> Añade tu ubicación (ej. Lima, Perú).`);
+    }
+
+    // 2. Habilidades / Skills (max 20 pts)
+    if (currentCv.skills && currentCv.skills.trim().length > 0) {
+      const skillsList = currentCv.skills.split(',').map(s => s.trim()).filter(Boolean);
+      if (skillsList.length >= 10) {
+        score += 20;
+      } else if (skillsList.length >= 5) {
+        score += 15;
+        recommendations.push(`<i class="fas fa-circle-info" style="color:var(--info, #3b82f6); margin-right:0.5vh;"></i> Añade más palabras clave o habilidades técnicas (mínimo 10).`);
+      } else {
+        score += 5;
+        recommendations.push(`<i class="fas fa-triangle-exclamation" style="color:var(--warning, #f59e0b); margin-right:0.5vh;"></i> Tienes muy pocas habilidades registradas, agrega al menos 5.`);
+      }
+    } else {
+      recommendations.push(`<i class="fas fa-circle-exclamation" style="color:var(--error, #ef4444); margin-right:0.5vh;"></i> Agrega habilidades y tecnologías clave (skills).`);
+    }
+
+    // 3. Experiencias Laborales (max 40 pts)
+    const exps = currentCv.experiencias || [];
+    if (exps.length > 0) {
+      score += Math.min(20, exps.length * 10);
+      if (exps.length < 2) {
+        recommendations.push(`<i class="fas fa-circle-info" style="color:var(--info, #3b82f6); margin-right:0.5vh;"></i> Agrega al menos dos experiencias laborales si las tienes.`);
       }
 
-      // 5. Configurar botón para @starting-style
-      const btnAddAlert = document.getElementById('btn_add_alert');
-      const alertContainer = document.getElementById('alert_container');
-      if (btnAddAlert && alertContainer) {
-        const newBtnAlert = btnAddAlert.cloneNode(true);
-        btnAddAlert.parentNode?.replaceChild(newBtnAlert, btnAddAlert);
-
-        newBtnAlert.addEventListener('click', () => {
-          const alert = document.createElement('div');
-          alert.className = 'lab_alert_starting';
-          alert.textContent = langwii.n(
-            '✨ ¡Nueva alerta animada nativamente con CSS @starting-style!',
-            '✨ New alert animated natively with CSS @starting-style!'
-          );
-          
-          alertContainer.appendChild(alert);
-
-          // Remover la alerta después de unos segundos
-          setTimeout(() => {
-            alert.style.opacity = '0';
-            alert.style.transform = 'scale(0.9)';
-            setTimeout(() => alert.remove(), 400);
-          }, 3000);
-        });
-      }
-
-      // 6. Configurar wicopy
-      const btnCopyInput = document.getElementById('btn_copy_input');
-      if (btnCopyInput) {
-        const newBtnCopy = btnCopyInput.cloneNode(true);
-        btnCopyInput.parentNode?.replaceChild(newBtnCopy, btnCopyInput);
-        
-        newBtnCopy.addEventListener('click', (e) => {
-          wicopy('#input_copy_demo', e.currentTarget as any);
-        });
-      }
-
-      // 7. Inyectar datos de fechas (Lista completa de 7 funciones)
-      const txtYear = document.getElementById('txt_year');
-      if (txtYear) {
-        txtYear.textContent = String(year());
-      }
-
-      const txtFechaHoy = document.getElementById('txt_fecha_hoy');
-      if (txtFechaHoy) {
-        txtFechaHoy.textContent = fechaHoy();
-      }
-
-      const txtTiempoRel = document.getElementById('txt_tiempo_rel');
-      if (txtTiempoRel) {
-        txtTiempoRel.textContent = wiTiempo(Date.now() - 120000); // hace 2 min
-      }
-
-      const txtMesesDiff = document.getElementById('txt_meses_diff');
-      if (txtMesesDiff) {
-        txtMesesDiff.textContent = String(calcMeses('2026-01-01'));
-      }
-
-      const txtFechaHora = document.getElementById('txt_fecha_hora');
-      if (txtFechaHora) {
-        txtFechaHora.textContent = formatearFechaHora(new Date());
-      }
-
-      const txtFechaInput = document.getElementById('txt_fecha_input');
-      if (txtFechaInput) {
-        txtFechaInput.textContent = formatearFechaParaInput(new Date());
-      }
-
-      const txtWiDateMock = document.getElementById('txt_widate_mock');
-      if (txtWiDateMock) {
-        // Simulamos un Timestamp de Firebase (seconds y nanoseconds)
-        const mockFirebaseTimestamp = { seconds: Math.floor(Date.now() / 1000) };
-        const dummyDb = { fromDate: (d: Date) => d.toISOString() }; // Mock DB interface
-        const dateHelper = wiDate(dummyDb);
-        txtWiDateMock.textContent = dateHelper.get(mockFirebaseTimestamp, 'full');
-      }
-
-      // 8. Configurar Toasts (Mensaje)
-      document.querySelectorAll('.btn-toast').forEach(btn => {
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode?.replaceChild(newBtn, btn);
-        
-        newBtn.addEventListener('click', (e) => {
-          const target = e.currentTarget as HTMLButtonElement;
-          const tipo = target.getAttribute('data-tipo') || 'success';
-          Mensaje(
-            langwii.n(
-              `¡Éxito! Alerta flotante de tipo ${tipo} disparada.`,
-              `Success! Triggered a dynamic ${tipo} notification.`
-            ),
-            tipo
-          );
-        });
-      });
-
-      // 9. Configurar Modales
-      const btnOpenModal = document.getElementById('btn_open_modal');
-      if (btnOpenModal) {
-        const newBtn = btnOpenModal.cloneNode(true);
-        btnOpenModal.parentNode?.replaceChild(newBtn, btnOpenModal);
-        newBtn.addEventListener('click', () => abrirModal('lab_test_modal'));
-      }
-      
-      const btnModalSave = document.getElementById('btn_modal_save');
-      if (btnModalSave) {
-        const newBtn = btnModalSave.cloneNode(true);
-        btnModalSave.parentNode?.replaceChild(newBtn, btnModalSave);
-        newBtn.addEventListener('click', () => {
-          Mensaje(
-            langwii.n('¡Ajustes guardados con éxito!', 'Settings saved successfully!'), 
-            'success'
-          );
-          cerrarTodos();
-        });
-      }
-
-      // 10. Configurar Rutas (wiPath)
-      const txtPathActual = document.getElementById('txt_wipath_actual');
-      const txtPathParams = document.getElementById('txt_wipath_params');
-      
-      const updateRouteInfo = () => {
-        if (txtPathActual) txtPathActual.textContent = wiPath.actual;
-        if (txtPathParams) txtPathParams.textContent = JSON.stringify(wiPath.params());
-      };
-      
-      updateRouteInfo();
-      window.removeEventListener('popstate', updateRouteInfo);
-      window.addEventListener('popstate', updateRouteInfo);
-
-      const btnSimularRuta = document.getElementById('btn_simular_ruta');
-      if (btnSimularRuta) {
-        const newBtn = btnSimularRuta.cloneNode(true);
-        btnSimularRuta.parentNode?.replaceChild(newBtn, btnSimularRuta);
-        newBtn.addEventListener('click', () => {
-          const rand = Math.floor(Math.random() * 100);
-          wiPath.poner(`${wiPath.actual}?user=wilder&rand=${rand}`);
-        });
-      }
-
-      // 11. Configurar Formateador de Nombres
-      const inputNombreDemo = document.getElementById('input_nombre_demo') as HTMLInputElement;
-      const txtNombreCapit = document.getElementById('txt_nombre_capit');
-      const txtNombreCompleto = document.getElementById('txt_nombre_completo');
-      const txtNombreGet = document.getElementById('txt_nombre_get');
-      const txtNombreAvatar = document.getElementById('txt_nombre_avatar');
-      
-      const updateNameDemo = () => {
-        if (inputNombreDemo) {
-          const val = inputNombreDemo.value;
-          if (txtNombreCapit) txtNombreCapit.textContent = Capit(val);
-          if (txtNombreCompleto) txtNombreCompleto.textContent = NombreApellido(val);
-          if (txtNombreGet) txtNombreGet.textContent = getNombre(val);
-          if (txtNombreAvatar) txtNombreAvatar.textContent = avatar(val);
-        }
-      };
-      
-      if (inputNombreDemo) {
-        const newBtn = inputNombreDemo.cloneNode(true);
-        inputNombreDemo.parentNode?.replaceChild(newBtn, inputNombreDemo);
-        newBtn.addEventListener('input', (e) => {
-          const target = e.currentTarget as HTMLInputElement;
-          const val = target.value;
-          if (txtNombreCapit) txtNombreCapit.textContent = Capit(val);
-          if (txtNombreCompleto) txtNombreCompleto.textContent = NombreApellido(val);
-          if (txtNombreGet) txtNombreGet.textContent = getNombre(val);
-          if (txtNombreAvatar) txtNombreAvatar.textContent = avatar(val);
-        });
-      }
-      updateNameDemo();
-
-      // 12. Configurar Notificaciones Apilables (Notificacion)
-      document.querySelectorAll('.btn-notif').forEach(btn => {
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode?.replaceChild(newBtn, btn);
-        
-        newBtn.addEventListener('click', (e) => {
-          const target = e.currentTarget as HTMLButtonElement;
-          const tipo = target.getAttribute('data-tipo') || 'success';
-          Notificacion(
-            langwii.n(
-              `¡Éxito! Banner de notificación de tipo ${tipo} disparado.`,
-              `Success! Triggered a dynamic ${tipo} notification banner.`
-            ),
-            tipo
-          );
-        });
-      });
-
-      // 13. Configurar Rate Limiter (wiRateLimit)
-      const btnRateLimitTrigger = document.getElementById('btn_ratelimit_trigger');
-      const btnRateLimitReset = document.getElementById('btn_ratelimit_reset');
-      const txtRateLimitRemaining = document.getElementById('txt_ratelimit_remaining');
-      
-      const updateAttempts = (remaining: number) => {
-        if (txtRateLimitRemaining) {
-          txtRateLimitRemaining.textContent = String(remaining);
-          if (remaining === 0) {
-            txtRateLimitRemaining.style.color = 'var(--error)';
-          } else {
-            txtRateLimitRemaining.style.color = 'var(--success)';
-          }
-        }
-      };
-      
-      if (btnRateLimitTrigger) {
-        const newBtn = btnRateLimitTrigger.cloneNode(true);
-        btnRateLimitTrigger.parentNode?.replaceChild(newBtn, btnRateLimitTrigger);
-        newBtn.addEventListener('click', () => {
-          const limit = wiRateLimit('lab_click_limit', 3, 60000 as any);
-          
-          if (!limit.ok) {
-            Mensaje(
-              langwii.n(
-                `¡Límite alcanzado! Bloqueado por ${limit.min} min.`,
-                `Limit reached! Locked for ${limit.min} min.`
-              ),
-              'error'
-            );
-            updateAttempts(0);
-            return;
-          }
-          
-          limit.fail();
-          
-          const s = JSON.parse(localStorage.getItem('limiteHoy_lab_click_limit') || '{}');
-          const currentAttempts = s.n || 0;
-          const remaining = Math.max(0, 3 - currentAttempts);
-          
-          updateAttempts(remaining);
-          
-          if (remaining === 0) {
-            Mensaje(
-              langwii.n('¡Bloqueado! Excediste el límite.', 'Locked! You hit the limit.'), 
-              'warning'
-            );
-          } else {
-            Mensaje(
-              langwii.n(
-                `Acción registrada. Restantes: ${remaining}`,
-                `Action counted. Remaining: ${remaining}`
-              ), 
-              'info'
-            );
-          }
-        });
-      }
-      
-      if (btnRateLimitReset) {
-        const newBtn = btnRateLimitReset.cloneNode(true);
-        btnRateLimitReset.parentNode?.replaceChild(newBtn, btnRateLimitReset);
-        newBtn.addEventListener('click', () => {
-          localStorage.removeItem('limiteHoy_lab_click_limit');
-          updateAttempts(3);
-          Mensaje(langwii.n('¡Limitador reseteado!', 'Limiter reset!'), 'success');
-        });
-      }
-      
-      const getInitialAttempts = () => {
-        try {
-          const item = localStorage.getItem('limiteHoy_lab_click_limit');
-          if (item) {
-            const s = JSON.parse(item);
-            if (Date.now() < s.bloqueadoHasta) {
-              updateAttempts(0);
-              return;
-            }
-            updateAttempts(Math.max(0, 3 - (s.n || 0)));
-          } else {
-            updateAttempts(3);
-          }
-        } catch(e) {}
-      };
-      getInitialAttempts();
-
-      // 14. Configurar Scroll Spy (wiScroll)
-      const spyContainer = document.getElementById('spy_scroll_container');
-      if (spyContainer) {
-        wiScroll(
-          ['lab_sec_demo1', 'lab_sec_demo2'],
-          '.lab_spy_link',
-          {
-            root: spyContainer,
-            margin: '0px 0px -50% 0px',
-            cls: 'active'
-          }
-        );
-      }
-
-      // 15. Configurar SEO y Metadatos (setMeta)
-      const btnSimularSeo = document.getElementById('btn_simular_seo');
-      const txtSeoTitle = document.getElementById('txt_seo_title');
-      
-      const updateSeoInfo = () => {
-        if (txtSeoTitle) txtSeoTitle.textContent = document.title;
-      };
-      updateSeoInfo();
-
-      if (btnSimularSeo) {
-        const newBtn = btnSimularSeo.cloneNode(true);
-        btnSimularSeo.parentNode?.replaceChild(newBtn, btnSimularSeo);
-        newBtn.addEventListener('click', () => {
-          setMeta({
-            title: langwii.n('Artículo de Test de Super SEO', 'Super SEO Test Article'),
-            desc: langwii.n('Simulación de SEO dinámico de artículo', 'Simulated dynamic article SEO'),
-            path: '/lab/seo-test',
-            type: 'Article',
-            datePublished: new Date().toISOString() as any
-          });
-          updateSeoInfo();
-          
-          Mensaje(
-            langwii.n(
-              '¡Meta schema de SEO dinámico generado en el head!',
-              'SEO schema dynamic meta generated in head!'
-            ),
-            'success'
-          );
-        });
-      }
-
-      // 16. Configurar Button Spinner (wiSpin)
-      const btnSpinDemo = document.getElementById('btn_spin_demo');
-      if (btnSpinDemo) {
-        const newBtn = btnSpinDemo.cloneNode(true);
-        btnSpinDemo.parentNode?.replaceChild(newBtn, btnSpinDemo);
-        newBtn.addEventListener('click', () => {
-          wiSpin(newBtn, true, langwii.n('Enviando...', 'Sending...'));
-          
-          setTimeout(() => {
-            wiSpin(newBtn, false);
-            Mensaje(
-              langwii.n('¡Proceso finalizado!', 'Process complete!'),
-              'success'
-            );
-          }, 2000);
-        });
-      }
-
-      // 17. Configurar Almacenamiento (storage.js)
-      const btnStorageSave = document.getElementById('btn_storage_save');
-      const btnStorageRead = document.getElementById('btn_storage_read');
-      const txtStorageState = document.getElementById('txt_storage_state');
-      
-      if (btnStorageSave) {
-        const newBtn = btnStorageSave.cloneNode(true);
-        btnStorageSave.parentNode?.replaceChild(newBtn, btnStorageSave);
-        newBtn.addEventListener('click', () => {
-          const val = Math.floor(Math.random() * 1000);
-          savels('lab_temp_data', { score: val }, 0.00138); // ~5 segundos (5/3600 horas)
-          if (txtStorageState) {
-            txtStorageState.textContent = langwii.n(
-              `Guardado: ${val} (Expira en 5s)`,
-              `Saved: ${val} (Expires in 5s)`
-            );
-            txtStorageState.style.color = 'var(--mco)';
-          }
-          Mensaje(langwii.n('¡Dato guardado en localStorage!', 'Value saved in localStorage!'), 'success');
-        });
-      }
-      
-      if (btnStorageRead) {
-        const newBtn = btnStorageRead.cloneNode(true);
-        btnStorageRead.parentNode?.replaceChild(newBtn, btnStorageRead);
-        newBtn.addEventListener('click', () => {
-          const data = getls('lab_temp_data');
-          if (txtStorageState) {
-            if (data) {
-              txtStorageState.textContent = langwii.n(
-                `Leído: ${JSON.stringify(data)}`,
-                `Read: ${JSON.stringify(data)}`
-              );
-              txtStorageState.style.color = 'var(--success)';
-            } else {
-              txtStorageState.textContent = langwii.n(
-                'Expiró o sin datos',
-                'Expired or no data'
-              );
-              txtStorageState.style.color = 'var(--error)';
-            }
-          }
-        });
-      }
-
-      // 18. Configurar Carga Diferida (superFun)
-      const btnSuperFunTrigger = document.getElementById('btn_superfun_trigger');
-      const txtSuperFunStatus = document.getElementById('txt_superfun_status');
-      
-      if (btnSuperFunTrigger) {
-        const newBtn = btnSuperFunTrigger.cloneNode(true);
-        btnSuperFunTrigger.parentNode?.replaceChild(newBtn, btnSuperFunTrigger);
-        newBtn.addEventListener('click', () => {
-          localStorage.removeItem('superFun');
-          if (txtSuperFunStatus) {
-            txtSuperFunStatus.textContent = langwii.n(
-              '¡Encolado! Haz scroll, clic o mueve el mouse para disparar...',
-              'Enqueued! Scroll, click or move mouse to trigger...'
-            );
-            txtSuperFunStatus.style.color = 'var(--warning)';
-          }
-          
-          superFun(() => {
-            if (txtSuperFunStatus) {
-              txtSuperFunStatus.textContent = langwii.n(
-                '⚡ ¡Script pesado ejecutado con éxito!',
-                '⚡ Executed heavy script successfully!'
-              );
-              txtSuperFunStatus.style.color = 'var(--success)';
-            }
-            Mensaje(
-              langwii.n('¡SuperFun ejecutado!', 'SuperFun executed!'), 
-              'success'
-            );
-          });
-        });
-      }
-
-      // 19. Configurar Utilidades de Texto (texto.js)
-      const inputTextoMinus = document.getElementById('input_texto_minus') as HTMLInputElement;
-      const txtTextoMis10 = document.getElementById('txt_texto_mis10');
-      
-      if (inputTextoMinus) {
-        const newBtn = inputTextoMinus.cloneNode(true) as HTMLInputElement;
-        inputTextoMinus.parentNode?.replaceChild(newBtn, inputTextoMinus);
-        minus(newBtn);
-        
-        newBtn.addEventListener('input', (e) => {
-          const target = e.currentTarget as HTMLInputElement;
-          if (txtTextoMis10) {
-            txtTextoMis10.textContent = mis10(target.value);
-          }
-        });
-      }
-
-      // 20. Configurar Formato de Código (wiCode)
-      const btnWicodeTrigger = document.getElementById('btn_wicode_trigger');
-      if (btnWicodeTrigger) {
-        const newBtn = btnWicodeTrigger.cloneNode(true);
-        btnWicodeTrigger.parentNode?.replaceChild(newBtn, btnWicodeTrigger);
-        newBtn.addEventListener('click', () => {
-          wiCode('.lab_wicode_demo');
-          Mensaje(langwii.n('¡wiCode formateado!', 'wiCode formatted!'), 'success');
-        });
-      }
-
-      // 21. Configurar Ubicación y Telemetría (wiIp)
-      const btnWiipTrigger = document.getElementById('btn_wiip_trigger');
-      const txtWiipCity = document.getElementById('txt_wiip_city');
-      const txtWiipBrowser = document.getElementById('txt_wiip_browser');
-      
-      if (btnWiipTrigger) {
-        const newBtn = btnWiipTrigger.cloneNode(true);
-        btnWiipTrigger.parentNode?.replaceChild(newBtn, btnWiipTrigger);
-        newBtn.addEventListener('click', () => {
-          wiIp().then(data => {
-            if (data) {
-              if (txtWiipCity) txtWiipCity.textContent = `${data.ip} (${data.city}, ${data.country})`;
-              if (txtWiipBrowser) txtWiipBrowser.textContent = `${data.os} / ${data.browser} (${data.device})`;
-              Mensaje(langwii.n('¡Telemetría consultada!', 'Telemetry queried!'), 'success');
-            } else {
-              Mensaje('Error querying IP', 'error');
-            }
-          });
-        });
-      }
-
-      // 22. Configurar Atajos DOM (more.js)
-      const btnWisumaSecret = document.getElementById('btn_wisuma_secret');
-      const btnAdtmDemo = document.getElementById('btn_adtm_demo');
-      
-      if (btnWisumaSecret) {
-        const newBtn = btnWisumaSecret.cloneNode(true);
-        btnWisumaSecret.parentNode?.replaceChild(newBtn, btnWisumaSecret);
-        wiSuma(newBtn, () => {
-          Mensaje(langwii.n('💥 ¡Combinación secreta disparada!', '💥 Secret combination triggered!'), 'success');
-        }, 5);
-      }
-      
-      if (btnAdtmDemo) {
-        const newBtn = btnAdtmDemo.cloneNode(true);
-        btnAdtmDemo.parentNode?.replaceChild(newBtn, btnAdtmDemo);
-        newBtn.addEventListener('click', () => {
-          adtm(
-            newBtn, 
-            'lab_btn_saving_state', 
-            langwii.n('Guardando...', 'Saving...'), 
-            langwii.n('Guardar Estado', 'Save Status')
-          );
-        });
-      }
-
-      // 23. Configurar Carga Inteligente (wiSmart)
-      const btnWismartTrigger = document.getElementById('btn_wismart_trigger');
-      const txtWismartStatus = document.getElementById('txt_wismart_status');
-      
-      if (btnWismartTrigger) {
-        const newBtn = btnWismartTrigger.cloneNode(true);
-        btnWismartTrigger.parentNode?.replaceChild(newBtn, btnWismartTrigger);
-        newBtn.addEventListener('click', () => {
-          localStorage.removeItem('wiSmart');
-          
-          if (txtWismartStatus) {
-            txtWismartStatus.textContent = langwii.n(
-              '¡Encolado! Haz scroll o clic en cualquier lado para disparar...',
-              'Enqueued! Scroll or click anywhere to trigger...'
-            );
-            txtWismartStatus.style.color = 'var(--warning)';
-          }
-
-          wiSmart({
-            css: ['https://fonts.googleapis.com/css2?family=Lobster&display=swap'],
-            custom: [
-              () => {
-                return new Promise((resolve) => {
-                  if (txtWismartStatus) {
-                    txtWismartStatus.textContent = langwii.n(
-                      '⚡ ¡Fuente Lobster Cargada! Estilo de tarjeta actualizado.',
-                      '⚡ Lobster Font Loaded! Element style updated.'
-                    );
-                    txtWismartStatus.style.color = 'var(--success)';
-                    txtWismartStatus.style.fontFamily = "'Lobster', cursive";
-                  }
-                  resolve(true);
-                });
-              }
-            ]
-          });
-        });
-      }
-
-      // 24. Configurar Bus de Autenticación (wiAuth)
-      const btnAuthLogin = document.getElementById('btn_auth_login');
-      const btnAuthLogout = document.getElementById('btn_auth_logout');
-      const txtAuthStatus = document.getElementById('txt_auth_status');
-
-      // Escuchar cambios reactivos en la sesión
-      const cancelAuthSub = wiAuth.on((user: any) => {
-        if (txtAuthStatus) {
-          if (user) {
-            txtAuthStatus.textContent = langwii.n(
-              `Logueado: ${user.nombre} (${user.rol})`,
-              `Logged in: ${user.nombre} (${user.rol})`
-            );
-            txtAuthStatus.style.color = 'var(--success)';
-          } else {
-            txtAuthStatus.textContent = langwii.n('Sin usuario activo', 'No user active');
-            txtAuthStatus.style.color = 'var(--error)';
+      // Buscar métricas cuantitativas (% o números) en los logros
+      let numbersCount = 0;
+      exps.forEach((exp) => {
+        if (exp.logros) {
+          const matches = exp.logros.match(/\d+|%/g);
+          if (matches) {
+            numbersCount += matches.length;
           }
         }
       });
 
-      if (btnAuthLogin) {
-        const newBtn = btnAuthLogin.cloneNode(true);
-        btnAuthLogin.parentNode?.replaceChild(newBtn, btnAuthLogin);
-        newBtn.addEventListener('click', () => {
-          wiAuth.login({ id: 101, nombre: 'Wilder Alexander', rol: 'admin', tema: 'mora' });
-          Mensaje(langwii.n('¡Sesión simulada activada!', 'Mock session logged in!'), 'success');
-        });
+      if (numbersCount >= 3) {
+        score += 20;
+      } else if (numbersCount >= 1) {
+        score += 10;
+        recommendations.push(`<i class="fas fa-lightbulb" style="color:var(--warning, #f59e0b); margin-right:0.5vh;"></i> <strong>Consejo ATS:</strong> Añade más métricas numéricas o porcentajes en tus logros.`);
+      } else {
+        recommendations.push(`<i class="fas fa-lightbulb" style="color:var(--warning, #f59e0b); margin-right:0.5vh;"></i> <strong>Importante ATS:</strong> No tienes métricas en tus logros. Los reclutadores prefieren resultados medibles (ej: "Reduje latencia en 30%").`);
       }
+    } else {
+      recommendations.push(`<i class="fas fa-circle-exclamation" style="color:var(--error, #ef4444); margin-right:0.5vh;"></i> Añade experiencias laborales en tu CV.`);
+    }
 
-      if (btnAuthLogout) {
-        const newBtn = btnAuthLogout.cloneNode(true);
-        btnAuthLogout.parentNode?.replaceChild(newBtn, btnAuthLogout);
-        newBtn.addEventListener('click', () => {
-          wiAuth.logout();
-          Mensaje(langwii.n('¡Sesión cerrada con éxito!', 'Logged out successfully!'), 'warning');
-        });
+    // 4. Proyectos y Certificaciones (max 20 pts)
+    const projs = currentCv.proyectos || [];
+    const certs = currentCv.certificaciones || [];
+
+    if (projs.length > 0) {
+      score += 10;
+    } else {
+      recommendations.push(`<i class="fas fa-circle-info" style="color:var(--info, #3b82f6); margin-right:0.5vh;"></i> Añadir proyectos destacados (SaaS, apps) fortalece mucho tu perfil.`);
+    }
+
+    if (certs.length > 0) {
+      score += 10;
+    } else {
+      recommendations.push(`<i class="fas fa-circle-info" style="color:var(--info, #3b82f6); margin-right:0.5vh;"></i> Agrega certificaciones o cursos relevantes.`);
+    }
+
+    // Actualizar UI
+    const circle = document.getElementById('ats_score_circle');
+    const scoreText = document.getElementById('ats_score_text');
+    const scoreLevel = document.getElementById('ats_score_level');
+    const checklist = document.getElementById('ats_checklist');
+
+    if (circle) {
+      const circumference = 314.16;
+      const offset = circumference - (score / 100) * circumference;
+      circle.setAttribute('stroke-dashoffset', String(offset));
+      
+      // Cambiar color del círculo según puntaje
+      if (score >= 80) {
+        circle.setAttribute('stroke', 'var(--success, #10b981)');
+      } else if (score >= 50) {
+        circle.setAttribute('stroke', 'var(--warning, #f59e0b)');
+      } else {
+        circle.setAttribute('stroke', 'var(--danger, #ef4444)');
       }
+    }
 
-      // 25. Configurar Markdown Parser (wiMd)
-      const txtWimdInput = document.getElementById('txt_wimd_input') as HTMLTextAreaElement;
-      const txtWimdOutput = document.getElementById('txt_wimd_output');
+    if (scoreText) {
+      scoreText.textContent = `${score}%`;
+    }
 
-      const renderMd = () => {
-        if (txtWimdInput && txtWimdOutput) {
-          txtWimdOutput.innerHTML = wiMd(txtWimdInput.value);
-        }
-      };
-
-      if (txtWimdInput) {
-        txtWimdInput.addEventListener('input', renderMd);
-        renderMd(); // primer render
+    if (scoreLevel) {
+      if (score >= 80) {
+        scoreLevel.textContent = 'Excelente';
+        scoreLevel.style.color = 'var(--success, #10b981)';
+      } else if (score >= 55) {
+        scoreLevel.textContent = 'Aceptable';
+        scoreLevel.style.color = 'var(--warning, #f59e0b)';
+      } else {
+        scoreLevel.textContent = 'Bajo';
+        scoreLevel.style.color = 'var(--danger, #ef4444)';
       }
+    }
 
-      console.log('🧪 [Lab] Módulos de widev/ re-inicializados con éxito.');
-    } catch (e) {
-      console.error('🧪 [Lab] Error al inicializar:', e);
+    if (checklist) {
+      if (recommendations.length === 0) {
+        checklist.innerHTML = `<li style="color: var(--success, #10b981);"><i class="fas fa-circle-check"></i> ¡Tu currículum está 100% optimizado para ATS! Listo para postular.</li>`;
+      } else {
+        checklist.innerHTML = recommendations.map(rec => `<li style="margin-bottom: 0.8vh; display: flex; align-items: flex-start;"><span>${rec}</span></li>`).join('');
+      }
     }
   };
 
-  document.addEventListener('astro:page-load', initLab);
+  // Actualiza el JSON debug visual y recalcula el ATS Score
+  const updateJsonDebug = () => {
+    if (jsonDebug) {
+      jsonDebug.textContent = JSON.stringify(currentCv, null, 2);
+    }
+    recalculateAtsScore();
+  };
+
+  // Renderizar experiencias laborales en el formulario
+  const renderExperiences = () => {
+    if (!expContainer) return;
+    expContainer.innerHTML = '';
+
+    currentCv.experiencias.forEach((exp, index) => {
+      const expBlock = document.createElement('div');
+      expBlock.className = 'lab_exp_block';
+      expBlock.innerHTML = `
+        <div class="lab_exp_block_header">
+          <span class="lab_exp_block_title">${exp.empresa || 'Empresa'} - ${exp.puesto || 'Puesto'} (Idx: ${index})</span>
+          <button type="button" class="lab_btn danger btn-delete-exp" data-idx="${index}" style="padding: 0.5vh 1vh; font-size: 0.75rem;">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <div class="lab_group">
+          <label>Empresa</label>
+          <input type="text" class="lab_input exp-empresa" data-idx="${index}" value="${exp.empresa || ''}" />
+        </div>
+        <div class="lab_group">
+          <label>Puesto</label>
+          <input type="text" class="lab_input exp-puesto" data-idx="${index}" value="${exp.puesto || ''}" />
+        </div>
+        <div class="lab_group">
+          <label>Logros</label>
+          <textarea class="lab_input lab_textarea exp-logros" data-idx="${index}" rows="3">${exp.logros || ''}</textarea>
+        </div>
+      `;
+      expContainer.appendChild(expBlock);
+    });
+
+    // Agregar event listeners a los inputs de las experiencias
+    expContainer.querySelectorAll('.exp-empresa').forEach(input => {
+      input.addEventListener('input', (e) => {
+        const idx = parseInt(e.target.getAttribute('data-idx') || '0');
+        currentCv.experiencias[idx].empresa = e.target.value;
+        saveToStorage();
+        updateJsonDebug();
+      });
+    });
+
+    expContainer.querySelectorAll('.exp-puesto').forEach(input => {
+      input.addEventListener('input', (e) => {
+        const idx = parseInt(e.target.getAttribute('data-idx') || '0');
+        currentCv.experiencias[idx].puesto = e.target.value;
+        saveToStorage();
+        updateJsonDebug();
+      });
+    });
+
+    expContainer.querySelectorAll('.exp-logros').forEach(input => {
+      input.addEventListener('input', (e) => {
+        const idx = parseInt(e.target.getAttribute('data-idx') || '0');
+        currentCv.experiencias[idx].logros = e.target.value;
+        saveToStorage();
+        updateJsonDebug();
+      });
+    });
+
+    expContainer.querySelectorAll('.btn-delete-exp').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const btnEl = e.target.closest('.btn-delete-exp');
+        if (!btnEl) return;
+        const idx = parseInt(btnEl.getAttribute('data-idx') || '0');
+        currentCv.experiencias.splice(idx, 1);
+        saveToStorage();
+        renderExperiences();
+        updateJsonDebug();
+      });
+    });
+  };
+
+  // Llenar formulario desde los datos de currentCv
+  const populateForm = () => {
+    if (inputNombre) inputNombre.value = currentCv.nombre || '';
+    if (inputTitulo) inputTitulo.value = currentCv.titulo || '';
+    if (inputResumen) inputResumen.value = currentCv.resumen || '';
+    renderExperiences();
+    updateJsonDebug();
+  };
+
+  // Event listeners para los datos principales
+  inputNombre?.addEventListener('input', (e) => {
+    currentCv.nombre = e.target.value;
+    saveToStorage();
+    updateJsonDebug();
+  });
+
+  inputTitulo?.addEventListener('input', (e) => {
+    currentCv.titulo = e.target.value;
+    saveToStorage();
+    updateJsonDebug();
+  });
+
+  inputResumen?.addEventListener('input', (e) => {
+    currentCv.resumen = e.target.value;
+    saveToStorage();
+    updateJsonDebug();
+  });
+
+  document.getElementById('btn_add_exp')?.addEventListener('click', () => {
+    currentCv.experiencias.push({
+      id: 'exp_' + Math.random().toString(36).substring(2, 9),
+      puesto: '',
+      empresa: '',
+      logros: ''
+    });
+    saveToStorage();
+    renderExperiences();
+    updateJsonDebug();
+  });
+
+  document.getElementById('btn_reset_cv')?.addEventListener('click', () => {
+    currentCv = JSON.parse(JSON.stringify(MOCK_CV_SEED));
+    saveToStorage();
+    populateForm();
+  });
+
+  document.getElementById('btn_save_cv')?.addEventListener('click', () => {
+    saveToStorage();
+    if (window.Mensaje) {
+      window.Mensaje('CV Guardado localmente en el Lab', 'success');
+    }
+  });
+
+  // --- INTEGRACIÓN DE CHATWII FLOTANTE ---
+  const startFloatingChatwii = () => {
+    // Inicializar Chatwii usando la API expuesta por visual.js
+    // Pasamos el mock getCvData y updateCvData reactivos
+    initChat(
+      'es',
+      () => currentCv,
+      (newData) => {
+        if (newData && typeof newData === 'object') {
+          if ('experiencias' in newData) {
+            Object.keys(currentCv).forEach(k => delete currentCv[k]);
+          }
+          Object.assign(currentCv, newData);
+        }
+        saveToStorage();
+        populateForm(); // Refrescar formulario en pantalla
+      }
+    );
+  };
+
+  // Inicializar todo
+  populateForm();
+  
+  // Darle un pequeño timeout para esperar que el script de inicialización global de Astro termine
+  setTimeout(startFloatingChatwii, 200);
 </script>

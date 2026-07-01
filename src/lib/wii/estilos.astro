@@ -1,0 +1,1304 @@
+---
+// src/lib/wii/Lab.astro
+// Componente de laboratorio y pruebas para todos los componentes modularizados de widev/
+
+import Layout from '../../layouts/Layout.astro';
+import labcss from './lab.css?inline';
+
+interface Props {
+  lang?: 'es' | 'en';
+}
+
+const { lang = 'es' } = Astro.props;
+---
+
+<style is:global set:html={labcss}></style>
+
+<Layout title={lang === 'en' ? 'Testing Lab — widev/' : 'Laboratorio de Pruebas — widev/'}>
+  <div class="lab_container">
+    
+    <!-- Módulo 1: Cabecera de Pruebas (Ancho Completo) -->
+    <div class="lab_card lab_card--full">
+      <div class="lab_title">
+        <i class="fas fa-flask"></i> 
+        {lang === 'en' ? 'Modular Components Lab' : 'Laboratorio de Componentes Modularizados'}
+      </div>
+      <p id="lab_saludo" class="lab_saludo"></p>
+      
+      <div style="display: flex; gap: 2vh; flex-wrap: wrap; margin-top: 2vh;">
+        <!-- Botón A: Tooltip JS Modular (Inyecta el CSS internamente) -->
+        <button 
+          type="button" 
+          id="btn_tooltip" 
+          class="lab_btn_submit" 
+          data-witip={lang === 'en' ? 'This tooltip style is injected by the JS module!' : '¡Los estilos de este tooltip son inyectados por el módulo JS!'} 
+          data-wtipo="info"
+        >
+          {lang === 'en' ? 'JS Tooltip (wiTip)' : 'Tooltip JS (wiTip)'}
+        </button>
+
+        <!-- Botón B: Tooltip 100% CSS (Sin una línea de JS) -->
+        <a 
+          href="#"
+          class="lab_btn_submit" 
+          style="background: var(--success);"
+          data-witip-css={lang === 'en' ? '100% CSS Tooltip (GPU accelerated!)' : '¡Tooltip 100% CSS (acelerado por GPU!)'}
+        >
+          {lang === 'en' ? 'CSS Tooltip' : 'Tooltip CSS'}
+        </a>
+      </div>
+    </div>
+
+    <!-- Contenedor en dos columnas para pruebas lógicas -->
+    <div class="lab_grid">
+      <!-- Módulo 3: Animaciones JS (herowi) -->
+      <div class="lab_card" data-herowi="100">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-wand-magic-sparkles"></i> 
+          {lang === 'en' ? 'Header Animation (herowi)' : 'Test de Cabeceras (herowi)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Animated item 1' : 'Elemento animado incremental 1'}</p>
+        <p class="lab_text">{lang === 'en' ? 'Animated item 2' : 'Elemento animado incremental 2'}</p>
+        <p class="lab_text">{lang === 'en' ? 'Animated item 3' : 'Elemento animado incremental 3'}</p>
+      </div>
+
+      <!-- Módulo 4: Animaciones en Scroll (showi vs CSS Scroll-Driven) -->
+      <div class="lab_card" data-showi="150">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-eye"></i> 
+          {lang === 'en' ? 'Scroll Animation (showi)' : 'Test de Scroll (showi)'}
+        </h3>
+        <div class="lab_item">{lang === 'en' ? 'Item 1' : 'Item 1'}</div>
+        <div class="lab_item">{lang === 'en' ? 'Item 2' : 'Item 2'}</div>
+        <div class="lab_item">{lang === 'en' ? 'Item 3' : 'Item 3'}</div>
+      </div>
+
+      <!-- Módulo 5: Entrada al viewport (wiVista) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-binoculars"></i> 
+          {lang === 'en' ? 'Viewport Entry (wiVista)' : 'Entrada al Viewport (wiVista)'}
+        </h3>
+        <p class="lab_text" style="font-size: var(--fz_s3);">
+          {lang === 'en' ? 'Scroll down or check the console when items light up.' : 'Haz scroll o revisa la consola cuando los elementos se iluminen.'}
+        </p>
+        <div class="lab_vista_item">{lang === 'en' ? 'Target A' : 'Objetivo A'}</div>
+        <div class="lab_vista_item">{lang === 'en' ? 'Target B' : 'Objetivo B'}</div>
+      </div>
+
+      <!-- Módulo 6: Transición de contenidos (wiFade vs CSS @starting-style) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-arrows-rotate"></i> 
+          {lang === 'en' ? 'Dynamic Transition Test' : 'Test de Transiciones'}
+        </h3>
+        
+        <!-- Sub-test A: wiFade -->
+        <div id="fade_target" class="lab_fade_box">
+          {lang === 'en' ? 'Original text (wiFade)' : 'Texto original (wiFade)'}
+        </div>
+        <button type="button" id="btn_fade" class="lab_btn_submit" style="width: 100%; margin-bottom: 2.5vh;">
+          {lang === 'en' ? 'Trigger wiFade' : 'Ejecutar wiFade'}
+        </button>
+
+        <!-- Sub-test B: @starting-style -->
+        <button type="button" id="btn_add_alert" class="lab_btn_submit" style="width: 100%; background: var(--warning);">
+          {lang === 'en' ? 'Insert Alert (@starting-style)' : 'Insertar Alerta (@starting-style)'}
+        </button>
+        <div id="alert_container" class="lab_alert_container"></div>
+      </div>
+
+      <!-- Módulo 7: Copiar al Portapapeles (wicopy) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-copy"></i> 
+          {lang === 'en' ? 'Copy Clipboard (wicopy)' : 'Copiar Portapapeles (wicopy)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Copies text from the input below:' : 'Copia el texto del campo de abajo:'}</p>
+        
+        <input 
+          type="text" 
+          id="input_copy_demo" 
+          value="https://workwii.com/wilder" 
+          style="width: 100%; padding: 1.2vh 1.8vh; background: var(--bg4); border: 1px solid var(--brd); border-radius: 0.8vh; color: var(--tx1); font-weight: 500; margin-bottom: 2vh; font-size: var(--fz_s3);" 
+          readonly 
+        />
+        
+        <button type="button" id="btn_copy_input" class="lab_btn_submit" style="width: 100%; background: var(--mco);">
+          {lang === 'en' ? 'Copy Link' : 'Copiar Enlace'}
+        </button>
+      </div>
+
+      <!-- Módulo 8: Carga Diferida (imgwii) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-image"></i> 
+          {lang === 'en' ? 'Lazy Image Loader (imgwii)' : 'Carga Diferida (imgwii)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Dynamic lazy image using public placeholder:' : 'Imagen diferida usando placeholder de public/:'}</p>
+        
+        <!-- Contenedor con borde y fondo para simular carga diferida -->
+        <div style="height: 18vh; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 1vh; background: var(--bg4); border: 1px solid var(--brd);">
+          <img 
+            data-src="/perfil.webp" 
+            style="width: 100%; height: 100%; object-fit: cover;" 
+            alt="Lazy loaded user avatar" 
+          />
+        </div>
+      </div>
+
+      <!-- Módulo 9: Utilidades de Fecha (fecha.js) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-calendar-days"></i> 
+          {lang === 'en' ? 'Time & Dates (fecha.js)' : 'Fechas y Tiempo (fecha.js)'}
+        </h3>
+        
+        <!-- 1. year() -->
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>year(): </strong>
+          <span id="txt_year" style="color: var(--mco); font-weight: 600;"></span>
+        </div>
+
+        <!-- 2. fechaHoy() -->
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>fechaHoy(): </strong>
+          <span id="txt_fecha_hoy" style="color: var(--tx1); font-weight: 600;"></span>
+        </div>
+
+        <!-- 3. wiTiempo() -->
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>wiTiempo(): </strong>
+          <span id="txt_tiempo_rel" style="color: var(--success); font-weight: 600;"></span>
+        </div>
+
+        <!-- 4. calcMeses() -->
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>calcMeses(): </strong>
+          <span id="txt_meses_diff" style="color: var(--info); font-weight: 600;"></span>
+        </div>
+
+        <!-- 5. formatearFechaHora() -->
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>formatearFechaHora(): </strong>
+          <span id="txt_fecha_hora" style="color: var(--warning); font-weight: 600;"></span>
+        </div>
+
+        <!-- 6. formatearFechaParaInput() -->
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>formatearFechaParaInput(): </strong>
+          <span id="txt_fecha_input" style="color: var(--error); font-weight: 600;"></span>
+        </div>
+
+        <!-- 7. wiDate() -->
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>wiDate() [Mock Firebase]: </strong>
+          <span id="txt_widate_mock" style="color: var(--tx2); font-weight: 600;"></span>
+        </div>
+      </div>
+
+      <!-- Módulo 10: Mensajes Flotantes (Mensaje) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-comment-dots"></i> 
+          {lang === 'en' ? 'Toasts (Mensaje)' : 'Mensajes (Mensaje)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Trigger dynamic notification toasts:' : 'Dispara alertas flotantes dinámicas:'}</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1vh; margin-top: 1.5vh;">
+          <button type="button" class="lab_btn_submit btn-toast" data-tipo="success" style="background: var(--success);">Success</button>
+          <button type="button" class="lab_btn_submit btn-toast" data-tipo="error" style="background: var(--error);">Error</button>
+          <button type="button" class="lab_btn_submit btn-toast" data-tipo="warning" style="background: var(--warning);">Warning</button>
+          <button type="button" class="lab_btn_submit btn-toast" data-tipo="info" style="background: var(--info);">Info</button>
+        </div>
+      </div>
+
+      <!-- Módulo 11: Ventanas Modales (abrirModal) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-window-restore"></i> 
+          {lang === 'en' ? 'Modals (wiModal)' : 'Modales (wiModal)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Triggers a frosted-glass overlay dialog:' : 'Despliega una ventana emergente de pruebas:'}</p>
+        <button type="button" id="btn_open_modal" class="lab_btn_submit" style="width: 100%; background: var(--mco);">
+          {lang === 'en' ? 'Open Test Modal' : 'Abrir Modal de Pruebas'}
+        </button>
+      </div>
+
+      <!-- Módulo 12: Control de Rutas (wiPath) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-route"></i> 
+          {lang === 'en' ? 'Routes & Params (wiPath)' : 'Rutas y Params (wiPath)'}
+        </h3>
+        
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>wiPath.actual: </strong>
+          <span id="txt_wipath_actual" style="color: var(--mco); font-weight: 600;"></span>
+        </div>
+
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>wiPath.params(): </strong>
+          <span id="txt_wipath_params" style="color: var(--success); font-weight: 600;"></span>
+        </div>
+
+        <button type="button" id="btn_simular_ruta" class="lab_btn_submit" style="width: 100%; background: var(--info); margin-top: 1vh;">
+          {lang === 'en' ? 'Simulate Navigation' : 'Simular Navegación (Query)'}
+        </button>
+      </div>
+
+      <!-- Módulo 13: Formateo de Nombres (nombre.js) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-signature"></i> 
+          {lang === 'en' ? 'Name Formatter (nombre.js)' : 'Formateador de Nombres (nombre.js)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Converts messy name formats dynamically:' : 'Convierte formatos de texto dinámicamente:'}</p>
+        
+        <input 
+          type="text" 
+          id="input_nombre_demo" 
+          value="  wilder Alexander vilchez SILVA  " 
+          style="width: 100%; padding: 1.2vh 1.8vh; background: var(--bg4); border: 1px solid var(--brd); border-radius: 0.8vh; color: var(--tx1); font-weight: 500; font-size: var(--fz_s3); margin-bottom: 2.5vh; outline: none; transition: border-color 0.2s;" 
+          onfocus="this.style.borderColor='var(--mco)';"
+          onblur="this.style.borderColor='var(--brd)';"
+        />
+
+        <!-- 1. Capit() -->
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>Capit(): </strong>
+          <span id="txt_nombre_capit" style="color: var(--warning); font-weight: 600;"></span>
+        </div>
+        
+        <!-- 2. NombreApellido() -->
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>NombreApellido(): </strong>
+          <span id="txt_nombre_completo" style="color: var(--success); font-weight: 600;"></span>
+        </div>
+
+        <!-- 3. getNombre() -->
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>getNombre(): </strong>
+          <span id="txt_nombre_get" style="color: var(--info); font-weight: 600;"></span>
+        </div>
+        
+        <!-- 4. avatar() -->
+        <div class="lab_item" style="font-size: var(--fz_s3); display: flex; align-items: center; justify-content: space-between;">
+          <strong>avatar(): </strong>
+          <span id="txt_nombre_avatar" style="color: var(--txa); font-weight: 700; background: var(--mco); width: 4.5vh; height: 4.5vh; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);"></span>
+        </div>
+      </div>
+
+      <!-- Módulo 14: Notificaciones Apilables (Notificacion) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-bell"></i> 
+          {lang === 'en' ? 'Stacked Banners (Notificacion)' : 'Banners Apilables (Notificacion)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Spam these triggers to stack side banners:' : 'Presiona varias veces para apilar avisos en cascada:'}</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1vh; margin-top: 1.5vh;">
+          <button type="button" class="lab_btn_submit btn-notif" data-tipo="success" style="background: var(--success);">Success Notif</button>
+          <button type="button" class="lab_btn_submit btn-notif" data-tipo="error" style="background: var(--error);">Error Notif</button>
+          <button type="button" class="lab_btn_submit btn-notif" data-tipo="warning" style="background: var(--warning);">Warning Notif</button>
+          <button type="button" class="lab_btn_submit btn-notif" data-tipo="info" style="background: var(--info);">Info Notif</button>
+        </div>
+      </div>
+
+      <!-- Módulo 15: Limitador de Intentos (wiRateLimit) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-shield-halved"></i> 
+          {lang === 'en' ? 'Rate Limiting (wiRateLimit)' : 'Limitador de Intentos (wiRateLimit)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Click limit test (Max 3 attempts, blocks for 1 min):' : 'Test de clics (Máx 3 intentos, bloquea por 1 min):'}</p>
+        
+        <div style="display: flex; gap: 1.5vh; align-items: center; margin-bottom: 2vh;">
+          <button type="button" id="btn_ratelimit_trigger" class="lab_btn_submit" style="flex: 1; background: var(--mco);">
+            {lang === 'en' ? 'Trigger Action' : 'Ejecutar Acción'}
+          </button>
+          <button type="button" id="btn_ratelimit_reset" class="lab_btn_submit" style="background: var(--bg4); color: var(--tx1);">
+            Reset
+          </button>
+        </div>
+
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>{lang === 'en' ? 'Remaining Attempts: ' : 'Intentos restantes: '}</strong>
+          <span id="txt_ratelimit_remaining" style="font-weight: 700; color: var(--success);">3</span>
+        </div>
+      </div>
+
+      <!-- Módulo 16: Scroll Spy (wiScroll) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-scroll"></i> 
+          {lang === 'en' ? 'Scroll Spy (wiScroll)' : 'Scroll Espía (wiScroll)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Visual navigation highlights on viewport section entry:' : 'Indicador visual de sección activa en pantalla:'}</p>
+        
+        <!-- Menú Demo Mini -->
+        <div style="display: flex; gap: 1vh; margin-bottom: 2vh; background: var(--bg4); padding: 1vh; border-radius: 0.8vh; border: 1px solid var(--brd);">
+          <a href="#lab_sec_demo1" class="lab_spy_link active" style="flex: 1; text-align: center; text-decoration: none; color: var(--tx2); padding: 0.5vh; border-radius: 0.4vh; font-size: var(--fz_s3); font-weight: 600; transition: all 0.2s;">Sec 1</a>
+          <a href="#lab_sec_demo2" class="lab_spy_link" style="flex: 1; text-align: center; text-decoration: none; color: var(--tx2); padding: 0.5vh; border-radius: 0.4vh; font-size: var(--fz_s3); font-weight: 600; transition: all 0.2s;">Sec 2</a>
+        </div>
+        
+        <!-- Contenedor con Scroll Interno para Simular Spy -->
+        <div id="spy_scroll_container" style="height: 12vh; overflow-y: scroll; border: 1px solid var(--brd); border-radius: 0.8vh; padding: 1.5vh; background: var(--bg3); scroll-behavior: smooth;">
+          <div id="lab_sec_demo1" style="height: 10vh; background: rgba(0, 112, 243, 0.1); border-radius: 0.6vh; display: flex; align-items: center; justify-content: center; margin-bottom: 2vh; font-weight: 600;">Sección 1</div>
+          <div id="lab_sec_demo2" style="height: 10vh; background: rgba(16, 185, 129, 0.1); border-radius: 0.6vh; display: flex; align-items: center; justify-content: center; font-weight: 600;">Sección 2</div>
+        </div>
+      </div>
+
+      <!-- Módulo 17: SEO y Metadatos (seometa.js) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-search"></i> 
+          {lang === 'en' ? 'SEO & Meta (seometa.js)' : 'SEO y Metadatos (seometa.js)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Simulates dynamic SEO meta-tag generation:' : 'Simulación de metadatos en el <head>:'}</p>
+        
+        <button type="button" id="btn_simular_seo" class="lab_btn_submit" style="width: 100%; background: var(--success); margin-bottom: 2vh;">
+          {lang === 'en' ? 'Generate Article Schema' : 'Generar Schema de Artículo'}
+        </button>
+
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>document.title: </strong>
+          <span id="txt_seo_title" style="color: var(--tx1); font-weight: 600;"></span>
+        </div>
+      </div>
+
+      <!-- Módulo 18: Cargando en Botones (spin.js) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-spinner"></i> 
+          {lang === 'en' ? 'Button Loader (spin.js)' : 'Cargando en Botón (spin.js)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Simulates progress animation on a button:' : 'Simula animación de progreso en un botón:'}</p>
+        
+        <button type="button" id="btn_spin_demo" class="lab_btn_submit" style="width: 100%; background: var(--mco);">
+          {lang === 'en' ? 'Send Application' : 'Enviar Postulación'}
+        </button>
+      </div>
+
+      <!-- Módulo 19: Almacenamiento (storage.js) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-database"></i> 
+          {lang === 'en' ? 'Timed Storage (storage.js)' : 'Almacenamiento (storage.js)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Tests localStorage with expiration (saves for 5 sec):' : 'Guarda datos con expiración (guardado por 5 seg):'}</p>
+        
+        <div style="display: flex; gap: 1.5vh; margin-bottom: 2vh;">
+          <button type="button" id="btn_storage_save" class="lab_btn_submit" style="flex: 1; background: var(--mco);">
+            {lang === 'en' ? 'Save Value' : 'Guardar Dato'}
+          </button>
+          <button type="button" id="btn_storage_read" class="lab_btn_submit" style="flex: 1; background: var(--success);">
+            {lang === 'en' ? 'Read Value' : 'Leer Dato'}
+          </button>
+        </div>
+
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>{lang === 'en' ? 'Saved State: ' : 'Estado Guardado: '}</strong>
+          <span id="txt_storage_state" style="color: var(--tx2); font-weight: 600;">{lang === 'en' ? 'No data' : 'Sin datos'}</span>
+        </div>
+      </div>
+
+      <!-- Módulo 20: Carga Diferida (superfun.js) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-bolt"></i> 
+          {lang === 'en' ? 'Interaction Deferred (superFun)' : 'Carga Diferida (superFun)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Postpones heavy execution until user interacts:' : 'Difiere la carga hasta la primera interacción:'}</p>
+        
+        <button type="button" id="btn_superfun_trigger" class="lab_btn_submit" style="width: 100%; background: var(--warning);">
+          {lang === 'en' ? 'Queue Heavy Script' : 'Encolar Script Pesado'}
+        </button>
+
+        <div class="lab_item" style="font-size: var(--fz_s3); margin-top: 1.5vh;">
+          <strong>{lang === 'en' ? 'Status: ' : 'Estado: '}</strong>
+          <span id="txt_superfun_status" style="font-weight: 700; color: var(--error);">{lang === 'en' ? 'Waiting for interaction...' : 'Esperando interacción...'}</span>
+        </div>
+      </div>
+
+      <!-- Módulo 21: Utilidades de Texto (texto.js) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-text-height"></i> 
+          {lang === 'en' ? 'Text Formatting (texto.js)' : 'Formateo de Texto (texto.js)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Live lowercase conversion preserving selection:' : 'Conversión a minúsculas conservando selección:'}</p>
+        
+        <input 
+          type="text" 
+          id="input_texto_minus" 
+          placeholder={lang === 'en' ? 'Type in uppercase, turns lowercase...' : 'Escribe en MAYÚSCULAS y se convertirá...'} 
+          style="width: 100%; padding: 1.2vh 1.8vh; background: var(--bg4); border: 1px solid var(--brd); border-radius: 0.8vh; color: var(--tx1); font-weight: 500; font-size: var(--fz_s3); margin-bottom: 2vh; outline: none; transition: border-color 0.2s;" 
+          onfocus="this.style.borderColor='var(--mco)';"
+          onblur="this.style.borderColor='var(--brd)';"
+        />
+
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>mis10() [Truncate]: </strong>
+          <span id="txt_texto_mis10" style="color: var(--success); font-weight: 600;"></span>
+        </div>
+      </div>
+
+      <!-- Módulo 22: Formateador de Código (wiCode) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-code"></i> 
+          {lang === 'en' ? 'Code Block Wrapper (wiCode)' : 'Formato de Código (wiCode)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Wraps pre/code tags with an interactive copy button:' : 'Envuelve etiquetas pre/code con botón flotante de copia:'}</p>
+        
+        <pre class="lab_wicode_demo" style="margin-top: 1.5vh;">const greet = () => "Hello Workwii!";</pre>
+
+        <button type="button" id="btn_wicode_trigger" class="lab_btn_submit" style="width: 100%; background: var(--mco); margin-top: 1.5vh;">
+          {lang === 'en' ? 'Apply wiCode Format' : 'Aplicar Formato wiCode'}
+        </button>
+      </div>
+
+      <!-- Módulo 23: Ubicación y Telemetría (wiIp) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-location-dot"></i> 
+          {lang === 'en' ? 'IP & Telemetry (wiIp)' : 'Ubicación y Telemetría (wiIp)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Queries client IP, device, OS, and location:' : 'Consulta la IP, dispositivo, SO y geolocalización:'}</p>
+        
+        <button type="button" id="btn_wiip_trigger" class="lab_btn_submit" style="width: 100%; background: var(--success); margin-bottom: 2vh;">
+          {lang === 'en' ? 'Query Client Data' : 'Consultar Datos Cliente'}
+        </button>
+
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>IP / Ciudad: </strong>
+          <span id="txt_wiip_city" style="color: var(--tx1); font-weight: 600;"></span>
+        </div>
+
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>OS / Browser: </strong>
+          <span id="txt_wiip_browser" style="color: var(--success); font-weight: 600;"></span>
+        </div>
+      </div>
+
+      <!-- Módulo 24: Atajos DOM (more.js) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-tags"></i> 
+          {lang === 'en' ? 'DOM Utilities (more.js)' : 'Atajos DOM (more.js)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Tests sequential clicks (wiSuma) and quick updates (adtm):' : 'Prueba clics acumulados (wiSuma) y textos rápidos (adtm):'}</p>
+        
+        <div style="display: flex; gap: 1.5vh; margin-bottom: 2vh;">
+          <button type="button" id="btn_wisuma_secret" class="lab_btn_submit" style="flex: 1; background: var(--warning);">
+            {lang === 'en' ? 'Click 5 times' : 'Clic 5 veces (Suma)'}
+          </button>
+          <button type="button" id="btn_adtm_demo" class="lab_btn_submit" style="flex: 1; background: var(--info);">
+            {lang === 'en' ? 'Save Status' : 'Guardar Estado'}
+          </button>
+        </div>
+      </div>
+
+      <!-- Módulo 25: Carga Inteligente (wiSmart) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-brain"></i> 
+          {lang === 'en' ? 'Smart Asset Loader (wiSmart)' : 'Carga Inteligente (wiSmart)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Simulates dynamic CSS font load on user interaction:' : 'Simula la carga dinámica de fuentes con la primera interacción:'}</p>
+        
+        <button type="button" id="btn_wismart_trigger" class="lab_btn_submit" style="width: 100%; background: var(--mco);">
+          {lang === 'en' ? 'Load Test Font (Lobster)' : 'Cargar Fuente de Prueba (Lobster)'}
+        </button>
+
+        <div class="lab_item" style="font-size: var(--fz_s3); margin-top: 1.5vh;">
+          <strong>{lang === 'en' ? 'Status: ' : 'Estado: '}</strong>
+          <span id="txt_wismart_status" style="font-weight: 700; color: var(--warning);">{lang === 'en' ? 'Idle' : 'Inactivo'}</span>
+        </div>
+      </div>
+
+      <!-- Módulo 26: Bus de Autenticación (wiAuth) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fas fa-user-shield"></i> 
+          {lang === 'en' ? 'Auth Reactive Bus (wiAuth)' : 'Bus de Autenticación (wiAuth)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Tests user session reactivity and updates:' : 'Prueba la reactividad ante cambios de sesión de usuario:'}</p>
+        
+        <div style="display: flex; gap: 1.5vh; margin-bottom: 2vh;">
+          <button type="button" id="btn_auth_login" class="lab_btn_submit" style="flex: 1; background: var(--success);">
+            Login Mock
+          </button>
+          <button type="button" id="btn_auth_logout" class="lab_btn_submit" style="flex: 1; background: var(--error);">
+            Logout Mock
+          </button>
+        </div>
+
+        <div class="lab_item" style="font-size: var(--fz_s3);">
+          <strong>{lang === 'en' ? 'Active session: ' : 'Sesión activa: '}</strong>
+          <span id="txt_auth_status" style="font-weight: 700; color: var(--error);">{lang === 'en' ? 'No user' : 'Sin usuario'}</span>
+        </div>
+      </div>
+
+      <!-- Módulo 27: Markdown Ligero (wiMd) -->
+      <div class="lab_card">
+        <h3 class="lab_sec_title">
+          <i class="fab fa-markdown"></i> 
+          {lang === 'en' ? 'Light Markdown (wiMd)' : 'Markdown Ligero (wiMd)'}
+        </h3>
+        <p class="lab_text">{lang === 'en' ? 'Converts syntax dynamically with XSS protection:' : 'Convierte sintaxis dinámicamente con protección contra XSS:'}</p>
+        
+        <textarea 
+          id="txt_wimd_input" 
+          style="width: 100%; height: 8vh; padding: 1.2vh 1.8vh; background: var(--bg4); border: 1px solid var(--brd); border-radius: 0.8vh; color: var(--tx1); font-weight: 500; font-size: var(--fz_s3); margin-bottom: 2vh; outline: none; resize: none; transition: border-color 0.2s;" 
+          onfocus="this.style.borderColor='var(--mco)';"
+          onblur="this.style.borderColor='var(--brd)';"
+        >{"**Hola Wilder**, visita [Google](https://google.com) o prueba `código inline` y <script>alert(1)</" + "script>"}</textarea>
+
+        <div class="lab_item" style="font-size: var(--fz_s3); max-height: 12vh; overflow-y: auto;">
+          <strong>HTML Generado: </strong>
+          <div id="txt_wimd_output" style="background: var(--bg3); padding: 1vh; border-radius: 0.6vh; margin-top: 1vh; font-family: sans-serif; color: var(--tx2);"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Modal HTML Element de Pruebas -->
+  <div id="lab_test_modal" class="wiModal">
+    <div class="wiModal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5vh;">
+        <h3 style="font-weight: 700; margin: 0;">
+          {lang === 'en' ? 'Prueba de Modal Modular' : 'Prueba de Modal Modular'}
+        </h3>
+        <!-- Botón cerrar circular premium con icono Font Awesome -->
+        <button 
+          type="button" 
+          class="modalX" 
+          style="background: var(--bg4); border: none; width: 4.5vh; height: 4.5vh; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--tx2); transition: all 0.2s ease;"
+          onmouseover="this.style.background='var(--brd)'; this.style.color='var(--tx1)';"
+          onmouseout="this.style.background='var(--bg4)'; this.style.color='var(--tx2)';"
+        >
+          <i class="fa-solid fa-xmark" style="font-size: var(--fz_m2);"></i>
+        </button>
+      </div>
+      
+      <p class="lab_text" style="margin-bottom: 2vh;">
+        {lang === 'en' ? 'Testing input focus behavior on modal open:' : 'Comprobando auto-foco en el primer campo:'}
+      </p>
+      
+      <input 
+        type="text" 
+        placeholder={lang === 'en' ? 'This gains focus automatically...' : 'Este campo gana foco al abrir...'} 
+        style="width: 100%; padding: 1.2vh 1.8vh; background: var(--bg4); border: 1px solid var(--brd); border-radius: 0.8vh; color: var(--tx1); font-weight: 500; font-size: var(--fz_s3); margin-bottom: 2.5vh; transition: border-color 0.2s ease, box-shadow 0.2s ease; outline: none;"
+        onfocus="this.style.borderColor='var(--mco)'; this.style.boxShadow='0 0 0 3px rgba(0, 112, 243, 0.15)';"
+        onblur="this.style.borderColor='var(--brd)'; this.style.boxShadow='none';"
+      />
+      
+      <div style="display: flex; gap: 2vh; justify-content: flex-end;">
+        <button 
+          type="button" 
+          class="lab_btn_submit" 
+          data-wimodal-close
+          style="background: var(--bg4); color: var(--tx1); display: inline-flex; align-items: center; gap: 1vh;"
+        >
+          <i class="fa-solid fa-xmark"></i>
+          {lang === 'en' ? 'Cancel' : 'Cancelar'}
+        </button>
+        <button 
+          type="button" 
+          id="btn_modal_save" 
+          class="lab_btn_submit" 
+          style="background: var(--success); display: inline-flex; align-items: center; gap: 1vh;"
+        >
+          <i class="fa-solid fa-check"></i>
+          {lang === 'en' ? 'Save' : 'Aceptar'}
+        </button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .lab_spy_link.active {
+    background: var(--bg3) !important;
+    color: var(--mco) !important;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  }
+</style>
+
+<script>
+  import { 
+    Saludar, 
+    wiTip, 
+    herowi, 
+    showi, 
+    wiVista, 
+    wiFade, 
+    wicopy, 
+    year,
+    wiDate,
+    fechaHoy, 
+    formatearFechaParaInput,
+    formatearFechaHora,
+    wiTiempo, 
+    calcMeses, 
+    imgwii,
+    Mensaje,
+    abrirModal,
+    cerrarModal,
+    cerrarTodos,
+    wiPath,
+    Capit,
+    NombreApellido,
+    getNombre,
+    avatar,
+    Notificacion,
+    wiRateLimit,
+    wiScroll,
+    setMeta,
+    wiSpin,
+    savels,
+    getls,
+    removels,
+    superFun,
+    Capi,
+    mis10,
+    minus,
+    wiCode,
+    wiIp,
+    wiSuma,
+    adtm,
+    wiSmart,
+    wiMd,
+    langwii
+  } from '../widev/widev.js';
+  import { wiAuth } from '../wiauth/sesion.js';
+
+  const initLab = () => {
+    // 1. Ejecutar Saludo
+    const saludoEl = document.getElementById('lab_saludo');
+    if (saludoEl) {
+      saludoEl.textContent = Saludar('Wilder');
+    }
+
+    // 2. Inicializar Tooltips, Animaciones e Imágenes
+    try {
+      wiTip();
+      herowi();
+      showi();
+      imgwii.ver();
+      
+      // 3. Inicializar wiVista
+      wiVista('.lab_vista_item', (el: Element, idx: number) => {
+        console.log(`🧪 [wiVista] Elemento index [${idx}] visible en pantalla:`, el.textContent);
+      }, { anim: 'wi_visible', threshold: 0.2 });
+
+      // 4. Configurar botón para wiFade
+      const btnFade = document.getElementById('btn_fade');
+      const fadeTarget = document.getElementById('fade_target');
+      if (btnFade && fadeTarget) {
+        const newBtn = btnFade.cloneNode(true);
+        btnFade.parentNode?.replaceChild(newBtn, btnFade);
+
+        newBtn.addEventListener('click', async () => {
+          const isOriginal = fadeTarget.textContent.trim().toLowerCase().includes('original');
+          const newHtml = isOriginal
+            ? langwii.n('✨ ¡Cambiado suavemente con wiFade!', '✨ Swapped smoothly with wiFade!')
+            : langwii.n('Texto original (wiFade)', 'Original text (wiFade)');
+          
+          await wiFade(fadeTarget, newHtml, 150);
+        });
+      }
+
+      // 5. Configurar botón para @starting-style
+      const btnAddAlert = document.getElementById('btn_add_alert');
+      const alertContainer = document.getElementById('alert_container');
+      if (btnAddAlert && alertContainer) {
+        const newBtnAlert = btnAddAlert.cloneNode(true);
+        btnAddAlert.parentNode?.replaceChild(newBtnAlert, btnAddAlert);
+
+        newBtnAlert.addEventListener('click', () => {
+          const alert = document.createElement('div');
+          alert.className = 'lab_alert_starting';
+          alert.textContent = langwii.n(
+            '✨ ¡Nueva alerta animada nativamente con CSS @starting-style!',
+            '✨ New alert animated natively with CSS @starting-style!'
+          );
+          
+          alertContainer.appendChild(alert);
+
+          // Remover la alerta después de unos segundos
+          setTimeout(() => {
+            alert.style.opacity = '0';
+            alert.style.transform = 'scale(0.9)';
+            setTimeout(() => alert.remove(), 400);
+          }, 3000);
+        });
+      }
+
+      // 6. Configurar wicopy
+      const btnCopyInput = document.getElementById('btn_copy_input');
+      if (btnCopyInput) {
+        const newBtnCopy = btnCopyInput.cloneNode(true);
+        btnCopyInput.parentNode?.replaceChild(newBtnCopy, btnCopyInput);
+        
+        newBtnCopy.addEventListener('click', (e) => {
+          wicopy('#input_copy_demo', e.currentTarget as any);
+        });
+      }
+
+      // 7. Inyectar datos de fechas (Lista completa de 7 funciones)
+      const txtYear = document.getElementById('txt_year');
+      if (txtYear) {
+        txtYear.textContent = String(year());
+      }
+
+      const txtFechaHoy = document.getElementById('txt_fecha_hoy');
+      if (txtFechaHoy) {
+        txtFechaHoy.textContent = fechaHoy();
+      }
+
+      const txtTiempoRel = document.getElementById('txt_tiempo_rel');
+      if (txtTiempoRel) {
+        txtTiempoRel.textContent = wiTiempo(Date.now() - 120000); // hace 2 min
+      }
+
+      const txtMesesDiff = document.getElementById('txt_meses_diff');
+      if (txtMesesDiff) {
+        txtMesesDiff.textContent = String(calcMeses('2026-01-01'));
+      }
+
+      const txtFechaHora = document.getElementById('txt_fecha_hora');
+      if (txtFechaHora) {
+        txtFechaHora.textContent = formatearFechaHora(new Date());
+      }
+
+      const txtFechaInput = document.getElementById('txt_fecha_input');
+      if (txtFechaInput) {
+        txtFechaInput.textContent = formatearFechaParaInput(new Date());
+      }
+
+      const txtWiDateMock = document.getElementById('txt_widate_mock');
+      if (txtWiDateMock) {
+        // Simulamos un Timestamp de Firebase (seconds y nanoseconds)
+        const mockFirebaseTimestamp = { seconds: Math.floor(Date.now() / 1000) };
+        const dummyDb = { fromDate: (d: Date) => d.toISOString() }; // Mock DB interface
+        const dateHelper = wiDate(dummyDb);
+        txtWiDateMock.textContent = dateHelper.get(mockFirebaseTimestamp, 'full');
+      }
+
+      // 8. Configurar Toasts (Mensaje)
+      document.querySelectorAll('.btn-toast').forEach(btn => {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode?.replaceChild(newBtn, btn);
+        
+        newBtn.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLButtonElement;
+          const tipo = target.getAttribute('data-tipo') || 'success';
+          Mensaje(
+            langwii.n(
+              `¡Éxito! Alerta flotante de tipo ${tipo} disparada.`,
+              `Success! Triggered a dynamic ${tipo} notification.`
+            ),
+            tipo
+          );
+        });
+      });
+
+      // 9. Configurar Modales
+      const btnOpenModal = document.getElementById('btn_open_modal');
+      if (btnOpenModal) {
+        const newBtn = btnOpenModal.cloneNode(true);
+        btnOpenModal.parentNode?.replaceChild(newBtn, btnOpenModal);
+        newBtn.addEventListener('click', () => abrirModal('lab_test_modal'));
+      }
+      
+      const btnModalSave = document.getElementById('btn_modal_save');
+      if (btnModalSave) {
+        const newBtn = btnModalSave.cloneNode(true);
+        btnModalSave.parentNode?.replaceChild(newBtn, btnModalSave);
+        newBtn.addEventListener('click', () => {
+          Mensaje(
+            langwii.n('¡Ajustes guardados con éxito!', 'Settings saved successfully!'), 
+            'success'
+          );
+          cerrarTodos();
+        });
+      }
+
+      // 10. Configurar Rutas (wiPath)
+      const txtPathActual = document.getElementById('txt_wipath_actual');
+      const txtPathParams = document.getElementById('txt_wipath_params');
+      
+      const updateRouteInfo = () => {
+        if (txtPathActual) txtPathActual.textContent = wiPath.actual;
+        if (txtPathParams) txtPathParams.textContent = JSON.stringify(wiPath.params());
+      };
+      
+      updateRouteInfo();
+      window.removeEventListener('popstate', updateRouteInfo);
+      window.addEventListener('popstate', updateRouteInfo);
+
+      const btnSimularRuta = document.getElementById('btn_simular_ruta');
+      if (btnSimularRuta) {
+        const newBtn = btnSimularRuta.cloneNode(true);
+        btnSimularRuta.parentNode?.replaceChild(newBtn, btnSimularRuta);
+        newBtn.addEventListener('click', () => {
+          const rand = Math.floor(Math.random() * 100);
+          wiPath.poner(`${wiPath.actual}?user=wilder&rand=${rand}`);
+        });
+      }
+
+      // 11. Configurar Formateador de Nombres
+      const inputNombreDemo = document.getElementById('input_nombre_demo') as HTMLInputElement;
+      const txtNombreCapit = document.getElementById('txt_nombre_capit');
+      const txtNombreCompleto = document.getElementById('txt_nombre_completo');
+      const txtNombreGet = document.getElementById('txt_nombre_get');
+      const txtNombreAvatar = document.getElementById('txt_nombre_avatar');
+      
+      const updateNameDemo = () => {
+        if (inputNombreDemo) {
+          const val = inputNombreDemo.value;
+          if (txtNombreCapit) txtNombreCapit.textContent = Capit(val);
+          if (txtNombreCompleto) txtNombreCompleto.textContent = NombreApellido(val);
+          if (txtNombreGet) txtNombreGet.textContent = getNombre(val);
+          if (txtNombreAvatar) txtNombreAvatar.textContent = avatar(val);
+        }
+      };
+      
+      if (inputNombreDemo) {
+        const newBtn = inputNombreDemo.cloneNode(true);
+        inputNombreDemo.parentNode?.replaceChild(newBtn, inputNombreDemo);
+        newBtn.addEventListener('input', (e) => {
+          const target = e.currentTarget as HTMLInputElement;
+          const val = target.value;
+          if (txtNombreCapit) txtNombreCapit.textContent = Capit(val);
+          if (txtNombreCompleto) txtNombreCompleto.textContent = NombreApellido(val);
+          if (txtNombreGet) txtNombreGet.textContent = getNombre(val);
+          if (txtNombreAvatar) txtNombreAvatar.textContent = avatar(val);
+        });
+      }
+      updateNameDemo();
+
+      // 12. Configurar Notificaciones Apilables (Notificacion)
+      document.querySelectorAll('.btn-notif').forEach(btn => {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode?.replaceChild(newBtn, btn);
+        
+        newBtn.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLButtonElement;
+          const tipo = target.getAttribute('data-tipo') || 'success';
+          Notificacion(
+            langwii.n(
+              `¡Éxito! Banner de notificación de tipo ${tipo} disparado.`,
+              `Success! Triggered a dynamic ${tipo} notification banner.`
+            ),
+            tipo
+          );
+        });
+      });
+
+      // 13. Configurar Rate Limiter (wiRateLimit)
+      const btnRateLimitTrigger = document.getElementById('btn_ratelimit_trigger');
+      const btnRateLimitReset = document.getElementById('btn_ratelimit_reset');
+      const txtRateLimitRemaining = document.getElementById('txt_ratelimit_remaining');
+      
+      const updateAttempts = (remaining: number) => {
+        if (txtRateLimitRemaining) {
+          txtRateLimitRemaining.textContent = String(remaining);
+          if (remaining === 0) {
+            txtRateLimitRemaining.style.color = 'var(--error)';
+          } else {
+            txtRateLimitRemaining.style.color = 'var(--success)';
+          }
+        }
+      };
+      
+      if (btnRateLimitTrigger) {
+        const newBtn = btnRateLimitTrigger.cloneNode(true);
+        btnRateLimitTrigger.parentNode?.replaceChild(newBtn, btnRateLimitTrigger);
+        newBtn.addEventListener('click', () => {
+          const limit = wiRateLimit('lab_click_limit', 3, 60000 as any);
+          
+          if (!limit.ok) {
+            Mensaje(
+              langwii.n(
+                `¡Límite alcanzado! Bloqueado por ${limit.min} min.`,
+                `Limit reached! Locked for ${limit.min} min.`
+              ),
+              'error'
+            );
+            updateAttempts(0);
+            return;
+          }
+          
+          limit.fail();
+          
+          const s = JSON.parse(localStorage.getItem('limiteHoy_lab_click_limit') || '{}');
+          const currentAttempts = s.n || 0;
+          const remaining = Math.max(0, 3 - currentAttempts);
+          
+          updateAttempts(remaining);
+          
+          if (remaining === 0) {
+            Mensaje(
+              langwii.n('¡Bloqueado! Excediste el límite.', 'Locked! You hit the limit.'), 
+              'warning'
+            );
+          } else {
+            Mensaje(
+              langwii.n(
+                `Acción registrada. Restantes: ${remaining}`,
+                `Action counted. Remaining: ${remaining}`
+              ), 
+              'info'
+            );
+          }
+        });
+      }
+      
+      if (btnRateLimitReset) {
+        const newBtn = btnRateLimitReset.cloneNode(true);
+        btnRateLimitReset.parentNode?.replaceChild(newBtn, btnRateLimitReset);
+        newBtn.addEventListener('click', () => {
+          localStorage.removeItem('limiteHoy_lab_click_limit');
+          updateAttempts(3);
+          Mensaje(langwii.n('¡Limitador reseteado!', 'Limiter reset!'), 'success');
+        });
+      }
+      
+      const getInitialAttempts = () => {
+        try {
+          const item = localStorage.getItem('limiteHoy_lab_click_limit');
+          if (item) {
+            const s = JSON.parse(item);
+            if (Date.now() < s.bloqueadoHasta) {
+              updateAttempts(0);
+              return;
+            }
+            updateAttempts(Math.max(0, 3 - (s.n || 0)));
+          } else {
+            updateAttempts(3);
+          }
+        } catch(e) {}
+      };
+      getInitialAttempts();
+
+      // 14. Configurar Scroll Spy (wiScroll)
+      const spyContainer = document.getElementById('spy_scroll_container');
+      if (spyContainer) {
+        wiScroll(
+          ['lab_sec_demo1', 'lab_sec_demo2'],
+          '.lab_spy_link',
+          {
+            root: spyContainer,
+            margin: '0px 0px -50% 0px',
+            cls: 'active'
+          }
+        );
+      }
+
+      // 15. Configurar SEO y Metadatos (setMeta)
+      const btnSimularSeo = document.getElementById('btn_simular_seo');
+      const txtSeoTitle = document.getElementById('txt_seo_title');
+      
+      const updateSeoInfo = () => {
+        if (txtSeoTitle) txtSeoTitle.textContent = document.title;
+      };
+      updateSeoInfo();
+
+      if (btnSimularSeo) {
+        const newBtn = btnSimularSeo.cloneNode(true);
+        btnSimularSeo.parentNode?.replaceChild(newBtn, btnSimularSeo);
+        newBtn.addEventListener('click', () => {
+          setMeta({
+            title: langwii.n('Artículo de Test de Super SEO', 'Super SEO Test Article'),
+            desc: langwii.n('Simulación de SEO dinámico de artículo', 'Simulated dynamic article SEO'),
+            path: '/lab/seo-test',
+            type: 'Article',
+            datePublished: new Date().toISOString() as any
+          });
+          updateSeoInfo();
+          
+          Mensaje(
+            langwii.n(
+              '¡Meta schema de SEO dinámico generado en el head!',
+              'SEO schema dynamic meta generated in head!'
+            ),
+            'success'
+          );
+        });
+      }
+
+      // 16. Configurar Button Spinner (wiSpin)
+      const btnSpinDemo = document.getElementById('btn_spin_demo');
+      if (btnSpinDemo) {
+        const newBtn = btnSpinDemo.cloneNode(true);
+        btnSpinDemo.parentNode?.replaceChild(newBtn, btnSpinDemo);
+        newBtn.addEventListener('click', () => {
+          wiSpin(newBtn, true, langwii.n('Enviando...', 'Sending...'));
+          
+          setTimeout(() => {
+            wiSpin(newBtn, false);
+            Mensaje(
+              langwii.n('¡Proceso finalizado!', 'Process complete!'),
+              'success'
+            );
+          }, 2000);
+        });
+      }
+
+      // 17. Configurar Almacenamiento (storage.js)
+      const btnStorageSave = document.getElementById('btn_storage_save');
+      const btnStorageRead = document.getElementById('btn_storage_read');
+      const txtStorageState = document.getElementById('txt_storage_state');
+      
+      if (btnStorageSave) {
+        const newBtn = btnStorageSave.cloneNode(true);
+        btnStorageSave.parentNode?.replaceChild(newBtn, btnStorageSave);
+        newBtn.addEventListener('click', () => {
+          const val = Math.floor(Math.random() * 1000);
+          savels('lab_temp_data', { score: val }, 0.00138); // ~5 segundos (5/3600 horas)
+          if (txtStorageState) {
+            txtStorageState.textContent = langwii.n(
+              `Guardado: ${val} (Expira en 5s)`,
+              `Saved: ${val} (Expires in 5s)`
+            );
+            txtStorageState.style.color = 'var(--mco)';
+          }
+          Mensaje(langwii.n('¡Dato guardado en localStorage!', 'Value saved in localStorage!'), 'success');
+        });
+      }
+      
+      if (btnStorageRead) {
+        const newBtn = btnStorageRead.cloneNode(true);
+        btnStorageRead.parentNode?.replaceChild(newBtn, btnStorageRead);
+        newBtn.addEventListener('click', () => {
+          const data = getls('lab_temp_data');
+          if (txtStorageState) {
+            if (data) {
+              txtStorageState.textContent = langwii.n(
+                `Leído: ${JSON.stringify(data)}`,
+                `Read: ${JSON.stringify(data)}`
+              );
+              txtStorageState.style.color = 'var(--success)';
+            } else {
+              txtStorageState.textContent = langwii.n(
+                'Expiró o sin datos',
+                'Expired or no data'
+              );
+              txtStorageState.style.color = 'var(--error)';
+            }
+          }
+        });
+      }
+
+      // 18. Configurar Carga Diferida (superFun)
+      const btnSuperFunTrigger = document.getElementById('btn_superfun_trigger');
+      const txtSuperFunStatus = document.getElementById('txt_superfun_status');
+      
+      if (btnSuperFunTrigger) {
+        const newBtn = btnSuperFunTrigger.cloneNode(true);
+        btnSuperFunTrigger.parentNode?.replaceChild(newBtn, btnSuperFunTrigger);
+        newBtn.addEventListener('click', () => {
+          localStorage.removeItem('superFun');
+          if (txtSuperFunStatus) {
+            txtSuperFunStatus.textContent = langwii.n(
+              '¡Encolado! Haz scroll, clic o mueve el mouse para disparar...',
+              'Enqueued! Scroll, click or move mouse to trigger...'
+            );
+            txtSuperFunStatus.style.color = 'var(--warning)';
+          }
+          
+          superFun(() => {
+            if (txtSuperFunStatus) {
+              txtSuperFunStatus.textContent = langwii.n(
+                '⚡ ¡Script pesado ejecutado con éxito!',
+                '⚡ Executed heavy script successfully!'
+              );
+              txtSuperFunStatus.style.color = 'var(--success)';
+            }
+            Mensaje(
+              langwii.n('¡SuperFun ejecutado!', 'SuperFun executed!'), 
+              'success'
+            );
+          });
+        });
+      }
+
+      // 19. Configurar Utilidades de Texto (texto.js)
+      const inputTextoMinus = document.getElementById('input_texto_minus') as HTMLInputElement;
+      const txtTextoMis10 = document.getElementById('txt_texto_mis10');
+      
+      if (inputTextoMinus) {
+        const newBtn = inputTextoMinus.cloneNode(true) as HTMLInputElement;
+        inputTextoMinus.parentNode?.replaceChild(newBtn, inputTextoMinus);
+        minus(newBtn);
+        
+        newBtn.addEventListener('input', (e) => {
+          const target = e.currentTarget as HTMLInputElement;
+          if (txtTextoMis10) {
+            txtTextoMis10.textContent = mis10(target.value);
+          }
+        });
+      }
+
+      // 20. Configurar Formato de Código (wiCode)
+      const btnWicodeTrigger = document.getElementById('btn_wicode_trigger');
+      if (btnWicodeTrigger) {
+        const newBtn = btnWicodeTrigger.cloneNode(true);
+        btnWicodeTrigger.parentNode?.replaceChild(newBtn, btnWicodeTrigger);
+        newBtn.addEventListener('click', () => {
+          wiCode('.lab_wicode_demo');
+          Mensaje(langwii.n('¡wiCode formateado!', 'wiCode formatted!'), 'success');
+        });
+      }
+
+      // 21. Configurar Ubicación y Telemetría (wiIp)
+      const btnWiipTrigger = document.getElementById('btn_wiip_trigger');
+      const txtWiipCity = document.getElementById('txt_wiip_city');
+      const txtWiipBrowser = document.getElementById('txt_wiip_browser');
+      
+      if (btnWiipTrigger) {
+        const newBtn = btnWiipTrigger.cloneNode(true);
+        btnWiipTrigger.parentNode?.replaceChild(newBtn, btnWiipTrigger);
+        newBtn.addEventListener('click', () => {
+          wiIp().then(data => {
+            if (data) {
+              if (txtWiipCity) txtWiipCity.textContent = `${data.ip} (${data.city}, ${data.country})`;
+              if (txtWiipBrowser) txtWiipBrowser.textContent = `${data.os} / ${data.browser} (${data.device})`;
+              Mensaje(langwii.n('¡Telemetría consultada!', 'Telemetry queried!'), 'success');
+            } else {
+              Mensaje('Error querying IP', 'error');
+            }
+          });
+        });
+      }
+
+      // 22. Configurar Atajos DOM (more.js)
+      const btnWisumaSecret = document.getElementById('btn_wisuma_secret');
+      const btnAdtmDemo = document.getElementById('btn_adtm_demo');
+      
+      if (btnWisumaSecret) {
+        const newBtn = btnWisumaSecret.cloneNode(true);
+        btnWisumaSecret.parentNode?.replaceChild(newBtn, btnWisumaSecret);
+        wiSuma(newBtn, () => {
+          Mensaje(langwii.n('💥 ¡Combinación secreta disparada!', '💥 Secret combination triggered!'), 'success');
+        }, 5);
+      }
+      
+      if (btnAdtmDemo) {
+        const newBtn = btnAdtmDemo.cloneNode(true);
+        btnAdtmDemo.parentNode?.replaceChild(newBtn, btnAdtmDemo);
+        newBtn.addEventListener('click', () => {
+          adtm(
+            newBtn, 
+            'lab_btn_saving_state', 
+            langwii.n('Guardando...', 'Saving...'), 
+            langwii.n('Guardar Estado', 'Save Status')
+          );
+        });
+      }
+
+      // 23. Configurar Carga Inteligente (wiSmart)
+      const btnWismartTrigger = document.getElementById('btn_wismart_trigger');
+      const txtWismartStatus = document.getElementById('txt_wismart_status');
+      
+      if (btnWismartTrigger) {
+        const newBtn = btnWismartTrigger.cloneNode(true);
+        btnWismartTrigger.parentNode?.replaceChild(newBtn, btnWismartTrigger);
+        newBtn.addEventListener('click', () => {
+          localStorage.removeItem('wiSmart');
+          
+          if (txtWismartStatus) {
+            txtWismartStatus.textContent = langwii.n(
+              '¡Encolado! Haz scroll o clic en cualquier lado para disparar...',
+              'Enqueued! Scroll or click anywhere to trigger...'
+            );
+            txtWismartStatus.style.color = 'var(--warning)';
+          }
+
+          wiSmart({
+            css: ['https://fonts.googleapis.com/css2?family=Lobster&display=swap'],
+            custom: [
+              () => {
+                return new Promise((resolve) => {
+                  if (txtWismartStatus) {
+                    txtWismartStatus.textContent = langwii.n(
+                      '⚡ ¡Fuente Lobster Cargada! Estilo de tarjeta actualizado.',
+                      '⚡ Lobster Font Loaded! Element style updated.'
+                    );
+                    txtWismartStatus.style.color = 'var(--success)';
+                    txtWismartStatus.style.fontFamily = "'Lobster', cursive";
+                  }
+                  resolve(true);
+                });
+              }
+            ]
+          });
+        });
+      }
+
+      // 24. Configurar Bus de Autenticación (wiAuth)
+      const btnAuthLogin = document.getElementById('btn_auth_login');
+      const btnAuthLogout = document.getElementById('btn_auth_logout');
+      const txtAuthStatus = document.getElementById('txt_auth_status');
+
+      // Escuchar cambios reactivos en la sesión
+      const cancelAuthSub = wiAuth.on((user: any) => {
+        if (txtAuthStatus) {
+          if (user) {
+            txtAuthStatus.textContent = langwii.n(
+              `Logueado: ${user.nombre} (${user.rol})`,
+              `Logged in: ${user.nombre} (${user.rol})`
+            );
+            txtAuthStatus.style.color = 'var(--success)';
+          } else {
+            txtAuthStatus.textContent = langwii.n('Sin usuario activo', 'No user active');
+            txtAuthStatus.style.color = 'var(--error)';
+          }
+        }
+      });
+
+      if (btnAuthLogin) {
+        const newBtn = btnAuthLogin.cloneNode(true);
+        btnAuthLogin.parentNode?.replaceChild(newBtn, btnAuthLogin);
+        newBtn.addEventListener('click', () => {
+          wiAuth.login({ id: 101, nombre: 'Wilder Alexander', rol: 'admin', tema: 'mora' });
+          Mensaje(langwii.n('¡Sesión simulada activada!', 'Mock session logged in!'), 'success');
+        });
+      }
+
+      if (btnAuthLogout) {
+        const newBtn = btnAuthLogout.cloneNode(true);
+        btnAuthLogout.parentNode?.replaceChild(newBtn, btnAuthLogout);
+        newBtn.addEventListener('click', () => {
+          wiAuth.logout();
+          Mensaje(langwii.n('¡Sesión cerrada con éxito!', 'Logged out successfully!'), 'warning');
+        });
+      }
+
+      // 25. Configurar Markdown Parser (wiMd)
+      const txtWimdInput = document.getElementById('txt_wimd_input') as HTMLTextAreaElement;
+      const txtWimdOutput = document.getElementById('txt_wimd_output');
+
+      const renderMd = () => {
+        if (txtWimdInput && txtWimdOutput) {
+          txtWimdOutput.innerHTML = wiMd(txtWimdInput.value);
+        }
+      };
+
+      if (txtWimdInput) {
+        txtWimdInput.addEventListener('input', renderMd);
+        renderMd(); // primer render
+      }
+
+      console.log('🧪 [Lab] Módulos de widev/ re-inicializados con éxito.');
+    } catch (e) {
+      console.error('🧪 [Lab] Error al inicializar:', e);
+    }
+  };
+
+  document.addEventListener('astro:page-load', initLab);
+</script>

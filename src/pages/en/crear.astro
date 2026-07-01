@@ -3,7 +3,12 @@
 import Layout from '../../layouts/Layout.astro';
 import CrearPage from '../../lib/todos/crear/crearPage.astro';
 import { seo } from '../../lib/seo.js';
+import estilosCrear from '../../lib/todos/crear/crear.css?inline';
+import estilosChat from '../../lib/todos/crear/chatwii/estilo.css?inline';
 ---
 <Layout {...seo.crear.en}>
-  <CrearPage lang="en" />
+  <style is:global set:html={estilosCrear} slot="head"></style>
+  <style is:global set:html={estilosChat} slot="head"></style>
+
+  <CrearPage />
 </Layout>

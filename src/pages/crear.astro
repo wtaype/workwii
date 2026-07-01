@@ -4,7 +4,11 @@
 import Layout from '../layouts/Layout.astro';
 import CrearPage from '../lib/todos/crear/crearPage.astro';
 import { seo } from '../lib/seo.js';
+import estilosCrear from '../lib/todos/crear/crear.css?inline';
+import estilosChat from '../lib/todos/crear/chatwii/estilo.css?inline';
 ---
 <Layout {...seo.crear.es}>
-  <CrearPage lang="es" />
+  <style is:global set:html={estilosCrear + estilosChat } slot="head"></style>
+
+  <CrearPage />
 </Layout>
