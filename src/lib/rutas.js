@@ -7,6 +7,7 @@ export const idiomaRutas = {
     '/': 'Inicio',
     '/crear': 'Crear CV',
     '/analisar': 'Analizar CV',
+    '/traducir': 'Traducir CV',
     '/convertir-ats': 'Convertir a ATS',
     '/remotos': 'Trabajo Remoto',
     '/blog': 'Blog Apoyo',
@@ -31,6 +32,7 @@ export const idiomaRutas = {
     '/': 'Home',
     '/crear': 'Create CV',
     '/analisar': 'Analyze CV',
+    '/traducir': 'Translate CV',
     '/convertir-ats': 'Convert to ATS',
     '/remotos': 'Remote Work',
     '/blog': 'Blog Support',
@@ -56,6 +58,7 @@ export const idiomaRutas = {
 const COMUN = [
   { href: '/crear', ico: 'fa-file-signature' },
   { href: '/analisar', ico: 'fa-expand' },
+  { href: '/traducir', ico: 'fa-language' },
   { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles' },
   { href: '/remotos', ico: 'fa-briefcase' },
   { href: '/blog',   ico: 'fa-blog' },
