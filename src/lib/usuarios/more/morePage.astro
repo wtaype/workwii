@@ -1,0 +1,130 @@
+---
+// src/lib/usuarios/more/morePage.astro
+import { idiomaMore } from './idiomaMore.js';
+
+const lang = Astro.currentLocale || 'es';
+const t = (idiomaMore as any)[lang] || idiomaMore['es'];
+---
+
+<div class="more_wrap">
+  <header class="z_header">
+    <div class="z_header_txt">
+      <div class="z_badge"><i class="fas fa-cubes"></i> {lang === 'en' ? 'System Modules' : 'Módulos del Sistema'}</div>
+      <h1>{t['more.titulo']}</h1>
+      <p>{t['more.subtitulo']}</p>
+    </div>
+    <div class="z_search_box">
+      <i class="fas fa-magnifying-glass"></i>
+      <input type="text" id="zSearchInput" placeholder={t['more.buscar']} autocomplete="off">
+    </div>
+  </header>
+
+  <!-- Grid de Módulos (Cargados dinámicamente) -->
+  <div class="ej_grid" id="zGrid">
+    <div id="zLoading" style="grid-column: 1/-1; text-align: center; padding: 5vh; color: var(--tx3);">
+      <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
+    </div>
+  </div>
+
+  <!-- Estado Vacío -->
+  <div class="z_empty_grid" id="zEmpty" style="display: none;">
+    <i class="fas fa-ban"></i>
+    <p>{t['more.vacio']}</p>
+  </div>
+</div>
+
+<script>
+  import { protegerRuta } from '../../wiauth/sesion.js';
+  import { NAV_CONFIG, translateNav } from '../../rutas.js';
+  import { idiomaMore } from './idiomaMore.js';
+
+  const initMore = async () => {
+    // 1. Validar sesión y obtener información del usuario
+    const wi = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
+    if (!wi) return;
+
+    const lang = document.documentElement.lang || 'es';
+    const dict = (idiomaMore as any)[lang] || idiomaMore['es'];
+
+    const role = wi.rol || 'usuario';
+    const roleConfig = (NAV_CONFIG as any)[role] || NAV_CONFIG.usuario;
+    const translated = translateNav(roleConfig, lang);
+    const modules = translated.more || [];
+
+    const grid = document.getElementById('zGrid');
+    const loading = document.getElementById('zLoading');
+    const empty = document.getElementById('zEmpty');
+    const searchInput = document.getElementById('zSearchInput') as HTMLInputElement;
+
+    if (loading) loading.remove();
+
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    if (modules.length === 0) {
+      if (empty) empty.style.display = 'flex';
+      return;
+    }
+
+    const colors = {
+      '/traducir': '#6a00f5',
+      '/convertir-ats': '#0ebeff',
+      '/remotos': '#25b62a',
+      '/mi-cvs': '#ffa726',
+      '/postulaciones': '#ff3849',
+      '/notas': '#ffb800',
+      '/blog': '#6366f1',
+      '/nuevo': '#10b981',
+      '/word': '#2563eb',
+      '/mensajes': '#ec4899',
+      '/usuarios': '#4b5563'
+    };
+
+    // Dibujar tarjetas dinámicas estilo ej_item de Inicio
+    modules.forEach((mod: any, index: number) => {
+      const cleanHref = mod.href.replace(/^\/en/, '') || '/';
+      const accentColor = colors[cleanHref as keyof typeof colors] || 'var(--mco)';
+      const desc = dict[`desc.${cleanHref}`] || '';
+
+      const card = document.createElement('a');
+      card.href = mod.href;
+      card.className = 'ej_item';
+      card.setAttribute('style', `--x: ${accentColor}; animation-delay: ${index * 0.04}s;`);
+      card.setAttribute('data-search', `${mod.txt.toLowerCase()} ${desc.toLowerCase()}`);
+
+      card.innerHTML = `
+        <div class="ej_top">
+          <span><i class="fas ${mod.ico}"></i></span>
+          <span class="ej_tag font_o">${lang === 'en' ? 'Tool' : 'Herramienta'}</span>
+        </div>
+        <h3 class="font_o ej_title">${mod.txt}</h3>
+        <p class="font_o ej_desc">${desc}</p>
+      `;
+
+      grid.appendChild(card);
+    });
+
+    // Configurar buscador interactivo
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const q = searchInput.value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.ej_item');
+        let visibleCount = 0;
+
+        cards.forEach((cardEl) => {
+          const el = cardEl as HTMLElement;
+          const searchData = el.getAttribute('data-search') || '';
+          const match = !q || searchData.includes(q);
+          el.style.display = match ? 'block' : 'none';
+          if (match) visibleCount++;
+        });
+
+        if (empty) {
+          empty.style.display = visibleCount === 0 ? 'flex' : 'none';
+        }
+      });
+    }
+  };
+
+  document.addEventListener('astro:page-load', initMore);
+</script>

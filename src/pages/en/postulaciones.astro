@@ -1,0 +1,10 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PostulacionesPage from '../../lib/usuarios/postulaciones/postulacionesPage.astro';
+import estilosPost from '../../lib/usuarios/postulaciones/postulaciones.css?inline';
+---
+<Layout title="My Applications" robots="noindex, nofollow">
+  <script is:inline slot="head">localStorage.wiSmile||location.replace('/')</script>
+  <style is:global set:html={estilosPost} slot="head"></style>
+  <PostulacionesPage/>
+</Layout>

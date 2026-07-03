@@ -23,6 +23,7 @@ export const idiomaRutas = {
     '/gestor': 'Dashboard',
     '/admin': 'Plataforma',
     '/usuarios': 'Usuarios',
+    '/more': 'Más',
     'registrar': 'Registrar',
     'ingresar': 'Ingresar',
     'salir': 'Salir',
@@ -48,6 +49,7 @@ export const idiomaRutas = {
     '/gestor': 'Dashboard',
     '/admin': 'Platform',
     '/usuarios': 'Users',
+    '/more': 'More',
     'registrar': 'Register',
     'ingresar': 'Login',
     'salir': 'Logout',
@@ -81,37 +83,62 @@ export const NAV_CONFIG = {
   usuario: {
     left: [
       { href: '/smile', ico: 'fa-house' }, 
-      ...COMUN
+      { href: '/crear', ico: 'fa-file-signature' },
+      { href: '/analisar', ico: 'fa-expand' },
+      { href: '/blog', ico: 'fa-blog' },
+      { href: '/remotos', ico: 'fa-briefcase' },
+      { href: '/traducir', ico: 'fa-language' },
+      { href: '/more', ico: 'fa-ellipsis' },
     ],
     right: [
+      { href: '/mi-cvs', ico: 'fa-folder-open' },
       { href: '/ser-editor', ico: 'fa-user-pen' },
+      { isPerfil: true }, { isSalir: true },
+    ],
+    more: [
+      { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles' },
+      { href: '/postulaciones', ico: 'fa-list-check' },
       { href: '/notas', ico: 'fa-note-sticky' },
-      { isPerfil: true }, { isSalir: true }
     ]
   },
   editor: {
     left: [
-      { href: '/editor', ico: 'fa-house' },
-      ...COMUN
+      { href: '/crear', ico: 'fa-file-signature' },
+      { href: '/analisar', ico: 'fa-expand' },
+      { href: '/traducir', ico: 'fa-language' },
+      { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles' },
+      { href: '/remotos', ico: 'fa-briefcase' },
+      { href: '/more', ico: 'fa-ellipsis' },
     ],
     right: [
       { href: '/nuevo', ico: 'fa-plus' },
-      { href: '/notas', ico: 'fa-note-sticky' },
+      { href: '/editor', ico: 'fa-gauge' },
+      { isPerfil: true }, { isSalir: true },
+    ],
+    more: [
       { href: '/word', ico: 'fa-file-word' },
-      { isPerfil: true }, { isSalir: true }
+      { href: '/notas', ico: 'fa-note-sticky' },
+      { href: '/blog', ico: 'fa-blog' },
     ]
   },
   gestor: {
     left: [
       { href: '/gestor', ico: 'fa-house' },
       { href: '/crear', ico: 'fa-file-signature' },
-      ...COMUN
+      { href: '/analisar', ico: 'fa-expand' },
+      { href: '/more', ico: 'fa-ellipsis' }
     ],
     right: [
       { href: '/nuevo', ico: 'fa-plus' },
-      { href: '/notas', ico: 'fa-note-sticky' },
       { href: '/mensajes', ico: 'fa-comments' },
       { isPerfil: true }, { isSalir: true }
+    ],
+    more: [
+      { href: '/notas', ico: 'fa-note-sticky' },
+      { href: '/traducir', ico: 'fa-language' },
+      { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles' },
+      { href: '/remotos', ico: 'fa-briefcase' },
+      { href: '/blog', ico: 'fa-blog' }
     ]
   },
   admin: {
@@ -119,11 +146,18 @@ export const NAV_CONFIG = {
       { href: '/admin', ico: 'fa-globe' },
       { href: '/usuarios', ico: 'fa-users' },
       { href: '/crear', ico: 'fa-file-signature' },
-      { href: '/analisar', ico: 'fa-expand' }
+      { href: '/analisar', ico: 'fa-expand' },
+      { href: '/more', ico: 'fa-ellipsis' }
     ],
     right: [
       { href: '/mensajes', ico: 'fa-comments' },
       { isPerfil: true }, { isSalir: true }
+    ],
+    more: [
+      { href: '/traducir', ico: 'fa-language' },
+      { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles' },
+      { href: '/remotos', ico: 'fa-briefcase' },
+      { href: '/blog', ico: 'fa-blog' }
     ]
   }
 };
@@ -170,7 +204,8 @@ export function translateNav(config, lang) {
 
   return {
     left: config.left ? config.left.map(translateItem) : [],
-    right: config.right ? config.right.map(translateItem) : []
+    right: config.right ? config.right.map(translateItem) : [],
+    more: config.more ? config.more.map(translateItem) : []
   };
 }
 
@@ -186,10 +221,10 @@ export function rutaRoles() {
     if (item.href) publicPaths.push(item.href);
   });
 
-  // Construir dinámicamente el mapeo inspeccionando NAV_CONFIG
+  // Construir dinámicamente el mapeo de roles inspeccionando NAV_CONFIG (left, right y more)
   Object.entries(NAV_CONFIG).forEach(([rol, cfg]) => {
     if (rol === 'todos') return;
-    const items = [...(cfg.left || []), ...(cfg.right || [])];
+    const items = [...(cfg.left || []), ...(cfg.right || []), ...(cfg.more || [])];
     items.forEach(item => {
       if (item.href) {
         if (publicPaths.includes(item.href)) return; // Omitir rutas públicas
@@ -202,8 +237,9 @@ export function rutaRoles() {
   // Agregar rutas especiales fuera del menú de navegación
   roles['/verificar'] = ['admin'];
 
-  // Asegurar que las herramientas comunes de candidatos estén accesibles para todos los roles logueados
+  // Asegurar que las herramientas comunes estén accesibles para todos los roles logueados
   const allRoles = ['usuario', 'editor', 'gestor', 'admin'];
+  roles['/more'] = allRoles;
   roles['/smile'] = allRoles;
   roles['/word'] = allRoles;
   roles['/notas'] = allRoles;

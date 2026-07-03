@@ -1,0 +1,10 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import MicvsPage from '../../lib/usuarios/micvs/micvsPage.astro';
+import estilosMicvs from '../../lib/usuarios/micvs/micvs.css?inline';
+---
+<Layout title="My Resumes" robots="noindex, nofollow">
+  <script is:inline slot="head">localStorage.wiSmile||location.replace('/')</script>
+  <style is:global set:html={estilosMicvs} slot="head"></style>
+  <MicvsPage/>
+</Layout>

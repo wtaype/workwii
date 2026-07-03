@@ -1,0 +1,239 @@
+/* src/lib/usuarios/more/more.css */
+
+.more_wrap {
+  margin: 0 auto;
+  padding: 4vh 2vh;
+}
+
+/* Header */
+.z_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 3vh;
+  margin-bottom: 5vh;
+  border-bottom: 1px solid var(--brd, #e2e8f0);
+  padding-bottom: 3vh;
+  flex-wrap: wrap;
+}
+
+.z_header_txt {
+  flex: 1;
+  min-width: 280px;
+}
+
+.z_badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8vh;
+  font-size: var(--fz_s4, 0.8rem);
+  font-weight: 700;
+  color: var(--mco, #6366f1);
+  background: rgba(99, 102, 241, 0.08);
+  padding: 0.8vh 1.5vh;
+  border-radius: 50px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.5vh;
+}
+
+.z_header_txt h1 {
+  font-size: var(--fz_l2, 2rem);
+  font-weight: 800;
+  color: var(--tx, #1e293b);
+  margin: 0 0 1vh;
+}
+
+.z_header_txt p {
+  font-size: var(--fz_m2, 1rem);
+  color: var(--tx2, #64748b);
+  margin: 0;
+}
+
+/* Buscador */
+.z_search_box {
+  position: relative;
+  width: 320px;
+  max-width: 100%;
+}
+
+.z_search_box i {
+  position: absolute;
+  left: 2vh;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--tx3, #94a3b8);
+  font-size: var(--fz_m2, 1rem);
+  pointer-events: none;
+}
+
+.z_search_box input {
+  width: 100%;
+  padding: 1.5vh 2vh 1.5vh 5vh;
+  border-radius: 1.2vh;
+  border: 2px solid var(--brd, #e2e8f0);
+  background: var(--wb, #ffffff);
+  color: var(--tx, #1e293b);
+  font-size: var(--fz_m2, 1rem);
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.z_search_box input:focus {
+  border-color: var(--mco, #6366f1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Grid de Tarjetas (Estilo ej_grid, 4 columnas) */
+.ej_grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3.5vh;
+  margin-top: 4vh;
+}
+
+.ej_item {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  background: color-mix(in srgb, var(--wb) 80%, transparent);
+  backdrop-filter: blur(8px);
+  padding: 4.5vh 4vh;
+  border-radius: 2.5vh;
+  border: 1px solid var(--brd);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+  animation: zFadeUp 0.4s ease-out both;
+}
+
+.ej_item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--x) 15%, transparent) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.ej_item:hover::after {
+  opacity: 1;
+}
+
+.ej_item:hover {
+  transform: translateY(-8px);
+  border-color: var(--x);
+  box-shadow: 0 20px 40px color-mix(in srgb, var(--x) 12%, rgba(0, 0, 0, 0.06));
+}
+
+.ej_top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1vh;
+  margin-bottom: 2.5vh;
+  z-index: 1;
+}
+
+.ej_top > span:first-child {
+  font-size: var(--fz_l2);
+  color: var(--x);
+  background: color-mix(in srgb, var(--x) 12%, transparent);
+  width: 7vh;
+  height: 7vh;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s ease;
+}
+
+.ej_item:hover .ej_top > span:first-child {
+  background: var(--x);
+  color: #fff;
+  transform: scale(1.1) rotate(6deg);
+}
+
+.ej_tag {
+  font-size: var(--fz_s4);
+  font-weight: 700;
+  color: var(--x);
+  background: color-mix(in srgb, var(--x) 12%, transparent);
+  padding: 0.6vh 1.4vh;
+  border-radius: 50px;
+}
+
+.ej_title {
+  font-size: var(--fz_m4);
+  font-weight: 800;
+  color: var(--tx1);
+  margin: 0 0 1.5vh;
+  z-index: 1;
+}
+
+.ej_desc {
+  font-size: var(--fz_m1);
+  color: var(--tx2);
+  line-height: 1.6;
+  margin: 0;
+  z-index: 1;
+}
+
+/* Vacío */
+.z_empty_grid {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 8vh 2vh;
+  color: var(--tx2, #64748b);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2vh;
+}
+
+.z_empty_grid i {
+  font-size: 8vh;
+  opacity: 0.25;
+}
+
+/* Animación */
+@keyframes zFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(2.5vh);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsividad */
+@media (max-width: 1100px) {
+  .ej_grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 850px) {
+  .ej_grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .z_header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2vh;
+  }
+  .z_search_box {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .ej_grid {
+    grid-template-columns: 1fr;
+  }
+}

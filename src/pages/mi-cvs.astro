@@ -1,22 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { seo } from '../lib/seo.js';
+import MicvsPage from '../lib/usuarios/micvs/micvsPage.astro';
+import estilosMicvs from '../lib/usuarios/micvs/micvs.css?inline';
 ---
-
-<style is:global>
-
-</style>
-
-<Layout {...seo.acerca}>
-    <!-- 
-Panel central protegido por autenticación (localStorage.wiSmile).
-
-Función: Los usuarios suben sus CVs (PDF/Word de hasta 5MB) a Supabase Storage y la tabla user_cvs.
-Acción: Permite ver sus CVs y enviarlos con un clic a las herramientas de análisis o edición.
-    
-    -->
-
-    <h1> por eso yo amo a mi Dios siempre, porque el es bueno todo el tiempo.</h1>
+<Layout title="Mis CVs" robots="noindex, nofollow">
+  <script is:inline slot="head">localStorage.wiSmile||location.replace('/')</script>
+  <style is:global set:html={estilosMicvs} slot="head"></style>
+  <MicvsPage/>
 </Layout>
-
-<script is:inline> </script>
