@@ -1,0 +1,912 @@
+/* =========================================================================
+   POSTULACIONES.CSS — Estilos Premium para Modulo de Candidaturas
+   ========================================================================= */
+
+.post_root {
+  display: flex;
+  flex-direction: column;
+  height: 95vh;
+  overflow: hidden;
+  font-family: var(--ff_P);
+  background: var(--bg);
+  color: var(--tx);
+  box-sizing: border-box;
+  padding: 1vh;
+  gap: 1vh;
+}
+
+.post_root * {
+  box-sizing: border-box;
+}
+
+/* ── OVERRIDE PARA COMPONENTE CHATWII EMBEBIDO PLANO ─────────────────────── */
+.chatwii_main {
+  position: relative !important;
+  height: 100% !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.chatwii_postulaciones .cr_chat_widget {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important; /* Forzar a que ocupe el alto completo de la columna */
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--wb) !important;
+  z-index: 1 !important;
+  max-width: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: none !important;
+}
+
+.chatwii_postulaciones .chatwii_body {
+  flex: 1 !important;
+  max-height: none !important;
+  height: auto !important;
+  padding-bottom: 95px !important; /* Espacio para el footer absoluto */
+}
+
+/* ── TOPBAR UNIFICADA ULTRA-COMPACTA (ALTURA FIJA Y PERFECTA ALINEACION) ── */
+.post_topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5vh;
+  padding: 0 2vh;
+  height: 56px; /* Altura fija para evitar desalineación */
+  background: var(--wb);
+  border: 1px solid var(--brd) !important;
+  border-radius: 1vh;
+  flex-shrink: 0;
+}
+
+.post_topbar_left {
+  display: flex;
+  align-items: center;
+  gap: 1.5vh;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.post_topbar_right {
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+  flex-shrink: 0;
+}
+
+/* Brand / Logo */
+.post_brand {
+  display: flex;
+  align-items: center;
+  gap: 0.8vh;
+  flex-shrink: 0;
+}
+
+.post_brand_icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--mco), var(--hva, var(--mco)));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--mco) 25%, transparent);
+}
+
+.post_brand_text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.post_brand_title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--tx1);
+  white-space: nowrap;
+}
+
+.post_divider_v {
+  width: 1px;
+  height: 24px;
+  background: var(--brd);
+  flex-shrink: 0;
+}
+
+/* Selector Group */
+.post_selector_group {
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+  flex-shrink: 0;
+}
+
+.post_sel_wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  border: 1.2px solid var(--brd);
+  border-radius: 6px;
+  padding: 0 10px;
+  width: 210px;
+  height: 32px;
+}
+
+.post_sel_ico   { color: var(--mco); font-size: 0.8rem; flex-shrink: 0; }
+.post_sel_arrow { color: var(--tx3); font-size: 0.65rem; flex-shrink: 0; pointer-events: none; }
+
+.post_selector {
+  border: none;
+  background: transparent;
+  color: var(--tx1);
+  font-family: var(--ff_P);
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex: 1;
+  min-width: 0;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  height: 100%;
+}
+
+/* Badge de Estado */
+.post_badge_estado {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  border: 1.2px solid var(--brd);
+  border-radius: 6px;
+  padding: 0 12px;
+  height: 32px; /* Alineado a la altura de los demás */
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.post_estado_dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--tx3);
+  transition: background 0.2s;
+}
+
+.post_estado_txt {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--tx2);
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+/* Modificadores de color según el estado (utilizando variables witema) */
+.post_badge_estado.post_status_postulado {
+  border-color: color-mix(in srgb, var(--warning) 30%, transparent);
+  background: color-mix(in srgb, var(--warning) 6%, transparent);
+}
+.post_badge_estado.post_status_postulado .post_estado_dot { background: var(--warning); }
+.post_badge_estado.post_status_postulado .post_estado_txt { color: var(--warning); }
+
+.post_badge_estado.post_status_entrevista {
+  border-color: color-mix(in srgb, var(--mco) 30%, transparent);
+  background: color-mix(in srgb, var(--mco) 6%, transparent);
+}
+.post_badge_estado.post_status_entrevista .post_estado_dot { background: var(--mco); }
+.post_badge_estado.post_status_entrevista .post_estado_txt { color: var(--mco); }
+
+.post_badge_estado.post_status_rechazado {
+  border-color: color-mix(in srgb, var(--error) 30%, transparent);
+  background: color-mix(in srgb, var(--error) 6%, transparent);
+}
+.post_badge_estado.post_status_rechazado .post_estado_dot { background: var(--error); }
+.post_badge_estado.post_status_rechazado .post_estado_txt { color: var(--error); }
+
+.post_badge_estado.post_status_oferta {
+  border-color: color-mix(in srgb, var(--success) 30%, transparent);
+  background: color-mix(in srgb, var(--success) 6%, transparent);
+}
+.post_badge_estado.post_status_oferta .post_estado_dot { background: var(--success); }
+.post_badge_estado.post_status_oferta .post_estado_txt { color: var(--success); }
+
+/* Campo Nombre editable en Header */
+.post_nombre_edit_group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+  max-width: 240px;
+  height: 32px;
+}
+
+.post_header_input_wrap {
+  flex: 1;
+  min-width: 0;
+  border: 1.2px solid var(--brd);
+  border-radius: 6px;
+  padding: 0 10px !important;
+  background: var(--bg);
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.post_header_nombre_input {
+  border: none;
+  background: transparent;
+  color: var(--tx1);
+  font-family: var(--ff_P);
+  font-weight: 700;
+  font-size: 0.8rem;
+  outline: none;
+  width: 100%;
+  height: 100%;
+}
+
+.post_btn_save_nombre {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1.2px solid var(--brd);
+  background: var(--wb);
+  color: var(--tx3);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.post_btn_save_nombre:hover {
+  border-color: var(--success, #10b981);
+  color: var(--success, #10b981);
+  background: color-mix(in srgb, var(--success, #10b981) 4%, transparent);
+}
+
+/* Acciones en la Topbar derecha */
+.post_upload_wrapper {
+  display: flex;
+  align-items: center;
+  height: 32px;
+}
+
+.post_estado_sel {
+  border: 1.2px solid var(--brd);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--tx);
+  font-family: var(--ff_P);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0 10px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  height: 32px;
+}
+
+.post_estado_sel:focus { border-color: var(--mco); }
+
+.post_btn_cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 16px;
+  background: linear-gradient(135deg, var(--mco), var(--hva, var(--mco)));
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: var(--ff_P);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--mco) 25%, transparent);
+  height: 32px;
+}
+
+.post_btn_cta:hover {
+  filter: brightness(1.08);
+  transform: translateY(-0.1vh);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--mco) 35%, transparent);
+}
+
+.post_btn_full { width: 100%; justify-content: center; }
+
+.post_btn_icon_del {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1.2px solid var(--brd);
+  background: transparent;
+  color: var(--tx3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.post_btn_icon_del:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: color-mix(in srgb, #ef4444 6%, transparent);
+}
+
+.post_btn_upload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 1.2px solid var(--brd);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--tx2);
+  font-family: var(--ff_P);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 32px;
+  white-space: nowrap;
+}
+
+.post_btn_upload:hover {
+  border-color: var(--mco);
+  color: var(--mco);
+  background: color-mix(in srgb, var(--mco) 4%, transparent);
+}
+
+.post_btn_upload:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── ESTADO VACIO ────────────────────────────────────────────────────────── */
+.post_empty_state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2vh;
+  text-align: center;
+  padding: 4vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.post_empty_glow {
+  position: absolute;
+  width: 25vh;
+  height: 25vh;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--mco) 8%, transparent) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.post_empty_icon {
+  width: 7vh;
+  height: 7vh;
+  border-radius: 2vh;
+  background: var(--wb);
+  border: 1.2px solid var(--brd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5vh;
+  color: var(--mco);
+  opacity: 0.6;
+}
+
+.post_empty_h { font-size: 1.1rem; font-weight: 800; color: var(--tx1); margin: 0; }
+.post_empty_p { font-size: 0.8rem; color: var(--tx3); margin: 0; max-width: 30vh; }
+
+/* ── WORKSPACE SPLIT (2 COLUMNAS) ────────────────────────────────────────── */
+.post_workspace {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex: 1;
+  overflow: hidden;
+  gap: 1vh;
+}
+
+.post_pane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 1vh;
+  border: 1px solid var(--brd) !important;
+  background: var(--wb);
+}
+
+.chatwii_postulaciones {
+  background: var(--wb);
+}
+
+.post_pane_preview {
+  background: var(--bg);
+}
+
+/* ── SCROLL PREVIEW A4 ───────────────────────────────────────────────────── */
+.post_a4_scroll {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--pdf, #f3f4f6) !important;
+  padding: 2vh 1.5vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: var(--brd) transparent;
+}
+
+.post_a4_scroll::-webkit-scrollbar { width: 4px; }
+.post_a4_scroll::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 99px; }
+
+/* Placeholder CV Vacio */
+.post_preview_empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1vh;
+  text-align: center;
+  color: var(--tx3);
+  padding: 3vh;
+  flex: 1;
+  width: 100%;
+}
+
+.post_prev_empty_ico {
+  width: 5vh;
+  height: 5vh;
+  border-radius: 50%;
+  background: var(--wb);
+  border: 1.2px solid var(--brd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2vh;
+  color: var(--tx3);
+  opacity: 0.5;
+}
+
+.post_preview_empty p { font-size: 0.8rem; font-weight: 600; color: var(--tx2); margin: 0; }
+.post_preview_empty span { font-size: 0.72rem; color: var(--tx3); }
+
+.post_btn_upload_lg {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4vh;
+  margin-top: 0.4vh;
+  padding: 0.6vh 1.5vh;
+  border: 1.2px dashed var(--brd);
+  border-radius: 0.6vh;
+  background: var(--wb);
+  color: var(--mco);
+  font-family: var(--ff_P);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.post_btn_upload_lg:hover {
+  border-color: var(--mco);
+  border-style: solid;
+  background: color-mix(in srgb, var(--mco) 4%, transparent);
+}
+
+/* ── ESTILOS PREMIUM PARA PREVIEW ATS A4 (PDF MOCK) ──────────────────────── */
+.cr_cv_document, .cr_cv_page {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 15px !important;
+  background: #fff !important;
+  color: #333 !important;
+  padding: 38px 45px !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+  height: 1122px !important;
+  width: 794px !important;
+  max-width: 100%;
+  margin: 0 auto !important;
+  font-family: 'Times New Roman', Times, Georgia, serif !important;
+  font-size: 11pt !important;
+  line-height: 1.45 !important;
+  box-sizing: border-box;
+  text-align: left;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.cr_cv_page_next {
+  margin-top: 24px !important;
+}
+
+.cr_page_number {
+  position: absolute !important;
+  bottom: 5mm !important;
+  right: 12mm !important;
+  font-size: 8pt !important;
+  color: #aaa !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.cr_printable_pages_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+
+.cr_cv_header {
+  text-align: center;
+  margin-bottom: 3.5vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1vh;
+  width: 100%;
+}
+
+.cr_cv_header.has_avatar {
+  flex-direction: row;
+  justify-content: space-between;
+  text-align: left;
+  align-items: center;
+}
+
+.cr_cv_header.has_avatar .cr_cv_header_text {
+  flex: 1;
+}
+
+.cr_cv_header.has_avatar .cr_cv_contact {
+  justify-content: flex-start;
+}
+
+.cr_cv_header.has_avatar .cr_cv_name {
+  text-align: left !important;
+}
+
+.cr_cv_header.has_avatar .cr_cv_title {
+  text-align: left !important;
+}
+
+.cr_cv_name {
+  font-size: 20pt !important;
+  font-weight: 700 !important;
+  color: #111 !important;
+  margin: 0 0 0.5vh !important;
+  letter-spacing: -0.5px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  text-align: center !important;
+  width: 100% !important;
+  border-bottom: none !important;
+}
+
+.cr_cv_title {
+  font-size: 11.5pt !important;
+  font-weight: 600 !important;
+  color: #444 !important;
+  margin-bottom: 1.5vh !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+.cr_cv_contact {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1vh 1.5vw;
+  font-size: 9.5pt !important;
+  color: #555 !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.cr_cv_contact span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6vh;
+}
+
+.ats_a4_avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.ats_a4_avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cr_cv_section {
+  width: 100%;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.cr_cv_section_title {
+  font-size: 11pt !important;
+  font-weight: 700 !important;
+  color: #111 !important;
+  text-transform: uppercase !important;
+  margin: 0 0 0.5vh !important;
+  letter-spacing: 0.8px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  border-bottom: 1.5px solid #222 !important;
+  padding-bottom: 0.2vh !important;
+}
+
+.cr_cv_section_title--spaced {
+  margin-top: 1.2vh !important;
+  margin-bottom: 4px !important;
+}
+
+.cr_temp_measurer {
+  position: absolute;
+  visibility: hidden;
+  top: -9999px;
+  left: -9999px;
+  width: 794px;
+}
+
+.cr_cv_document--measure {
+  width: 794px !important;
+  padding: 38px 45px !important;
+  box-sizing: border-box !important;
+  height: auto !important;
+  box-shadow: none !important;
+  border: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 15px !important;
+}
+
+.cr_measure_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.cr_cv_text {
+  font-size: 10pt !important;
+  color: #333 !important;
+  margin: 0 !important;
+  text-align: justify !important;
+  white-space: pre-wrap !important;
+}
+
+.cr_cv_item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3vh;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.cr_cv_item_row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  color: #111;
+  font-size: 10.5pt !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.cr_cv_item_subrow {
+  display: flex;
+  justify-content: space-between;
+  font-style: italic;
+  color: #444;
+  font-size: 9.5pt !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.cr_cv_item_desc {
+  margin: 0.4vh 0 0;
+  padding-left: 2.5vh;
+  font-size: 10pt !important;
+  color: #333;
+}
+
+.cr_cv_item_desc ul {
+  margin: 0;
+  padding-left: 0 !important;
+  list-style-type: none !important;
+}
+
+.cr_cv_item_desc li {
+  margin-bottom: 0.3vh;
+  text-align: justify;
+  position: relative;
+  padding-left: 18px !important;
+}
+
+.cr_cv_item_desc li::before {
+  content: "•" !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  color: #333 !important;
+  font-size: 10pt !important;
+}
+
+.cr_cv_skills_list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5vh;
+  font-size: 10pt !important;
+  color: #333;
+}
+
+.cr_cv_proj_tech {
+  font-size: 9pt !important;
+  color: #555;
+  margin: 0.3vh 0 0;
+}
+
+/* ── ESTILOS PREMIUM PARA MODALES NATIVOS ────────────────────────────────── */
+.cr_confirm_modal_body {
+  background: var(--wb) !important;
+  border: 1px solid var(--brd) !important;
+  max-width: 500px !important;
+  border-radius: 16px !important;
+  padding: 3vh 3.5vh !important;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.cr_confirm_modal_body.post_modal_dos_columnas {
+  max-width: 780px !important; /* Más ancho para las dos columnas */
+}
+
+.post_modal_header_custom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1vh;
+  width: 100%;
+}
+
+.post_modal_htit_custom {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--tx1);
+  margin: 0;
+}
+
+/* Grid de Dos Columnas */
+.post_modal_grid_layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+  width: 100%;
+  text-align: left;
+  margin-top: 20px;
+}
+
+.post_modal_col {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.post_modal_footer_custom {
+  width: 100%;
+  margin-top: 2vh;
+}
+
+/* Labels e Iconos */
+.post_fld {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.post_lbl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--tx2);
+  margin-bottom: 2px;
+}
+
+.post_lbl_ico {
+  color: var(--mco);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+/* Campos de entrada estilizados */
+.post_inp {
+  width: 100%;
+  border: 1.2px solid var(--brd);
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: var(--bg);
+  color: var(--tx);
+  font-family: var(--ff_P);
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  height: 34px;
+}
+
+.post_inp:focus {
+  border-color: var(--mco);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mco) 10%, transparent);
+}
+
+select.post_inp {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23888888%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.post_fld_textarea {
+  height: 100%;
+}
+
+.post_modal_textarea {
+  resize: vertical;
+  min-height: 145px;
+  height: 100%;
+  line-height: 1.5;
+  scrollbar-width: thin;
+}
+
+/* ── RESPONSIVE ADAPTABILITY ──────────────────────────────────────────────── */
+@media (max-width: 1000px) {
+  .post_workspace {
+    grid-template-columns: 1fr;
+    grid-template-rows: 50vh 1fr;
+  }
+  .chatwii_postulaciones { border-bottom: 1px solid var(--brd); }
+}
+
+@media (max-width: 768px) {
+  .post_topbar { flex-wrap: wrap; height: auto; padding: 1.5vh; }
+  .post_topbar_left { width: 100%; flex-wrap: wrap; }
+  .post_divider_v, .post_brand_text { display: none; }
+  .post_row_2 { grid-template-columns: 1fr; }
+  .post_nombre_edit_group { max-width: 100%; }
+}

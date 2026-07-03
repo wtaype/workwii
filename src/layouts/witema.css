@@ -34,6 +34,7 @@
 
 --white: #fff;
 --offline: #ddd;
+--pdf: #555;
 --cielo: #0EBEFF;
 --dulce: #FF5C69;
 --paz: #29C72E;
@@ -241,7 +242,7 @@ opacity: .3;
 #wimain {
 max-width: 95vw;
 margin: auto;
-padding: 1vh 4vw;
+padding: 1vh 2vh;
 min-height: 100vh;
 }
 
