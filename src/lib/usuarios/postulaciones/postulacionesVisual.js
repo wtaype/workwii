@@ -237,12 +237,59 @@ const renombrarPostulacion = (nuevoNombre) => {
   Mensaje(_lg['post.notasGuardadas'] || 'Nombre actualizado', 'success');
 };
 
+// ── Helpers de Skeleton A4 ───────────────────────────────────────────────────
+
+const mostrarSkeletonA4 = () => {
+  const area  = document.getElementById('post_cv_printable_area');
+  const vacio = document.getElementById('post_preview_vacio');
+  if (!area) return;
+  if (vacio) vacio.style.display = 'none';
+  area.style.display = 'block';
+  area.innerHTML = `
+    <div class="cr_cv_document cr_cv_page post_skeleton_page">
+      <div class="post_sk_header">
+        <div class="post_sk_line post_sk_name"></div>
+        <div class="post_sk_line post_sk_title"></div>
+        <div class="post_sk_line post_sk_contact"></div>
+      </div>
+      <div class="post_sk_section">
+        <div class="post_sk_line post_sk_section_title"></div>
+        <div class="post_sk_line post_sk_text"></div>
+        <div class="post_sk_line post_sk_text post_sk_short"></div>
+      </div>
+      <div class="post_sk_section">
+        <div class="post_sk_line post_sk_section_title"></div>
+        <div class="post_sk_item">
+          <div class="post_sk_line post_sk_item_title"></div>
+          <div class="post_sk_line post_sk_text"></div>
+          <div class="post_sk_line post_sk_text post_sk_short"></div>
+        </div>
+        <div class="post_sk_item">
+          <div class="post_sk_line post_sk_item_title"></div>
+          <div class="post_sk_line post_sk_text"></div>
+        </div>
+      </div>
+      <div class="post_sk_section">
+        <div class="post_sk_line post_sk_section_title"></div>
+        <div class="post_sk_line post_sk_text"></div>
+        <div class="post_sk_line post_sk_text post_sk_short"></div>
+      </div>
+      <div class="post_sk_badge">
+        <i class="fas fa-brain"></i>
+        <span>${_lg['post.procesando'] || 'Analizando CV con IA...'}</span>
+      </div>
+    </div>
+  `;
+};
+
 // ── Procesar y Cargar CV ─────────────────────────────────────────────────────
 
 const procesarArchivoCv = async (file) => {
   if (!file || !_activa) return;
 
-  const btn = document.getElementById('post_btn_subir_cv');
+  const btnHeader = document.getElementById('post_btn_subir_cv');
+  const btnModal  = document.getElementById('postul_cv_btn');
+  const cvNombre  = document.getElementById('postul_cv_nombre');
   const ext = file.name.split('.').pop().toLowerCase();
 
   if (!['pdf', 'docx', 'doc'].includes(ext)) {
@@ -250,9 +297,18 @@ const procesarArchivoCv = async (file) => {
     return;
   }
 
-  if (btn) {
-    btn.disabled = true;
-    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${_lg['post.procesando'] || 'Procesando...'}`;
+  // Mostrar skeleton A4 inmediatamente en el preview
+  mostrarSkeletonA4();
+
+  // Feedback visual en botones
+  const procesandoTxt = _lg['post.procesando'] || 'Analizando...';
+  if (btnHeader) {
+    btnHeader.disabled = true;
+    btnHeader.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${procesandoTxt}`;
+  }
+  if (btnModal) {
+    btnModal.disabled = true;
+    btnModal.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
   }
 
   try {
@@ -271,7 +327,7 @@ const procesarArchivoCv = async (file) => {
       tipo = 'text';
     }
 
-    const cvJson = await estructurarCvConIA(texto, _activa.cargo || '', _activa.idioma || 'es', tipo);
+    const cvJson = await estructurarCvConIA(texto, _activa.cargo || '', _activa.idioma || 'es', tipo, _activa.empresa || '');
 
     _cvData = cvJson;
 
@@ -279,17 +335,32 @@ const procesarArchivoCv = async (file) => {
     const keyNombre = formatKeyName(_activa.nombre);
     localStorage.setItem(`preview_post_${keyNombre}`, JSON.stringify(cvJson));
 
+    // Reemplazar skeleton con el CV real
     actualizarPreview();
-    renderHistorialChat(); // Actualizar el saludo del Coach
+
+    // Refrescar saludo del Coach con los datos del CV ya disponibles
+    renderHistorialChat();
 
     Mensaje(_lg['post.cvCargado'] || 'CV cargado.', 'success');
+
+    // Actualizar label del CV en el modal si sigue abierto
+    if (cvNombre) {
+      cvNombre.textContent = file.name;
+      cvNombre.classList.add('post_cv_filename--selected');
+    }
   } catch (e) {
     console.error(e);
+    // Quitar skeleton en caso de error
+    actualizarPreview();
     Mensaje(_lg['post.cvError'] || 'Error al procesar el CV.', 'error');
   } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> ${_lg['post.subirCV'] || 'Subir CV'}`;
+    if (btnHeader) {
+      btnHeader.disabled = false;
+      btnHeader.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> ${_lg['post.subirCV'] || 'Subir CV'}`;
+    }
+    if (btnModal) {
+      btnModal.disabled = false;
+      btnModal.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> <span>${_lg['post.modalCvBtn'] || 'Seleccionar archivo'}</span>`;
     }
   }
 };
@@ -339,25 +410,34 @@ export const initPostulaciones = (lang, lg) => {
   });
 
   document.getElementById('post_modal_guardar')?.addEventListener('click', () => {
-    const empresa = document.getElementById('post_modal_empresa')?.value.trim();
-    const cargo = document.getElementById('post_modal_cargo')?.value.trim();
-    const idioma = document.getElementById('post_modal_idioma')?.value || _lang;
-    const notas = document.getElementById('post_modal_notas')?.value.trim() || '';
+    const empresa = document.getElementById('postul_empresa')?.value.trim();
+    const cargo   = document.getElementById('postul_cargo')?.value.trim();
+    const idioma  = document.getElementById('postul_idioma')?.value || _lang;
+    const notas   = document.getElementById('postul_vacante')?.value.trim() || '';
+    const cvFile  = document.getElementById('postul_cv')?.files?.[0] || null;
 
     if (!empresa || !cargo) {
-      wiTip(document.getElementById('post_modal_empresa'), _lang === 'en' ? 'Complete both fields' : 'Completa ambos campos', 'error');
+      wiTip(document.getElementById('postul_empresa'), _lang === 'en' ? 'Complete both fields' : 'Completa ambos campos', 'error');
       return;
     }
 
     const nueva = crearPostulacion(empresa, cargo, idioma, notas);
     cerrarModal('post_modal_nueva');
-    
+
     // Limpiar campos del modal
-    document.getElementById('post_modal_empresa').value = '';
-    document.getElementById('post_modal_cargo').value = '';
-    document.getElementById('post_modal_notas').value = '';
+    document.getElementById('postul_empresa').value = '';
+    document.getElementById('postul_cargo').value   = '';
+    document.getElementById('postul_vacante').value = '';
+    document.getElementById('postul_cv').value      = '';
+    const cvNombreEl = document.getElementById('postul_cv_nombre');
+    if (cvNombreEl) cvNombreEl.textContent = _lg['post.modalCvNinguno'] || 'Ningún archivo';
 
     cargarActiva(nueva.id);
+
+    // Si se seleccionó un CV en el modal, procesarlo automáticamente
+    if (cvFile) {
+      procesarArchivoCv(cvFile);
+    }
   });
 
   // Eliminar candidatura
@@ -370,7 +450,7 @@ export const initPostulaciones = (lang, lg) => {
     }
   });
 
-  // Subida de archivos
+  // Subida de archivos — botón del header (topbar)
   const fileInput = document.getElementById('post_cv_file');
   fileInput?.addEventListener('change', (e) => {
     if (e.target.files?.[0]) {
@@ -380,5 +460,24 @@ export const initPostulaciones = (lang, lg) => {
 
   document.getElementById('post_btn_subir_cv')?.addEventListener('click', () => {
     fileInput?.click();
+  });
+
+  // Subida de archivos — campo CV dentro del modal de nueva candidatura
+  const postulCvInput = document.getElementById('postul_cv');
+  const postulCvBtn   = document.getElementById('postul_cv_btn');
+  const postulCvNombre = document.getElementById('postul_cv_nombre');
+
+  postulCvBtn?.addEventListener('click', () => {
+    postulCvInput?.click();
+  });
+
+  postulCvInput?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (postulCvNombre) {
+      postulCvNombre.textContent = file
+        ? file.name
+        : (_lg['post.modalCvNinguno'] || 'Ningún archivo');
+      postulCvNombre.classList.toggle('post_cv_filename--selected', !!file);
+    }
   });
 };

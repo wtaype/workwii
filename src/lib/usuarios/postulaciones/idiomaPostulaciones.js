@@ -34,6 +34,9 @@ export const idiomaPostulaciones = {
     'post.modalIdioma': 'Idioma de preparación',
     'post.modalGuardar': 'Crear candidatura',
     'post.modalCancelar': 'Cancelar',
+    'post.modalCv': 'Subir CV (Opcional)',
+    'post.modalCvBtn': 'Seleccionar archivo',
+    'post.modalCvNinguno': 'Ningún archivo seleccionado',
 
     // Panel izquierdo (Chat)
     'post.chatHeader': 'Coach Wii',
@@ -90,6 +93,9 @@ export const idiomaPostulaciones = {
     'post.modalIdioma': 'Preparation Language',
     'post.modalGuardar': 'Create candidacy',
     'post.modalCancelar': 'Cancel',
+    'post.modalCv': 'Upload CV (Optional)',
+    'post.modalCvBtn': 'Select file',
+    'post.modalCvNinguno': 'No file selected',
 
     // Panel izquierdo (Chat)
     'post.chatHeader': 'Coach Wii',

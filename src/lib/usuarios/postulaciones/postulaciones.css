@@ -50,9 +50,11 @@
 
 .chatwii_postulaciones .chatwii_body {
   flex: 1 !important;
-  max-height: none !important;
-  height: auto !important;
-  padding-bottom: 95px !important; /* Espacio para el footer absoluto */
+  min-height: 0 !important;       /* Clave para que flex child haga scroll */
+  height: 0 !important;           /* Con flex:1 y min-height:0 esto permite el scroll */
+  overflow-y: auto !important;
+  padding-bottom: calc(14vh + 5vh) !important; /* footer(~14vh) + margen extra(5vh) */
+  scroll-padding-bottom: calc(14vh + 5vh) !important;
 }
 
 /* ── TOPBAR UNIFICADA ULTRA-COMPACTA (ALTURA FIJA Y PERFECTA ALINEACION) ── */
@@ -954,3 +956,130 @@ select.post_inp option {
 .cr_cv_contact_links {
   margin-top: 4px;
 }
+
+/* ── CAMPO SUBIR CV EN MODAL NUEVA POSTULACIÓN ───────────────────────────── */
+.post_cv_upload_row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.post_btn_upload_modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1.5px solid var(--mco);
+  background: transparent;
+  color: var(--mco);
+  font-family: var(--ff_P);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.post_btn_upload_modal:hover {
+  background: var(--mco);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.post_btn_upload_modal i {
+  font-size: 0.85rem;
+}
+
+.post_cv_filename {
+  font-size: 0.76rem;
+  color: var(--tx2);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+  transition: color 0.2s;
+}
+
+.post_cv_filename--selected {
+  color: var(--success, #22c55e);
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* ── SKELETON A4 — Preview mientras la IA procesa el CV ─────────────────────── */
+@keyframes post_sk_shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.post_skeleton_page {
+  position: relative;
+  overflow: hidden;
+}
+
+.post_sk_header,
+.post_sk_section,
+.post_sk_item {
+  margin-bottom: 22px;
+}
+
+.post_sk_item {
+  margin-bottom: 16px;
+  padding-left: 4px;
+}
+
+.post_sk_line {
+  border-radius: 6px;
+  margin-bottom: 10px;
+  background: linear-gradient(
+    90deg,
+    var(--brd) 25%,
+    color-mix(in srgb, var(--brd) 40%, var(--wb)) 50%,
+    var(--brd) 75%
+  );
+  background-size: 1200px 100%;
+  animation: post_sk_shimmer 1.6s infinite linear;
+}
+
+/* Tamaños específicos por tipo de línea */
+.post_sk_name         { height: 28px; width: 55%; }
+.post_sk_title        { height: 16px; width: 38%; margin-top: 6px; }
+.post_sk_contact      { height: 12px; width: 70%; margin-top: 8px; }
+.post_sk_section_title{ height: 14px; width: 30%; background: linear-gradient(90deg, color-mix(in srgb, var(--mco) 25%, transparent) 25%, color-mix(in srgb, var(--mco) 10%, transparent) 50%, color-mix(in srgb, var(--mco) 25%, transparent) 75%); background-size: 1200px 100%; animation: post_sk_shimmer 1.6s infinite linear; }
+.post_sk_item_title   { height: 13px; width: 50%; }
+.post_sk_text         { height: 11px; width: 100%; }
+.post_sk_short        { width: 72% !important; }
+
+/* Badge flotante de "Analizando con IA..." */
+.post_sk_badge {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--mco) 12%, var(--wb));
+  border: 1px solid color-mix(in srgb, var(--mco) 30%, transparent);
+  color: var(--mco);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--ff_P);
+  white-space: nowrap;
+  animation: post_sk_badge_pulse 2s ease-in-out infinite;
+}
+
+@keyframes post_sk_badge_pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+.post_sk_badge i { font-size: 0.9rem; }
+

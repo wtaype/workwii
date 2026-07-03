@@ -5,7 +5,7 @@
 
 import { llamarGemini } from '../../../api/gemini.js';
 
-export const estructurarCvConIA = async (textoCv, puestoDeseado = '', idiomaDestino = 'es', inputType = 'text') => {
+export const estructurarCvConIA = async (textoCv, puestoDeseado = '', idiomaDestino = 'es', inputType = 'text', empresa = '') => {
   let idiomaPrompt = '';
   if (idiomaDestino === 'en') {
     idiomaPrompt = `IMPORTANTE: Traduce y redacta TODO el contenido del curriculum al ingles (English). El JSON resultante debe tener todos los textos en ingles. En el JSON final, establece el campo "idioma" como "en".`;
@@ -92,7 +92,7 @@ Devuelve UNICAMENTE el reporte JSON que cumpla EXACTAMENTE con esta estructura (
             }
           },
           {
-            text: `Lee el PDF adjunto (curriculum del candidato), extrae y transcribe fielmente su informacion sin optimizar, tradúcelo (si el idioma de destino es ingles) y estructúralo en el formato JSON solicitado.\n\n${puestoDeseado ? `PUESTO DESEADO: "${puestoDeseado}"` : ''}`
+            text: `Lee el PDF adjunto (curriculum del candidato), extrae y transcribe fielmente su informacion sin optimizar, tradúcelo (si el idioma de destino es ingles) y estructúralo en el formato JSON solicitado.\n\n${empresa ? `EMPRESA DESTINO: "${empresa}"\n` : ''}${puestoDeseado ? `PUESTO DESEADO: "${puestoDeseado}"` : ''}`
           }
         ]
       }
@@ -102,6 +102,7 @@ Devuelve UNICAMENTE el reporte JSON que cumpla EXACTAMENTE con esta estructura (
 """
 ${textoCv}
 """
+${empresa      ? `EMPRESA DESTINO: "${empresa}"`      : ''}
 ${puestoDeseado ? `PUESTO DESEADO: "${puestoDeseado}"` : ''}
 Por favor, extrae, traduce si es necesario y estructura en el formato JSON requerido.`;
     contents = [{ parts: [{ text: userText }] }];

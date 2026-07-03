@@ -7,6 +7,9 @@
 
 import { llamarGeminiStream } from '../../../api/gemini.js';
 import { wiRateLimit, Notificacion } from '../../../widev/widev.js';
+import { Saludar } from '../../../widev/saludo.js';
+import { getNombre } from '../../../widev/nombre.js';
+import { getls } from '../../../widev/storage.js';
 import { coachPersona } from './personalidad.js';
 import { promptPuesto } from './skills/puesto.js';
 
@@ -128,9 +131,55 @@ export const enviarMensaje = async (textoUsuario, onChunk) => {
   }
 };
 
-// ── Saludo inicial ──────────────────────────────────────────────────────────
+// ── Saludo inicial dinámico (local, 0ms, sin tokens de IA) ──────────────────────────
 
 export const obtenerSaludo = () => {
-  const saludos = coachPersona.saludos[_lang] || coachPersona.saludos.es;
-  return saludos[Math.floor(Math.random() * saludos.length)];
+  // 1. Nombre del usuario desde wiSmile
+  const wiSmile = getls('wiSmile');
+  const nombreCompleto = wiSmile?.nombre || '';
+  const primerNombre = getNombre(nombreCompleto);
+
+  // 2. Saludo por hora del dia
+  const saludoHora = Saludar(primerNombre, _lang);
+
+  // 3. Info de la postulacion activa
+  const info = _getPostInfo ? _getPostInfo() : null;
+  const empresa = info?.empresa || '';
+  const cargo   = info?.cargo   || '';
+
+  // 4. Primer skill o titulo del CV (si ya esta cargado)
+  const cv = _getCvData ? _getCvData() : null;
+  const primerSkill = cv?.skills
+    ? cv.skills.split(',')[0].trim()
+    : cv?.experiencias?.[0]?.puesto || '';
+
+  // ── Armar el mensaje segun contexto disponible ──
+  const isEn = _lang === 'en';
+
+  if (isEn) {
+    let msg = `${saludoHora} 👋`;
+    if (empresa && cargo) {
+      msg += ` I'm ready to help you with your application to **${empresa}** as **${cargo}**`;
+      if (primerSkill) msg += `. I can see you have experience in **${primerSkill}** — that's a great asset for this role`;
+      msg += `. Are you ready to start your preparation? 🚀`;
+    } else if (cargo) {
+      msg += ` Let's prepare you for the **${cargo}** role. What would you like to work on?`;
+    } else {
+      msg += ` I'm Coach Wii, your interview mentor. Tell me about the position you're applying for!`;
+    }
+    return msg;
+  }
+
+  // Espanol
+  let msg = `${saludoHora} 👋`;
+  if (empresa && cargo) {
+    msg += ` Estoy listo para ayudarte con tu postulacion a **${empresa}** como **${cargo}**`;
+    if (primerSkill) msg += `. Veo que tienes experiencia en **${primerSkill}** — eso es clave para este puesto`;
+    msg += `. ¿Ya estamos listos para prepararnos? 🚀`;
+  } else if (cargo) {
+    msg += ` Vamos a prepararte para el puesto de **${cargo}**. ¿Por dónde empezamos?`;
+  } else {
+    msg += ` Soy Coach Wii, tu mentor de entrevistas. ¡Cuéntame sobre el puesto al que estás aplicando!`;
+  }
+  return msg;
 };

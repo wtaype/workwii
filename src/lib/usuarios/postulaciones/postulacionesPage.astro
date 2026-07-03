@@ -131,7 +131,7 @@ const lg   = idiomaPostulaciones[lang];
 
 <!-- ══ MODAL NUEVA POSTULACION (DOS COLUMNAS Y ICONOS EN LABELS) ════════════ -->
 <div class="wiModal" id="post_modal_nueva">
-  <div class="modalBody cr_confirm_modal_body post_modal_dos_columnas">
+  <div class="modalBody cr_confirm_modal_body post_modal_dos_columnas" id="nueva_postulacion">
     <button class="modalX" data-wimodal-close>&times;</button>
     <div class="cr_confirm_content">
       
@@ -144,14 +144,15 @@ const lg   = idiomaPostulaciones[lang];
       <!-- Grid de Dos Columnas -->
       <div class="post_modal_grid_layout">
         
-        <!-- Columna Izquierda: Formulario -->
-        <div class="post_modal_col">
+        <!-- Columna Izquierda: Formulario (forms_postul) -->
+        <div class="post_modal_col" id="forms_postul">
+
           <div class="post_fld">
             <label class="post_lbl">
               <i class="fas fa-building post_lbl_ico"></i>
               <span>{lg['post.modalEmpresa']}</span>
             </label>
-            <input id="post_modal_empresa" type="text" class="post_inp" placeholder={lg['post.modalEmpresaPl']} autocomplete="off" />
+            <input id="postul_empresa" type="text" class="post_inp" placeholder={lg['post.modalEmpresaPl']} autocomplete="off" />
           </div>
 
           <div class="post_fld">
@@ -159,7 +160,7 @@ const lg   = idiomaPostulaciones[lang];
               <i class="fas fa-user-tie post_lbl_ico"></i>
               <span>{lg['post.modalCargo']}</span>
             </label>
-            <input id="post_modal_cargo" type="text" class="post_inp" placeholder={lg['post.modalCargoPl']} autocomplete="off" />
+            <input id="postul_cargo" type="text" class="post_inp" placeholder={lg['post.modalCargoPl']} autocomplete="off" />
           </div>
 
           <div class="post_fld">
@@ -167,21 +168,38 @@ const lg   = idiomaPostulaciones[lang];
               <i class="fas fa-language post_lbl_ico"></i>
               <span>{lg['post.modalIdioma']}</span>
             </label>
-            <select id="post_modal_idioma" class="post_inp">
+            <select id="postul_idioma" class="post_inp">
               <option value="es">Español</option>
               <option value="en">English</option>
             </select>
           </div>
+
+          <!-- Campo subir CV desde el modal -->
+          <div class="post_fld">
+            <label class="post_lbl">
+              <i class="fas fa-file-pdf post_lbl_ico"></i>
+              <span>{lg['post.modalCv']}</span>
+            </label>
+            <div class="post_cv_upload_row">
+              <input type="file" id="postul_cv" accept=".pdf,.docx,.doc" class="dpn" />
+              <button type="button" id="postul_cv_btn" class="post_btn_upload_modal">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>{lg['post.modalCvBtn']}</span>
+              </button>
+              <span id="postul_cv_nombre" class="post_cv_filename">{lg['post.modalCvNinguno']}</span>
+            </div>
+          </div>
+
         </div>
 
-        <!-- Columna Derecha: Descripción/Notas de Vacante -->
-        <div class="post_modal_col">
+        <!-- Columna Derecha: Descripción/Notas de Vacante (descri_postul) -->
+        <div class="post_modal_col" id="descri_postul">
           <div class="post_fld post_fld_textarea">
             <label class="post_lbl">
               <i class="fas fa-align-left post_lbl_ico"></i>
               <span>{lg['post.ofertaLabel']}</span>
             </label>
-            <textarea id="post_modal_notes" class="post_inp post_modal_textarea" placeholder={lg['post.ofertaPlaceholder']} rows="8"></textarea>
+            <textarea id="postul_vacante" class="post_inp post_modal_textarea" placeholder={lg['post.ofertaPlaceholder']} rows="8"></textarea>
           </div>
         </div>
 
