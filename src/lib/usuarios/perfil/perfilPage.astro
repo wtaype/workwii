@@ -103,10 +103,23 @@ const lg = (idiomaPerfil as any)[lang] || idiomaPerfil['es'];
     <div class="prf_col_right">
       <div class="prf_card">
         <h2 class="prf_card_tit"><i class="fas fa-lock"></i> {lg['perfil.actualizarPass']}</h2>
+        
         <label for="prf_pass"><i class="fas fa-lock"></i> {lg['perfil.nuevaPass']}</label>
-        <input type="password" id="prf_pass" placeholder={lg['perfil.passPl']}>
+        <div class="prf_pass_wrap">
+          <input type="password" id="prf_pass" placeholder={lg['perfil.passPl']}>
+          <button type="button" class="prf_pass_eye" data-target="prf_pass" tabindex="-1">
+            <i class="fas fa-eye-slash"></i>
+          </button>
+        </div>
+        
         <label for="prf_pass_conf"><i class="fas fa-lock"></i> {lg['perfil.confPass']}</label>
-        <input type="password" id="prf_pass_conf" placeholder={lg['perfil.confPassPl']}>
+        <div class="prf_pass_wrap">
+          <input type="password" id="prf_pass_conf" placeholder={lg['perfil.confPassPl']}>
+          <button type="button" class="prf_pass_eye" data-target="prf_pass_conf" tabindex="-1">
+            <i class="fas fa-eye-slash"></i>
+          </button>
+        </div>
+        
         <button id="prf_guardar_pass" class="prf_btn"><i class="fas fa-key"></i> {lg['perfil.actualizarPass']}</button>
       </div>
 
@@ -308,6 +321,21 @@ const lg = (idiomaPerfil as any)[lang] || idiomaPerfil['es'];
         localStorage.wiTema = val;
       });
     }
+
+    // Configurar toggle de contraseña (ver/ocultar)
+    document.querySelectorAll('.prf_pass_eye').forEach((btn) => {
+      listen(btn, 'click', (e) => {
+        e.preventDefault();
+        const targetId = btn.getAttribute('data-target') || '';
+        const input = document.getElementById(targetId) as HTMLInputElement;
+        const icon = btn.querySelector('i');
+        if (input && icon) {
+          const isPass = input.type === 'password';
+          input.type = isPass ? 'text' : 'password';
+          icon.className = isPass ? 'fas fa-eye' : 'fas fa-eye-slash';
+        }
+      });
+    });
   };
 
   const initPerfil = async () => {

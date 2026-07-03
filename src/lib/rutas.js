@@ -27,8 +27,10 @@ export const idiomaRutas = {
     'registrar': 'Registrar',
     'ingresar': 'Ingresar',
     'salir': 'Salir',
-    'perfil': 'Mi Perfil'
-  },
+    'perfil': 'Mi Perfil',
+    '/mi-cvs': 'Mis CVs',
+    '/postulaciones': 'Postulaciones',
+},
   en: {
     '/': 'Home',
     '/crear': 'Create CV',
@@ -53,7 +55,9 @@ export const idiomaRutas = {
     'registrar': 'Register',
     'ingresar': 'Login',
     'salir': 'Logout',
-    'perfil': 'My Profile'
+    'perfil': 'My Profile',
+    '/mi-cvs': 'My Resumes',
+    '/postulaciones': 'Applications', 
   }
 };
 
@@ -73,11 +77,11 @@ export const NAV_CONFIG = {
       { href: '/', ico: 'fa-house' },
       ...COMUN,
       { href: '/comparar',   ico: 'fa-trophy' },
-      { href: '/acerca', ico: 'fa-circle-info' }
+      { href: '/acerca', ico: 'fa-circle-info' },
     ],
     right: [
       { isBtn: true, cls: 'bt_auth registrar', ico: 'fa-user-plus' },
-      { isBtn: true, cls: 'bt_auth login', ico: 'fa-sign-in-alt' }
+      { isBtn: true, cls: 'bt_auth login', ico: 'fa-sign-in-alt' },
     ]
   },
   usuario: {
@@ -91,7 +95,8 @@ export const NAV_CONFIG = {
       { href: '/more', ico: 'fa-ellipsis' },
     ],
     right: [
-      { href: '/mi-cvs', ico: 'fa-folder-open' },
+      { href: '/mi-cvs', ico: 'fa-folder-open' }, 
+      { href: '/postulaciones', ico: 'fa-list-check' },
       { href: '/ser-editor', ico: 'fa-user-pen' },
       { isPerfil: true }, { isSalir: true },
     ],
@@ -111,14 +116,19 @@ export const NAV_CONFIG = {
       { href: '/more', ico: 'fa-ellipsis' },
     ],
     right: [
-      { href: '/nuevo', ico: 'fa-plus' },
+      { href: '/postulaciones', ico: 'fa-list-check' },
+      { href: '/mi-cvs', ico: 'fa-folder-open' }, 
+      // { href: '/nuevo', ico: 'fa-plus' },
       { href: '/editor', ico: 'fa-gauge' },
       { isPerfil: true }, { isSalir: true },
     ],
     more: [
+      { href: '/smile', ico: 'fa-house' }, 
       { href: '/word', ico: 'fa-file-word' },
       { href: '/notas', ico: 'fa-note-sticky' },
       { href: '/blog', ico: 'fa-blog' },
+      { href: '/comparar',   ico: 'fa-trophy' },
+      { href: '/acerca', ico: 'fa-circle-info' },
     ]
   },
   gestor: {
@@ -239,13 +249,15 @@ export function rutaRoles() {
 
   // Asegurar que las herramientas comunes estén accesibles para todos los roles logueados
   const allRoles = ['usuario', 'editor', 'gestor', 'admin'];
-  roles['/more'] = allRoles;
   roles['/smile'] = allRoles;
+  roles['/perfil'] = allRoles;
   roles['/word'] = allRoles;
   roles['/notas'] = allRoles;
   roles['/mensajes'] = allRoles;
-  roles['/perfil'] = allRoles;
   roles['/ser-editor'] = allRoles;
+  roles['/mi-cvs'] = allRoles;
+  roles['/postulaciones'] = allRoles;
+  roles['/more'] = allRoles;
 
   return { roles, require2FA };
 }

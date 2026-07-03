@@ -233,3 +233,40 @@
     .prf_username, .prf_rol_chip{ justify-content: center; }
     .prf_lbl { min-width: auto; }
   }
+
+  /* ==================== PASSWORD WRAPPER & TOGGLE ==================== */
+  .prf_pass_wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  .prf_pass_wrap input {
+    padding-right: 5vh !important;
+  }
+  .prf_pass_eye {
+    position: absolute;
+    right: 1.5vh;
+    top: 50%;
+    transform: translateY(-50%) !important;
+    background: transparent;
+    border: none;
+    color: var(--tx3);
+    font-size: var(--fz_m2);
+    cursor: pointer;
+    padding: 0.5vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+    z-index: 5;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+  .prf_pass_eye:hover {
+    color: var(--mco);
+    transform: translateY(-50%) !important;
+  }
+  .prf_pass_eye:active, .prf_pass_eye:focus {
+    transform: translateY(-50%) !important;
+  }
