@@ -18,30 +18,6 @@ let _container: HTMLElement | null = null;
 let _lang = 'es';
 let _enviando = false;
 let _persona: any = null;
-let _typingBubble: HTMLElement | null = null;
-let _typingTimer: ReturnType<typeof setTimeout> | null = null;
-
-// ── Typing indicator (burbuja usuario con 3 puntos) ───────────────────────────────
-
-const mostrarTypingIndicator = () => {
-  const area = document.getElementById('cr_chat_mensajes_area');
-  if (!area || _typingBubble) return;
-  _typingBubble = document.createElement('div');
-  _typingBubble.className = 'cr_chat_burbuja user cr_user_typing';
-  _typingBubble.innerHTML = `
-    <div class="cr_chat_texto">
-      <span class="cr_typing_dot"></span>
-      <span class="cr_typing_dot"></span>
-      <span class="cr_typing_dot"></span>
-    </div>`;
-  area.appendChild(_typingBubble);
-  area.scrollTop = area.scrollHeight;
-};
-
-const ocultarTypingIndicator = () => {
-  if (_typingBubble) { _typingBubble.remove(); _typingBubble = null; }
-  if (_typingTimer)  { clearTimeout(_typingTimer); _typingTimer = null; }
-};
 
 /**
  * Agrega una burbuja de mensaje al area de chat
@@ -166,7 +142,6 @@ export const renderHistorialChat = () => {
  */
 const procesarEnvioMensaje = async () => {
   if (_enviando) return;
-  ocultarTypingIndicator(); // Limpiar puntos antes de enviar
 
   // Control de seguridad por XSS / bloqueos
   if (estaBloqueadoTemporalmente()) {
@@ -266,7 +241,7 @@ export const mountChatWii = (
     document.body.appendChild(modal);
   }
 
-  // ── Cablear eventos del input + typing indicator ──
+  // ── Cablear eventos del input ──
   const textarea = document.getElementById('cr_chat_textarea') as HTMLTextAreaElement;
   const btnSend = document.getElementById('cr_chat_btn_send') as HTMLButtonElement;
 
@@ -275,20 +250,11 @@ export const mountChatWii = (
       textarea.style.height = 'auto';
       textarea.style.height = `${Math.min(textarea.scrollHeight, 140)}px`;
       if (btnSend) btnSend.disabled = textarea.value.trim().length === 0;
-
-      if (textarea.value.trim().length > 0) {
-        mostrarTypingIndicator();
-        if (_typingTimer) clearTimeout(_typingTimer);
-        _typingTimer = setTimeout(ocultarTypingIndicator, 2000);
-      } else {
-        ocultarTypingIndicator();
-      }
     });
 
     textarea.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        ocultarTypingIndicator();
         procesarEnvioMensaje();
       }
     });
