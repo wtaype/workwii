@@ -101,7 +101,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--txa);
   font-size: 0.85rem;
   flex-shrink: 0;
   box-shadow: 0 3px 8px color-mix(in srgb, var(--mco) 25%, transparent);
@@ -314,7 +314,7 @@
   gap: 6px;
   padding: 0 16px;
   background: linear-gradient(135deg, var(--mco), var(--hva, var(--mco)));
-  color: #fff;
+  color: var(--txa);
   border: none;
   border-radius: 6px;
   font-family: var(--ff_P);
@@ -451,7 +451,7 @@
 }
 
 /* ── SCROLL PREVIEW A4 ───────────────────────────────────────────────────── */
-.post_a4_scroll {
+.ps_preview_pdf {
   flex: 1;
   overflow-y: auto;
   background: var(--pdf, #f3f4f6) !important;
@@ -464,8 +464,8 @@
   scrollbar-color: var(--brd) transparent;
 }
 
-.post_a4_scroll::-webkit-scrollbar { width: 4px; }
-.post_a4_scroll::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 99px; }
+.ps_preview_pdf::-webkit-scrollbar { width: 4px; }
+.ps_preview_pdf::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 99px; }
 
 /* Placeholder CV Vacio */
 .post_preview_empty {
@@ -526,8 +526,8 @@
   display: flex !important;
   flex-direction: column !important;
   gap: 15px !important;
-  background: #fff !important;
-  color: #333 !important;
+  background: var(--bg8) !important;
+  color: var(--tx) !important;
   padding: 38px 45px !important;
   border: none !important;
   box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
@@ -602,7 +602,7 @@
 .cr_cv_name {
   font-size: 20pt !important;
   font-weight: 700 !important;
-  color: #111 !important;
+  color: var(--tx) !important;
   margin: 0 0 0.5vh !important;
   letter-spacing: -0.5px !important;
   font-family: Arial, Helvetica, sans-serif !important;
@@ -614,7 +614,7 @@
 .cr_cv_title {
   font-size: 11.5pt !important;
   font-weight: 600 !important;
-  color: #444 !important;
+  color: var(--tx2) !important;
   margin-bottom: 1.5vh !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
@@ -629,7 +629,7 @@
   flex-wrap: wrap;
   gap: 1vh 1.5vw;
   font-size: 9.5pt !important;
-  color: #555 !important;
+  color: var(--tx3) !important;
   font-family: Arial, Helvetica, sans-serif !important;
 }
 
@@ -662,12 +662,12 @@
 .cr_cv_section_title {
   font-size: 11pt !important;
   font-weight: 700 !important;
-  color: #111 !important;
+  color: var(--tx) !important;
   text-transform: uppercase !important;
   margin: 0 0 0.5vh !important;
   letter-spacing: 0.8px !important;
   font-family: Arial, Helvetica, sans-serif !important;
-  border-bottom: 1.5px solid #222 !important;
+  border-bottom: 1.5px solid var(--brd) !important;
   padding-bottom: 0.2vh !important;
 }
 
@@ -704,7 +704,7 @@
 
 .cr_cv_text {
   font-size: 10pt !important;
-  color: #333 !important;
+  color: var(--tx2) !important;
   margin: 0 !important;
   text-align: justify !important;
   white-space: pre-wrap !important;
@@ -722,7 +722,7 @@
   display: flex;
   justify-content: space-between;
   font-weight: 700;
-  color: #111;
+  color: var(--tx) !important;
   font-size: 10.5pt !important;
   font-family: Arial, Helvetica, sans-serif !important;
 }
@@ -731,7 +731,7 @@
   display: flex;
   justify-content: space-between;
   font-style: italic;
-  color: #444;
+  color: var(--tx2) !important;
   font-size: 9.5pt !important;
   font-family: Arial, Helvetica, sans-serif !important;
 }
@@ -740,7 +740,7 @@
   margin: 0.4vh 0 0;
   padding-left: 2.5vh;
   font-size: 10pt !important;
-  color: #333;
+  color: var(--tx2) !important;
 }
 
 .cr_cv_item_desc ul {
@@ -761,7 +761,7 @@
   position: absolute !important;
   left: 0 !important;
   top: 0 !important;
-  color: #333 !important;
+  color: var(--tx2) !important;
   font-size: 10pt !important;
 }
 
@@ -770,12 +770,12 @@
   flex-direction: column;
   gap: 0.5vh;
   font-size: 10pt !important;
-  color: #333;
+  color: var(--tx2) !important;
 }
 
 .cr_cv_proj_tech {
   font-size: 9pt !important;
-  color: #555;
+  color: var(--tx3) !important;
   margin: 0.3vh 0 0;
 }
 
@@ -813,7 +813,7 @@
 .post_modal_grid_layout {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
-  gap: 20px;
+  gap: 2vh;
   width: 100%;
   text-align: left;
   margin-top: 20px;
@@ -822,7 +822,7 @@
 .post_modal_col {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 2vh;
 }
 
 .post_modal_footer_custom {
@@ -856,30 +856,37 @@
 /* Campos de entrada estilizados */
 .post_inp {
   width: 100%;
-  border: 1.2px solid var(--brd);
-  border-radius: 8px;
-  padding: 8px 12px;
-  background: var(--bg);
-  color: var(--tx);
-  font-family: var(--ff_P);
-  font-size: 0.8rem;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  height: 34px;
+  border: 1.2px solid var(--brd) !important;
+  border-radius: 8px !important;
+  padding: 0 12px !important; /* Evitar padding vertical excesivo que corte el texto en select */
+  background: var(--bg) !important;
+  color: var(--tx) !important;
+  font-family: var(--ff_P) !important;
+  font-size: var(--fz_m) !important;
+  outline: none !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+  height: 38px !important; /* Altura óptima para centrado vertical */
+  box-sizing: border-box !important;
 }
 
 .post_inp:focus {
-  border-color: var(--mco);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mco) 10%, transparent);
+  border-color: var(--mco) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mco) 10%, transparent) !important;
 }
 
 select.post_inp {
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23888888%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 32px;
+  cursor: pointer !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23888888%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  padding-right: 32px !important;
+  color: var(--tx) !important;
+}
+
+select.post_inp option {
+  background: var(--wb) !important;
+  color: var(--tx) !important;
 }
 
 .post_fld_textarea {
@@ -887,11 +894,12 @@ select.post_inp {
 }
 
 .post_modal_textarea {
-  resize: vertical;
-  min-height: 145px;
-  height: 100%;
-  line-height: 1.5;
-  scrollbar-width: thin;
+  resize: vertical !important;
+  min-height: 145px !important;
+  height: 100% !important;
+  line-height: 1.5 !important;
+  scrollbar-width: thin !important;
+  padding: 12px !important; /* Agregar padding vertical para textareas */
 }
 
 /* ── RESPONSIVE ADAPTABILITY ──────────────────────────────────────────────── */
@@ -909,4 +917,13 @@ select.post_inp {
   .post_divider_v, .post_brand_text { display: none; }
   .post_row_2 { grid-template-columns: 1fr; }
   .post_nombre_edit_group { max-width: 100%; }
+}
+
+/* ── CLASES UTILITARIAS PARA REMOVER ESTILOS INLINE ─────────────────────── */
+.post_hidden {
+  display: none !important;
+}
+
+.cr_cv_contact_links {
+  margin-top: 4px;
 }

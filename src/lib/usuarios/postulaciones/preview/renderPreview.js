@@ -33,7 +33,7 @@ export const updateA4Preview = (cv) => {
 
   const contactsHTML = `
     <div>${personalHTML}</div>
-    ${linksHTML ? `<div style="margin-top: 4px;">${linksHTML}</div>` : ''}
+    ${linksHTML ? `<div class="cr_cv_contact_links">${linksHTML}</div>` : ''}
   `;
 
   // Cabecera del CV

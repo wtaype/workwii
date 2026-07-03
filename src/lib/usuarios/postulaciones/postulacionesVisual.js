@@ -109,20 +109,21 @@ const actualizarIndicadorEstado = () => {
 };
 
 const alternarControlesHeader = (mostrar) => {
-  const displayVal = mostrar ? 'block' : 'none';
-  const flexVal = mostrar ? 'flex' : 'none';
-
   const div1 = document.querySelector('.post_desc_divider');
   const div2 = document.getElementById('post_nombre_edit_container');
   const div3 = document.getElementById('post_upload_container');
   const div4 = document.getElementById('post_estado_sel');
   const div5 = document.getElementById('post_btn_eliminar');
 
-  if (div1) div1.style.display = displayVal;
-  if (div2) div2.style.display = flexVal;
-  if (div3) div3.style.display = displayVal;
-  if (div4) div4.style.display = displayVal;
-  if (div5) div5.style.display = displayVal;
+  const els = [div1, div2, div3, div4, div5];
+  els.forEach(el => {
+    if (!el) return;
+    if (mostrar) {
+      el.classList.remove('post_hidden');
+    } else {
+      el.classList.add('post_hidden');
+    }
+  });
 };
 
 // ── Cargar Postulacion Activa ────────────────────────────────────────────────
@@ -140,14 +141,14 @@ const cargarActiva = (id) => {
   const workspaceEl = document.getElementById('post_workspace');
 
   if (!_activa) {
-    if (emptyEl) emptyEl.style.display = 'flex';
-    if (workspaceEl) workspaceEl.style.display = 'none';
+    emptyEl?.classList.remove('post_hidden');
+    workspaceEl?.classList.add('post_hidden');
     alternarControlesHeader(false);
     return;
   }
 
-  if (emptyEl) emptyEl.style.display = 'none';
-  if (workspaceEl) workspaceEl.style.display = 'grid';
+  emptyEl?.classList.add('post_hidden');
+  workspaceEl?.classList.remove('post_hidden');
   alternarControlesHeader(true);
 
   renderSelector();

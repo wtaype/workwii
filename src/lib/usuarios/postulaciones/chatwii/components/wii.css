@@ -246,7 +246,7 @@
 
 .cr_chat_burbuja.user .cr_chat_texto {
   background: linear-gradient(135deg, var(--mco), var(--hva, var(--mco)));
-  color: #fff;
+  color: var(--txa);
   border: none;
   border-radius: 14px 14px 0 14px;
   box-shadow: 0 4px 12px color-mix(in srgb, var(--mco) 16%, transparent);

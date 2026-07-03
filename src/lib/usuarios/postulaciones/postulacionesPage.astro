@@ -40,10 +40,10 @@ const lg   = idiomaPostulaciones[lang];
         </div>
       </div>
 
-      <div class="post_divider_v post_desc_divider" style="display:none"></div>
+      <div class="post_divider_v post_desc_divider post_hidden"></div>
 
       <!-- Campo para editar el nombre de la postulación activa -->
-      <div class="post_nombre_edit_group" id="post_nombre_edit_container" style="display:none">
+      <div class="post_nombre_edit_group post_hidden" id="post_nombre_edit_container">
         <div class="post_header_input_wrap">
           <i class="fas fa-pen"></i>
           <input type="text" id="post_nombre_input" class="post_header_nombre_input" placeholder={lg['post.nombreLabel']} autocomplete="off" />
@@ -58,7 +58,7 @@ const lg   = idiomaPostulaciones[lang];
     <!-- Derecha: Estado de postulación, subir CV, nueva postulación, eliminar -->
     <div class="post_topbar_right">
       <!-- Subir CV -->
-      <div class="post_upload_wrapper" id="post_upload_container" style="display:none">
+      <div class="post_upload_wrapper post_hidden" id="post_upload_container">
         <input type="file" id="post_cv_file" accept=".pdf,.docx,.doc" class="dpn" />
         <button id="post_btn_subir_cv" class="post_btn_upload">
           <i class="fas fa-cloud-upload-alt"></i>
@@ -67,7 +67,7 @@ const lg   = idiomaPostulaciones[lang];
       </div>
 
       <!-- Selector de estado -->
-      <select id="post_estado_sel" class="post_estado_sel" style="display:none">
+      <select id="post_estado_sel" class="post_estado_sel post_hidden">
         <option value="postulado">{lg['post.estados.postulado']}</option>
         <option value="entrevista">{lg['post.estados.entrevista']}</option>
         <option value="rechazado">{lg['post.estados.rechazado']}</option>
@@ -81,7 +81,7 @@ const lg   = idiomaPostulaciones[lang];
       </button>
 
       <!-- Eliminar candidatura -->
-      <button id="post_btn_eliminar" class="post_btn_icon_del" data-witip={lg['post.eliminar']} style="display:none">
+      <button id="post_btn_eliminar" class="post_btn_icon_del post_hidden" data-witip={lg['post.eliminar']}>
         <i class="fas fa-trash-alt"></i>
       </button>
     </div>
@@ -89,7 +89,7 @@ const lg   = idiomaPostulaciones[lang];
   </header>
 
   <!-- ══ ESTADO VACIO ══════════════════════════════════════════════════════ -->
-  <div class="post_empty_state" id="post_empty">
+  <div class="post_empty_state post_hidden" id="post_empty">
     <div class="post_empty_glow"></div>
     <div class="post_empty_icon"><i class="fas fa-briefcase"></i></div>
     <h2 class="post_empty_h">{lg['post.sinPostulaciones']}</h2>
@@ -100,7 +100,7 @@ const lg   = idiomaPostulaciones[lang];
   </div>
 
   <!-- ══ WORKSPACE PRINCIPAL (2 COLUMNAS) ═══════════════════════════════════ -->
-  <main class="post_workspace" id="post_workspace" style="display:none">
+  <main class="post_workspace post_hidden" id="post_workspace">
     
     <!-- Columna Izquierda: ChatWii Plano -->
     <section class="post_pane chatwii_postulaciones">
@@ -111,7 +111,7 @@ const lg   = idiomaPostulaciones[lang];
     <section class="post_pane post_pane_preview">
       
       <!-- Area A4 Scrollable -->
-      <div class="post_a4_scroll" id="post_a4_scroll">
+      <div class="ps_preview_pdf" id="post_a4_scroll">
         <div class="post_preview_empty" id="post_preview_vacio">
           <div class="post_prev_empty_ico"><i class="fas fa-file-circle-plus"></i></div>
           <p>{lg['post.previewVacio']}</p>
