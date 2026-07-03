@@ -45,6 +45,8 @@ export const crearVentanaChat = (idioma, persona) => {
           placeholder="${placeholder}" 
           rows="1"
           maxlength="50000"
+          lang="${idioma === 'en' ? 'en-US' : 'es-419'}"
+          spellcheck="true"
         ></textarea>
         <button class="cr_chat_btn_send" id="cr_chat_btn_send" disabled>
           <i class="fas fa-paper-plane"></i>

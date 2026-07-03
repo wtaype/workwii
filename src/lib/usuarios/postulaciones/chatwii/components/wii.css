@@ -383,7 +383,8 @@
   color: var(--tx);
   font-size: 0.85rem;
   resize: none !important;
-  overflow: hidden !important;
+  overflow-y: auto;
+  scrollbar-width: none;   /* Firefox: oculta scroll sin afectar comportamiento */
   max-height: 90vh;
   min-height: 1vh;
   line-height: 1.4;
