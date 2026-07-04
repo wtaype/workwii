@@ -1,0 +1,241 @@
+---
+// src/lib/todos/ccat/ccatPage.astro
+// Componente principal de maquetación HTML para el test CCAT
+
+import { idiomaCcat } from './idiomaCcat.js';
+
+const lang = Astro.locals.lang;
+const lg   = idiomaCcat[lang];
+---
+
+<div class="ccat_root" data-ccat-lang={lang}>
+  <div class="ccat_container">
+    
+    <!-- 1. PANTALLA INTRODUCCIÓN -->
+    <div id="ccat-intro" class="ccat_card">
+      <div class="ccat_intro_header">
+        <h1 class="ccat_intro_title" set:html={lg.intro.title}></h1>
+        <p class="ccat_intro_subtitle">{lg.intro.desc}</p>
+      </div>
+
+      <div class="ccat_rules_grid">
+        <div class="ccat_rule_item">
+          <i class="fas fa-clock ccat_rule_icon"></i>
+          <span class="ccat_rule_title">{lg.intro.ruleTime}</span>
+          <span class="ccat_rule_desc">{lg.intro.ruleTimeDesc}</span>
+        </div>
+        <div class="ccat_rule_item">
+          <i class="fas fa-list-ol ccat_rule_icon"></i>
+          <span class="ccat_rule_title">{lg.intro.ruleQuestions}</span>
+          <span class="ccat_rule_desc">{lg.intro.ruleQuestionsDesc}</span>
+        </div>
+        <div class="ccat_rule_item">
+          <i class="fas fa-calculator-slash ccat_rule_icon"></i>
+          <span class="ccat_rule_title">{lg.intro.ruleCalculator}</span>
+          <span class="ccat_rule_desc">{lg.intro.ruleCalculatorDesc}</span>
+        </div>
+        <div class="ccat_rule_item">
+          <i class="fas fa-award ccat_rule_icon"></i>
+          <span class="ccat_rule_title">{lg.intro.ruleScoring}</span>
+          <span class="ccat_rule_desc">{lg.intro.ruleScoringDesc}</span>
+        </div>
+      </div>
+
+      <div class="ccat_text_center">
+        <button id="ccat_btn_start" class="ccat_btn_primary ccat_pulse_btn" set:html={lg.intro.btnStart}></button>
+      </div>
+    </div>
+
+    <!-- 2. PANTALLA EXAMEN -->
+    <div id="ccat-quiz" class="ccat_card ccat_hidden">
+      
+      <!-- Fila Superior: Tiempo y Finalizar -->
+      <div class="ccat_exam_header">
+        <div class="ccat_exam_timer" id="ccat_timer">
+          <i class="far fa-clock"></i>
+          <span id="ccat_timer_val">15:00</span>
+        </div>
+        <button id="ccat_btn_quit" class="ccat_btn_secondary ccat_btn_finish">{lg.quiz.btnFinish}</button>
+      </div>
+
+      <!-- Barra de Progreso -->
+      <div class="ccat_progress_container">
+        <div class="ccat_progress_meta">
+          <span>{lg.quiz.progressLabel} <span id="ccat_progress_num">1</span> / 50</span>
+          <span id="ccat_progress_percent">2%</span>
+        </div>
+        <div class="ccat_progress_track">
+          <div id="ccat_progress_fill" class="ccat_progress_bar"></div>
+        </div>
+      </div>
+
+      <!-- Área de Pregunta y Opciones -->
+      <div class="ccat_quiz_body">
+        <div id="ccat_category_badge" class="ccat_badge">Verbal</div>
+        <div id="ccat_question_text" class="ccat_question_text">Cargando pregunta...</div>
+        
+        <!-- Si la pregunta es espacial, renderizaremos el SVG aquí -->
+        <div id="ccat_spatial_area" class="ccat_spatial_container ccat_hidden"></div>
+
+        <!-- Grid de Opciones -->
+        <div id="ccat_options_container" class="ccat_options_grid"></div>
+      </div>
+
+      <!-- Controles de Navegación -->
+      <div class="ccat_exam_actions">
+        <button id="ccat_btn_prev" class="ccat_btn_secondary" disabled set:html={lg.quiz.btnPrev}></button>
+        <button id="ccat_btn_skip" class="ccat_btn_secondary">{lg.quiz.btnSkip}</button>
+        <button id="ccat_btn_next" class="ccat_btn_secondary" set:html={lg.quiz.btnNext}></button>
+      </div>
+    </div>
+
+    <!-- 3. PANTALLA RESULTADOS -->
+    <div id="ccat-results" class="ccat_card ccat_hidden">
+      <div class="ccat_intro_header">
+        <h1 class="ccat_intro_title" set:html={lg.results.title}></h1>
+      </div>
+
+      <div class="ccat_results_grid">
+        
+        <!-- Columna Izquierda: Puntuación y Percentil -->
+        <div class="ccat_layout_col_3vh">
+          <div class="ccat_rule_item ccat_widget_score">
+            <div class="ccat_circle_progress" id="ccat_results_circle">
+              <div class="ccat_circle_text">
+                <span class="ccat_circle_num" id="ccat_score_num">0</span>
+                <span class="ccat_circle_label">{lg.results.scoreLabel}</span>
+              </div>
+            </div>
+            <span class="ccat_rule_desc" id="ccat_score_sub">{lg.results.correctOf}</span>
+          </div>
+
+          <div class="ccat_rule_item ccat_rule_item--left-padded">
+            <h3 class="ccat_percentile_title"><i class="fas fa-trophy" style="color:var(--mco); margin-right: 8px;"></i> {lg.results.percentileLabel}: <span id="ccat_percentile_val">0%</span></h3>
+            <p class="ccat_percentile_desc" id="ccat_percentile_desc" set:html={lg.results.percentileDesc.replace('{pct}', '0')}></p>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Categorías y Benchmarks -->
+        <div class="ccat_layout_col_3vh">
+          
+          <!-- breakdown por categoría -->
+          <div class="ccat_rule_item ccat_rule_item--stretch-padded">
+            <h3 class="ccat_result_title_section"><i class="fas fa-chart-pie"></i> {lg.results.categoryTitle}</h3>
+            
+            <div class="ccat_category_row">
+              <div class="ccat_category_info">
+                <span class="ccat_category_name"><i class="fas fa-font"></i> {lg.results.catVerbal}</span>
+                <span id="ccat_cat_verbal_score">0 / 0</span>
+              </div>
+              <div class="ccat_category_track">
+                <div id="ccat_cat_verbal_fill" class="ccat_category_fill"></div>
+              </div>
+            </div>
+
+            <div class="ccat_category_row">
+              <div class="ccat_category_info">
+                <span class="ccat_category_name"><i class="fas fa-calculator"></i> {lg.results.catNumerical}</span>
+                <span id="ccat_cat_numerical_score">0 / 0</span>
+              </div>
+              <div class="ccat_category_track">
+                <div id="ccat_cat_numerical_fill" class="ccat_category_fill"></div>
+              </div>
+            </div>
+
+            <div class="ccat_category_row">
+              <div class="ccat_category_info">
+                <span class="ccat_category_name"><i class="fas fa-shapes"></i> {lg.results.catSpatial}</span>
+                <span id="ccat_cat_spatial_score">0 / 0</span>
+              </div>
+              <div class="ccat_category_track">
+                <div id="ccat_cat_spatial_fill" class="ccat_category_fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Adecuación laboral -->
+          <div class="ccat_rule_item ccat_rule_item--stretch-padded">
+            <h3 class="ccat_result_title_section"><i class="fas fa-briefcase"></i> {lg.results.benchTitle}</h3>
+            <p class="ccat_rule_desc">{lg.results.benchDesc}</p>
+            
+            <div class="ccat_benchmarks_list">
+              <div class="ccat_benchmark_item">
+                <div class="ccat_bench_label">
+                  <span class="ccat_bench_title">{lg.results.benchSoftEng}</span>
+                  <span class="ccat_bench_target">Target: 35+ correctas</span>
+                </div>
+                <span id="ccat_bench_soft_status" class="ccat_bench_status ccat_bench_status--fail">{lg.results.statusFail}</span>
+              </div>
+
+              <div class="ccat_benchmark_item">
+                <div class="ccat_bench_label">
+                  <span class="ccat_bench_title">{lg.results.benchAnalyst}</span>
+                  <span class="ccat_bench_target">Target: 32+ correctas</span>
+                </div>
+                <span id="ccat_bench_analyst_status" class="ccat_bench_status ccat_bench_status--fail">{lg.results.statusFail}</span>
+              </div>
+
+              <div class="ccat_benchmark_item">
+                <div class="ccat_bench_label">
+                  <span class="ccat_bench_title">{lg.results.benchManager}</span>
+                  <span class="ccat_bench_target">Target: 28+ correctas</span>
+                </div>
+                <span id="ccat_bench_manager_status" class="ccat_bench_status ccat_bench_status--fail">{lg.results.statusFail}</span>
+              </div>
+
+              <div class="ccat_benchmark_item">
+                <div class="ccat_bench_label">
+                  <span class="ccat_bench_title">{lg.results.benchAdmin}</span>
+                  <span class="ccat_bench_target">Target: 25+ correctas</span>
+                </div>
+                <span id="ccat_bench_admin_status" class="ccat_bench_status ccat_bench_status--fail">{lg.results.statusFail}</span>
+              </div>
+
+              <div class="ccat_benchmark_item">
+                <div class="ccat_bench_label">
+                  <span class="ccat_bench_title">{lg.results.benchSupport}</span>
+                  <span class="ccat_bench_target">Target: 20+ correctas</span>
+                </div>
+                <span id="ccat_bench_support_status" class="ccat_bench_status ccat_bench_status--fail">{lg.results.statusFail}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila de Descargas Premium -->
+      <div class="ccat_download_row">
+        <button id="ccat_btn_pdf" class="ccat_btn_download"><i class="fas fa-file-pdf" style="color:#ef4444;"></i> PDF</button>
+        <button id="ccat_btn_word" class="ccat_btn_download"><i class="fas fa-file-word" style="color:#2b579a;"></i> Word</button>
+        <button id="ccat_btn_md" class="ccat_btn_download"><i class="fab fa-markdown" style="color:#0972b2;"></i> Markdown</button>
+        <button id="ccat_btn_json" class="ccat_btn_download"><i class="fas fa-file-code" style="color:#f59e0b;"></i> JSON</button>
+      </div>
+
+      <!-- Sección de revisión de preguntas -->
+      <div class="ccat_review_section">
+        <h3 class="ccat_result_title_section ccat_review_title_bordered">
+          <i class="fas fa-list-check"></i> {lg.results.reviewTitle}
+        </h3>
+        
+        <div id="ccat_review_container" class="ccat_review_list">
+          <p class="ccat_review_loading_text">{lg.results.loadingReview}</p>
+        </div>
+      </div>
+
+      <div class="ccat_retry_footer_wrap">
+        <button id="ccat_btn_retry" class="ccat_btn_primary" set:html={lg.results.btnRetry}></button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  import { initCcat } from './ccatVisual.js';
+  
+  document.addEventListener('astro:page-load', () => {
+    if (document.querySelector('.ccat_root')) {
+      initCcat();
+    }
+  });
+</script>

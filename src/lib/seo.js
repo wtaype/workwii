@@ -387,5 +387,35 @@ export const seo = {
       audience: ['candidates', 'professionals', 'unemployed', 'students'],
       intent: 'translate resume to spanish or english'
     }
+  },
+  ccat: {
+    es: {
+      title: `Simulador de Test CCAT Gratis (50q/15m) | ${app}`,
+      description: "Practica con nuestro simulador gratuito del test CCAT (Criteria Cognitive Aptitude Test). 50 preguntas, 15 minutos, sin calculadora. ¡Prepárate gratis!",
+      path: '/ccat-test',
+      keywords: [
+        'simulador test ccat',
+        'practicar ccat gratis',
+        'ccat 50 preguntas 15 minutos',
+        'criteria cognitive aptitude test',
+        'preparar test de aptitud'
+      ],
+      audience: ['candidatos', 'profesionales', 'postulantes', 'estudiantes'],
+      intent: 'practicar y simular el examen de aptitud cognitiva ccat'
+    },
+    en: {
+      title: `Free CCAT Practice Test Simulator (50q/15m) | ${app}`,
+      description: "Practice with our free CCAT simulator (Criteria Cognitive Aptitude Test). 50 questions, 15 minutes, no calculator. Prep for success today!",
+      path: '/en/ccat-test',
+      keywords: [
+        'ccat practice test free',
+        'ccat simulator',
+        'ccat 50 questions 15 minutes',
+        'criteria cognitive aptitude exam',
+        'cognitive test practice'
+      ],
+      audience: ['candidates', 'professionals', 'job seekers', 'students'],
+      intent: 'practice and simulate the ccat cognitive aptitude test'
+    }
   }
 };

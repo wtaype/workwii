@@ -1,0 +1,770 @@
+/* =========================================================================
+   CCAT.CSS — Simulador Premium de Evaluación Cognitiva (WorkWii)
+   ========================================================================= */
+
+.ccat_root {
+  display: flex;
+  flex-direction: column;
+  min-height: 80vh;
+  font-family: var(--ff_P), sans-serif;
+  color: var(--tx);
+  background: var(--bg);
+  padding: 2vh 1vh;
+  box-sizing: border-box;
+}
+
+.ccat_container {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3vh;
+}
+
+.ccat_card {
+  background: var(--wb);
+  border: 1px solid var(--brd);
+  border-radius: 1.5vh;
+  padding: 4vh;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s, box-shadow 0.2s;
+  min-height: 87vh;
+}
+
+/* ── PANTALLA INTRODUCCIÓN ────────────────────────────────────────────────── */
+.ccat_intro_header {
+  text-align: center;
+  margin-bottom: 4vh;
+}
+
+.ccat_intro_title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--tx);
+  margin-bottom: 1.5vh;
+}
+
+.ccat_intro_title span {
+  color: var(--mco);
+}
+
+.ccat_intro_subtitle {
+  font-size: 1.05rem;
+  color: var(--tx2);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.ccat_rules_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2.5vh;
+  margin-bottom: 5vh;
+}
+
+.ccat_rule_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3vh;
+  background: var(--bg);
+  border: 1px solid var(--brd);
+  border-radius: 1.2vh;
+}
+
+.ccat_rule_icon {
+  font-size: 2rem;
+  color: var(--mco);
+  margin-bottom: 1.5vh;
+}
+
+.ccat_rule_title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--tx);
+  margin-bottom: 0.5vh;
+}
+
+.ccat_rule_desc {
+  font-size: 0.8rem;
+  color: var(--tx2);
+}
+
+.ccat_btn_primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--mco);
+  color: #fff;
+  border: none;
+  border-radius: 1vh;
+  padding: 2vh 4vh;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, filter 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 15px color-mix(in srgb, var(--mco) 30%, transparent);
+}
+
+.ccat_btn_primary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--mco) 40%, transparent);
+}
+
+.ccat_btn_primary:active {
+  transform: translateY(0);
+}
+
+/* ── PANTALLA EXAMEN (HEADER Y BARRA DE PROGRESO) ─────────────────────────── */
+.ccat_exam_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2vh;
+  margin-bottom: 2vh;
+}
+
+.ccat_exam_timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 1vh 2vh;
+  background: var(--bg);
+  border: 1px solid var(--brd);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1.15rem;
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.ccat_exam_timer--warning {
+  background: color-mix(in srgb, var(--error, #ef4444) 10%, var(--wb));
+  border-color: var(--error, #ef4444);
+  color: var(--error, #ef4444);
+  animation: ccat_timer_pulse 1s infinite alternate;
+}
+
+@keyframes ccat_timer_pulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.03); }
+}
+
+.ccat_progress_container {
+  width: 100%;
+  margin-bottom: 4vh;
+}
+
+.ccat_progress_meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--tx2);
+  margin-bottom: 1vh;
+}
+
+.ccat_progress_track {
+  width: 100%;
+  height: 8px;
+  background: var(--brd);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.ccat_progress_bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--mco) 0%, color-mix(in srgb, var(--mco) 70%, #fff) 100%);
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+
+/* ── PREGUNTA ACTIVA Y CATEGORÍAS ────────────────────────────────────────── */
+.ccat_badge {
+  display: inline-flex;
+  padding: 0.6vh 1.4vh;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 2.5vh;
+}
+
+.ccat_badge--verbal {
+  background: color-mix(in srgb, #22c55e 12%, var(--wb));
+  color: #16a34a;
+  border: 1px solid color-mix(in srgb, #22c55e 30%, transparent);
+}
+
+.ccat_badge--numerical {
+  background: color-mix(in srgb, #3b82f6 12%, var(--wb));
+  color: #2563eb;
+  border: 1px solid color-mix(in srgb, #3b82f6 30%, transparent);
+}
+
+.ccat_badge--spatial {
+  background: color-mix(in srgb, #a855f7 12%, var(--wb));
+  color: #9333ea;
+  border: 1px solid color-mix(in srgb, #a855f7 30%, transparent);
+}
+
+.ccat_question_text {
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-bottom: 4vh;
+}
+
+.ccat_spatial_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg);
+  border: 1px solid var(--brd);
+  border-radius: 12px;
+  padding: 3vh;
+  margin-bottom: 4vh;
+}
+
+.ccat_spatial_svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+}
+
+/* ── GRID DE OPCIONES ─────────────────────────────────────────────────────── */
+.ccat_options_grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+}
+
+.ccat_option_card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 2.2vh 3vh;
+  border: 1.5px solid var(--brd);
+  border-radius: 1vh;
+  cursor: pointer;
+  background: var(--wb);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.ccat_option_card:hover {
+  border-color: var(--mco);
+  background: color-mix(in srgb, var(--mco) 3%, var(--wb));
+  transform: translateX(4px);
+}
+
+.ccat_option_card--selected {
+  border-color: var(--mco);
+  background: color-mix(in srgb, var(--mco) 8%, var(--wb)) !important;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--mco) 8%, transparent);
+}
+
+.ccat_option_bullet {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--brd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--tx2);
+  background: var(--bg);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.ccat_option_card:hover .ccat_option_bullet {
+  border-color: var(--mco);
+  color: var(--mco);
+}
+
+.ccat_option_card--selected .ccat_option_bullet {
+  background: var(--mco);
+  border-color: var(--mco);
+  color: #fff;
+}
+
+.ccat_option_text {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--tx);
+}
+
+/* ── BOTONES DE ACCIÓN EXAMEN ────────────────────────────────────────────── */
+.ccat_exam_actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5vh;
+  padding-top: 3vh;
+  border-top: 1px solid var(--brd);
+}
+
+.ccat_btn_secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--tx2);
+  border: 1px solid var(--brd);
+  border-radius: 1vh;
+  padding: 1.5vh 3vh;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ccat_btn_secondary:hover:not(:disabled) {
+  border-color: var(--tx);
+  color: var(--tx);
+  background: var(--bg);
+}
+
+.ccat_btn_secondary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.ccat_btn_finish {
+  background: color-mix(in srgb, var(--error, #ef4444) 10%, transparent);
+  color: var(--error, #ef4444);
+  border: 1px solid var(--error, #ef4444);
+}
+
+.ccat_btn_finish:hover {
+  background: var(--error, #ef4444) !important;
+  color: #fff !important;
+}
+
+/* ── PANTALLA RESULTADOS (DASHBOARD) ──────────────────────────────────────── */
+.ccat_results_grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 4vh;
+}
+
+@media (max-width: 768px) {
+  .ccat_results_grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ccat_widget_score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5vh 4vh;
+  text-align: center;
+}
+
+.ccat_circle_progress {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--wb) 79%, transparent 80% 100%),
+              conic-gradient(var(--mco) 0%, var(--brd) 0%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 3vh;
+}
+
+.ccat_circle_text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ccat_circle_num {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--tx);
+}
+
+.ccat_circle_label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--tx2);
+  text-transform: uppercase;
+}
+
+.ccat_percentile_title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 1.5vh;
+}
+
+.ccat_percentile_desc {
+  font-size: 0.88rem;
+  color: var(--tx2);
+  line-height: 1.5;
+}
+
+.ccat_result_title_section {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 3vh;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ccat_result_title_section i {
+  color: var(--mco);
+}
+
+.ccat_category_row {
+  margin-bottom: 2.5vh;
+}
+
+.ccat_category_info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 1vh;
+}
+
+.ccat_category_name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ccat_category_track {
+  width: 100%;
+  height: 8px;
+  background: var(--brd);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.ccat_category_fill {
+  height: 100%;
+  border-radius: 99px;
+}
+
+/* ── IDONEIDAD LABORAL ────────────────────────────────────────────────────── */
+.ccat_benchmarks_list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8vh;
+  margin-top: 3vh;
+}
+
+.ccat_benchmark_item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.8vh 2.5vh;
+  background: var(--bg);
+  border: 1px solid var(--brd);
+  border-radius: 1vh;
+  transition: transform 0.2s;
+}
+
+.ccat_benchmark_item:hover {
+  transform: translateY(-1px);
+}
+
+.ccat_bench_label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ccat_bench_title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--tx);
+}
+
+.ccat_bench_target {
+  font-size: 0.75rem;
+  color: var(--tx2);
+}
+
+.ccat_bench_status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5vh 1.5vh;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.ccat_bench_status--success {
+  background: color-mix(in srgb, #22c55e 12%, var(--wb));
+  color: #16a34a;
+  border: 1px solid color-mix(in srgb, #22c55e 20%, transparent);
+}
+
+.ccat_bench_status--fail {
+  background: color-mix(in srgb, var(--tx2) 8%, var(--wb));
+  color: var(--tx2);
+  border: 1px solid var(--brd);
+}
+
+/* ── ACCORDEON REVISIÓN ───────────────────────────────────────────────────── */
+.ccat_review_section {
+  margin-top: 4vh;
+}
+
+.ccat_review_list {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+}
+
+.ccat_review_item {
+  border: 1px solid var(--brd);
+  border-radius: 1vh;
+  background: var(--wb);
+  overflow: hidden;
+}
+
+.ccat_review_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2.2vh 3vh;
+  cursor: pointer;
+  user-select: none;
+  background: var(--wb);
+  transition: background 0.2s;
+}
+
+.ccat_review_header:hover {
+  background: var(--bg);
+}
+
+.ccat_review_title_left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--tx);
+}
+
+.ccat_review_icon_status {
+  font-size: 1.1rem;
+}
+
+.ccat_review_icon_status--correct { color: #16a34a; }
+.ccat_review_icon_status--incorrect { color: var(--error, #ef4444); }
+.ccat_review_icon_status--skipped { color: var(--tx2); }
+
+.ccat_review_arrow {
+  font-size: 0.85rem;
+  color: var(--tx2);
+  transition: transform 0.2s;
+}
+
+.ccat_review_item--open .ccat_review_arrow {
+  transform: rotate(180deg);
+}
+
+.ccat_review_content {
+  display: none;
+  padding: 3vh 4vh;
+  background: var(--bg);
+  border-top: 1px solid var(--brd);
+}
+
+.ccat_review_item--open .ccat_review_content {
+  display: block;
+}
+
+.ccat_review_options_list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+  margin: 2.5vh 0;
+}
+
+.ccat_review_opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 1.2vh 2vh;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid var(--brd);
+  background: var(--wb);
+}
+
+.ccat_review_opt--correct {
+  border-color: #22c55e;
+  background: color-mix(in srgb, #22c55e 8%, var(--wb));
+  color: #15803d;
+}
+
+.ccat_review_opt--user-wrong {
+  border-color: var(--error, #ef4444);
+  background: color-mix(in srgb, var(--error, #ef4444) 8%, var(--wb));
+  color: #b91c1c;
+}
+
+.ccat_review_explanation {
+  background: var(--wb);
+  border-left: 4px solid var(--mco);
+  padding: 2.2vh;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--tx2);
+}
+
+.ccat_review_explanation p {
+  margin: 0;
+}
+
+.ccat_review_explanation strong {
+  color: var(--tx);
+}
+
+/* ── OTROS / CLASES GENERALES ─────────────────────────────────────────────── */
+.ccat_hidden {
+  display: none !important;
+}
+
+.ccat_pulse_btn {
+  animation: ccat_btn_pulse 2s infinite alternate;
+}
+
+@keyframes ccat_btn_pulse {
+  0% { box-shadow: 0 4px 12px color-mix(in srgb, var(--mco) 20%, transparent); }
+  100% { box-shadow: 0 4px 22px color-mix(in srgb, var(--mco) 45%, transparent); }
+}
+
+/* ── CLASES DE UTILIDAD PARA EVITAR ESTILOS INLINE ───────────────────────── */
+.ccat_text_center {
+  text-align: center;
+}
+
+.ccat_layout_col_3vh {
+  display: flex;
+  flex-direction: column;
+  gap: 3vh;
+}
+
+.ccat_rule_item--left-padded {
+  align-items: flex-start;
+  text-align: left;
+  padding: 3.5vh;
+}
+
+.ccat_rule_item--stretch-padded {
+  align-items: stretch;
+  text-align: left;
+  padding: 3.5vh;
+}
+
+.ccat_review_title_bordered {
+  border-bottom: 1px solid var(--brd);
+  padding-bottom: 2vh;
+  margin-bottom: 3vh;
+}
+
+.ccat_review_loading_text {
+  text-align: center;
+  color: var(--tx2);
+  font-style: italic;
+}
+
+.ccat_retry_footer_wrap {
+  text-align: center;
+  margin-top: 5vh;
+  border-top: 1px solid var(--brd);
+  padding-top: 4vh;
+}
+
+/* Fills específicos de categoría */
+#ccat_cat_verbal_fill {
+  background: #16a34a;
+  width: 0%;
+}
+
+#ccat_cat_numerical_fill {
+  background: #2563eb;
+  width: 0%;
+}
+
+#ccat_cat_spatial_fill {
+  background: #9333ea;
+  width: 0%;
+}
+
+/* Clases utilitarias para la revisión dinámica */
+.ccat_margin_bottom_2vh {
+  margin-bottom: 2vh;
+}
+
+.ccat_review_header_right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.ccat_review_item_text {
+  font-weight: 700;
+  margin-bottom: 2vh;
+  font-size: 1.05rem;
+}
+
+/* Fila de Botones de Descarga Premium */
+.ccat_download_row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5vh;
+  margin-top: 3.5vh;
+  margin-bottom: 1vh;
+  flex-wrap: wrap;
+}
+
+.ccat_btn_download {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--wb);
+  color: var(--tx2);
+  border: 1px solid var(--brd);
+  border-radius: 8px;
+  padding: 1.2vh 2.5vh;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.ccat_btn_download:hover {
+  background: var(--bg);
+  border-color: var(--mco);
+  color: var(--mco);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--mco) 8%, transparent);
+}
+
+.ccat_btn_download i {
+  font-size: 1.05rem;
+}
+
+

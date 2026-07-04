@@ -1,0 +1,14 @@
+---
+// src/pages/en/ccat-test.astro
+// Wrapper en inglés para el simulador de test CCAT
+
+import Layout from '../../layouts/Layout.astro';
+import CcatPage from '../../lib/todos/ccat/ccatPage.astro';
+import { seo } from '../../lib/seo.js';
+import estilosCcat from '../../lib/todos/ccat/ccat.css?inline';
+---
+<Layout {...seo.ccat.en}>
+  <style is:global set:html={estilosCcat} slot="head"></style>
+
+  <CcatPage />
+</Layout>

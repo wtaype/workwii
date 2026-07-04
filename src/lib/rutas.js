@@ -30,6 +30,7 @@ export const idiomaRutas = {
     'perfil': 'Mi Perfil',
     '/mi-cvs': 'Mis CVs',
     '/postulaciones': 'Postulaciones',
+    '/ccat-test': 'Test CCAT',
 },
   en: {
     '/': 'Home',
@@ -57,7 +58,8 @@ export const idiomaRutas = {
     'salir': 'Logout',
     'perfil': 'My Profile',
     '/mi-cvs': 'My Resumes',
-    '/postulaciones': 'Applications', 
+    '/postulaciones': 'Applications',
+    '/ccat-test': 'CCAT Test',
   }
 };
 
@@ -68,6 +70,7 @@ const COMUN = [
   { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles' },
   { href: '/remotos', ico: 'fa-briefcase' },
   { href: '/blog',   ico: 'fa-blog' },
+  { href: '/ccat-test', ico: 'fa-brain' },
 ];
 
 // 2. NAV_CONFIG limpio, compacto y sin un solo texto
