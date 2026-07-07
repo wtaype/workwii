@@ -1,0 +1,147 @@
+// src/lib/usuarios/listo/idiomaListo.js
+// Diccionario descentralizado de traducciones para el modulo "Listo" (ES/EN)
+
+export const idiomaListo = {
+  es: {
+    // Header principal
+    'list.titulo': 'Listo',
+    'list.subtitulo': 'Optimización Inteligente & Candidaturas',
+    'list.desc': 'Prepara candidaturas veloces, optimiza tu CV en tiempo real con ChatWii y descárgalo listo para enviar.',
+    'list.nueva': 'Nueva Candidatura',
+    'list.sinCandidaturas': 'Aún no tienes candidaturas registradas.',
+    'list.sinCandidaturasSub': 'Registra una candidatura para comenzar a optimizar tu CV con ChatWii.',
+    'list.crearPrimera': 'Registrar primera candidatura',
+
+    // Selector y estado
+    'list.seleccionar': 'Selecciona una candidatura...',
+    'list.eliminar': 'Eliminar candidatura',
+    'list.confirmarEliminar': '¿Estás seguro de que deseas eliminar esta candidatura? Se borrarán sus datos y el historial de chat de forma permanente.',
+    'list.eliminado': 'Candidatura eliminada con éxito.',
+
+    // Modal nueva candidatura
+    'list.modalTitulo': 'Nueva Candidatura',
+    'list.modalNombre': 'Nombre descriptivo (ej: Google - Frontend)',
+    'list.modalNombrePl': 'Ej: Google - Frontend Dev',
+    'list.modalEmpresa': 'Empresa',
+    'list.modalEmpresaPl': 'Ej: Google',
+    'list.modalCargo': 'Cargo / Vacante',
+    'list.modalCargoPl': 'Ej: Frontend Developer',
+    'list.modalIdioma': 'Idioma de preparación',
+    'list.modalGuardar': 'Crear candidatura',
+    'list.modalCancelar': 'Cancelar',
+    'list.modalCv': 'Subir CV actual (Opcional)',
+    'list.modalCvBtn': 'Seleccionar archivo',
+    'list.modalCvNinguno': 'Ningún archivo seleccionado',
+
+    // Panel izquierdo (Chat)
+    'list.chatHeader': 'ChatWii listo',
+    'list.chatEstado': 'Optimización Activa · En línea',
+    'list.chatLimpiar': 'Limpiar chat',
+    'list.chatPlaceholder': 'Pregúntale a ChatWii (ej: "Dime cómo mejorar mi perfil", "Cita un mensaje anterior para responder")...',
+    'list.chatDisclaimer': 'La IA puede cometer errores. Verifica la información importante.',
+
+    // Panel derecho (Visor y Editor)
+    'list.tabPreview': 'Vista Previa',
+    'list.tabEdit': 'Editar Datos',
+    'list.descargarPdf': 'Descargar PDF',
+    'list.subirCV': 'Subir CV Base',
+    'list.subirCVHelp': 'Carga tu CV actual para que ChatWii y el editor lo usen como base.',
+    'list.ofertaLabel': 'Requisitos / Descripción del puesto',
+    'list.ofertaPlaceholder': 'Pega aquí la descripción del puesto de trabajo, responsabilidades y habilidades requeridas...',
+    'list.ofertaGuardar': 'Guardar Requisitos',
+    'list.previewVacio': 'No hay ningún CV subido para esta candidatura.',
+    'list.previewVacioSub': 'Sube tu CV en PDF o Word para visualizarlo aquí y permitir que ChatWii lo audite.',
+    'list.procesando': 'Analizando CV...',
+    'list.cvCargado': 'CV analizado e integrado correctamente.',
+    'list.cvError': 'Error al procesar el archivo. Intenta con otro documento.',
+    'list.notasGuardadas': 'Requisitos del puesto guardados.',
+    'list.deshacer': 'Deshacer',
+    'list.aplicado': '¡Optimizaciones aplicadas al CV con éxito!',
+    'list.nombreLabel': 'Nombre de la candidatura',
+    'list.guardarNombre': 'Guardar',
+    
+    // Editor Form
+    'list.editor.contacto': 'Contacto',
+    'list.editor.perfil': 'Resumen Profesional',
+    'list.editor.experiencia': 'Experiencias',
+    'list.editor.skills': 'Habilidades',
+    'list.editor.agregarExp': '+ Agregar Experiencia',
+    'list.editor.eliminar': 'Eliminar',
+    'list.editor.puesto': 'Puesto / Cargo',
+    'list.editor.empresa': 'Empresa',
+    'list.editor.fechas': 'Fechas (Inicio - Fin)',
+    'list.editor.ubicacion': 'Ubicación',
+    'list.editor.logros': 'Logros (uno por línea, empezando con guion)'
+  },
+  en: {
+    // Header principal
+    'list.titulo': 'Listo',
+    'list.subtitulo': 'Smart Optimization & Job Candidacies',
+    'list.desc': 'Prepare job applications quickly, optimize your CV in real time with ChatWii, and download it ready to submit.',
+    'list.nueva': 'New Candidacy',
+    'list.sinCandidaturas': 'No candidacies registered yet.',
+    'list.sinCandidaturasSub': 'Register a candidacy to start optimizing your CV with ChatWii.',
+    'list.crearPrimera': 'Register first candidacy',
+
+    // Selector y estado
+    'list.seleccionar': 'Select a candidacy...',
+    'list.eliminar': 'Delete candidacy',
+    'list.confirmarEliminar': 'Are you sure you want to delete this candidacy? Its data and chat history will be permanently deleted.',
+    'list.eliminado': 'Candidacy successfully deleted.',
+
+    // Modal nueva candidatura
+    'list.modalTitulo': 'New Candidacy',
+    'list.modalNombre': 'Descriptive Name (e.g. Google - Frontend)',
+    'list.modalNombrePl': 'E.g. Google - Frontend Dev',
+    'list.modalEmpresa': 'Company',
+    'list.modalEmpresaPl': 'E.g. Google',
+    'list.modalCargo': 'Role / Job Position',
+    'list.modalCargoPl': 'E.g. Frontend Developer',
+    'list.modalIdioma': 'Preparation Language',
+    'list.modalGuardar': 'Create candidacy',
+    'list.modalCancelar': 'Cancel',
+    'list.modalCv': 'Upload current CV (Optional)',
+    'list.modalCvBtn': 'Select file',
+    'list.modalCvNinguno': 'No file selected',
+
+    // Panel izquierdo (Chat)
+    'list.chatHeader': 'ChatWii listo',
+    'list.chatEstado': 'Active Optimization · Online',
+    'list.chatLimpiar': 'Clear chat',
+    'list.chatPlaceholder': 'Ask ChatWii (e.g. "Tell me how to improve my profile", "Quote a previous message to reply")...',
+    'list.chatDisclaimer': 'AI can make mistakes. Verify important information.',
+
+    // Panel derecho (Visor y Editor)
+    'list.tabPreview': 'Preview',
+    'list.tabEdit': 'Edit Data',
+    'list.descargarPdf': 'Download PDF',
+    'list.subirCV': 'Upload Base CV',
+    'list.subirCVHelp': 'Upload your current resume so ChatWii and the editor can use it as a base.',
+    'list.ofertaLabel': 'Job Description / Requirements',
+    'list.ofertaPlaceholder': 'Paste here the job requirements, responsibilities, and required skills...',
+    'list.ofertaGuardar': 'Save Requirements',
+    'list.previewVacio': 'No resume uploaded for this candidacy.',
+    'list.previewVacioSub': 'Upload your resume in PDF or Word to preview it here and let ChatWii audit it.',
+    'list.procesando': 'Analyzing Resume...',
+    'list.cvCargado': 'Resume analyzed and integrated successfully.',
+    'list.cvError': 'Error processing the file. Please try another document.',
+    'list.notasGuardadas': 'Job description requirements saved.',
+    'list.deshacer': 'Undo',
+    'list.aplicado': 'CV successfully updated with optimizations!',
+    'list.nombreLabel': 'Candidacy name',
+    'list.guardarNombre': 'Save',
+    
+    // Editor Form
+    'list.editor.contacto': 'Contact',
+    'list.editor.perfil': 'Professional Summary',
+    'list.editor.experiencia': 'Experience',
+    'list.editor.skills': 'Skills',
+    'list.editor.agregarExp': '+ Add Experience',
+    'list.editor.eliminar': 'Delete',
+    'list.editor.puesto': 'Job Title',
+    'list.editor.empresa': 'Company',
+    'list.editor.fechas': 'Dates (Start - End)',
+    'list.editor.ubicacion': 'Location',
+    'list.editor.logros': 'Achievements (one per line, starting with a dash)'
+  }
+};

@@ -1,0 +1,1476 @@
+/* =========================================================================
+   LISTO.CSS — Estilos Premium para el Módulo Listo (CV IA & Postulaciones)
+   ========================================================================= */
+
+.listo_root {
+  display: flex;
+  flex-direction: column;
+  height: 95vh;
+  overflow: hidden;
+  font-family: var(--ff_P);
+  background: var(--bg);
+  color: var(--tx);
+  box-sizing: border-box;
+  padding: 1vh;
+  gap: 1vh;
+}
+
+.listo_root * {
+  box-sizing: border-box;
+}
+
+/* Override para el chat embebido */
+.chatwii_main {
+  position: relative !important;
+  height: 100% !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* ── TOPBAR UNIFICADA ULTRA-COMPACTA ── */
+.listo_topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5vh;
+  padding: 0.8vh 2vh;
+  height: 6.5vh;
+  min-height: 56px;
+  background: var(--wb);
+  border: 1px solid var(--brd) !important;
+  border-radius: 1vh;
+  flex-shrink: 0;
+}
+
+.listo_topbar_left {
+  display: flex;
+  align-items: center;
+  gap: 1.5vh;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.listo_topbar_right {
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+  flex-shrink: 0;
+}
+
+.listo_brand {
+  display: flex;
+  align-items: center;
+  gap: 0.8vh;
+  flex-shrink: 0;
+}
+
+.listo_brand_icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--mco), var(--hva, var(--mco))) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--txa);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--mco) 25%, transparent);
+}
+
+.listo_brand_text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.listo_brand_title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--tx1);
+  white-space: nowrap;
+}
+
+.listo_divider_v {
+  width: 1px;
+  height: 24px;
+  background: var(--brd);
+  flex-shrink: 0;
+}
+
+/* Selector de candidatura */
+.listo_selector_group {
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+  flex-shrink: 0;
+}
+
+.listo_sel_wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  border: 1.2px solid var(--brd);
+  border-radius: 6px;
+  padding: 0 10px;
+  width: 210px;
+  height: 3.5vh;
+  min-height: 32px;
+  box-sizing: border-box;
+}
+
+.listo_sel_ico   { color: var(--success); font-size: 0.8rem; flex-shrink: 0; display: inline-flex; align-items: center; }
+.listo_sel_arrow { color: var(--tx3); font-size: 0.65rem; flex-shrink: 0; pointer-events: none; display: inline-flex; align-items: center; }
+
+.listo_selector {
+  border: none;
+  background: transparent;
+  color: var(--tx1);
+  font-family: var(--ff_P);
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex: 1;
+  min-width: 0;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  height: 100%;
+  padding: 0 0 0 4px !important;
+  margin: 0 !important;
+  box-sizing: border-box;
+}
+
+/* Botones y CTAs */
+.listo_btn_cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 16px;
+  background: linear-gradient(135deg, var(--mco), var(--hva, var(--mco))) !important;
+  color: var(--txa);
+  border: none;
+  border-radius: 6px;
+  font-family: var(--ff_P);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--mco) 25%, transparent);
+  height: 3.5vh;
+  min-height: 32px;
+}
+
+.listo_btn_cta:hover {
+  filter: brightness(1.08);
+  transform: translateY(-0.1vh);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--mco) 35%, transparent);
+}
+
+.listo_btn_icon_del {
+  width: 3.5vh;
+  min-width: 32px;
+  height: 3.5vh;
+  min-height: 32px;
+  border-radius: 6px;
+  border: 1.2px solid var(--brd);
+  background: transparent;
+  color: var(--tx3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.listo_btn_icon_del:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: color-mix(in srgb, #ef4444 6%, transparent);
+}
+
+/* ── WORKSPACE GRID ── */
+.listo_workspace {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  flex: 1;
+  overflow: hidden;
+  gap: 1vh;
+}
+
+.listo_pane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 1vh;
+  border: 1px solid var(--brd) !important;
+  background: var(--wb);
+}
+
+.listo_pane_preview {
+  background: var(--bg);
+}
+
+/* Pestañas de Alternancia (Pill Segmented Control) */
+.listo_tabs_header {
+  display: flex;
+  background: var(--bg3);
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--brd) !important;
+  gap: 6px;
+  margin: 1.5vh 2vh 0.8vh;
+  flex-shrink: 0;
+}
+
+.listo_tab_btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 1vh 2vh;
+  background: transparent;
+  border: none !important;
+  border-radius: 8px;
+  font-family: var(--ff_P);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--tx2);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.listo_tab_btn:hover {
+  color: var(--mco);
+  background: color-mix(in srgb, var(--mco) 5%, transparent);
+}
+
+.listo_tab_btn.active {
+  background: var(--mco) !important;
+  color: var(--txa) !important;
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--mco) 22%, transparent);
+  font-weight: 800;
+}
+
+/* Contenido de Panel Derecho */
+.listo_tab_content_wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.listo_tab_pane {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.listo_tab_pane.active {
+  display: flex;
+}
+
+/* Scroll area para PDF */
+.listo_preview_pdf {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--pdf, #f3f4f6) !important;
+  padding: 2vh 1.5vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: var(--brd) transparent;
+}
+
+.listo_preview_pdf::-webkit-scrollbar { width: 4px; }
+.listo_preview_pdf::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 99px; }
+
+/* ── FORMULARIO DE EDICIÓN MANUAL RÁPIDA ── */
+.listo_editor_scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2vh 3vh;
+  background: var(--wb);
+  display: flex;
+  flex-direction: column;
+  gap: 2.5vh;
+}
+
+.listo_form_section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+  border-bottom: 1px solid var(--brd);
+  padding-bottom: 2.5vh;
+}
+
+.listo_form_section:last-child {
+  border-bottom: none;
+}
+
+.listo_sec_title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--tx1);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.listo_sec_title i {
+  color: var(--success);
+}
+
+.listo_form_grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5vh;
+}
+
+.listo_form_grid_full {
+  grid-column: span 2;
+}
+
+.listo_field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.listo_field label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--tx2);
+}
+
+.listo_input, .listo_textarea, .listo_select {
+  border: 1.2px solid var(--brd);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--tx1);
+  font-family: var(--ff_P);
+  font-size: 0.8rem;
+  padding: 10px 12px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.listo_input:focus, .listo_textarea:focus, .listo_select:focus {
+  border-color: var(--success);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 12%, transparent);
+}
+
+.listo_textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Sub-lista de ítems (experiencia, etc.) */
+.listo_item_card {
+  border: 1px solid var(--brd);
+  border-radius: 8px;
+  padding: 2vh;
+  margin-bottom: 1.5vh;
+  position: relative;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+}
+
+.listo_btn_remove_item {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: var(--error);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.listo_btn_add_item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 1.2vh;
+  border: 1.5px dashed var(--brd);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--tx2);
+  font-family: var(--ff_P);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 1vh;
+}
+
+.listo_btn_add_item:hover {
+  border-color: var(--success);
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 4%, transparent);
+}
+
+/* ── PREVIEW ESTILOS WYSIWYG EDITABLE ── */
+.cr_prev_editable_active {
+  outline: 2px dashed var(--mco) !important;
+  outline-offset: 2px !important;
+  background: color-mix(in srgb, var(--mco) 4%, transparent) !important;
+}
+
+/* ── ACCIONES HOVER WHATSAPP-STYLE ── */
+.cr_chat_mensajes_area {
+  position: relative;
+}
+
+.cr_chat_burbuja {
+  position: relative !important;
+}
+
+/* Contenedor de acciones al Hover */
+.listo_hover_actions {
+  position: absolute;
+  top: 10px;
+  right: -36px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 10;
+}
+
+.cr_chat_burbuja.user .listo_hover_actions {
+  right: auto;
+  left: -36px;
+}
+
+.cr_chat_burbuja:hover .listo_hover_actions {
+  opacity: 1;
+  visibility: visible;
+}
+
+.listo_hover_btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--wb);
+  border: 1.2px solid var(--brd);
+  color: var(--tx2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.72rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.listo_hover_btn:hover {
+  background: var(--success);
+  color: var(--txa);
+  border-color: var(--success);
+  transform: scale(1.1);
+}
+
+/* Tarjeta de Sugerencia dentro de la burbuja */
+.listo_suggestion_card {
+  margin-top: 12px;
+  border: 1.2px solid var(--brd);
+  border-radius: 8px;
+  background: var(--bg);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.listo_suggestion_title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--success);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.listo_suggestion_text {
+  font-size: 0.8rem;
+  color: var(--tx2);
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.listo_suggestion_actions {
+  display: flex;
+  gap: 8px;
+}
+
+.listo_suggest_btn_apply {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  background: var(--success);
+  color: var(--txa);
+  font-family: var(--ff_P);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.listo_suggest_btn_apply:hover {
+  background: color-mix(in srgb, var(--success) 90%, black);
+}
+
+.listo_suggest_btn_cancel {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--brd);
+  background: transparent;
+  color: var(--tx2);
+  font-family: var(--ff_P);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.listo_suggest_btn_cancel:hover {
+  border-color: var(--error);
+  color: var(--error);
+  background: color-mix(in srgb, var(--error) 4%, transparent);
+}
+
+/* Indicador de mensaje citado en el input del chat */
+.listo_quoted_preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: color-mix(in srgb, var(--success) 8%, transparent);
+  border-left: 4px solid var(--success);
+  padding: 8px 12px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 8px;
+  animation: slideUp 0.2s ease-out;
+}
+
+.listo_quote_body {
+  flex: 1;
+  min-width: 0;
+}
+
+.listo_quote_title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--success);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.listo_quote_text {
+  font-size: 0.75rem;
+  color: var(--tx2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listo_quote_close {
+  background: transparent;
+  border: none;
+  color: var(--tx3);
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 4px;
+}
+
+.listo_quote_close:hover {
+  color: var(--error);
+}
+
+/* Toast flotante para Deshacer (Undo) */
+.listo_toast_undo {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  background: #2d3748;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 9999;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: var(--ff_P);
+  font-size: 0.8rem;
+}
+
+.listo_toast_undo span {
+  font-weight: 500;
+}
+
+.listo_btn_undo_action {
+  background: var(--success);
+  border: none;
+  border-radius: 4px;
+  color: var(--txa);
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-family: var(--ff_P);
+  font-size: 0.72rem;
+  transition: all 0.2s;
+}
+
+.listo_btn_undo_action:hover {
+  filter: brightness(1.1);
+}
+
+/* ── MODALES ADICIONALES ── */
+.listo_modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.listo_modal.open {
+  display: flex;
+}
+
+.listo_modal_body {
+  background: var(--wb);
+  border-radius: 12px;
+  border: 1px solid var(--brd);
+  width: 500px;
+  max-width: 90%;
+  padding: 3vh;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  animation: modalScale 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes modalScale {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ── CLASE UTILITARIA DISPLAY NONE ── */
+.dpn {
+  display: none !important;
+}
+
+/* ── MODALES COMPATIBLES Y PREMIUM EN DOS COLUMNAS ── */
+.listo_modal_dos_columnas {
+  max-width: 780px !important;
+}
+
+.listo_modal_header_custom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1vh;
+  width: 100%;
+  margin-bottom: 2vh;
+}
+
+.listo_modal_hico {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: 1vh;
+}
+
+.listo_modal_htit_custom {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--tx1);
+  margin: 0;
+}
+
+.listo_modal_grid_layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 2.5vh;
+  width: 100%;
+  text-align: left;
+  margin-top: 20px;
+}
+
+.listo_modal_col {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+}
+
+.listo_fld {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.listo_lbl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--tx2);
+  margin-bottom: 2px;
+}
+
+.listo_lbl_ico {
+  color: var(--mco);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.listo_inp {
+  width: 100%;
+  border: 1.2px solid var(--brd) !important;
+  border-radius: 8px !important;
+  padding: 0 12px !important;
+  background: var(--bg) !important;
+  color: var(--tx) !important;
+  font-family: var(--ff_P) !important;
+  font-size: var(--fz_m) !important;
+  outline: none !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+  height: 38px !important;
+  box-sizing: border-box !important;
+}
+
+.listo_inp:focus {
+  border-color: var(--mco) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mco) 10%, transparent) !important;
+}
+
+select.listo_inp {
+  cursor: pointer !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23888888%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  padding-right: 32px !important;
+  color: var(--tx) !important;
+}
+
+select.listo_inp option {
+  background: var(--wb) !important;
+  color: var(--tx) !important;
+}
+
+.listo_fld_textarea {
+  height: 100%;
+}
+
+.listo_modal_textarea {
+  resize: vertical !important;
+  min-height: 145px !important;
+  height: 100% !important;
+  line-height: 1.5 !important;
+  scrollbar-width: thin !important;
+  padding: 12px !important;
+}
+
+.listo_cv_upload_row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.listo_btn_upload_modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1.5px solid var(--mco);
+  background: transparent;
+  color: var(--mco);
+  font-family: var(--ff_P);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.listo_btn_upload_modal:hover {
+  background: var(--mco);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.listo_cv_filename {
+  font-size: 0.76rem;
+  color: var(--tx2);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+  transition: color 0.2s;
+}
+
+.listo_cv_filename--selected {
+  color: var(--success, #22c55e);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.listo_modal_footer_custom {
+  width: 100%;
+  margin-top: 2vh;
+}
+
+.listo_btn_full {
+  width: 100%;
+}
+
+/* ── ESTADO VACÍO DE LA INTERFAZ ── */
+.listo_empty_state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5vh;
+  text-align: center;
+  padding: 6vh 4vh;
+  position: relative;
+  overflow: hidden;
+  min-height: 60vh;
+}
+
+.listo_empty_glow {
+  position: absolute;
+  width: 30vh;
+  height: 30vh;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--success) 8%, transparent) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.listo_empty_icon {
+  width: 8vh;
+  height: 8vh;
+  border-radius: 2.2vh;
+  background: var(--wb);
+  border: 1.2px solid var(--brd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3vh;
+  color: var(--success);
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.08);
+}
+
+.listo_empty_h {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--tx1);
+  margin: 0;
+}
+
+.listo_empty_p {
+  font-size: 0.82rem;
+  color: var(--tx3);
+  margin: 0;
+  max-width: 35vh;
+  line-height: 1.5;
+}
+
+/* ── PREVIEW A4 VACÍO ── */
+.listo_preview_empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5vh;
+  text-align: center;
+  color: var(--tx3);
+  padding: 4vh;
+  flex: 1;
+  width: 100%;
+  min-height: 320px;
+}
+
+.listo_prev_empty_ico {
+  width: 5.5vh;
+  height: 5.5vh;
+  border-radius: 50%;
+  background: var(--wb);
+  border: 1.2px solid var(--brd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2vh;
+  color: var(--tx3);
+  opacity: 0.6;
+}
+
+.listo_preview_empty p {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--tx2);
+  margin: 0;
+}
+
+.listo_preview_empty span {
+  font-size: 0.74rem;
+  color: var(--tx3);
+}
+
+.listo_btn_upload_lg {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5vh;
+  margin-top: 0.6vh;
+  padding: 0.7vh 1.6vh;
+  border: 1.2px dashed var(--brd);
+  border-radius: 0.8vh;
+  background: var(--wb);
+  color: var(--mco);
+  font-family: var(--ff_P);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.listo_btn_upload_lg:hover {
+  border-color: var(--mco);
+  border-style: solid;
+  background: color-mix(in srgb, var(--mco) 4%, transparent);
+}
+
+/* ── EDITAR NOMBRE EN TOPBAR ── */
+.listo_header_input_wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1.2px solid var(--brd);
+  border-radius: 6px;
+  padding: 0 10px;
+  height: 32px;
+}
+
+.listo_header_input_wrap i {
+  font-size: 0.7rem;
+  color: var(--tx3);
+}
+
+.listo_header_nombre_input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--tx1);
+  width: 170px;
+  font-family: var(--ff_P);
+}
+
+.listo_btn_save_nombre {
+  background: var(--success);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.15);
+}
+
+.listo_btn_save_nombre:hover {
+  filter: brightness(1.08);
+  transform: translateY(-0.5px);
+}
+
+/* ── SKELETON SHIMMER ATS A4 ── */
+@keyframes listo_sk_shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.post_skeleton_page {
+  position: relative;
+  overflow: hidden;
+}
+
+.post_sk_header,
+.post_sk_section,
+.post_sk_item {
+  margin-bottom: 22px;
+}
+
+.post_sk_item {
+  margin-bottom: 16px;
+  padding-left: 4px;
+}
+
+.post_sk_line {
+  border-radius: 6px;
+  margin-bottom: 10px;
+  background: linear-gradient(
+    90deg,
+    var(--brd) 25%,
+    color-mix(in srgb, var(--brd) 40%, var(--wb)) 50%,
+    var(--brd) 75%
+  );
+  background-size: 1200px 100%;
+  animation: listo_sk_shimmer 1.6s infinite linear;
+}
+
+.post_sk_name         { height: 28px; width: 55%; }
+.post_sk_title        { height: 16px; width: 38%; margin-top: 6px; }
+.post_sk_contact      { height: 12px; width: 70%; margin-top: 8px; }
+.post_sk_section_title{ height: 14px; width: 30%; background: linear-gradient(90deg, color-mix(in srgb, var(--mco) 25%, transparent) 25%, color-mix(in srgb, var(--mco) 10%, transparent) 50%, color-mix(in srgb, var(--mco) 25%, transparent) 75%); background-size: 1200px 100%; animation: listo_sk_shimmer 1.6s infinite linear; }
+.post_sk_item_title   { height: 13px; width: 50%; }
+.post_sk_text         { height: 11px; width: 100%; }
+.post_sk_short        { width: 72% !important; }
+
+.post_sk_badge {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--mco) 12%, var(--wb));
+  border: 1px solid color-mix(in srgb, var(--mco) 30%, transparent);
+  color: var(--mco);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--ff_P);
+  white-space: nowrap;
+  animation: post_sk_badge_pulse 2s ease-in-out infinite;
+}
+
+@keyframes post_sk_badge_pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+.post_sk_badge i { font-size: 0.9rem; }
+
+/* ── CLASES MIGRADAS PARA REEMPLAZAR ESTILOS INLINE ── */
+.listo_btn_download_gradient {
+  background: linear-gradient(135deg, var(--mco), color-mix(in srgb, var(--mco) 85%, white)) !important;
+}
+
+.listo_modal_icon_success {
+  background: var(--success) !important;
+  color: white !important;
+}
+
+.cr_chat_online_dot_success {
+  background: var(--success) !important;
+}
+
+.listo_modal_icon_danger {
+  color: var(--error) !important;
+}
+
+.listo_modal_btn_danger {
+  background: var(--error) !important;
+  border-color: var(--error) !important;
+  color: white !important;
+}
+
+.listo_modal_btn_danger:hover {
+  filter: brightness(1.08) !important;
+}
+
+.chatwii_body {
+  position: relative !important;
+}
+
+/* ── CHATWII EN LISTO: FIX ALTURA 100% Y NEGRILLAS ── */
+.chatwii_postulaciones .cr_chat_widget {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--wb) !important;
+  z-index: 1 !important;
+  max-width: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: none !important;
+}
+
+.chatwii_postulaciones .chatwii_body {
+  flex: 1 !important;
+  min-height: 0 !important;
+  height: 0 !important;
+  overflow-y: auto !important;
+  padding-bottom: calc(14vh + 5vh) !important;
+  scroll-padding-bottom: calc(14vh + 5vh) !important;
+}
+
+.cr_chat_texto strong {
+  font-weight: 700 !important;
+  color: var(--tx) !important;
+}
+
+/* ── VISOR PREMIUM DE LA HOJA A4 DEL CV (FORMATO ATS) ── */
+.cr_cv_document, .cr_cv_page {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 15px !important;
+  background: var(--bg8) !important;
+  color: var(--tx) !important;
+  padding: 38px 45px !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+  height: 1122px !important;
+  width: 794px !important;
+  max-width: 100%;
+  margin: 0 auto !important;
+  font-family: 'Times New Roman', Times, Georgia, serif !important;
+  font-size: 11pt !important;
+  line-height: 1.45 !important;
+  box-sizing: border-box;
+  text-align: left;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.cr_cv_page_next {
+  margin-top: 24px !important;
+}
+
+.cr_page_number {
+  position: absolute !important;
+  bottom: 5mm !important;
+  right: 12mm !important;
+  font-size: 8pt !important;
+  color: #aaa !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.cr_printable_pages_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+
+.cr_cv_header {
+  text-align: center;
+  margin-bottom: 3.5vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1vh;
+  width: 100%;
+}
+
+.cr_cv_header.has_avatar {
+  flex-direction: row;
+  justify-content: space-between;
+  text-align: left;
+  align-items: center;
+}
+
+.cr_cv_header.has_avatar .cr_cv_header_text {
+  flex: 1;
+}
+
+.cr_cv_header.has_avatar .cr_cv_contact {
+  justify-content: flex-start;
+}
+
+.cr_cv_header.has_avatar .cr_cv_name {
+  text-align: left !important;
+}
+
+.cr_cv_header.has_avatar .cr_cv_title {
+  text-align: left !important;
+}
+
+.cr_cv_name {
+  font-size: 20pt !important;
+  font-weight: 700 !important;
+  color: var(--tx) !important;
+  margin: 0 0 0.5vh !important;
+  letter-spacing: -0.5px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  text-align: center !important;
+  width: 100% !important;
+  border-bottom: none !important;
+}
+
+.cr_cv_title {
+  font-size: 11.5pt !important;
+  font-weight: 600 !important;
+  color: var(--tx2) !important;
+  margin-bottom: 1.5vh !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+.cr_cv_contact {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1vh 1.5vw;
+  font-size: 9.5pt !important;
+  color: var(--tx3) !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.cr_cv_contact span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6vh;
+}
+
+.ats_a4_avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.ats_a4_avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cr_cv_section {
+  width: 100%;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.cr_cv_section_title {
+  font-size: 11pt !important;
+  font-weight: 700 !important;
+  color: var(--tx) !important;
+  text-transform: uppercase !important;
+  margin: 0 0 0.5vh !important;
+  letter-spacing: 0.8px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  border-bottom: 1.5px solid var(--brd) !important;
+  padding-bottom: 0.2vh !important;
+}
+
+.cr_cv_section_title--spaced {
+  margin-top: 1.2vh !important;
+  margin-bottom: 4px !important;
+}
+
+.cr_temp_measurer {
+  position: absolute;
+  visibility: hidden;
+  top: -9999px;
+  left: -9999px;
+  width: 794px;
+}
+
+.cr_cv_document--measure {
+  width: 794px !important;
+  padding: 38px 45px !important;
+  box-sizing: border-box !important;
+  height: auto !important;
+  box-shadow: none !important;
+  border: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 15px !important;
+}
+
+.cr_measure_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.cr_cv_text {
+  font-size: 10pt !important;
+  color: var(--tx2) !important;
+  margin: 0 !important;
+  text-align: justify !important;
+  white-space: pre-wrap !important;
+}
+
+.cr_cv_item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3vh;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.cr_cv_item_row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  color: var(--tx) !important;
+  font-size: 10.5pt !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.cr_cv_item_subrow {
+  display: flex;
+  justify-content: space-between;
+  font-style: italic;
+  color: var(--tx2) !important;
+  font-size: 9.5pt !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.cr_cv_item_desc {
+  margin: 0.4vh 0 0;
+  padding-left: 2.5vh;
+  font-size: 10pt !important;
+  color: var(--tx2) !important;
+}
+
+.cr_cv_item_desc ul {
+  margin: 0;
+  padding-left: 0 !important;
+  list-style-type: none !important;
+}
+
+.cr_cv_item_desc li {
+  margin-bottom: 0.3vh;
+  text-align: justify;
+  position: relative;
+  padding-left: 18px !important;
+}
+
+.cr_cv_item_desc li::before {
+  content: "•" !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  color: var(--tx2) !important;
+  font-size: 10pt !important;
+}
+
+.cr_cv_skills_list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5vh;
+  font-size: 10pt !important;
+  color: var(--tx2) !important;
+}
+
+.cr_cv_proj_tech {
+  font-size: 9pt !important;
+  color: var(--tx3) !important;
+  margin: 0.3vh 0 0;
+}
+
+.cr_cv_contact_links {
+  margin-top: 4px;
+}
+
+/* ── DISEÑO DE HEADER: RENOMBRADO FLEX Y BOTÓN SUBIR CV BASE ── */
+#list_nombre_edit_container {
+  display: inline-flex !important;
+  align-items: center !important;
+  flex-direction: row !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+}
+
+#list_btn_subir_cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  background: var(--mco) !important;
+  color: var(--txa) !important;
+  border: none !important;
+  border-radius: 6px;
+  font-family: var(--ff_P);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 3.5vh;
+  min-height: 32px;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--mco) 25%, transparent) !important;
+}
+
+#list_btn_subir_cv:hover:not(:disabled) {
+  filter: brightness(1.08) !important;
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--mco) 35%, transparent) !important;
+}
+
+#list_btn_subir_cv:disabled {
+  background: var(--bg3) !important;
+  color: var(--tx3) !important;
+  border: 1px solid var(--brd) !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+
+

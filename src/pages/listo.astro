@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ListoPage from '../lib/usuarios/listo/listoPage.astro';
+import estilosListo from '../lib/usuarios/listo/listo.css?inline';
+import estilosChat from '../lib/usuarios/listo/chatwii/components/wii.css?inline';
+---
+<Layout title="Listo - CV IA & Postulaciones" robots="noindex, nofollow">
+  <script is:inline slot="head">localStorage.wiSmile||location.replace('/')</script>
+  <style is:global set:html={estilosListo + estilosChat} slot="head"></style>
+  <ListoPage/>
+</Layout>

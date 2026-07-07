@@ -1,0 +1,247 @@
+---
+// src/lib/usuarios/listo/listoPage.astro
+// Maquetación y Layout del módulo Listo (CV IA & Postulaciones)
+import { idiomaListo } from './idiomaListo.js';
+import EditorForm from './editor/editorForm.astro';
+
+const lang = Astro.locals.lang || 'es';
+const lg   = idiomaListo[lang];
+---
+
+<div class="listo_root">
+
+  <!-- ══ BARRA SUPERIOR (TOPBAR UNIFICADA) ══════════════════════════════════ -->
+  <header class="listo_topbar">
+    
+    <!-- Izquierda: logo + selector de candidatura + nombre editable -->
+    <div class="listo_topbar_left">
+      <div class="listo_brand">
+        <div class="listo_brand_icon">
+          <i class="fas fa-rocket"></i>
+        </div>
+        <div class="listo_brand_text">
+          <span class="listo_brand_title">{lg['list.titulo']}</span>
+        </div>
+      </div>
+
+      <div class="listo_divider_v"></div>
+
+      <!-- Selector de candidatura -->
+      <div class="listo_selector_group">
+        <div class="listo_sel_wrapper">
+          <i class="fas fa-folder-open listo_sel_ico"></i>
+          <select id="list_selector" class="listo_selector">
+            <option value="">{lg['list.seleccionar']}</option>
+          </select>
+          <i class="fas fa-chevron-down listo_sel_arrow"></i>
+        </div>
+      </div>
+
+      <div class="listo_divider_v list_desc_divider dpn"></div>
+
+      <!-- Campo para editar el nombre de la candidatura activa -->
+      <div class="listo_nombre_edit_group dpn" id="list_nombre_edit_container">
+        <div class="listo_header_input_wrap">
+          <i class="fas fa-pen"></i>
+          <input type="text" id="list_nombre_input" class="listo_header_nombre_input" placeholder={lg['list.nombreLabel']} autocomplete="off" />
+        </div>
+        <button id="list_btn_guardar_nombre" class="listo_btn_save_nombre" data-witip={lg['list.guardarNombre']}>
+          <i class="fas fa-save"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Derecha: Subir CV base, nueva candidatura, eliminar, descargar -->
+    <div class="listo_topbar_right">
+      <!-- Subir CV -->
+      <div class="listo_upload_wrapper dpn" id="list_upload_container">
+        <input type="file" id="list_cv_file" accept=".pdf,.docx,.doc" class="dpn" />
+        <button id="list_btn_subir_cv" class="listo_btn_upload">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <span>{lg['list.subirCV']}</span>
+        </button>
+      </div>
+
+      <!-- Descargar PDF -->
+      <button id="list_btn_descargar" class="listo_btn_cta listo_btn_download_gradient dpn">
+        <i class="fas fa-download"></i>
+        <span>{lg['list.descargarPdf']}</span>
+      </button>
+
+      <!-- Nueva Candidatura -->
+      <button id="list_btn_nueva" class="listo_btn_cta">
+        <i class="fas fa-plus"></i>
+        <span>{lg['list.nueva']}</span>
+      </button>
+
+      <!-- Eliminar candidatura -->
+      <button id="list_btn_eliminar" class="listo_btn_icon_del dpn" data-witip={lg['list.eliminar']}>
+        <i class="fas fa-trash-alt"></i>
+      </button>
+    </div>
+
+  </header>
+
+  <!-- ══ ESTADO VACÍO ══════════════════════════════════════════════════════ -->
+  <div class="listo_empty_state dpn" id="list_empty">
+    <div class="listo_empty_glow"></div>
+    <div class="listo_empty_icon"><i class="fas fa-rocket"></i></div>
+    <h2 class="listo_empty_h">{lg['list.sinCandidaturas']}</h2>
+    <p class="listo_empty_p">{lg['list.sinCandidaturasSub']}</p>
+    <button class="listo_btn_cta" onclick="document.getElementById('list_btn_nueva')?.click()">
+      <i class="fas fa-plus"></i> {lg['list.crearPrimera']}
+    </button>
+  </div>
+
+  <!-- ══ WORKSPACE PRINCIPAL (2 COLUMNAS: CHAT / PREVIEW-FORM) ═══════════════ -->
+  <main class="listo_workspace dpn" id="list_workspace">
+    
+    <!-- Columna Izquierda: ChatWii listo -->
+    <section class="listo_pane chatwii_postulaciones">
+      <div id="list_chat_container" class="chatwii_main"></div>
+    </section>
+
+    <!-- Columna Derecha: Tabs (Vista Previa vs Editar Datos) -->
+    <section class="listo_pane listo_pane_preview">
+      
+      <!-- Pestañas de Alternancia -->
+      <div class="listo_tabs_header">
+        <button class="listo_tab_btn active" id="list_tab_preview_btn" data-tab="preview">
+          <i class="fas fa-eye"></i> {lg['list.tabPreview']}
+        </button>
+        <button class="listo_tab_btn" id="list_tab_edit_btn" data-tab="edit">
+          <i class="fas fa-edit"></i> {lg['list.tabEdit']}
+        </button>
+      </div>
+
+      <!-- Contenedor del contenido del Tab -->
+      <div class="listo_tab_content_wrapper">
+        
+        <!-- Tab 1: Vista Previa A4 -->
+        <div class="listo_tab_pane active" id="list_tab_preview_content">
+          <div class="listo_preview_pdf" id="list_a4_scroll">
+            <div class="listo_preview_empty" id="list_preview_vacio">
+              <div class="listo_prev_empty_ico"><i class="fas fa-file-circle-plus"></i></div>
+              <p>{lg['list.previewVacio']}</p>
+              <span>{lg['list.previewVacioSub']}</span>
+              <button class="listo_btn_upload_lg" onclick="document.getElementById('list_btn_subir_cv')?.click()">
+                <i class="fas fa-cloud-upload-alt"></i> {lg['list.subirCV']}
+              </button>
+            </div>
+            
+            <div id="list_cv_printable_area" class="cr_printable_pages_container"></div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Editor Manual Compacto -->
+        <div class="listo_tab_pane" id="list_tab_edit_content">
+          <EditorForm lang={lang} />
+        </div>
+
+      </div>
+
+    </section>
+  </main>
+
+</div>
+
+<!-- ══ MODAL NUEVA CANDIDATURA ════════════════════════════════════════════ -->
+<div class="wiModal" id="list_modal_nueva">
+  <div class="modalBody cr_confirm_modal_body listo_modal_dos_columnas" id="nueva_candidatura">
+    <button class="modalX" data-wimodal-close>&times;</button>
+    <div class="cr_confirm_content">
+      
+      <div class="listo_modal_header_custom">
+        <div class="listo_modal_hico listo_modal_icon_success"><i class="fas fa-plus-circle"></i></div>
+        <h3 class="listo_modal_htit_custom">{lg['list.modalTitulo']}</h3>
+      </div>
+
+      <!-- Form Grid -->
+      <div class="listo_modal_grid_layout">
+        
+        <!-- Columna Izquierda: Datos -->
+        <div class="listo_modal_col">
+          <div class="listo_fld">
+            <label class="listo_lbl">
+              <i class="fas fa-building listo_lbl_ico"></i>
+              <span>{lg['list.modalEmpresa']}</span>
+            </label>
+            <input id="list_modal_empresa" type="text" class="listo_inp" placeholder={lg['list.modalEmpresaPl']} autocomplete="off" />
+          </div>
+
+          <div class="listo_fld">
+            <label class="listo_lbl">
+              <i class="fas fa-user-tie listo_lbl_ico"></i>
+              <span>{lg['list.modalCargo']}</span>
+            </label>
+            <input id="list_modal_cargo" type="text" class="listo_inp" placeholder={lg['list.modalCargoPl']} autocomplete="off" />
+          </div>
+
+          <div class="listo_fld">
+            <label class="listo_lbl">
+              <i class="fas fa-language listo_lbl_ico"></i>
+              <span>{lg['list.modalIdioma']}</span>
+            </label>
+            <select id="list_modal_idioma" class="listo_inp">
+              <option value="es">Español</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+
+          <!-- Subir CV base inicial -->
+          <div class="listo_fld">
+            <label class="listo_lbl">
+              <i class="fas fa-file-pdf listo_lbl_ico"></i>
+              <span>{lg['list.modalCv']}</span>
+            </label>
+            <div class="listo_cv_upload_row">
+              <input type="file" id="list_modal_cv_file" accept=".pdf,.docx,.doc" class="dpn" />
+              <button type="button" id="list_modal_cv_btn" class="listo_btn_upload_modal">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>{lg['list.modalCvBtn']}</span>
+              </button>
+              <span id="list_modal_cv_nombre" class="listo_cv_filename">{lg['list.modalCvNinguno']}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Requisitos de Vacante -->
+        <div class="listo_modal_col">
+          <div class="listo_fld listo_fld_textarea">
+            <label class="listo_lbl">
+              <i class="fas fa-align-left listo_lbl_ico"></i>
+              <span>{lg['list.ofertaLabel']}</span>
+            </label>
+            <textarea id="list_modal_vacante" class="listo_inp listo_modal_textarea" placeholder={lg['list.ofertaPlaceholder']} rows="8"></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Acciones de Modal -->
+      <div class="listo_modal_footer_custom">
+        <button id="list_modal_guardar" class="listo_btn_cta listo_btn_full">
+          <i class="fas fa-check"></i> {lg['list.modalGuardar']}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  import { protegerRuta } from '../../wiauth/sesion.js';
+  import { idiomaListo } from './idiomaListo.js';
+  import { initListo } from './listoVisual.js';
+
+  const init = async () => {
+    const u = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
+    if (!u) return;
+    const lang = document.documentElement.lang || 'es';
+    const lg   = (idiomaListo as any)[lang] || idiomaListo['es'];
+    initListo(lang, lg);
+  };
+
+  document.addEventListener('astro:page-load', init);
+</script>

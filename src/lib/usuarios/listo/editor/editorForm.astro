@@ -1,0 +1,93 @@
+---
+// src/lib/usuarios/listo/editor/editorForm.astro
+// Panel de Formulario Compacto para Edición Manual del CV
+import { idiomaListo } from '../idiomaListo.js';
+const { lang = 'es' } = Astro.props;
+const lg = idiomaListo[lang];
+---
+
+<form id="list_editor_form" class="listo_editor_scroll" onsubmit="return false;">
+
+  <!-- SECCIÓN 1: CONTACTO -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-address-card"></i> {lg['list.editor.contacto']}
+    </legend>
+    
+    <div class="listo_form_grid">
+      <div class="listo_field">
+        <label for="list_edit_nombre">{lg['list.modalNombre']} *</label>
+        <input type="text" id="list_edit_nombre" class="listo_input" required />
+      </div>
+      
+      <div class="listo_field">
+        <label for="list_edit_titulo">{lg['list.modalCargo']} *</label>
+        <input type="text" id="list_edit_titulo" class="listo_input" required />
+      </div>
+
+      <div class="listo_field">
+        <label for="list_edit_email">Email *</label>
+        <input type="email" id="list_edit_email" class="listo_input" required />
+      </div>
+
+      <div class="listo_field">
+        <label for="list_edit_telefono">Teléfono *</label>
+        <input type="tel" id="list_edit_telefono" class="listo_input" required />
+      </div>
+
+      <div class="listo_field">
+        <label for="list_edit_ubicacion">Ubicación *</label>
+        <input type="text" id="list_edit_ubicacion" class="listo_input" placeholder="Ciudad, País" required />
+      </div>
+
+      <div class="listo_field">
+        <label for="list_edit_linkedin">LinkedIn</label>
+        <input type="url" id="list_edit_linkedin" class="listo_input" />
+      </div>
+
+      <div class="listo_field listo_form_grid_full">
+        <label for="list_edit_web">Web / Portfolio</label>
+        <input type="url" id="list_edit_web" class="listo_input" />
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- SECCIÓN 2: PERFIL / RESUMEN -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-user"></i> {lg['list.editor.perfil']}
+    </legend>
+    
+    <div class="listo_field">
+      <label for="list_edit_resumen">{lg['list.editor.perfil']}</label>
+      <textarea id="list_edit_resumen" class="listo_textarea" rows="4"></textarea>
+    </div>
+  </fieldset>
+
+  <!-- SECCIÓN 3: HABILIDADES (SKILLS) -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-sliders-h"></i> {lg['list.editor.skills']}
+    </legend>
+    
+    <div class="listo_field">
+      <label for="list_edit_skills">{lg['list.editor.skills']} (separadas por comas)</label>
+      <textarea id="list_edit_skills" class="listo_textarea" rows="3" placeholder="React, TypeScript, Node.js, Docker..."></textarea>
+    </div>
+  </fieldset>
+
+  <!-- SECCIÓN 4: EXPERIENCIA LABORAL -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-briefcase"></i> {lg['list.editor.experiencia']}
+    </legend>
+    
+    <!-- Contenedor dinámico de experiencias -->
+    <div id="list_editor_experiencias_container"></div>
+
+    <button type="button" id="list_btn_agregar_experiencia" class="listo_btn_add_item">
+      <i class="fas fa-plus"></i> {lg['list.editor.agregarExp']}
+    </button>
+  </fieldset>
+
+</form>

@@ -30,6 +30,7 @@ export const idiomaRutas = {
     'perfil': 'Mi Perfil',
     '/mi-cvs': 'Mis CVs',
     '/postulaciones': 'Postulaciones',
+    '/listo': 'Listo',
     '/ccat-test': 'Test CCAT',
 },
   en: {
@@ -59,6 +60,7 @@ export const idiomaRutas = {
     'perfil': 'My Profile',
     '/mi-cvs': 'My Resumes',
     '/postulaciones': 'Applications',
+    '/listo': 'Listo',
     '/ccat-test': 'CCAT Test',
   }
 };
@@ -99,6 +101,7 @@ export const NAV_CONFIG = {
     ],
     right: [
       { href: '/mi-cvs', ico: 'fa-folder-open' }, 
+      { href: '/listo', ico: 'fa-rocket' },
       { href: '/postulaciones', ico: 'fa-list-check' },
       { href: '/ser-editor', ico: 'fa-user-pen' },
       { isPerfil: true }, { isSalir: true },
@@ -119,9 +122,10 @@ export const NAV_CONFIG = {
       { href: '/more', ico: 'fa-ellipsis' },
     ],
     right: [
+      { href: '/listo', ico: 'fa-rocket' },
       { href: '/postulaciones', ico: 'fa-list-check' },
       { href: '/mi-cvs', ico: 'fa-folder-open' }, 
-      { href: '/nuevo', ico: 'fa-plus' },
+      // { href: '/nuevo', ico: 'fa-plus' },
       { href: '/editor', ico: 'fa-gauge' },
       { isPerfil: true }, { isSalir: true },
     ],
@@ -147,6 +151,7 @@ export const NAV_CONFIG = {
       { isPerfil: true }, { isSalir: true }
     ],
     more: [
+      { href: '/listo', ico: 'fa-rocket' },
       { href: '/notas', ico: 'fa-note-sticky' },
       { href: '/traducir', ico: 'fa-language' },
       { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles' },
@@ -167,6 +172,7 @@ export const NAV_CONFIG = {
       { isPerfil: true }, { isSalir: true }
     ],
     more: [
+      { href: '/listo', ico: 'fa-rocket' },
       { href: '/traducir', ico: 'fa-language' },
       { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles' },
       { href: '/remotos', ico: 'fa-briefcase' },
@@ -260,6 +266,7 @@ export function rutaRoles() {
   roles['/ser-editor'] = allRoles;
   roles['/mi-cvs'] = allRoles;
   roles['/postulaciones'] = allRoles;
+  roles['/listo'] = allRoles;
   roles['/more'] = allRoles;
 
   return { roles, require2FA };
