@@ -444,11 +444,15 @@
   position: relative !important;
 }
 
+.cr_chat_texto {
+  position: relative !important;
+}
+
 /* Contenedor de acciones al Hover */
 .listo_hover_actions {
   position: absolute;
-  top: 10px;
-  right: -36px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -459,8 +463,13 @@
 }
 
 .cr_chat_burbuja.user .listo_hover_actions {
+  left: -34px;
   right: auto;
-  left: -36px;
+}
+
+.cr_chat_burbuja.chatwii .listo_hover_actions {
+  right: -34px;
+  left: auto;
 }
 
 .cr_chat_burbuja:hover .listo_hover_actions {
@@ -1471,6 +1480,175 @@ select.listo_inp option {
   cursor: not-allowed;
   opacity: 0.6;
 }
+
+/* ── TARJETA INTERACTIVA DE CAMBIOS IA CON VISTA PREVIA DETALLADA ── */
+.listo_suggest_item {
+  border-top: 1px solid var(--brd);
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.listo_suggest_item:first-of-type {
+  border-top: none;
+}
+
+.listo_suggest_item_header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.listo_suggest_item_check {
+  cursor: pointer;
+  accent-color: var(--mco) !important;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.listo_suggest_item_title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--tx1);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listo_suggest_item_toggle {
+  font-size: 0.7rem;
+  color: var(--tx3);
+  transition: transform 0.2s ease;
+  padding: 4px;
+}
+
+.listo_suggest_item_toggle.expanded {
+  transform: rotate(180deg);
+}
+
+.listo_suggest_diff_box {
+  display: none;
+  background: var(--bg3);
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  margin-left: 25px;
+  flex-direction: column;
+  gap: 8px;
+  border-left: 3px solid var(--mco);
+  margin-top: 4px;
+}
+
+.listo_suggest_diff_box.show {
+  display: flex;
+}
+
+.listo_suggest_diff_section {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.listo_suggest_diff_label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--tx3);
+  letter-spacing: 0.3px;
+}
+
+.listo_suggest_diff_val_old {
+  color: #ef4444 !important;
+  text-decoration: line-through;
+  white-space: pre-wrap;
+  background: rgba(239, 68, 68, 0.05);
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.listo_suggest_diff_val_new {
+  color: #22c55e !important;
+  font-weight: 500;
+  white-space: pre-wrap;
+  background: rgba(34, 197, 94, 0.05);
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.listo_suggest_btn_apply_selected {
+  padding: 0 14px;
+  height: 28px;
+  border-radius: 4px;
+  border: none;
+  background: var(--mco) !important;
+  color: var(--txa) !important;
+  font-family: var(--ff_P);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.listo_suggest_btn_apply_selected:hover {
+  filter: brightness(1.08);
+}
+
+.listo_suggest_btn_apply_selected:active {
+  transform: scale(0.97);
+}
+
+.listo_suggestion_desc {
+  margin-bottom: 12px !important;
+}
+
+.listo_suggest_items_list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  margin-bottom: 16px !important;
+}
+
+.listo_suggest_actions_row {
+  display: flex !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+}
+
+.listo_suggest_btn_apply_all {
+  padding: 0 14px;
+  height: 28px;
+  border-radius: 4px;
+  background: transparent !important;
+  border: 1.2px solid var(--brd) !important;
+  color: var(--tx2) !important;
+  font-family: var(--ff_P);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.listo_suggest_btn_apply_all:hover {
+  background: var(--bg3) !important;
+  color: var(--tx1) !important;
+}
+
+
 
 
 

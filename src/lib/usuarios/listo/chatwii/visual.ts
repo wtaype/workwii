@@ -18,7 +18,8 @@ let _container: HTMLElement | null = null;
 let _lang = 'es';
 let _enviando = false;
 let _persona: any = null;
-let _quotedMessage: { role: string; text: string } | null = null;
+let _quotedMessage: { id: string; role: string; text: string } | null = null;
+let _localGetCvData: (() => any) | null = null;
 
 /**
  * Procesa el texto crudo para separar <explicacion> de <cambio_cv>
@@ -113,65 +114,204 @@ const agregarBurbuja = (role: 'user' | 'model', texto: string, scroll = true) =>
   textoDiv.className = 'cr_chat_texto';
 
   const { explicacion, cambioCv } = extraerBloques(texto);
+  let cleanTextForQuote = '';
 
   if (role === 'model') {
     textoDiv.innerHTML = mdToHtml(explicacion);
+    cleanTextForQuote = explicacion;
 
     // Verificar si hay JSON sugerido para aplicar cambios
     if (cambioCv && (cambioCv.endsWith('}') || cambioCv.includes('}'))) {
       try {
         const cleanJsonStr = cambioCv.replace('</cambio_cv>', '').trim();
         const parsed = JSON.parse(cleanJsonStr);
+        const currentCv = _localGetCvData ? _localGetCvData() : {};
 
-        const card = document.createElement('div');
-        card.className = 'listo_suggestion_card';
-        
-        const tit = _lang === 'en' ? 'Optimizations Suggested' : 'Optimizaciones sugeridas';
-        const desc = _lang === 'en' 
-          ? 'ChatWii has written improvements for your resume. Apply them?'
-          : 'ChatWii redactó mejoras para tu CV. ¿Deseas aplicarlas?';
-        const applyText = _lang === 'en' ? 'Apply' : 'Aplicar';
-        const cancelText = _lang === 'en' ? 'Discard' : 'Descartar';
+        const diffs: Array<{
+          id: string;
+          field: string;
+          label: string;
+          oldVal: string;
+          newVal: string;
+          data: any;
+        }> = [];
 
-        card.innerHTML = `
-          <div class="listo_suggestion_title">
-            <i class="fas fa-wand-magic-sparkles"></i> ${tit}
-          </div>
-          <div class="listo_suggestion_text">${desc}</div>
-          <div class="listo_suggestion_actions">
-            <button class="listo_suggest_btn_apply"><i class="fas fa-check"></i> ${applyText}</button>
-            <button class="listo_suggest_btn_cancel"><i class="fas fa-times"></i> ${cancelText}</button>
-          </div>
-        `;
+        if (parsed.titulo && parsed.titulo !== currentCv.titulo) {
+          diffs.push({
+            id: 'title',
+            field: 'titulo',
+            label: _lang === 'en' ? 'Profession Title' : 'Título o Profesión',
+            oldVal: currentCv.titulo || '',
+            newVal: parsed.titulo,
+            data: { titulo: parsed.titulo }
+          });
+        }
 
-        const btnApply = card.querySelector('.listo_suggest_btn_apply') as HTMLButtonElement;
-        const btnCancel = card.querySelector('.listo_suggest_btn_cancel') as HTMLButtonElement;
+        if (parsed.resumen && parsed.resumen !== currentCv.resumen) {
+          diffs.push({
+            id: 'resumen',
+            field: 'resumen',
+            label: _lang === 'en' ? 'Professional Summary' : 'Resumen Profesional',
+            oldVal: currentCv.resumen || '',
+            newVal: parsed.resumen,
+            data: { resumen: parsed.resumen }
+          });
+        }
 
-        btnApply.addEventListener('click', () => {
-          if (typeof (window as any).listo_aplicarCambiosIA === 'function') {
-            (window as any).listo_aplicarCambiosIA(parsed);
+        if (parsed.skills && parsed.skills !== currentCv.skills) {
+          diffs.push({
+            id: 'skills',
+            field: 'skills',
+            label: _lang === 'en' ? 'Skills' : 'Habilidades',
+            oldVal: currentCv.skills || '',
+            newVal: parsed.skills,
+            data: { skills: parsed.skills }
+          });
+        }
+
+        if (Array.isArray(parsed.experiencias)) {
+          parsed.experiencias.forEach((exp: any, idx: number) => {
+            const currentExp = currentCv.experiencias?.find((e: any) => e.id === exp.id);
+            const puestoText = exp.puesto || 'Puesto';
+            const empresaText = exp.empresa || 'Empresa';
+
+            const formatExpText = (e: any) => {
+              if (!e) return '';
+              const logros = Array.isArray(e.logros) ? e.logros.join('\n') : (e.logros || '');
+              return `${e.puesto || ''} @ ${e.empresa || ''}\n${e.inicio || ''} - ${e.fin || ''}\n${e.ubicacion || ''}\nLogros:\n${logros}`;
+            };
+
+            diffs.push({
+              id: `exp_${exp.id || idx}`,
+              field: `exp_${exp.id || idx}`,
+              label: `${_lang === 'en' ? 'Experience:' : 'Experiencia:'} ${puestoText} (${empresaText})`,
+              oldVal: currentExp ? formatExpText(currentExp) : (_lang === 'en' ? '(New Experience Item)' : '(Nueva Experiencia)'),
+              newVal: formatExpText(exp),
+              data: { experiencias: [exp] }
+            });
+          });
+        }
+
+        if (diffs.length > 0) {
+          const card = document.createElement('div');
+          card.className = 'listo_suggestion_card';
+
+          const tit = _lang === 'en' ? 'Optimizations Suggested' : 'Optimizaciones sugeridas';
+          const desc = _lang === 'en' 
+            ? 'Review the proposed changes below:' 
+            : 'Revisa los cambios propuestos abajo:';
+          const applySelectedText = _lang === 'en' ? 'Apply Selected' : 'Aplicar Selección';
+          const applyAllText = _lang === 'en' ? 'Apply All' : 'Aplicar Todo';
+          const discardText = _lang === 'en' ? 'Discard' : 'Descartar';
+
+          let itemsHTML = '';
+          diffs.forEach(diff => {
+            itemsHTML += `
+              <div class="listo_suggest_item" data-diff-id="${diff.id}">
+                <div class="listo_suggest_item_header">
+                  <input type="checkbox" class="listo_suggest_item_check" checked data-diff-id="${diff.id}" />
+                  <span class="listo_suggest_item_title">${diff.label}</span>
+                  <i class="fas fa-chevron-down listo_suggest_item_toggle"></i>
+                </div>
+                <div class="listo_suggest_diff_box">
+                  <div class="listo_suggest_diff_section">
+                    <span class="listo_suggest_diff_label">${_lang === 'en' ? 'Current:' : 'Actual:'}</span>
+                    <div class="listo_suggest_diff_val_old">${diff.oldVal || (_lang === 'en' ? '(Empty)' : '(Vacío)')}</div>
+                  </div>
+                  <div class="listo_suggest_diff_section">
+                    <span class="listo_suggest_diff_label">${_lang === 'en' ? 'Proposed:' : 'Propuesto:'}</span>
+                    <div class="listo_suggest_diff_val_new">${diff.newVal}</div>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+
+          card.innerHTML = `
+            <div class="listo_suggestion_title">
+              <i class="fas fa-wand-magic-sparkles"></i> ${tit}
+            </div>
+            <div class="listo_suggestion_text listo_suggestion_desc">${desc}</div>
+            <div class="listo_suggest_items_container listo_suggest_items_list">
+              ${itemsHTML}
+            </div>
+            <div class="listo_suggestion_actions listo_suggest_actions_row">
+              <button class="listo_suggest_btn_apply_selected"><i class="fas fa-check-double"></i> ${applySelectedText}</button>
+              <button class="listo_suggest_btn_apply listo_suggest_btn_apply_all"><i class="fas fa-check"></i> ${applyAllText}</button>
+              <button class="listo_suggest_btn_cancel"><i class="fas fa-times"></i> ${discardText}</button>
+            </div>
+          `;
+
+          // Event listeners for toggle collapse/expand diffs
+          const itemHeaders = card.querySelectorAll('.listo_suggest_item_header');
+          itemHeaders.forEach(header => {
+            header.addEventListener('click', (e) => {
+              if ((e.target as HTMLElement).tagName === 'INPUT') return;
+              const parent = header.closest('.listo_suggest_item');
+              const box = parent?.querySelector('.listo_suggest_diff_box');
+              const icon = header.querySelector('.listo_suggest_item_toggle');
+              if (box && icon) {
+                box.classList.toggle('show');
+                icon.classList.toggle('expanded');
+              }
+            });
+          });
+
+          const btnApplySelected = card.querySelector('.listo_suggest_btn_apply_selected') as HTMLButtonElement;
+          const btnApplyAll = card.querySelector('.listo_suggest_btn_apply_all') as HTMLButtonElement;
+          const btnCancel = card.querySelector('.listo_suggest_btn_cancel') as HTMLButtonElement;
+
+          btnApplySelected.addEventListener('click', () => {
+            const checkedChecks = card.querySelectorAll('.listo_suggest_item_check:checked');
+            if (checkedChecks.length === 0) return;
+
+            const merged: any = {};
+            checkedChecks.forEach(ch => {
+              const diffId = ch.getAttribute('data-diff-id');
+              const diff = diffs.find(d => d.id === diffId);
+              if (diff) {
+                if (diff.field.startsWith('exp_')) {
+                  if (!merged.experiencias) merged.experiencias = [];
+                  merged.experiencias.push(...diff.data.experiencias);
+                } else {
+                  merged[diff.field] = diff.data[diff.field];
+                }
+              }
+            });
+
+            if (typeof (window as any).listo_aplicarCambiosIA === 'function') {
+              (window as any).listo_aplicarCambiosIA(merged);
+              card.remove();
+            }
+          });
+
+          btnApplyAll.addEventListener('click', () => {
+            if (typeof (window as any).listo_aplicarCambiosIA === 'function') {
+              (window as any).listo_aplicarCambiosIA(parsed);
+              card.remove();
+            }
+          });
+
+          btnCancel.addEventListener('click', () => {
             card.remove();
-          }
-        });
+          });
 
-        btnCancel.addEventListener('click', () => {
-          card.remove();
-        });
-
-        textoDiv.appendChild(card);
+          textoDiv.appendChild(card);
+        }
       } catch (_) {
-        // En streaming, ignore hasta que se complete el JSON
+        // Ignorar errores parciales de JSON durante streaming
       }
     }
   } else {
     // Si contiene cita visual, limpiar para mostrar texto bonito
     const cleanUserText = texto.replace(/^\[Citado: ".*"\]\n\n/, '');
     textoDiv.textContent = cleanUserText;
+    cleanTextForQuote = cleanUserText;
   }
 
   burbuja.appendChild(textoDiv);
 
-  // Acciones al Hover (WhatsApp Reply)
+  // Acciones al Hover (WhatsApp Reply) - Asociada al textoDiv para posicionamiento relativo
   const hoverActions = document.createElement('div');
   hoverActions.className = 'listo_hover_actions';
   hoverActions.innerHTML = `
@@ -182,10 +322,10 @@ const agregarBurbuja = (role: 'user' | 'model', texto: string, scroll = true) =>
 
   const btnCitar = hoverActions.querySelector('.listo_btn_citar') as HTMLButtonElement;
   btnCitar.addEventListener('click', () => {
-    citarMensaje(role, role === 'model' ? explicacion : texto.replace(/^\[Citado: ".*"\]\n\n/, ''));
+    citarMensaje(role, cleanTextForQuote);
   });
 
-  burbuja.appendChild(hoverActions);
+  textoDiv.appendChild(hoverActions);
   area.appendChild(burbuja);
 
   if (scroll) {
@@ -355,6 +495,7 @@ export const mountChatWii = (
   _lang = lang;
   _persona = persona;
   _quotedMessage = null;
+  _localGetCvData = getCvData;
 
   initCoach(lang, getCvData, getOferta, getPostInfo);
 
