@@ -121,7 +121,7 @@ export const NAV_CONFIG = {
     right: [
       { href: '/postulaciones', ico: 'fa-list-check' },
       { href: '/mi-cvs', ico: 'fa-folder-open' }, 
-      // { href: '/nuevo', ico: 'fa-plus' },
+      { href: '/nuevo', ico: 'fa-plus' },
       { href: '/editor', ico: 'fa-gauge' },
       { isPerfil: true }, { isSalir: true },
     ],
