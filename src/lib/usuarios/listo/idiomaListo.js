@@ -43,6 +43,7 @@ export const idiomaListo = {
     // Panel derecho (Visor y Editor)
     'list.tabPreview': 'Vista Previa',
     'list.tabEdit': 'Editar Datos',
+    'list.tabJob': 'Editar Puesto',
     'list.descargarPdf': 'Descargar PDF',
     'list.subirCV': 'Subir CV Base',
     'list.subirCVHelp': 'Carga tu CV actual para que ChatWii y el editor lo usen como base.',
@@ -114,6 +115,7 @@ export const idiomaListo = {
     // Panel derecho (Visor y Editor)
     'list.tabPreview': 'Preview',
     'list.tabEdit': 'Edit Data',
+    'list.tabJob': 'Job Details',
     'list.descargarPdf': 'Download PDF',
     'list.subirCV': 'Upload Base CV',
     'list.subirCVHelp': 'Upload your current resume so ChatWii and the editor can use it as a base.',

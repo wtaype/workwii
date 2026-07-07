@@ -632,27 +632,43 @@ export const initListo = (lang, lg) => {
   // ── Gestión de pestañas (Tabs logic) ──
   const tabPreviewBtn = document.getElementById('list_tab_preview_btn');
   const tabEditBtn    = document.getElementById('list_tab_edit_btn');
+  const tabJobBtn     = document.getElementById('list_tab_job_btn');
   const tabPreviewContent = document.getElementById('list_tab_preview_content');
   const tabEditContent    = document.getElementById('list_tab_edit_content');
+  const tabJobContent     = document.getElementById('list_tab_job_content');
 
   const activarTab = (tab) => {
+    [tabPreviewBtn, tabEditBtn, tabJobBtn].forEach(btn => btn?.classList.remove('active'));
+    [tabPreviewContent, tabEditContent, tabJobContent].forEach(c => c?.classList.remove('active'));
+
     if (tab === 'preview') {
       tabPreviewBtn?.classList.add('active');
-      tabEditBtn?.classList.remove('active');
       tabPreviewContent?.classList.add('active');
-      tabEditContent?.classList.remove('active');
       actualizarPreview();
-    } else {
-      tabPreviewBtn?.classList.remove('active');
+    } else if (tab === 'edit') {
       tabEditBtn?.classList.add('active');
-      tabPreviewContent?.classList.remove('active');
       tabEditContent?.classList.add('active');
       populateForm();
+    } else if (tab === 'job') {
+      tabJobBtn?.classList.add('active');
+      tabJobContent?.classList.add('active');
+      if (_activa) {
+        const inputEmpresa = document.getElementById('list_job_empresa');
+        const inputCargo = document.getElementById('list_job_cargo');
+        const inputIdioma = document.getElementById('list_job_idioma');
+        const inputVacante = document.getElementById('list_job_vacante');
+
+        if (inputEmpresa) inputEmpresa.value = _activa.empresa || '';
+        if (inputCargo) inputCargo.value = _activa.cargo || '';
+        if (inputIdioma) inputIdioma.value = _activa.idioma || 'es';
+        if (inputVacante) inputVacante.value = _activa.notas || '';
+      }
     }
   };
 
   tabPreviewBtn?.addEventListener('click', () => activarTab('preview'));
   tabEditBtn?.addEventListener('click', () => activarTab('edit'));
+  tabJobBtn?.addEventListener('click', () => activarTab('job'));
 
   // Sincronizar inputs manuales del formulario global
   const globalInputs = ['nombre', 'titulo', 'email', 'telefono', 'ubicacion', 'linkedin', 'web', 'resumen', 'skills'];
@@ -665,6 +681,36 @@ export const initListo = (lang, lg) => {
 
   // Botón agregar experiencia
   document.getElementById('list_btn_agregar_experiencia')?.addEventListener('click', agregarExperienciaNueva);
+
+  // Botón guardar puesto/vacante
+  document.getElementById('list_btn_guardar_job')?.addEventListener('click', () => {
+    if (_activa) {
+      const inputEmpresa = document.getElementById('list_job_empresa');
+      const inputCargo = document.getElementById('list_job_cargo');
+      const inputIdioma = document.getElementById('list_job_idioma');
+      const inputVacante = document.getElementById('list_job_vacante');
+
+      const empresa = inputEmpresa ? inputEmpresa.value.trim() : '';
+      const cargo = inputCargo ? inputCargo.value.trim() : '';
+      const idioma = inputIdioma ? inputIdioma.value : 'es';
+      const notas = inputVacante ? inputVacante.value.trim() : '';
+
+      _activa.empresa = empresa;
+      _activa.cargo = cargo;
+      _activa.idioma = idioma;
+      _activa.notas = notas;
+
+      const nuevoNombre = `${empresa || 'Empresa'} - ${cargo || 'Cargo'}`;
+      if (nuevoNombre !== _activa.nombre) {
+        renombrarCandidatura(nuevoNombre);
+      } else {
+        guardarLista();
+        Mensaje(_lg['list.notasGuardadas'] || 'Datos guardados', 'success');
+      }
+
+      cargarActiva(_activa.id);
+    }
+  });
 
   // ── Registrar API global para ChatWii ──
   window.listo_aplicarCambiosIA = (patches) => {

@@ -124,12 +124,12 @@ export const NAV_CONFIG = {
     right: [
       { href: '/listo', ico: 'fa-rocket' },
       { href: '/postulaciones', ico: 'fa-list-check' },
-      { href: '/mi-cvs', ico: 'fa-folder-open' }, 
-      // { href: '/nuevo', ico: 'fa-plus' },
+      // { href: '/mi-cvs', ico: 'fa-folder-open' }, 
       { href: '/editor', ico: 'fa-gauge' },
       { isPerfil: true }, { isSalir: true },
     ],
     more: [
+      { href: '/nuevo', ico: 'fa-plus' },
       { href: '/smile', ico: 'fa-house' }, 
       { href: '/word', ico: 'fa-file-word' },
       { href: '/notas', ico: 'fa-note-sticky' },

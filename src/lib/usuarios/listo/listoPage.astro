@@ -102,7 +102,7 @@ const lg   = idiomaListo[lang];
       <div id="list_chat_container" class="chatwii_main"></div>
     </section>
 
-    <!-- Columna Derecha: Tabs (Vista Previa vs Editar Datos) -->
+    <!-- Columna Derecha: Tabs (Vista Previa vs Editar Datos vs Editar Puesto) -->
     <section class="listo_pane listo_pane_preview">
       
       <!-- Pestañas de Alternancia -->
@@ -112,6 +112,9 @@ const lg   = idiomaListo[lang];
         </button>
         <button class="listo_tab_btn" id="list_tab_edit_btn" data-tab="edit">
           <i class="fas fa-edit"></i> {lg['list.tabEdit']}
+        </button>
+        <button class="listo_tab_btn" id="list_tab_job_btn" data-tab="job">
+          <i class="fas fa-briefcase"></i> {lg['list.tabJob']}
         </button>
       </div>
 
@@ -137,6 +140,47 @@ const lg   = idiomaListo[lang];
         <!-- Tab 2: Editor Manual Compacto -->
         <div class="listo_tab_pane" id="list_tab_edit_content">
           <EditorForm lang={lang} />
+        </div>
+
+        <!-- Tab 3: Editar Puesto / Requisitos -->
+        <div class="listo_tab_pane" id="list_tab_job_content">
+          <div class="listo_editor_scroll">
+            <div class="listo_form_section">
+              <h3 class="listo_sec_title">
+                <i class="fas fa-briefcase"></i>
+                <span>{lg['list.tabJob']}</span>
+              </h3>
+              
+              <div class="listo_form_grid">
+                <div class="listo_field">
+                  <label>{lg['list.modalEmpresa']}</label>
+                  <input type="text" id="list_job_empresa" class="listo_input" autocomplete="off" />
+                </div>
+                <div class="listo_field">
+                  <label>{lg['list.modalCargo']}</label>
+                  <input type="text" id="list_job_cargo" class="listo_input" autocomplete="off" />
+                </div>
+                <div class="listo_field listo_form_grid_full">
+                  <label>{lg['list.modalIdioma']}</label>
+                  <select id="list_job_idioma" class="listo_select">
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                  </select>
+                </div>
+                <div class="listo_field listo_form_grid_full">
+                  <label>{lg['list.ofertaLabel']}</label>
+                  <textarea id="list_job_vacante" class="listo_textarea" rows="12"></textarea>
+                </div>
+              </div>
+              
+              <div style="margin-top: 15px;">
+                <button type="button" id="list_btn_guardar_job" class="listo_btn_cta">
+                  <i class="fas fa-save"></i>
+                  <span>{lg['list.ofertaGuardar']}</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
