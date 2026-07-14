@@ -72,7 +72,24 @@ export const idiomaListo = {
     'list.editor.empresa': 'Empresa',
     'list.editor.fechas': 'Fechas (Inicio - Fin)',
     'list.editor.ubicacion': 'Ubicación',
-    'list.editor.logros': 'Logros (uno por línea, empezando con guion)'
+    'list.editor.logros': 'Logros (uno por línea, empezando con guion)',
+    'list.editor.educacion': 'Educación',
+    'list.editor.proyectos': 'Proyectos Destacados',
+    'list.editor.certificaciones': 'Certificaciones',
+    'list.editor.idiomas': 'Idiomas',
+    'list.editor.agregarEdu': '+ Agregar Educación',
+    'list.editor.agregarProj': '+ Agregar Proyecto',
+    'list.editor.agregarCert': '+ Agregar Certificación',
+    'list.editor.agregarIdioma': '+ Agregar Idioma',
+    'list.editor.grado': 'Grado / Certificación',
+    'list.editor.institucion': 'Institución',
+    'list.editor.projNombre': 'Nombre del Proyecto',
+    'list.editor.projEnlace': 'Enlace / URL',
+    'list.editor.projTech': 'Tecnologías (Astro, React, etc.)',
+    'list.editor.projDesc': 'Descripción',
+    'list.editor.certNombre': 'Nombre de Certificación',
+    'list.editor.certEmisor': 'Emisor / Organización',
+    'list.editor.certFecha': 'Fecha / Año'
   },
   en: {
     // Header principal
@@ -144,6 +161,23 @@ export const idiomaListo = {
     'list.editor.empresa': 'Company',
     'list.editor.fechas': 'Dates (Start - End)',
     'list.editor.ubicacion': 'Location',
-    'list.editor.logros': 'Achievements (one per line, starting with a dash)'
+    'list.editor.logros': 'Achievements (one per line, starting with a dash)',
+    'list.editor.educacion': 'Education',
+    'list.editor.proyectos': 'Featured Projects',
+    'list.editor.certificaciones': 'Certifications',
+    'list.editor.idiomas': 'Languages',
+    'list.editor.agregarEdu': '+ Add Education',
+    'list.editor.agregarProj': '+ Add Project',
+    'list.editor.agregarCert': '+ Add Certification',
+    'list.editor.agregarIdioma': '+ Add Language',
+    'list.editor.grado': 'Degree / Certification',
+    'list.editor.institucion': 'Institution',
+    'list.editor.projNombre': 'Project Name',
+    'list.editor.projEnlace': 'Link / URL',
+    'list.editor.projTech': 'Technologies (Astro, React, etc.)',
+    'list.editor.projDesc': 'Description',
+    'list.editor.certNombre': 'Certification Name',
+    'list.editor.certEmisor': 'Issuer / Organization',
+    'list.editor.certFecha': 'Date / Year'
   }
 };

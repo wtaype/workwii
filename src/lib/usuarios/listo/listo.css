@@ -315,6 +315,7 @@
   gap: 1.5vh;
   border-bottom: 1px solid var(--brd);
   padding-bottom: 2.5vh;
+  border:none;
 }
 
 .listo_form_section:last-child {
@@ -1646,6 +1647,43 @@ select.listo_inp option {
 .listo_suggest_btn_apply_all:hover {
   background: var(--bg3) !important;
   color: var(--tx1) !important;
+}
+
+/* ── DISEÑO DE FORMULARIO - CLASES PERSONALIZADAS SIN INLINE CSS ── */
+.listo_form_row_flex {
+  display: flex !important;
+  gap: 8px !important;
+}
+
+.listo_idioma_card {
+  padding: 12px !important;
+  margin-bottom: 8px !important;
+}
+
+.listo_idioma_row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.listo_idioma_input {
+  flex: 1 !important;
+}
+
+.listo_btn_remove_idioma {
+  margin: 0 !important;
+  padding: 6px 12px !important;
+  background: rgba(220, 53, 69, 0.1) !important;
+  color: #dc3545 !important;
+  border: none !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  transition: background 0.2s !important;
+}
+
+.listo_btn_remove_idioma:hover {
+  background: rgba(220, 53, 69, 0.2) !important;
 }
 
 

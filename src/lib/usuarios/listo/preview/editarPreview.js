@@ -47,7 +47,7 @@ export const initEditablePreview = (printableArea, getCvData, updateCvData, onSy
 
     el.addEventListener('keydown', (e) => {
       const field = el.getAttribute('data-edit-field');
-      const multilineFields = ['resumen', 'exp_logro', 'skills'];
+      const multilineFields = ['resumen', 'exp_logro', 'skills', 'proj_descripcion'];
       if (e.key === 'Enter' && !multilineFields.includes(field)) {
          e.preventDefault();
       }
@@ -127,6 +127,45 @@ const _syncFieldToState = (el, getCvData, updateCvData) => {
       if (idx > -1 && text !== list[idx][subKey]) {
         list[idx][subKey] = text;
         updateCvData({ educacion: list });
+      }
+      break;
+    }
+
+    case 'cert_nombre':
+    case 'cert_emisor':
+    case 'cert_fecha': {
+      const certId = el.getAttribute('data-cert-id');
+      const subKey = field.replace('cert_', '');
+      const list   = [...(cv.certificaciones || [])];
+      const idx    = list.findIndex(c => c.id === certId);
+      if (idx > -1 && text !== list[idx][subKey]) {
+        list[idx][subKey] = text;
+        updateCvData({ certificaciones: list });
+      }
+      break;
+    }
+
+    case 'proj_nombre':
+    case 'proj_enlace':
+    case 'proj_descripcion':
+    case 'proj_tecnologias': {
+      const projId = el.getAttribute('data-proj-id');
+      const subKey = field.replace('proj_', '');
+      const list   = [...(cv.proyectos || [])];
+      const idx    = list.findIndex(p => p.id === projId);
+      if (idx > -1 && text !== list[idx][subKey]) {
+        list[idx][subKey] = text;
+        updateCvData({ proyectos: list });
+      }
+      break;
+    }
+
+    case 'idioma_item': {
+      const idiIdx = parseInt(el.getAttribute('data-idioma-idx') || '0', 10);
+      const list   = [...(cv.idiomas || [])];
+      if (list[idiIdx] !== undefined && text !== list[idiIdx]) {
+        list[idiIdx] = text;
+        updateCvData({ idiomas: list });
       }
       break;
     }

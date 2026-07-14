@@ -86,8 +86,65 @@ const lg = idiomaListo[lang];
     <div id="list_editor_experiencias_container"></div>
 
     <button type="button" id="list_btn_agregar_experiencia" class="listo_btn_add_item">
-      <i class="fas fa-plus"></i> {lg['list.editor.agregarExp']}
+      <i class="fas fa-plus"></i> {lg['list.editor.agregarExp'] || '+ Agregar Experiencia'}
+    </button>
+  </fieldset>
+
+  <!-- SECCIÓN 5: EDUCACIÓN -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-graduation-cap"></i> {lg['list.editor.educacion'] || 'Educación'}
+    </legend>
+    
+    <!-- Contenedor dinámico de educación -->
+    <div id="list_editor_educacion_container"></div>
+
+    <button type="button" id="list_btn_agregar_educacion" class="listo_btn_add_item">
+      <i class="fas fa-plus"></i> {lg['list.editor.agregarEdu'] || '+ Agregar Educación'}
+    </button>
+  </fieldset>
+
+  <!-- SECCIÓN 6: PROYECTOS -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-project-diagram"></i> {lg['list.editor.proyectos'] || 'Proyectos'}
+    </legend>
+    
+    <!-- Contenedor dinámico de proyectos -->
+    <div id="list_editor_proyectos_container"></div>
+
+    <button type="button" id="list_btn_agregar_proyecto" class="listo_btn_add_item">
+      <i class="fas fa-plus"></i> {lg['list.editor.agregarProj'] || '+ Agregar Proyecto'}
+    </button>
+  </fieldset>
+
+  <!-- SECCIÓN 7: CERTIFICACIONES -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-certificate"></i> {lg['list.editor.certificaciones'] || 'Certificaciones'}
+    </legend>
+    
+    <!-- Contenedor dinámico de certificaciones -->
+    <div id="list_editor_certificaciones_container"></div>
+
+    <button type="button" id="list_btn_agregar_certificacion" class="listo_btn_add_item">
+      <i class="fas fa-plus"></i> {lg['list.editor.agregarCert'] || '+ Agregar Certificación'}
+    </button>
+  </fieldset>
+
+  <!-- SECCIÓN 8: IDIOMAS -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-language"></i> {lg['list.editor.idiomas'] || 'Idiomas'}
+    </legend>
+    
+    <!-- Contenedor dinámico de idiomas -->
+    <div id="list_editor_idiomas_container"></div>
+
+    <button type="button" id="list_btn_agregar_idioma" class="listo_btn_add_item">
+      <i class="fas fa-plus"></i> {lg['list.editor.agregarIdioma'] || '+ Agregar Idioma'}
     </button>
   </fieldset>
 
 </form>
+

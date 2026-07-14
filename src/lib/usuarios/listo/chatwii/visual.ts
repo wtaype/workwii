@@ -192,6 +192,88 @@ const agregarBurbuja = (role: 'user' | 'model', texto: string, scroll = true) =>
           });
         }
 
+        if (Array.isArray(parsed.educacion)) {
+          parsed.educacion.forEach((edu: any, idx: number) => {
+            const currentEdu = currentCv.educacion?.find((e: any) => e.id === edu.id);
+            const gradoText = edu.grado || 'Grado';
+            const instText = edu.institucion || 'Institución';
+
+            const formatEduText = (e: any) => {
+              if (!e) return '';
+              return `${e.grado || ''} @ ${e.institucion || ''}\n${e.inicio || ''} - ${e.fin || ''}\n${e.ubicacion || ''}`;
+            };
+
+            diffs.push({
+              id: `edu_${edu.id || idx}`,
+              field: `edu_${edu.id || idx}`,
+              label: `${_lang === 'en' ? 'Education:' : 'Educación:'} ${gradoText} (${instText})`,
+              oldVal: currentEdu ? formatEduText(currentEdu) : (_lang === 'en' ? '(New Education Item)' : '(Nueva Educación)'),
+              newVal: formatEduText(edu),
+              data: { educacion: [edu] }
+            });
+          });
+        }
+
+        if (Array.isArray(parsed.proyectos)) {
+          parsed.proyectos.forEach((proj: any, idx: number) => {
+            const currentProj = currentCv.proyectos?.find((p: any) => p.id === proj.id);
+            const nombreText = proj.nombre || 'Proyecto';
+
+            const formatProjText = (p: any) => {
+              if (!p) return '';
+              return `${p.nombre || ''}\nLink: ${p.enlace || ''}\nTech: ${p.tecnologias || ''}\nDesc: ${p.descripcion || ''}`;
+            };
+
+            diffs.push({
+              id: `proj_${proj.id || idx}`,
+              field: `proj_${proj.id || idx}`,
+              label: `${_lang === 'en' ? 'Project:' : 'Proyecto:'} ${nombreText}`,
+              oldVal: currentProj ? formatProjText(currentProj) : (_lang === 'en' ? '(New Project Item)' : '(Nuevo Proyecto)'),
+              newVal: formatProjText(proj),
+              data: { proyectos: [proj] }
+            });
+          });
+        }
+
+        if (Array.isArray(parsed.certificaciones)) {
+          parsed.certificaciones.forEach((cert: any, idx: number) => {
+            const currentCert = currentCv.certificaciones?.find((c: any) => c.id === cert.id);
+            const nombreText = cert.nombre || 'Certificación';
+
+            const formatCertText = (c: any) => {
+              if (!c) return '';
+              return `${c.nombre || ''}\nEmisor: ${c.emisor || ''}\nFecha: ${c.fecha || ''}`;
+            };
+
+            diffs.push({
+              id: `cert_${cert.id || idx}`,
+              field: `cert_${cert.id || idx}`,
+              label: `${_lang === 'en' ? 'Certification:' : 'Certificación:'} ${nombreText}`,
+              oldVal: currentCert ? formatCertText(currentCert) : (_lang === 'en' ? '(New Certification Item)' : '(Nueva Certificación)'),
+              newVal: formatCertText(cert),
+              data: { certificaciones: [cert] }
+            });
+          });
+        }
+
+        if (Array.isArray(parsed.idiomas)) {
+          const currentIdiomas = currentCv.idiomas || [];
+          const newIdiomas = parsed.idiomas;
+          const oldVal = currentIdiomas.filter(Boolean).join(', ');
+          const newVal = newIdiomas.filter(Boolean).join(', ');
+
+          if (oldVal !== newVal) {
+            diffs.push({
+              id: 'idiomas',
+              field: 'idiomas',
+              label: _lang === 'en' ? 'Languages' : 'Idiomas',
+              oldVal: oldVal || (_lang === 'en' ? '(Empty)' : '(Vacío)'),
+              newVal: newVal,
+              data: { idiomas: newIdiomas }
+            });
+          }
+        }
+
         if (diffs.length > 0) {
           const card = document.createElement('div');
           card.className = 'listo_suggestion_card';
@@ -273,6 +355,15 @@ const agregarBurbuja = (role: 'user' | 'model', texto: string, scroll = true) =>
                 if (diff.field.startsWith('exp_')) {
                   if (!merged.experiencias) merged.experiencias = [];
                   merged.experiencias.push(...diff.data.experiencias);
+                } else if (diff.field.startsWith('edu_')) {
+                  if (!merged.educacion) merged.educacion = [];
+                  merged.educacion.push(...diff.data.educacion);
+                } else if (diff.field.startsWith('proj_')) {
+                  if (!merged.proyectos) merged.proyectos = [];
+                  merged.proyectos.push(...diff.data.proyectos);
+                } else if (diff.field.startsWith('cert_')) {
+                  if (!merged.certificaciones) merged.certificaciones = [];
+                  merged.certificaciones.push(...diff.data.certificaciones);
                 } else {
                   merged[diff.field] = diff.data[diff.field];
                 }

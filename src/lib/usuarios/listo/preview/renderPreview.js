@@ -208,6 +208,20 @@ export const updateA4Preview = (cv, getCvData, updateCvData, onSync) => {
       }
     }
 
+    let idiomasHTML = '';
+    if (cv.idiomas && cv.idiomas.length > 0) {
+      const spans = cv.idiomas
+        .map((idioma, idx) => {
+          if (!idioma) return '';
+          return `<span class="cr_prev_editable" data-edit-field="idioma_item" data-idioma-idx="${idx}" spellcheck="true" lang="${cv.idioma}">${idioma}</span>`;
+        })
+        .filter(Boolean);
+
+      if (spans.length > 0) {
+        idiomasHTML = `<p class="cr_cv_text"><strong>${textIdiomasLabel}:</strong> ${spans.join(', ')}</p>`;
+      }
+    }
+
     blocks.push({
       type: 'skills',
       html: `
@@ -215,7 +229,7 @@ export const updateA4Preview = (cv, getCvData, updateCvData, onSync) => {
           <h2 class="cr_cv_section_title">${textSkills}</h2>
           <div class="cr_cv_skills_list">
             ${skillsHTML}
-            ${cv.idiomas && cv.idiomas.length > 0 ? `<p class="cr_cv_text"><strong>${textIdiomasLabel}:</strong> ${cv.idiomas.filter(Boolean).join(', ')}</p>` : ''}
+            ${idiomasHTML}
           </div>
         </div>
       `

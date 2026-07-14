@@ -7,6 +7,13 @@ import { updateA4Preview } from './preview/renderPreview.js';
 import { mountChatWii, renderHistorialChat } from './chatwii/visual.js';
 import { coachPersona } from './chatwii/personalidad.js';
 import { descargarPdfDirecto } from './descargar/dwpdf.js';
+import {
+  renderExperienciaCards,
+  renderEducacionCards,
+  renderProyectoCards,
+  renderCertificacionCards,
+  renderIdiomaCards
+} from './editor/renderForm.js';
 
 const LS_LISTA  = 'listo_lista';
 const LS_ACTIVA = 'listo_activa';
@@ -280,67 +287,11 @@ const populateForm = () => {
     if (el) el.value = _cvData[field] || '';
   });
 
-  renderExperienciaCards();
-};
-
-const renderExperienciaCards = () => {
-  const container = document.getElementById('list_editor_experiencias_container');
-  if (!container) return;
-
-  container.innerHTML = (_cvData.experiencias || []).map(exp => {
-    const logrosStr = Array.isArray(exp.logros)
-      ? exp.logros.join('\n')
-      : (typeof exp.logros === 'string' ? exp.logros : '');
-
-    return `
-      <div class="listo_item_card" data-exp-id="${exp.id}">
-        <button type="button" class="listo_btn_remove_item" data-exp-id="${exp.id}">
-          <i class="fas fa-trash-alt"></i> ${_lg['list.editor.eliminar']}
-        </button>
-        <div class="listo_form_grid">
-          <div class="listo_field">
-            <label>${_lg['list.editor.puesto']}</label>
-            <input type="text" class="listo_input list_exp_puesto" value="${exp.puesto || ''}" data-exp-id="${exp.id}" />
-          </div>
-          <div class="listo_field">
-            <label>${_lg['list.editor.empresa']}</label>
-            <input type="text" class="listo_input list_exp_empresa" value="${exp.empresa || ''}" data-exp-id="${exp.id}" />
-          </div>
-          <div class="listo_field">
-            <label>${_lg['list.editor.fechas']}</label>
-            <div style="display:flex; gap:8px;">
-              <input type="text" class="listo_input list_exp_inicio" placeholder="Inicio" value="${exp.inicio || ''}" data-exp-id="${exp.id}" />
-              <input type="text" class="listo_input list_exp_fin" placeholder="Fin" value="${exp.fin || ''}" data-exp-id="${exp.id}" />
-            </div>
-          </div>
-          <div class="listo_field">
-            <label>${_lg['list.editor.ubicacion']}</label>
-            <input type="text" class="listo_input list_exp_ubicacion" value="${exp.ubicacion || ''}" data-exp-id="${exp.id}" />
-          </div>
-          <div class="listo_field listo_form_grid_full">
-            <label>${_lg['list.editor.logros']}</label>
-            <textarea class="listo_textarea list_exp_logros" rows="3" data-exp-id="${exp.id}">${logrosStr}</textarea>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  // Cablear botones eliminar de las tarjetas
-  container.querySelectorAll('.listo_btn_remove_item').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const expId = btn.getAttribute('data-exp-id');
-      eliminarExperiencia(expId);
-    });
-  });
-
-  // Cablear cambios de inputs en tarjetas de experiencia
-  container.querySelectorAll('input, textarea').forEach(el => {
-    el.addEventListener('input', () => {
-      const expId = el.getAttribute('data-exp-id');
-      sincronizarExperienciaTarjeta(expId);
-    });
-  });
+  renderExperienciaCards(_cvData, _lg, sincronizarExperienciaTarjeta, eliminarExperiencia);
+  renderEducacionCards(_cvData, _lg, sincronizarEducacionTarjeta, eliminarEducacion);
+  renderProyectoCards(_cvData, _lg, sincronizarProyectoTarjeta, eliminarProyecto);
+  renderCertificacionCards(_cvData, _lg, sincronizarCertificacionTarjeta, eliminarCertificacion);
+  renderIdiomaCards(_cvData, _lg, sincronizarIdiomaTarjeta, eliminarIdioma);
 };
 
 const sincronizarExperienciaTarjeta = (expId) => {
@@ -406,6 +357,216 @@ const agregarExperienciaNueva = () => {
   populateForm();
 };
 
+const sincronizarEducacionTarjeta = (eduId) => {
+  const container = document.querySelector(`.listo_item_card[data-edu-id="${eduId}"]`);
+  if (!container) return;
+
+  const grado = (container.querySelector('.list_edu_grado')?.value || '').trim();
+  const institucion = (container.querySelector('.list_edu_institucion')?.value || '').trim();
+  const inicio = (container.querySelector('.list_edu_inicio')?.value || '').trim();
+  const fin = (container.querySelector('.list_edu_fin')?.value || '').trim();
+  const ubicacion = (container.querySelector('.list_edu_ubicacion')?.value || '').trim();
+
+  const idx = _cvData.educacion.findIndex(e => e.id === eduId);
+  if (idx > -1) {
+    pushToUndoStack();
+    _cvData.educacion[idx] = { id: eduId, grado, institucion, inicio, fin, ubicacion };
+    
+    const keyNombre = formatKeyName(_activa.nombre);
+    localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+    
+    actualizarPreview();
+  }
+};
+
+const eliminarEducacion = (eduId) => {
+  if (!_cvData || !_cvData.educacion) return;
+  pushToUndoStack();
+  _cvData.educacion = _cvData.educacion.filter(e => e.id !== eduId);
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
+
+const agregarEducacionNueva = () => {
+  if (!_cvData) return;
+  pushToUndoStack();
+
+  if (!Array.isArray(_cvData.educacion)) {
+    _cvData.educacion = [];
+  }
+
+  const rand = Math.random().toString(36).substring(2, 9);
+  _cvData.educacion.push({
+    id: `edu_${rand}`,
+    grado: '',
+    institucion: '',
+    inicio: '',
+    fin: '',
+    ubicacion: ''
+  });
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
+
+const sincronizarProyectoTarjeta = (projId) => {
+  const container = document.querySelector(`.listo_item_card[data-proj-id="${projId}"]`);
+  if (!container) return;
+
+  const nombre = (container.querySelector('.list_proj_nombre')?.value || '').trim();
+  const enlace = (container.querySelector('.list_proj_enlace')?.value || '').trim();
+  const tecnologias = (container.querySelector('.list_proj_tecnologias')?.value || '').trim();
+  const descripcion = (container.querySelector('.list_proj_descripcion')?.value || '').trim();
+
+  const idx = _cvData.proyectos.findIndex(p => p.id === projId);
+  if (idx > -1) {
+    pushToUndoStack();
+    _cvData.proyectos[idx] = { id: projId, nombre, enlace, tecnologias, descripcion };
+    
+    const keyNombre = formatKeyName(_activa.nombre);
+    localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+    
+    actualizarPreview();
+  }
+};
+
+const eliminarProyecto = (projId) => {
+  if (!_cvData || !_cvData.proyectos) return;
+  pushToUndoStack();
+  _cvData.proyectos = _cvData.proyectos.filter(p => p.id !== projId);
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
+
+const agregarProyectoNuevo = () => {
+  if (!_cvData) return;
+  pushToUndoStack();
+
+  if (!Array.isArray(_cvData.proyectos)) {
+    _cvData.proyectos = [];
+  }
+
+  const rand = Math.random().toString(36).substring(2, 9);
+  _cvData.proyectos.push({
+    id: `proj_${rand}`,
+    nombre: '',
+    enlace: '',
+    tecnologias: '',
+    descripcion: ''
+  });
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
+
+const sincronizarCertificacionTarjeta = (certId) => {
+  const container = document.querySelector(`.listo_item_card[data-cert-id="${certId}"]`);
+  if (!container) return;
+
+  const nombre = (container.querySelector('.list_cert_nombre')?.value || '').trim();
+  const emisor = (container.querySelector('.list_cert_emisor')?.value || '').trim();
+  const fecha = (container.querySelector('.list_cert_fecha')?.value || '').trim();
+
+  const idx = _cvData.certificaciones.findIndex(c => c.id === certId);
+  if (idx > -1) {
+    pushToUndoStack();
+    _cvData.certificaciones[idx] = { id: certId, nombre, emisor, fecha };
+    
+    const keyNombre = formatKeyName(_activa.nombre);
+    localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+    
+    actualizarPreview();
+  }
+};
+
+const eliminarCertificacion = (certId) => {
+  if (!_cvData || !_cvData.certificaciones) return;
+  pushToUndoStack();
+  _cvData.certificaciones = _cvData.certificaciones.filter(c => c.id !== certId);
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
+
+const agregarCertificacionNueva = () => {
+  if (!_cvData) return;
+  pushToUndoStack();
+
+  if (!Array.isArray(_cvData.certificaciones)) {
+    _cvData.certificaciones = [];
+  }
+
+  const rand = Math.random().toString(36).substring(2, 9);
+  _cvData.certificaciones.push({
+    id: `cert_${rand}`,
+    nombre: '',
+    emisor: '',
+    fecha: ''
+  });
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
+
+const sincronizarIdiomaTarjeta = (idx, value) => {
+  if (!_cvData || !Array.isArray(_cvData.idiomas)) return;
+  pushToUndoStack();
+  _cvData.idiomas[idx] = (value || '').trim();
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+};
+
+const eliminarIdioma = (idx) => {
+  if (!_cvData || !Array.isArray(_cvData.idiomas)) return;
+  pushToUndoStack();
+  _cvData.idiomas = _cvData.idiomas.filter((_, i) => i !== idx);
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
+
+const agregarIdiomaNuevo = () => {
+  if (!_cvData) return;
+  pushToUndoStack();
+
+  if (!Array.isArray(_cvData.idiomas)) {
+    _cvData.idiomas = [];
+  }
+
+  _cvData.idiomas.push('');
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
 // Sincronizar campos globales del formulario al escribir
 const sincronizarFormularioGlobal = (field, val) => {
   if (!_cvData) return;
@@ -682,6 +843,12 @@ export const initListo = (lang, lg) => {
   // Botón agregar experiencia
   document.getElementById('list_btn_agregar_experiencia')?.addEventListener('click', agregarExperienciaNueva);
 
+  // Botones agregar Educación, Proyectos, Certificaciones e Idiomas
+  document.getElementById('list_btn_agregar_educacion')?.addEventListener('click', agregarEducacionNueva);
+  document.getElementById('list_btn_agregar_proyecto')?.addEventListener('click', agregarProyectoNuevo);
+  document.getElementById('list_btn_agregar_certificacion')?.addEventListener('click', agregarCertificacionNueva);
+  document.getElementById('list_btn_agregar_idioma')?.addEventListener('click', agregarIdiomaNuevo);
+
   // Botón guardar puesto/vacante
   document.getElementById('list_btn_guardar_job')?.addEventListener('click', () => {
     if (_activa) {
@@ -722,11 +889,26 @@ export const initListo = (lang, lg) => {
     if (patches.resumen) _cvData.resumen = patches.resumen;
     if (patches.skills) _cvData.skills = patches.skills;
 
+    // Utilidad interna para corregir/normalizar IDs temporales o vacíos sugeridos por ChatWii
+    const normalizarId = (item, prefijo) => {
+      const placeholder = `${prefijo}_id_original`;
+      const esPlaceholder = !item.id || 
+                            item.id === 'undefined' || 
+                            item.id === placeholder ||
+                            (typeof item.id === 'string' && item.id.includes('original')) || 
+                            (typeof item.id === 'string' && item.id.includes('placeholder'));
+      if (esPlaceholder) {
+        const rand = Math.random().toString(36).substring(2, 9);
+        item.id = `${prefijo}_${rand}`;
+      }
+    };
+
     if (Array.isArray(patches.experiencias)) {
       if (!Array.isArray(_cvData.experiencias)) {
         _cvData.experiencias = [];
       }
       patches.experiencias.forEach(patchExp => {
+        normalizarId(patchExp, 'exp');
         const idx = _cvData.experiencias.findIndex(e => e.id === patchExp.id);
         if (idx > -1) {
           _cvData.experiencias[idx] = { ..._cvData.experiencias[idx], ...patchExp };
@@ -734,6 +916,55 @@ export const initListo = (lang, lg) => {
           _cvData.experiencias.push(patchExp);
         }
       });
+    }
+
+    if (Array.isArray(patches.educacion)) {
+      if (!Array.isArray(_cvData.educacion)) {
+        _cvData.educacion = [];
+      }
+      patches.educacion.forEach(patchEdu => {
+        normalizarId(patchEdu, 'edu');
+        const idx = _cvData.educacion.findIndex(e => e.id === patchEdu.id);
+        if (idx > -1) {
+          _cvData.educacion[idx] = { ..._cvData.educacion[idx], ...patchEdu };
+        } else {
+          _cvData.educacion.push(patchEdu);
+        }
+      });
+    }
+
+    if (Array.isArray(patches.proyectos)) {
+      if (!Array.isArray(_cvData.proyectos)) {
+        _cvData.proyectos = [];
+      }
+      patches.proyectos.forEach(patchProj => {
+        normalizarId(patchProj, 'proj');
+        const idx = _cvData.proyectos.findIndex(p => p.id === patchProj.id);
+        if (idx > -1) {
+          _cvData.proyectos[idx] = { ..._cvData.proyectos[idx], ...patchProj };
+        } else {
+          _cvData.proyectos.push(patchProj);
+        }
+      });
+    }
+
+    if (Array.isArray(patches.certificaciones)) {
+      if (!Array.isArray(_cvData.certificaciones)) {
+        _cvData.certificaciones = [];
+      }
+      patches.certificaciones.forEach(patchCert => {
+        normalizarId(patchCert, 'cert');
+        const idx = _cvData.certificaciones.findIndex(c => c.id === patchCert.id);
+        if (idx > -1) {
+          _cvData.certificaciones[idx] = { ..._cvData.certificaciones[idx], ...patchCert };
+        } else {
+          _cvData.certificaciones.push(patchCert);
+        }
+      });
+    }
+
+    if (Array.isArray(patches.idiomas)) {
+      _cvData.idiomas = patches.idiomas;
     }
 
     const keyNombre = formatKeyName(_activa.nombre);

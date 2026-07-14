@@ -302,6 +302,75 @@ export const descargarPdfDirecto = async (cv) => {
     });
   }
 
+  const validProjs = cv.proyectos?.filter(p => p.nombre?.trim()) || [];
+  if (validProjs.length > 0) {
+    const textProyectos = isEn ? 'Featured Projects' : 'Proyectos Destacados';
+    docContent.push(
+      { text: textProyectos, style: 'sectionHeader', margin: [0, 12, 0, 0] },
+      {
+        canvas: [
+          { type: 'line', x1: 0, y1: 2, x2: 515, y2: 2, lineWidth: 0.5, lineColor: '#a0aec0' }
+        ],
+        margin: [0, 2, 0, estilosPdf.sectionHeader.spaceAfter]
+      }
+    );
+
+    validProjs.forEach((proj, idx) => {
+      const projStack = [];
+      
+      const columns = [
+        {
+          text: proj.nombre || 'Nombre del Proyecto',
+          bold: true,
+          fontSize: estilosPdf.puesto.fontSize,
+          width: '*'
+        }
+      ];
+
+      if (proj.enlace) {
+        columns.push({
+          text: proj.enlace,
+          alignment: 'right',
+          fontSize: estilosPdf.fecha.fontSize,
+          color: '#4a5568',
+          width: 'auto'
+        });
+      }
+
+      projStack.push({
+        columns: columns,
+        margin: [0, 0, 0, 2]
+      });
+
+      if (proj.descripcion) {
+        projStack.push({
+          text: proj.descripcion,
+          fontSize: estilosPdf.logros.fontSize,
+          color: estilosPdf.logros.color,
+          margin: [0, 2, 0, 2]
+        });
+      }
+
+      if (proj.tecnologias) {
+        projStack.push({
+          text: [
+            { text: `${isEn ? 'Technologies' : 'Tecnologías'}: `, bold: true },
+            { text: proj.tecnologias }
+          ],
+          fontSize: estilosPdf.logros.fontSize - 0.5,
+          color: estilosPdf.logros.color,
+          margin: [0, 2, 0, estilosPdf.ubicacion.spaceAfter]
+        });
+      }
+
+      docContent.push({
+        stack: projStack,
+        unbreakable: true,
+        margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
+      });
+    });
+  }
+
   if (cv.skills || (cv.idiomas && cv.idiomas.length > 0)) {
     docContent.push(
       { text: textSkills, style: 'sectionHeader', margin: [0, 12, 0, 0] },
