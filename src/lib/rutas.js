@@ -83,10 +83,14 @@ export const NAV_CONFIG = {
       ...COMUN,
       { href: '/comparar',   ico: 'fa-trophy' },
       { href: '/acerca', ico: 'fa-circle-info' },
+      { href: '/more', ico: 'fa-ellipsis' },
     ],
     right: [
       { isBtn: true, cls: 'bt_auth registrar', ico: 'fa-user-plus' },
       { isBtn: true, cls: 'bt_auth login', ico: 'fa-sign-in-alt' },
+    ],
+    more: [
+      { href: '/ccat-test', ico: 'fa-brain' },
     ]
   },
   usuario: {
