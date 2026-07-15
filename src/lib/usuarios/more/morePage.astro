@@ -39,15 +39,21 @@ const t = (idiomaMore as any)[lang] || idiomaMore['es'];
   import { idiomaMore } from './idiomaMore.js';
 
   const initMore = async () => {
-    // 1. Validar sesión y obtener información del usuario
-    const wi = await protegerRuta(['usuario', 'editor', 'gestor', 'admin']);
-    if (!wi) return;
+    // 1. Obtener sesión de localStorage si existe (almacenada como { value, expiry })
+    let wi = null;
+    if (localStorage.wiSmile) {
+      try {
+        const parsed = JSON.parse(localStorage.wiSmile);
+        wi = parsed?.value || null;
+      } catch (_) {}
+    }
 
     const lang = document.documentElement.lang || 'es';
     const dict = (idiomaMore as any)[lang] || idiomaMore['es'];
 
-    const role = wi.rol || 'usuario';
-    const roleConfig = (NAV_CONFIG as any)[role] || NAV_CONFIG.usuario;
+    // Determinar si es un visitante público (sin rol en la base de datos) o usuario autenticado
+    const isGuest = !wi || !wi.rol;
+    const roleConfig = isGuest ? NAV_CONFIG.todos : ((NAV_CONFIG as any)[wi.rol] || NAV_CONFIG.todos);
     const translated = translateNav(roleConfig, lang);
     const modules = translated.more || [];
 
@@ -79,7 +85,10 @@ const t = (idiomaMore as any)[lang] || idiomaMore['es'];
       '/nuevo': '#10b981',
       '/word': '#2563eb',
       '/mensajes': '#ec4899',
-      '/usuarios': '#4b5563'
+      '/usuarios': '#4b5563',
+      '/ccat-test': '#a855f7',
+      '/comparar': '#ffa726',
+      '/acerca': '#6366f1'
     };
 
     // Dibujar tarjetas dinámicas estilo ej_item de Inicio

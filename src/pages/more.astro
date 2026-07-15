@@ -4,7 +4,6 @@ import MorePage from '../lib/usuarios/more/morePage.astro';
 import estilosMore from '../lib/usuarios/more/more.css?inline';
 ---
 <Layout title="Más Herramientas" robots="noindex, nofollow">
-  <script is:inline slot="head">localStorage.wiSmile||location.replace('/')</script>
   <style is:global set:html={estilosMore} slot="head"></style>
   <MorePage/>
 </Layout>

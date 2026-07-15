@@ -70,9 +70,7 @@ const COMUN = [
   { href: '/analisar', ico: 'fa-expand' },
   { href: '/traducir', ico: 'fa-language' },
   { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles' },
-  { href: '/remotos', ico: 'fa-briefcase' },
   { href: '/blog',   ico: 'fa-blog' },
-  { href: '/ccat-test', ico: 'fa-brain' },
 ];
 
 // 2. NAV_CONFIG limpio, compacto y sin un solo texto
@@ -82,7 +80,6 @@ export const NAV_CONFIG = {
       { href: '/', ico: 'fa-house' },
       ...COMUN,
       { href: '/comparar',   ico: 'fa-trophy' },
-      { href: '/acerca', ico: 'fa-circle-info' },
       { href: '/more', ico: 'fa-ellipsis' },
     ],
     right: [
@@ -90,6 +87,8 @@ export const NAV_CONFIG = {
       { isBtn: true, cls: 'bt_auth login', ico: 'fa-sign-in-alt' },
     ],
     more: [
+      { href: '/remotos', ico: 'fa-briefcase' },
+      { href: '/acerca', ico: 'fa-circle-info' },
       { href: '/ccat-test', ico: 'fa-brain' },
     ]
   },
@@ -239,7 +238,7 @@ export function rutaRoles() {
 
   // Obtener lista de rutas públicas del menú 'todos'
   const publicPaths = [];
-  const todosItems = [...(NAV_CONFIG.todos.left || []), ...(NAV_CONFIG.todos.right || [])];
+  const todosItems = [...(NAV_CONFIG.todos.left || []), ...(NAV_CONFIG.todos.right || []), ...(NAV_CONFIG.todos.more || [])];
   todosItems.forEach(item => {
     if (item.href) publicPaths.push(item.href);
   });
@@ -271,7 +270,6 @@ export function rutaRoles() {
   roles['/mi-cvs'] = allRoles;
   roles['/postulaciones'] = allRoles;
   roles['/listo'] = allRoles;
-  roles['/more'] = allRoles;
 
   return { roles, require2FA };
 }
