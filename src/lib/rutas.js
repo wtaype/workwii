@@ -97,7 +97,6 @@ export const NAV_CONFIG = {
       { href: '/smile', ico: 'fa-house' }, 
       { href: '/crear', ico: 'fa-file-signature' },
       { href: '/analisar', ico: 'fa-expand' },
-      { href: '/blog', ico: 'fa-blog' },
       { href: '/remotos', ico: 'fa-briefcase' },
       { href: '/traducir', ico: 'fa-language' },
       { href: '/more', ico: 'fa-ellipsis' },
@@ -110,6 +109,7 @@ export const NAV_CONFIG = {
       { isPerfil: true }, { isSalir: true },
     ],
     more: [
+      { href: '/blog', ico: 'fa-blog' },
       { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles' },
       { href: '/postulaciones', ico: 'fa-list-check' },
       { href: '/notas', ico: 'fa-note-sticky' },
