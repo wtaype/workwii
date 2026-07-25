@@ -48,6 +48,10 @@ export default defineConfig({
       target: 'esnext',
       minify: 'esbuild',
       cssCodeSplit: true,
+      esbuild: {
+        drop: ['console', 'debugger'],
+        legalComments: 'none'
+      },
       rollupOptions: {
         output: {
           manualChunks(id) {
@@ -97,7 +101,7 @@ export default defineConfig({
           if (!fs.existsSync(astroDir)) return;
 
           const criticalChunks = fs.readdirSync(astroDir).filter(f =>
-            /^(widev|wii|sesion|supabase|vendor-supabase)\.[a-zA-Z0-9_-]+\.js$/.test(f)
+            /^(widev|wii)\.[a-zA-Z0-9_-]+\.js$/.test(f)
           );
           if (!criticalChunks.length) return;
 
