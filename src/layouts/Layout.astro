@@ -6,7 +6,10 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { rutaRoles } from '../lib/rutas.js';
 import estilos from './witema.css?inline';
+import googleCss from '../../public/google/fonts.css?raw';
+import awesomeCss from '../../public/fontawesome/css/all.min.css?raw';
 
+const globalcss = estilos + '\n' + googleCss + '\n' + awesomeCss;
 const ROUTE_ROLES = rutaRoles();
 const wtema = dtema;
 
@@ -114,13 +117,10 @@ const seoSchema = {
     <script type="application/ld+json" set:html={JSON.stringify(seoSchema)} />
     <title>{title}</title>
 
-    <!-- Carga de fuentes locales Google (Poppins y Outfit) e iconos FontAwesome (Sin parpadeo FOUT) -->
-    <link rel="stylesheet" href="/google/fonts.css" data-astro-transition-persist="google-fonts" />
-    <link rel="stylesheet" href="/fontawesome/css/all.min.css" data-astro-transition-persist="fontawesome" />
-
     <!-- Habilitamos ClientRouter para navegación instantánea sin F5 -->
     <ClientRouter />
-    <style is:global data-astro-transition-persist="global-css" set:html={estilos}></style>
+    <!-- Estilos Inline Globales Unificados: witema + google (Poppins & Outfit) + fontawesome (0 peticiones HTTP bloqueantes) -->
+    <style is:global data-astro-transition-persist="global-css" set:html={globalcss}></style>
 
     <!-- Aplicación del tema síncrona inmediata para evitar parpadeo blanco (flash) -->
     <script is:inline define:vars={{ wtema, witemas, lang }}>
