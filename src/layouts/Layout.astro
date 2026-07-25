@@ -114,9 +114,9 @@ const seoSchema = {
     <script type="application/ld+json" set:html={JSON.stringify(seoSchema)} />
     <title>{title}</title>
 
-    <!-- Carga asíncrona de estilos de iconos de FontAwesome (No bloqueante) -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'" />
+    <!-- Carga de fuentes locales Google (Poppins y Outfit) e iconos FontAwesome (Sin parpadeo FOUT) -->
+    <link rel="stylesheet" href="/google/fonts.css" data-astro-transition-persist="google-fonts" />
+    <link rel="stylesheet" href="/fontawesome/css/all.min.css" data-astro-transition-persist="fontawesome" />
 
     <!-- Habilitamos ClientRouter para navegación instantánea sin F5 -->
     <ClientRouter />
@@ -208,7 +208,7 @@ const seoSchema = {
     <script>
       import { witema, wiSmart } from '../lib/widev/widev.js';
       import { dtema } from '../wii.js';
-      wiSmart({ css: ['https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap'] });
+      wiSmart({});
       witema(dtema); 
       window.addEventListener('storage', (e) => { if (e.key === 'wiSmile' && !e.newValue) { window.location.replace('/'); } }); //Cerrar session pro
     </script>
