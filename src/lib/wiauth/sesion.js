@@ -99,13 +99,13 @@ export const entrar = (wi) => {
   }, 1000);
 };
 
-export const salir = async () => {
+export const salir = async (keep = []) => {
   try {
     await supabase.auth.signOut();
   } catch (e) {
     console.error('Error signing out from Supabase:', e);
   }
-  wiAuth.logout();
+  wiAuth.logout(keep);
   window.location.replace('/');
 };
 

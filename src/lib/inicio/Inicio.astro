@@ -121,12 +121,12 @@ try {
     <p class="sec_desc">{lg['inicio.blogSubtitle']}</p>
     <div class="ib_grid" id="ib_grid" data-herowi="100">
       {posts.length > 0 ? (
-        posts.map((p) => {
-          const normalizedCat = (p.categoria || '').toLowerCase().trim();
+        posts.map((p, index) => {
+          const normalizedCat = (p.categoria || '').trim().toLowerCase();
           const catColors = { 
-            animales:'#0EBEFF', animals:'#0EBEFF',
-            naturaleza:'#25b62a', nature:'#25b62a',
-            amor:'#ff3849', love:'#ff3849',
+            tecnologia:'#00a8e6', technology:'#00a8e6', 
+            empleo:'#29C72E', jobs:'#29C72E', 
+            consejos:'#FFDA34', tips:'#FFDA34', 
             inspiración:'#ffa726', inspiration:'#ffa726',
             vida:'#6a00f5', life:'#6a00f5' 
           };
@@ -136,7 +136,7 @@ try {
           return (
             <a href={lang === 'en' ? `/en/${p.slug || p.id || ''}` : `/${p.slug || p.id || ''}`} class="ib_card" data-slug={p.slug || p.id}>
               <div class="ib_img_wrap">
-                <img src={imgwii.svg} data-src={p.imagen || '/poster.webp'} alt={p.titulo || 'Artículo'} class="ib_img wi_skeleton img_fade" />
+                <img src={imgwii.svg} data-src={p.imagen || '/poster.webp'} alt={p.titulo || 'Artículo'} class="ib_img wi_skeleton img_fade" fetchpriority={index < 2 ? 'high' : 'low'} decoding="async" />
                 <span class="ib_cat" style={`background:color-mix(in srgb,${c} 20%,transparent);color:${c}`}>{getCategoryLabel(p.categoria, lang)}</span>
               </div>
               <div class="ib_body">
