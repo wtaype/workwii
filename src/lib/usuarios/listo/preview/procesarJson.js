@@ -28,6 +28,9 @@ IMPORTANTE (REGLAS DE EXTRACCION SIN OPTIMIZAR - FIDELIDAD ABSOLUTA):
 5. Idiomas: Identifica los idiomas y niveles mencionados.
 6. Proyectos: Extrae los proyectos destacados en un array "proyectos".
 7. Certificaciones: Extrae las certificaciones en un array "certificaciones".
+8. Reconocimientos: Extrae los premios, honores o reconocimientos en un array "reconocimientos".
+9. Referencias: Extrae las referencias profesionales o personales en un array "referencias".
+10. Secciones Personalizadas / Extra: Extrae cualquier otra seccion adicional relevante (ej: Voluntariado, Publicaciones, etc.) en "seccionesExtra".
 
 ${idiomaPrompt}
 
@@ -73,6 +76,32 @@ Devuelve UNICAMENTE el reporte JSON que cumpla EXACTAMENTE con esta estructura (
       "nombre": "Nombre de la certificacion",
       "emisor": "Emisor",
       "fecha": "Fecha"
+    }
+  ],
+  "reconocimientos": [
+    {
+      "titulo": "Nombre del reconocimiento",
+      "fecha": "Fecha / Mes Año",
+      "emisor": "Emisor / Organizacion",
+      "ubicacion": "Ciudad, Pais",
+      "descripcion": "Descripcion del logro obtenido...",
+      "enlace": "https://referencia.com"
+    }
+  ],
+  "referencias": [
+    {
+      "nombre": "Nombre del referente",
+      "cargo": "Cargo",
+      "empresa": "Empresa",
+      "telefono": "+51 999 999 999",
+      "email": "referente@ejemplo.com",
+      "relacion": "Supervisora directa..."
+    }
+  ],
+  "seccionesExtra": [
+    {
+      "titulo": "Nombre de Seccion",
+      "contenido": "Detalle de la seccion..."
     }
   ],
   "skills": "Habilidad1, Habilidad2...",
@@ -141,6 +170,24 @@ Por favor, extrae, traduce si es necesario y estructura en el formato JSON reque
     parsedJson.certificaciones = parsedJson.certificaciones.map(cert => ({ id: generarId('cert'), ...cert }));
   } else {
     parsedJson.certificaciones = [];
+  }
+
+  if (Array.isArray(parsedJson.reconocimientos)) {
+    parsedJson.reconocimientos = parsedJson.reconocimientos.map(rec => ({ id: generarId('rec'), ...rec }));
+  } else {
+    parsedJson.reconocimientos = [];
+  }
+
+  if (Array.isArray(parsedJson.referencias)) {
+    parsedJson.referencias = parsedJson.referencias.map(ref => ({ id: generarId('ref'), ...ref }));
+  } else {
+    parsedJson.referencias = [];
+  }
+
+  if (Array.isArray(parsedJson.seccionesExtra)) {
+    parsedJson.seccionesExtra = parsedJson.seccionesExtra.map(sec => ({ id: generarId('sec'), ...sec }));
+  } else {
+    parsedJson.seccionesExtra = [];
   }
 
   if (!Array.isArray(parsedJson.idiomas)) {

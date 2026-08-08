@@ -413,6 +413,169 @@ export const descargarPdfDirecto = async (cv) => {
     });
   }
 
+  // Reconocimientos
+  const validRecs = cv.reconocimientos?.filter(r => r.titulo?.trim() || r.emisor?.trim()) || [];
+  if (validRecs.length > 0) {
+    const textReconocimientos = isEn ? 'Honors & Awards' : 'Reconocimientos';
+    docContent.push(
+      { text: textReconocimientos, style: 'sectionHeader', margin: [0, 12, 0, 0] },
+      {
+        canvas: [
+          { type: 'line', x1: 0, y1: 2, x2: 515, y2: 2, lineWidth: 0.5, lineColor: '#a0aec0' }
+        ],
+        margin: [0, 2, 0, estilosPdf.sectionHeader.spaceAfter]
+      }
+    );
+
+    validRecs.forEach((rec, idx) => {
+      const recStack = [];
+      recStack.push({
+        columns: [
+          {
+            text: rec.titulo || 'Reconocimiento',
+            bold: true,
+            fontSize: estilosPdf.puesto.fontSize,
+            width: '*'
+          },
+          {
+            text: rec.fecha || '',
+            alignment: 'right',
+            fontSize: estilosPdf.fecha.fontSize,
+            color: estilosPdf.fecha.color,
+            width: 'auto'
+          }
+        ],
+        margin: [0, 0, 0, 2]
+      });
+
+      const subrowColumns = [];
+      if (rec.emisor) {
+        subrowColumns.push({
+          text: rec.emisor,
+          fontSize: estilosPdf.fecha.fontSize,
+          color: '#4a5568',
+          italic: true,
+          width: '*'
+        });
+      }
+      if (rec.ubicacion) {
+        subrowColumns.push({
+          text: rec.ubicacion,
+          fontSize: estilosPdf.ubicacion.fontSize,
+          color: estilosPdf.ubicacion.color,
+          italic: true,
+          alignment: 'right',
+          width: 'auto'
+        });
+      }
+      if (subrowColumns.length > 0) {
+        recStack.push({
+          columns: subrowColumns,
+          margin: [0, 0, 0, 2]
+        });
+      }
+
+      if (rec.descripcion) {
+        recStack.push({
+          text: rec.descripcion,
+          fontSize: estilosPdf.logros.fontSize,
+          color: estilosPdf.logros.color,
+          margin: [0, 2, 0, 2]
+        });
+      }
+
+      if (rec.enlace) {
+        recStack.push({
+          text: [
+            { text: `${isEn ? 'Reference' : 'Referencia'}: `, bold: true },
+            { text: rec.enlace, link: rec.enlace, color: '#2b6cb0', decoration: 'underline' }
+          ],
+          fontSize: estilosPdf.logros.fontSize - 0.5,
+          margin: [0, 2, 0, estilosPdf.ubicacion.spaceAfter]
+        });
+      }
+
+      docContent.push({
+        stack: recStack,
+        unbreakable: true,
+        margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
+      });
+    });
+  }
+
+  // Referencias
+  const validRefs = cv.referencias?.filter(r => r.nombre?.trim()) || [];
+  if (validRefs.length > 0) {
+    const textReferencias = isEn ? 'References' : 'Referencias Laborales';
+    docContent.push(
+      { text: textReferencias, style: 'sectionHeader', margin: [0, 12, 0, 0] },
+      {
+        canvas: [
+          { type: 'line', x1: 0, y1: 2, x2: 515, y2: 2, lineWidth: 0.5, lineColor: '#a0aec0' }
+        ],
+        margin: [0, 2, 0, estilosPdf.sectionHeader.spaceAfter]
+      }
+    );
+
+    validRefs.forEach((ref, idx) => {
+      const refStack = [];
+      const cargoEmpresa = [ref.cargo, ref.empresa].filter(Boolean).join(' – ');
+      const infoContacto = [ref.telefono, ref.email].filter(Boolean).join('  |  ');
+
+      refStack.push({
+        columns: [
+          {
+            text: ref.nombre || 'Nombre',
+            bold: true,
+            fontSize: estilosPdf.puesto.fontSize,
+            width: '*'
+          },
+          {
+            text: cargoEmpresa,
+            alignment: 'right',
+            fontSize: estilosPdf.fecha.fontSize,
+            color: '#4a5568',
+            width: 'auto'
+          }
+        ],
+        margin: [0, 0, 0, 2]
+      });
+
+      if (infoContacto || ref.relacion) {
+        refStack.push({
+          columns: [
+            { text: infoContacto, fontSize: estilosPdf.ubicacion.fontSize, color: '#718096', width: '*' },
+            { text: ref.relacion || '', fontSize: estilosPdf.ubicacion.fontSize, color: '#718096', italic: true, alignment: 'right', width: 'auto' }
+          ],
+          margin: [0, 0, 0, estilosPdf.ubicacion.spaceAfter]
+        });
+      }
+
+      docContent.push({
+        stack: refStack,
+        unbreakable: true,
+        margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
+      });
+    });
+  }
+
+  // Secciones Personalizadas
+  const validSecs = cv.seccionesExtra?.filter(s => s.titulo?.trim() || s.contenido?.trim()) || [];
+  if (validSecs.length > 0) {
+    validSecs.forEach((sec) => {
+      docContent.push(
+        { text: sec.titulo || (isEn ? 'Additional Information' : 'Información Adicional'), style: 'sectionHeader', margin: [0, 12, 0, 0] },
+        {
+          canvas: [
+            { type: 'line', x1: 0, y1: 2, x2: 515, y2: 2, lineWidth: 0.5, lineColor: '#a0aec0' }
+          ],
+          margin: [0, 2, 0, estilosPdf.sectionHeader.spaceAfter]
+        },
+        { text: sec.contenido || '', style: 'bodyText', margin: [0, 2, 0, estilosPdf.bodyText.spaceAfter] }
+      );
+    });
+  }
+
   const docDefinition = {
     content: docContent,
     pageMargins: estilosPdf.margenes,

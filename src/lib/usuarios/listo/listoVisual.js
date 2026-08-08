@@ -12,7 +12,10 @@ import {
   renderEducacionCards,
   renderProyectoCards,
   renderCertificacionCards,
-  renderIdiomaCards
+  renderIdiomaCards,
+  renderReconocimientoCards,
+  renderReferenciaCards,
+  renderSeccionExtraCards
 } from './editor/renderForm.js';
 
 const LS_LISTA  = 'listo_lista';
@@ -292,6 +295,9 @@ const populateForm = () => {
   renderProyectoCards(_cvData, _lg, sincronizarProyectoTarjeta, eliminarProyecto);
   renderCertificacionCards(_cvData, _lg, sincronizarCertificacionTarjeta, eliminarCertificacion);
   renderIdiomaCards(_cvData, _lg, sincronizarIdiomaTarjeta, eliminarIdioma);
+  renderReconocimientoCards(_cvData, _lg, sincronizarReconocimientoTarjeta, eliminarReconocimiento);
+  renderReferenciaCards(_cvData, _lg, sincronizarReferenciaTarjeta, eliminarReferencia);
+  renderSeccionExtraCards(_cvData, _lg, sincronizarSeccionExtraTarjeta, eliminarSeccionExtra);
 };
 
 const sincronizarExperienciaTarjeta = (expId) => {
@@ -567,6 +573,185 @@ const agregarIdiomaNuevo = () => {
   actualizarPreview();
   populateForm();
 };
+
+// ── Reconocimientos ──
+const sincronizarReconocimientoTarjeta = (recId) => {
+  const container = document.querySelector(`.listo_item_card[data-rec-id="${recId}"]`);
+  if (!container) return;
+
+  const titulo = (container.querySelector('.list_rec_titulo')?.value || '').trim();
+  const fecha = (container.querySelector('.list_rec_fecha')?.value || '').trim();
+  const emisor = (container.querySelector('.list_rec_emisor')?.value || '').trim();
+  const ubicacion = (container.querySelector('.list_rec_ubicacion')?.value || '').trim();
+  const enlace = (container.querySelector('.list_rec_enlace')?.value || '').trim();
+  const descripcion = (container.querySelector('.list_rec_descripcion')?.value || '').trim();
+
+  const idx = (_cvData.reconocimientos || []).findIndex(r => r.id === recId);
+  if (idx > -1) {
+    pushToUndoStack();
+    _cvData.reconocimientos[idx] = { id: recId, titulo, fecha, emisor, ubicacion, enlace, descripcion };
+    
+    const keyNombre = formatKeyName(_activa.nombre);
+    localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+    
+    actualizarPreview();
+  }
+};
+
+const eliminarReconocimiento = (recId) => {
+  if (!_cvData || !_cvData.reconocimientos) return;
+  pushToUndoStack();
+  _cvData.reconocimientos = _cvData.reconocimientos.filter(r => r.id !== recId);
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
+
+const agregarReconocimientoNuevo = () => {
+  if (!_cvData) return;
+  pushToUndoStack();
+
+  if (!Array.isArray(_cvData.reconocimientos)) {
+    _cvData.reconocimientos = [];
+  }
+
+  const rand = Math.random().toString(36).substring(2, 9);
+  _cvData.reconocimientos.push({
+    id: `rec_${rand}`,
+    titulo: '',
+    fecha: '',
+    emisor: '',
+    ubicacion: '',
+    enlace: '',
+    descripcion: ''
+  });
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
+
+// ── Referencias ──
+const sincronizarReferenciaTarjeta = (refId) => {
+  const container = document.querySelector(`.listo_item_card[data-ref-id="${refId}"]`);
+  if (!container) return;
+
+  const nombre = (container.querySelector('.list_ref_nombre')?.value || '').trim();
+  const cargo = (container.querySelector('.list_ref_cargo')?.value || '').trim();
+  const empresa = (container.querySelector('.list_ref_empresa')?.value || '').trim();
+  const telefono = (container.querySelector('.list_ref_telefono')?.value || '').trim();
+  const email = (container.querySelector('.list_ref_email')?.value || '').trim();
+  const relacion = (container.querySelector('.list_ref_relacion')?.value || '').trim();
+
+  const idx = (_cvData.referencias || []).findIndex(r => r.id === refId);
+  if (idx > -1) {
+    pushToUndoStack();
+    _cvData.referencias[idx] = { id: refId, nombre, cargo, empresa, telefono, email, relacion };
+    
+    const keyNombre = formatKeyName(_activa.nombre);
+    localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+    
+    actualizarPreview();
+  }
+};
+
+const eliminarReferencia = (refId) => {
+  if (!_cvData || !_cvData.referencias) return;
+  pushToUndoStack();
+  _cvData.referencias = _cvData.referencias.filter(r => r.id !== refId);
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
+
+const agregarReferenciaNueva = () => {
+  if (!_cvData) return;
+  pushToUndoStack();
+
+  if (!Array.isArray(_cvData.referencias)) {
+    _cvData.referencias = [];
+  }
+
+  const rand = Math.random().toString(36).substring(2, 9);
+  _cvData.referencias.push({
+    id: `ref_${rand}`,
+    nombre: '',
+    cargo: '',
+    empresa: '',
+    telefono: '',
+    email: '',
+    relacion: ''
+  });
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
+
+// ── Secciones Personalizadas ──
+const sincronizarSeccionExtraTarjeta = (secId) => {
+  const container = document.querySelector(`.listo_item_card[data-sec-id="${secId}"]`);
+  if (!container) return;
+
+  const titulo = (container.querySelector('.list_sec_titulo')?.value || '').trim();
+  const contenido = (container.querySelector('.list_sec_contenido')?.value || '').trim();
+
+  const idx = (_cvData.seccionesExtra || []).findIndex(s => s.id === secId);
+  if (idx > -1) {
+    pushToUndoStack();
+    _cvData.seccionesExtra[idx] = { id: secId, titulo, contenido };
+    
+    const keyNombre = formatKeyName(_activa.nombre);
+    localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+    
+    actualizarPreview();
+  }
+};
+
+const eliminarSeccionExtra = (secId) => {
+  if (!_cvData || !_cvData.seccionesExtra) return;
+  pushToUndoStack();
+  _cvData.seccionesExtra = _cvData.seccionesExtra.filter(s => s.id !== secId);
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
+
+const agregarSeccionExtraNueva = () => {
+  if (!_cvData) return;
+  pushToUndoStack();
+
+  if (!Array.isArray(_cvData.seccionesExtra)) {
+    _cvData.seccionesExtra = [];
+  }
+
+  const rand = Math.random().toString(36).substring(2, 9);
+  _cvData.seccionesExtra.push({
+    id: `sec_${rand}`,
+    titulo: '',
+    contenido: ''
+  });
+
+  const keyNombre = formatKeyName(_activa.nombre);
+  localStorage.setItem(`preview_listo_${keyNombre}`, JSON.stringify(_cvData));
+
+  actualizarPreview();
+  populateForm();
+};
+
 // Sincronizar campos globales del formulario al escribir
 const sincronizarFormularioGlobal = (field, val) => {
   if (!_cvData) return;
@@ -849,6 +1034,9 @@ export const initListo = (lang, lg) => {
   document.getElementById('list_btn_agregar_proyecto')?.addEventListener('click', agregarProyectoNuevo);
   document.getElementById('list_btn_agregar_certificacion')?.addEventListener('click', agregarCertificacionNueva);
   document.getElementById('list_btn_agregar_idioma')?.addEventListener('click', agregarIdiomaNuevo);
+  document.getElementById('list_btn_agregar_reconocimiento')?.addEventListener('click', agregarReconocimientoNuevo);
+  document.getElementById('list_btn_agregar_referencia')?.addEventListener('click', agregarReferenciaNueva);
+  document.getElementById('list_btn_agregar_seccion_extra')?.addEventListener('click', agregarSeccionExtraNueva);
 
   // Botón guardar puesto/vacante
   document.getElementById('list_btn_guardar_job')?.addEventListener('click', () => {

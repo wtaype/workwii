@@ -146,5 +146,47 @@ const lg = idiomaListo[lang];
     </button>
   </fieldset>
 
+  <!-- SECCIÓN 9: RECONOCIMIENTOS -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-award"></i> {lg['list.editor.reconocimientos'] || 'Reconocimientos'}
+    </legend>
+    
+    <!-- Contenedor dinámico de reconocimientos -->
+    <div id="list_editor_reconocimientos_container"></div>
+
+    <button type="button" id="list_btn_agregar_reconocimiento" class="listo_btn_add_item">
+      <i class="fas fa-plus"></i> {lg['list.editor.agregarReconocimiento'] || '+ Agregar Reconocimiento'}
+    </button>
+  </fieldset>
+
+  <!-- SECCIÓN 10: REFERENCIAS -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-user-check"></i> {lg['list.editor.referencias'] || 'Referencias Laborales'}
+    </legend>
+    
+    <!-- Contenedor dinámico de referencias -->
+    <div id="list_editor_referencias_container"></div>
+
+    <button type="button" id="list_btn_agregar_referencia" class="listo_btn_add_item">
+      <i class="fas fa-plus"></i> {lg['list.editor.agregarReferencia'] || '+ Agregar Referencia'}
+    </button>
+  </fieldset>
+
+  <!-- SECCIÓN 11: SECCIONES PERSONALIZADAS -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-folder-plus"></i> {lg['list.editor.seccionesExtra'] || 'Secciones Personalizadas'}
+    </legend>
+    
+    <!-- Contenedor dinámico de secciones personalizadas -->
+    <div id="list_editor_secciones_extra_container"></div>
+
+    <button type="button" id="list_btn_agregar_seccion_extra" class="listo_btn_add_item">
+      <i class="fas fa-plus"></i> {lg['list.editor.agregarSeccionExtra'] || '+ Agregar Sección Personalizada'}
+    </button>
+  </fieldset>
+
 </form>
 

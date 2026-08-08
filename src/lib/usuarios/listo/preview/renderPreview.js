@@ -236,6 +236,87 @@ export const updateA4Preview = (cv, getCvData, updateCvData, onSync) => {
     });
   }
 
+  // Reconocimientos
+  const validRecs = cv.reconocimientos?.filter(r => r.titulo?.trim() || r.emisor?.trim()) || [];
+  if (validRecs.length > 0) {
+    const textReconocimientos = isEn ? 'Honors & Awards' : 'Reconocimientos';
+    blocks.push({
+      type: 'section_title',
+      html: `<h2 class="cr_cv_section_title cr_cv_section_title--spaced">${textReconocimientos}</h2>`
+    });
+
+    validRecs.forEach(rec => {
+      blocks.push({
+        type: 'item',
+        html: `
+          <div class="cr_cv_item">
+            <div class="cr_cv_item_row">
+              <strong class="cr_prev_editable" data-edit-field="rec_titulo" data-rec-id="${rec.id}" spellcheck="true" lang="${cv.idioma}">${rec.titulo || 'Reconocimiento'}</strong>
+              <span>${rec.fecha || ''}</span>
+            </div>
+            <div class="cr_cv_item_subrow">
+              <span class="cr_prev_editable" data-edit-field="rec_emisor" data-rec-id="${rec.id}" spellcheck="true" lang="${cv.idioma}">${rec.emisor || ''}</span>
+              <span class="cr_prev_editable" data-edit-field="rec_ubicacion" data-rec-id="${rec.id}" spellcheck="true" lang="${cv.idioma}">${rec.ubicacion || ''}</span>
+            </div>
+            ${rec.descripcion ? `<div class="cr_cv_item_desc"><p class="cr_prev_editable" data-edit-field="rec_descripcion" data-rec-id="${rec.id}" spellcheck="true" lang="${cv.idioma}">${rec.descripcion}</p></div>` : ''}
+            ${rec.enlace ? `<div class="cr_cv_item_desc"><p><strong>${isEn ? 'Reference' : 'Referencia'}:</strong> <a href="${rec.enlace}" target="_blank" rel="noopener noreferrer" class="cr_cv_link">${rec.enlace}</a></p></div>` : ''}
+          </div>
+        `
+      });
+    });
+  }
+
+  // Referencias
+  const validRefs = cv.referencias?.filter(r => r.nombre?.trim()) || [];
+  if (validRefs.length > 0) {
+    const textReferencias = isEn ? 'References' : 'Referencias Laborales';
+    blocks.push({
+      type: 'section_title',
+      html: `<h2 class="cr_cv_section_title cr_cv_section_title--spaced">${textReferencias}</h2>`
+    });
+
+    validRefs.forEach(ref => {
+      const infoContacto = [ref.telefono, ref.email].filter(Boolean).join(' | ');
+      blocks.push({
+        type: 'item',
+        html: `
+          <div class="cr_cv_item">
+            <div class="cr_cv_item_row">
+              <strong class="cr_prev_editable" data-edit-field="ref_nombre" data-ref-id="${ref.id}" spellcheck="true" lang="${cv.idioma}">${ref.nombre || 'Nombre'}</strong>
+              <span>${ref.cargo ? `${ref.cargo}${ref.empresa ? ` – ${ref.empresa}` : ''}` : (ref.empresa || '')}</span>
+            </div>
+            ${(infoContacto || ref.relacion) ? `
+              <div class="cr_cv_item_subrow">
+                <span>${infoContacto}</span>
+                <span>${ref.relacion || ''}</span>
+              </div>
+            ` : ''}
+          </div>
+        `
+      });
+    });
+  }
+
+  // Secciones Personalizadas
+  const validSecs = cv.seccionesExtra?.filter(s => s.titulo?.trim() || s.contenido?.trim()) || [];
+  if (validSecs.length > 0) {
+    validSecs.forEach(sec => {
+      blocks.push({
+        type: 'section_title',
+        html: `<h2 class="cr_cv_section_title cr_cv_section_title--spaced">${sec.titulo || (isEn ? 'Additional Information' : 'Información Adicional')}</h2>`
+      });
+
+      blocks.push({
+        type: 'item',
+        html: `
+          <div class="cr_cv_item">
+            <p class="cr_cv_text cr_prev_editable" data-edit-field="sec_contenido" data-sec-id="${sec.id}" spellcheck="true" lang="${cv.idioma}">${sec.contenido || ''}</p>
+          </div>
+        `
+      });
+    });
+  }
+
   // ── Medidor invisible para calcular alturas reales ──
   let tempDiv = document.getElementById('crTempMeasurer');
   if (!tempDiv) {

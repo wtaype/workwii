@@ -245,3 +245,155 @@ export const renderIdiomaCards = (cvData, lg, onInput, onDelete) => {
     });
   });
 };
+
+export const renderReconocimientoCards = (cvData, lg, onInput, onDelete) => {
+  const container = document.getElementById('list_editor_reconocimientos_container');
+  if (!container) return;
+
+  const list = cvData.reconocimientos || [];
+  container.innerHTML = list.map(rec => {
+    return `
+      <div class="listo_item_card" data-rec-id="${rec.id}">
+        <button type="button" class="listo_btn_remove_item" data-rec-id="${rec.id}">
+          <i class="fas fa-trash-alt"></i> ${lg['list.editor.eliminar'] || 'Eliminar'}
+        </button>
+        <div class="listo_form_grid">
+          <div class="listo_field">
+            <label>${lg['list.editor.recTitulo'] || 'Título / Reconocimiento'}</label>
+            <input type="text" class="listo_input list_rec_titulo" value="${rec.titulo || ''}" data-rec-id="${rec.id}" autocomplete="off" />
+          </div>
+          <div class="listo_field">
+            <label>${lg['list.editor.recFecha'] || 'Fecha (ej: Octubre 2024)'}</label>
+            <input type="text" class="listo_input list_rec_fecha" value="${rec.fecha || ''}" data-rec-id="${rec.id}" autocomplete="off" />
+          </div>
+          <div class="listo_field">
+            <label>${lg['list.editor.recEmisor'] || 'Emisor / Organización'}</label>
+            <input type="text" class="listo_input list_rec_emisor" value="${rec.emisor || ''}" data-rec-id="${rec.id}" autocomplete="off" />
+          </div>
+          <div class="listo_field">
+            <label>${lg['list.editor.recUbicacion'] || 'Ubicación (ej: Lima, Perú)'}</label>
+            <input type="text" class="listo_input list_rec_ubicacion" value="${rec.ubicacion || ''}" data-rec-id="${rec.id}" autocomplete="off" />
+          </div>
+          <div class="listo_field listo_form_grid_full">
+            <label>${lg['list.editor.recEnlace'] || 'Enlace de referencia (URL)'}</label>
+            <input type="url" class="listo_input list_rec_enlace" value="${rec.enlace || ''}" data-rec-id="${rec.id}" placeholder="https://..." autocomplete="off" />
+          </div>
+          <div class="listo_field listo_form_grid_full">
+            <label>${lg['list.editor.recDesc'] || 'Descripción / Detalle'}</label>
+            <textarea class="listo_textarea list_rec_descripcion" rows="3" data-rec-id="${rec.id}">${rec.descripcion || ''}</textarea>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.listo_btn_remove_item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-rec-id');
+      onDelete(id);
+    });
+  });
+
+  container.querySelectorAll('input, textarea').forEach(el => {
+    el.addEventListener('input', () => {
+      const id = el.getAttribute('data-rec-id');
+      onInput(id);
+    });
+  });
+};
+
+export const renderReferenciaCards = (cvData, lg, onInput, onDelete) => {
+  const container = document.getElementById('list_editor_referencias_container');
+  if (!container) return;
+
+  const list = cvData.referencias || [];
+  container.innerHTML = list.map(ref => {
+    return `
+      <div class="listo_item_card" data-ref-id="${ref.id}">
+        <button type="button" class="listo_btn_remove_item" data-ref-id="${ref.id}">
+          <i class="fas fa-trash-alt"></i> ${lg['list.editor.eliminar'] || 'Eliminar'}
+        </button>
+        <div class="listo_form_grid">
+          <div class="listo_field">
+            <label>${lg['list.editor.refNombre'] || 'Nombre del Referente'}</label>
+            <input type="text" class="listo_input list_ref_nombre" value="${ref.nombre || ''}" data-ref-id="${ref.id}" autocomplete="off" />
+          </div>
+          <div class="listo_field">
+            <label>${lg['list.editor.refCargo'] || 'Cargo'}</label>
+            <input type="text" class="listo_input list_ref_cargo" value="${ref.cargo || ''}" data-ref-id="${ref.id}" autocomplete="off" />
+          </div>
+          <div class="listo_field">
+            <label>${lg['list.editor.refEmpresa'] || 'Empresa / Institución'}</label>
+            <input type="text" class="listo_input list_ref_empresa" value="${ref.empresa || ''}" data-ref-id="${ref.id}" autocomplete="off" />
+          </div>
+          <div class="listo_field">
+            <label>${lg['list.editor.refTelefono'] || 'Teléfono'}</label>
+            <input type="tel" class="listo_input list_ref_telefono" value="${ref.telefono || ''}" data-ref-id="${ref.id}" autocomplete="off" />
+          </div>
+          <div class="listo_field">
+            <label>${lg['list.editor.refEmail'] || 'Correo Electrónico'}</label>
+            <input type="email" class="listo_input list_ref_email" value="${ref.email || ''}" data-ref-id="${ref.id}" autocomplete="off" />
+          </div>
+          <div class="listo_field">
+            <label>${lg['list.editor.refRelacion'] || 'Relación / Detalle'}</label>
+            <input type="text" class="listo_input list_ref_relacion" value="${ref.relacion || ''}" data-ref-id="${ref.id}" autocomplete="off" />
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.listo_btn_remove_item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-ref-id');
+      onDelete(id);
+    });
+  });
+
+  container.querySelectorAll('input').forEach(el => {
+    el.addEventListener('input', () => {
+      const id = el.getAttribute('data-ref-id');
+      onInput(id);
+    });
+  });
+};
+
+export const renderSeccionExtraCards = (cvData, lg, onInput, onDelete) => {
+  const container = document.getElementById('list_editor_secciones_extra_container');
+  if (!container) return;
+
+  const list = cvData.seccionesExtra || [];
+  container.innerHTML = list.map(sec => {
+    return `
+      <div class="listo_item_card" data-sec-id="${sec.id}">
+        <button type="button" class="listo_btn_remove_item" data-sec-id="${sec.id}">
+          <i class="fas fa-trash-alt"></i> ${lg['list.editor.eliminar'] || 'Eliminar'}
+        </button>
+        <div class="listo_form_grid">
+          <div class="listo_field listo_form_grid_full">
+            <label>${lg['list.editor.secTitulo'] || 'Título de la Sección'}</label>
+            <input type="text" class="listo_input list_sec_titulo" value="${sec.titulo || ''}" data-sec-id="${sec.id}" placeholder="Ej: Voluntariado, Publicaciones" autocomplete="off" />
+          </div>
+          <div class="listo_field listo_form_grid_full">
+            <label>${lg['list.editor.secContenido'] || 'Contenido / Detalle'}</label>
+            <textarea class="listo_textarea list_sec_contenido" rows="3" data-sec-id="${sec.id}">${sec.contenido || ''}</textarea>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.listo_btn_remove_item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-sec-id');
+      onDelete(id);
+    });
+  });
+
+  container.querySelectorAll('input, textarea').forEach(el => {
+    el.addEventListener('input', () => {
+      const id = el.getAttribute('data-sec-id');
+      onInput(id);
+    });
+  });
+};
