@@ -30,7 +30,7 @@ export const idiomaRutas = {
     'perfil': 'Mi Perfil',
     '/mi-cvs': 'Mis CVs',
     '/postulaciones': 'Postulaciones',
-    '/listo': 'Listo',
+    '/listo': 'Realizado',
     '/ccat-test': 'Test CCAT',
 },
   en: {
@@ -60,7 +60,7 @@ export const idiomaRutas = {
     'perfil': 'My Profile',
     '/mi-cvs': 'My Resumes',
     '/postulaciones': 'Applications',
-    '/listo': 'Listo',
+    '/listo': 'Realizado',
     '/ccat-test': 'CCAT Test',
   }
 };
@@ -101,7 +101,6 @@ export const NAV_CONFIG = {
       { href: '/more', ico: 'fa-ellipsis' },
     ],
     right: [
-      { href: '/mi-cvs', ico: 'fa-folder-open' }, 
       { href: '/listo', ico: 'fa-rocket' },
       { href: '/postulaciones', ico: 'fa-list-check' },
       { href: '/ser-editor', ico: 'fa-user-pen' },
@@ -111,6 +110,7 @@ export const NAV_CONFIG = {
       { href: '/convertir-ats', ico: 'fa-wand-magic-sparkles' },
       { href: '/remotos', ico: 'fa-briefcase' },
       { href: '/blog', ico: 'fa-blog' },
+      { href: '/mi-cvs', ico: 'fa-folder-open' }, 
       { href: '/postulaciones', ico: 'fa-list-check' },
       { href: '/notas', ico: 'fa-note-sticky' },
     ]

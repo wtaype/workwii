@@ -641,7 +641,8 @@ const procesarArchivoCv = async (file) => {
       texto = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
       tipo = 'pdf';
     } else {
-      const mammoth = await import('https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js');
+      const mammothMod = await import('mammoth');
+      const mammoth = mammothMod.default || mammothMod;
       const arrayBuffer = await file.arrayBuffer();
       const result = await mammoth.extractRawText({ arrayBuffer });
       texto = result.value;
