@@ -599,7 +599,25 @@ export const descargarPdfDirecto = async (cv) => {
     }
   };
 
-  const filename = `${(cv.nombre || 'CV_ATS').replace(/\s+/g, '_')}_CV_ATS.pdf`;
+  const formatPdfFilename = (nombreCompleto) => {
+    if (!nombreCompleto || typeof nombreCompleto !== 'string') return 'curriculum_cv.pdf';
+    
+    const limpio = nombreCompleto
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .trim();
+    
+    const words = limpio.split(/\s+/).filter(Boolean);
+    
+    if (words.length === 0) return 'curriculum_cv.pdf';
+    if (words.length === 1) return `${words[0]}_cv.pdf`;
+    
+    return `${words[0]}_${words[1]}_cv.pdf`;
+  };
+
+  const filename = formatPdfFilename(cv.nombre);
 
   try {
     window.pdfMake.createPdf(docDefinition).download(filename);
