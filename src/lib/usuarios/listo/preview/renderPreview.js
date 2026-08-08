@@ -104,6 +104,64 @@ export const updateA4Preview = (cv, getCvData, updateCvData, onSync) => {
     });
   }
 
+  // Proyectos Destacados
+  const validProjs = cv.proyectos?.filter(p => p.nombre?.trim()) || [];
+  if (validProjs.length > 0) {
+    const textProyectos = isEn ? 'Featured Projects' : 'Proyectos Destacados';
+    blocks.push({
+      type: 'section_title',
+      html: `<h2 class="cr_cv_section_title cr_cv_section_title--spaced">${textProyectos}</h2>`
+    });
+
+    validProjs.forEach(proj => {
+      blocks.push({
+        type: 'item',
+        html: `
+          <div class="cr_cv_item">
+            <div class="cr_cv_item_row">
+              <strong class="cr_prev_editable" data-edit-field="proj_nombre" data-proj-id="${proj.id}" spellcheck="true" lang="${cv.idioma}">${proj.nombre || 'Nombre del Proyecto'}</strong>
+              ${proj.enlace ? `<span class="cr_prev_editable" data-edit-field="proj_enlace" data-proj-id="${proj.id}">${proj.enlace}</span>` : ''}
+            </div>
+            <div class="cr_cv_item_desc">
+              <p class="cr_prev_editable" data-edit-field="proj_descripcion" data-proj-id="${proj.id}" spellcheck="true" lang="${cv.idioma}">${proj.descripcion || ''}</p>
+              ${proj.tecnologias ? `<p class="cr_cv_proj_tech"><strong>${isEn ? 'Technologies' : 'Tecnologías'}:</strong> <span class="cr_prev_editable" data-edit-field="proj_tecnologias" data-proj-id="${proj.id}" spellcheck="true" lang="${cv.idioma}">${proj.tecnologias}</span></p>` : ''}
+            </div>
+          </div>
+        `
+      });
+    });
+  }
+
+  // Reconocimientos
+  const validRecs = cv.reconocimientos?.filter(r => r.titulo?.trim() || r.emisor?.trim()) || [];
+  if (validRecs.length > 0) {
+    const textReconocimientos = isEn ? 'Honors & Awards' : 'Reconocimientos';
+    blocks.push({
+      type: 'section_title',
+      html: `<h2 class="cr_cv_section_title cr_cv_section_title--spaced">${textReconocimientos}</h2>`
+    });
+
+    validRecs.forEach(rec => {
+      blocks.push({
+        type: 'item',
+        html: `
+          <div class="cr_cv_item">
+            <div class="cr_cv_item_row">
+              <strong class="cr_prev_editable" data-edit-field="rec_titulo" data-rec-id="${rec.id}" spellcheck="true" lang="${cv.idioma}">${rec.titulo || 'Reconocimiento'}</strong>
+              <span>${rec.fecha || ''}</span>
+            </div>
+            <div class="cr_cv_item_subrow">
+              <span class="cr_prev_editable" data-edit-field="rec_emisor" data-rec-id="${rec.id}" spellcheck="true" lang="${cv.idioma}">${rec.emisor || ''}</span>
+              <span class="cr_prev_editable" data-edit-field="rec_ubicacion" data-rec-id="${rec.id}" spellcheck="true" lang="${cv.idioma}">${rec.ubicacion || ''}</span>
+            </div>
+            ${rec.descripcion ? `<div class="cr_cv_item_desc"><p class="cr_prev_editable" data-edit-field="rec_descripcion" data-rec-id="${rec.id}" spellcheck="true" lang="${cv.idioma}">${rec.descripcion}</p></div>` : ''}
+            ${rec.enlace ? `<div class="cr_cv_item_desc"><p><strong>${isEn ? 'Reference' : 'Referencia'}:</strong> <a href="${rec.enlace}" target="_blank" rel="noopener noreferrer" class="cr_cv_link">${rec.enlace}</a></p></div>` : ''}
+          </div>
+        `
+      });
+    });
+  }
+
   // Educación
   const validEdus = cv.educacion?.filter(e => e.grado?.trim() || e.institucion?.trim()) || [];
   if (validEdus.length > 0) {
@@ -158,34 +216,6 @@ export const updateA4Preview = (cv, getCvData, updateCvData, onSync) => {
     });
   }
 
-  // Proyectos Destacados
-  const validProjs = cv.proyectos?.filter(p => p.nombre?.trim()) || [];
-  if (validProjs.length > 0) {
-    const textProyectos = isEn ? 'Featured Projects' : 'Proyectos Destacados';
-    blocks.push({
-      type: 'section_title',
-      html: `<h2 class="cr_cv_section_title cr_cv_section_title--spaced">${textProyectos}</h2>`
-    });
-
-    validProjs.forEach(proj => {
-      blocks.push({
-        type: 'item',
-        html: `
-          <div class="cr_cv_item">
-            <div class="cr_cv_item_row">
-              <strong class="cr_prev_editable" data-edit-field="proj_nombre" data-proj-id="${proj.id}" spellcheck="true" lang="${cv.idioma}">${proj.nombre || 'Nombre del Proyecto'}</strong>
-              ${proj.enlace ? `<span class="cr_prev_editable" data-edit-field="proj_enlace" data-proj-id="${proj.id}">${proj.enlace}</span>` : ''}
-            </div>
-            <div class="cr_cv_item_desc">
-              <p class="cr_prev_editable" data-edit-field="proj_descripcion" data-proj-id="${proj.id}" spellcheck="true" lang="${cv.idioma}">${proj.descripcion || ''}</p>
-              ${proj.tecnologias ? `<p class="cr_cv_proj_tech"><strong>${isEn ? 'Technologies' : 'Tecnologías'}:</strong> <span class="cr_prev_editable" data-edit-field="proj_tecnologias" data-proj-id="${proj.id}" spellcheck="true" lang="${cv.idioma}">${proj.tecnologias}</span></p>` : ''}
-            </div>
-          </div>
-        `
-      });
-    });
-  }
-
   // Habilidades e Idiomas
   if (cv.skills || (cv.idiomas && cv.idiomas.length > 0)) {
     let skillsHTML = '';
@@ -233,36 +263,6 @@ export const updateA4Preview = (cv, getCvData, updateCvData, onSync) => {
           </div>
         </div>
       `
-    });
-  }
-
-  // Reconocimientos
-  const validRecs = cv.reconocimientos?.filter(r => r.titulo?.trim() || r.emisor?.trim()) || [];
-  if (validRecs.length > 0) {
-    const textReconocimientos = isEn ? 'Honors & Awards' : 'Reconocimientos';
-    blocks.push({
-      type: 'section_title',
-      html: `<h2 class="cr_cv_section_title cr_cv_section_title--spaced">${textReconocimientos}</h2>`
-    });
-
-    validRecs.forEach(rec => {
-      blocks.push({
-        type: 'item',
-        html: `
-          <div class="cr_cv_item">
-            <div class="cr_cv_item_row">
-              <strong class="cr_prev_editable" data-edit-field="rec_titulo" data-rec-id="${rec.id}" spellcheck="true" lang="${cv.idioma}">${rec.titulo || 'Reconocimiento'}</strong>
-              <span>${rec.fecha || ''}</span>
-            </div>
-            <div class="cr_cv_item_subrow">
-              <span class="cr_prev_editable" data-edit-field="rec_emisor" data-rec-id="${rec.id}" spellcheck="true" lang="${cv.idioma}">${rec.emisor || ''}</span>
-              <span class="cr_prev_editable" data-edit-field="rec_ubicacion" data-rec-id="${rec.id}" spellcheck="true" lang="${cv.idioma}">${rec.ubicacion || ''}</span>
-            </div>
-            ${rec.descripcion ? `<div class="cr_cv_item_desc"><p class="cr_prev_editable" data-edit-field="rec_descripcion" data-rec-id="${rec.id}" spellcheck="true" lang="${cv.idioma}">${rec.descripcion}</p></div>` : ''}
-            ${rec.enlace ? `<div class="cr_cv_item_desc"><p><strong>${isEn ? 'Reference' : 'Referencia'}:</strong> <a href="${rec.enlace}" target="_blank" rel="noopener noreferrer" class="cr_cv_link">${rec.enlace}</a></p></div>` : ''}
-          </div>
-        `
-      });
     });
   }
 

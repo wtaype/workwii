@@ -94,6 +94,9 @@ export const descargarPdfDirecto = async (cv) => {
     );
   }
 
+
+
+  // Experiencia Laboral
   const validExps = cv.experiencias?.filter(e => e.puesto?.trim() || e.empresa?.trim()) || [];
   if (validExps.length > 0) {
     docContent.push(
@@ -184,124 +187,7 @@ export const descargarPdfDirecto = async (cv) => {
     });
   }
 
-  const validEdus = cv.educacion?.filter(e => e.grado?.trim() || e.institucion?.trim()) || [];
-  if (validEdus.length > 0) {
-    docContent.push(
-      { text: textEducacion, style: 'sectionHeader', margin: [0, 12, 0, 0] },
-      {
-        canvas: [
-          { type: 'line', x1: 0, y1: 2, x2: 515, y2: 2, lineWidth: 0.5, lineColor: '#a0aec0' }
-        ],
-        margin: [0, 2, 0, estilosPdf.sectionHeader.spaceAfter]
-      }
-    );
-
-    validEdus.forEach((edu, idx) => {
-      const dateText = `${edu.inicio || ''} – ${edu.fin || ''}`;
-      
-      const eduStack = [];
-      eduStack.push({
-        columns: [
-          {
-            text: edu.grado || 'Grado / Certificación',
-            bold: estilosPdf.puesto.bold,
-            fontSize: estilosPdf.puesto.fontSize,
-            width: '*'
-          },
-          {
-            text: dateText,
-            alignment: 'right',
-            fontSize: estilosPdf.fecha.fontSize,
-            color: estilosPdf.fecha.color,
-            width: 'auto'
-          }
-        ],
-        margin: [0, 0, 0, 2]
-      });
-
-      const subrowColumns = [];
-      subrowColumns.push({
-        text: edu.institucion || '',
-        fontSize: estilosPdf.fecha.fontSize,
-        color: '#4a5568',
-        italic: true,
-        width: '*'
-      });
-      if (edu.ubicacion) {
-        subrowColumns.push({
-          text: edu.ubicacion,
-          fontSize: estilosPdf.ubicacion.fontSize,
-          color: estilosPdf.ubicacion.color,
-          italic: true,
-          alignment: 'right',
-          width: 'auto'
-        });
-      }
-      eduStack.push({
-        columns: subrowColumns,
-        margin: [0, 0, 0, estilosPdf.ubicacion.spaceAfter]
-      });
-
-      docContent.push({
-        stack: eduStack,
-        unbreakable: true,
-        margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
-      });
-    });
-  }
-
-  const validCerts = cv.certificaciones?.filter(c => c.nombre?.trim() || c.emisor?.trim()) || [];
-  if (validCerts.length > 0) {
-    const textCertificaciones = isEn ? 'Certifications' : 'Certificaciones';
-    docContent.push(
-      { text: textCertificaciones, style: 'sectionHeader', margin: [0, 12, 0, 0] },
-      {
-        canvas: [
-          { type: 'line', x1: 0, y1: 2, x2: 515, y2: 2, lineWidth: 0.5, lineColor: '#a0aec0' }
-        ],
-        margin: [0, 2, 0, estilosPdf.sectionHeader.spaceAfter]
-      }
-    );
-
-    validCerts.forEach((cert, idx) => {
-      const certStack = [];
-      certStack.push({
-        columns: [
-          {
-            text: cert.nombre || 'Certificación',
-            bold: estilosPdf.puesto.bold,
-            fontSize: estilosPdf.puesto.fontSize,
-            width: '*'
-          },
-          {
-            text: cert.fecha || '',
-            alignment: 'right',
-            fontSize: estilosPdf.fecha.fontSize,
-            color: estilosPdf.fecha.color,
-            width: 'auto'
-          }
-        ],
-        margin: [0, 0, 0, 2]
-      });
-
-      if (cert.emisor) {
-        certStack.push({
-          text: cert.emisor,
-          fontSize: estilosPdf.fecha.fontSize,
-          color: '#4a5568',
-          italic: true,
-          margin: [0, 0, 0, estilosPdf.ubicacion.spaceAfter]
-        });
-      }
-
-      docContent.push({
-        stack: certStack,
-        unbreakable: true,
-        margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
-      });
-    });
-  }
-
+  // Proyectos Destacados
   const validProjs = cv.proyectos?.filter(p => p.nombre?.trim()) || [];
   if (validProjs.length > 0) {
     const textProyectos = isEn ? 'Featured Projects' : 'Proyectos Destacados';
@@ -368,48 +254,6 @@ export const descargarPdfDirecto = async (cv) => {
         unbreakable: true,
         margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
       });
-    });
-  }
-
-  if (cv.skills || (cv.idiomas && cv.idiomas.length > 0)) {
-    docContent.push(
-      { text: textSkills, style: 'sectionHeader', margin: [0, 12, 0, 0] },
-      {
-        canvas: [
-          { type: 'line', x1: 0, y1: 2, x2: 515, y2: 2, lineWidth: 0.5, lineColor: '#a0aec0' }
-        ],
-        margin: [0, 2, 0, estilosPdf.sectionHeader.spaceAfter]
-      }
-    );
-
-    const skillsStack = [];
-    if (cv.skills) {
-      skillsStack.push({
-        text: [
-          { text: `${textSkillsLabel}: `, bold: true },
-          { text: cv.skills }
-        ],
-        fontSize: estilosPdf.skills.fontSize,
-        color: estilosPdf.skills.color,
-        margin: [0, estilosPdf.skills.spaceBefore, 0, estilosPdf.skills.spaceAfter]
-      });
-    }
-
-    if (cv.idiomas && cv.idiomas.length > 0) {
-      skillsStack.push({
-        text: [
-          { text: `${textIdiomasLabel}: `, bold: true },
-          { text: cv.idiomas.filter(Boolean).join(', ') }
-        ],
-        fontSize: estilosPdf.idiomas.fontSize,
-        color: estilosPdf.idiomas.color,
-        margin: [0, 0, 0, estilosPdf.idiomas.spaceAfter]
-      });
-    }
-
-    docContent.push({
-      stack: skillsStack,
-      margin: [0, 2, 0, 0]
     });
   }
 
@@ -500,6 +344,169 @@ export const descargarPdfDirecto = async (cv) => {
         unbreakable: true,
         margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
       });
+    });
+  }
+
+  // Educación
+  const validEdus = cv.educacion?.filter(e => e.grado?.trim() || e.institucion?.trim()) || [];
+  if (validEdus.length > 0) {
+    docContent.push(
+      { text: textEducacion, style: 'sectionHeader', margin: [0, 12, 0, 0] },
+      {
+        canvas: [
+          { type: 'line', x1: 0, y1: 2, x2: 515, y2: 2, lineWidth: 0.5, lineColor: '#a0aec0' }
+        ],
+        margin: [0, 2, 0, estilosPdf.sectionHeader.spaceAfter]
+      }
+    );
+
+    validEdus.forEach((edu, idx) => {
+      const dateText = `${edu.inicio || ''} – ${edu.fin || ''}`;
+      
+      const eduStack = [];
+      eduStack.push({
+        columns: [
+          {
+            text: edu.grado || 'Grado / Certificación',
+            bold: estilosPdf.puesto.bold,
+            fontSize: estilosPdf.puesto.fontSize,
+            width: '*'
+          },
+          {
+            text: dateText,
+            alignment: 'right',
+            fontSize: estilosPdf.fecha.fontSize,
+            color: estilosPdf.fecha.color,
+            width: 'auto'
+          }
+        ],
+        margin: [0, 0, 0, 2]
+      });
+
+      const subrowColumns = [];
+      subrowColumns.push({
+        text: edu.institucion || '',
+        fontSize: estilosPdf.fecha.fontSize,
+        color: '#4a5568',
+        italic: true,
+        width: '*'
+      });
+      if (edu.ubicacion) {
+        subrowColumns.push({
+          text: edu.ubicacion,
+          fontSize: estilosPdf.ubicacion.fontSize,
+          color: estilosPdf.ubicacion.color,
+          italic: true,
+          alignment: 'right',
+          width: 'auto'
+        });
+      }
+      eduStack.push({
+        columns: subrowColumns,
+        margin: [0, 0, 0, estilosPdf.ubicacion.spaceAfter]
+      });
+
+      docContent.push({
+        stack: eduStack,
+        unbreakable: true,
+        margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
+      });
+    });
+  }
+
+  // Certificaciones
+  const validCerts = cv.certificaciones?.filter(c => c.nombre?.trim() || c.emisor?.trim()) || [];
+  if (validCerts.length > 0) {
+    const textCertificaciones = isEn ? 'Certifications' : 'Certificaciones';
+    docContent.push(
+      { text: textCertificaciones, style: 'sectionHeader', margin: [0, 12, 0, 0] },
+      {
+        canvas: [
+          { type: 'line', x1: 0, y1: 2, x2: 515, y2: 2, lineWidth: 0.5, lineColor: '#a0aec0' }
+        ],
+        margin: [0, 2, 0, estilosPdf.sectionHeader.spaceAfter]
+      }
+    );
+
+    validCerts.forEach((cert, idx) => {
+      const certStack = [];
+      certStack.push({
+        columns: [
+          {
+            text: cert.nombre || 'Certificación',
+            bold: estilosPdf.puesto.bold,
+            fontSize: estilosPdf.puesto.fontSize,
+            width: '*'
+          },
+          {
+            text: cert.fecha || '',
+            alignment: 'right',
+            fontSize: estilosPdf.fecha.fontSize,
+            color: estilosPdf.fecha.color,
+            width: 'auto'
+          }
+        ],
+        margin: [0, 0, 0, 2]
+      });
+
+      if (cert.emisor) {
+        certStack.push({
+          text: cert.emisor,
+          fontSize: estilosPdf.fecha.fontSize,
+          color: '#4a5568',
+          italic: true,
+          margin: [0, 0, 0, estilosPdf.ubicacion.spaceAfter]
+        });
+      }
+
+      docContent.push({
+        stack: certStack,
+        unbreakable: true,
+        margin: [0, idx === 0 ? 2 : estilosPdf.sectionHeader.spaceAfter, 0, 2]
+      });
+    });
+  }
+
+  // Habilidades e Idiomas
+  if (cv.skills || (cv.idiomas && cv.idiomas.length > 0)) {
+    docContent.push(
+      { text: textSkills, style: 'sectionHeader', margin: [0, 12, 0, 0] },
+      {
+        canvas: [
+          { type: 'line', x1: 0, y1: 2, x2: 515, y2: 2, lineWidth: 0.5, lineColor: '#a0aec0' }
+        ],
+        margin: [0, 2, 0, estilosPdf.sectionHeader.spaceAfter]
+      }
+    );
+
+    const skillsStack = [];
+    if (cv.skills) {
+      skillsStack.push({
+        text: [
+          { text: `${textSkillsLabel}: `, bold: true },
+          { text: cv.skills }
+        ],
+        fontSize: estilosPdf.skills.fontSize,
+        color: estilosPdf.skills.color,
+        margin: [0, estilosPdf.skills.spaceBefore, 0, estilosPdf.skills.spaceAfter]
+      });
+    }
+
+    if (cv.idiomas && cv.idiomas.length > 0) {
+      skillsStack.push({
+        text: [
+          { text: `${textIdiomasLabel}: `, bold: true },
+          { text: cv.idiomas.filter(Boolean).join(', ') }
+        ],
+        fontSize: estilosPdf.idiomas.fontSize,
+        color: estilosPdf.idiomas.color,
+        margin: [0, 0, 0, estilosPdf.idiomas.spaceAfter]
+      });
+    }
+
+    docContent.push({
+      stack: skillsStack,
+      margin: [0, 2, 0, 0]
     });
   }
 

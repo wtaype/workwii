@@ -64,19 +64,7 @@ const lg = idiomaListo[lang];
     </div>
   </fieldset>
 
-  <!-- SECCIÓN 3: HABILIDADES (SKILLS) -->
-  <fieldset class="listo_form_section">
-    <legend class="listo_sec_title">
-      <i class="fas fa-sliders-h"></i> {lg['list.editor.skills']}
-    </legend>
-    
-    <div class="listo_field">
-      <label for="list_edit_skills">{lg['list.editor.skills']} (separadas por comas)</label>
-      <textarea id="list_edit_skills" class="listo_textarea" rows="3" placeholder="React, TypeScript, Node.js, Docker..."></textarea>
-    </div>
-  </fieldset>
-
-  <!-- SECCIÓN 4: EXPERIENCIA LABORAL -->
+  <!-- SECCIÓN 3: EXPERIENCIA LABORAL -->
   <fieldset class="listo_form_section">
     <legend class="listo_sec_title">
       <i class="fas fa-briefcase"></i> {lg['list.editor.experiencia']}
@@ -90,21 +78,7 @@ const lg = idiomaListo[lang];
     </button>
   </fieldset>
 
-  <!-- SECCIÓN 5: EDUCACIÓN -->
-  <fieldset class="listo_form_section">
-    <legend class="listo_sec_title">
-      <i class="fas fa-graduation-cap"></i> {lg['list.editor.educacion'] || 'Educación'}
-    </legend>
-    
-    <!-- Contenedor dinámico de educación -->
-    <div id="list_editor_educacion_container"></div>
-
-    <button type="button" id="list_btn_agregar_educacion" class="listo_btn_add_item">
-      <i class="fas fa-plus"></i> {lg['list.editor.agregarEdu'] || '+ Agregar Educación'}
-    </button>
-  </fieldset>
-
-  <!-- SECCIÓN 6: PROYECTOS -->
+  <!-- SECCIÓN 4: PROYECTOS -->
   <fieldset class="listo_form_section">
     <legend class="listo_sec_title">
       <i class="fas fa-project-diagram"></i> {lg['list.editor.proyectos'] || 'Proyectos'}
@@ -115,6 +89,34 @@ const lg = idiomaListo[lang];
 
     <button type="button" id="list_btn_agregar_proyecto" class="listo_btn_add_item">
       <i class="fas fa-plus"></i> {lg['list.editor.agregarProj'] || '+ Agregar Proyecto'}
+    </button>
+  </fieldset>
+
+  <!-- SECCIÓN 5: RECONOCIMIENTOS -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-award"></i> {lg['list.editor.reconocimientos'] || 'Reconocimientos'}
+    </legend>
+    
+    <!-- Contenedor dinámico de reconocimientos -->
+    <div id="list_editor_reconocimientos_container"></div>
+
+    <button type="button" id="list_btn_agregar_reconocimiento" class="listo_btn_add_item">
+      <i class="fas fa-plus"></i> {lg['list.editor.agregarReconocimiento'] || '+ Agregar Reconocimiento'}
+    </button>
+  </fieldset>
+
+  <!-- SECCIÓN 6: EDUCACIÓN -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-graduation-cap"></i> {lg['list.editor.educacion'] || 'Educación'}
+    </legend>
+    
+    <!-- Contenedor dinámico de educación -->
+    <div id="list_editor_educacion_container"></div>
+
+    <button type="button" id="list_btn_agregar_educacion" class="listo_btn_add_item">
+      <i class="fas fa-plus"></i> {lg['list.editor.agregarEdu'] || '+ Agregar Educación'}
     </button>
   </fieldset>
 
@@ -132,7 +134,19 @@ const lg = idiomaListo[lang];
     </button>
   </fieldset>
 
-  <!-- SECCIÓN 8: IDIOMAS -->
+  <!-- SECCIÓN 8: HABILIDADES (SKILLS) -->
+  <fieldset class="listo_form_section">
+    <legend class="listo_sec_title">
+      <i class="fas fa-sliders-h"></i> {lg['list.editor.skills']}
+    </legend>
+    
+    <div class="listo_field">
+      <label for="list_edit_skills">{lg['list.editor.skills']} (separadas por comas)</label>
+      <textarea id="list_edit_skills" class="listo_textarea" rows="3" placeholder="React, TypeScript, Node.js, Docker..."></textarea>
+    </div>
+  </fieldset>
+
+  <!-- SECCIÓN 9: IDIOMAS -->
   <fieldset class="listo_form_section">
     <legend class="listo_sec_title">
       <i class="fas fa-language"></i> {lg['list.editor.idiomas'] || 'Idiomas'}
@@ -143,20 +157,6 @@ const lg = idiomaListo[lang];
 
     <button type="button" id="list_btn_agregar_idioma" class="listo_btn_add_item">
       <i class="fas fa-plus"></i> {lg['list.editor.agregarIdioma'] || '+ Agregar Idioma'}
-    </button>
-  </fieldset>
-
-  <!-- SECCIÓN 9: RECONOCIMIENTOS -->
-  <fieldset class="listo_form_section">
-    <legend class="listo_sec_title">
-      <i class="fas fa-award"></i> {lg['list.editor.reconocimientos'] || 'Reconocimientos'}
-    </legend>
-    
-    <!-- Contenedor dinámico de reconocimientos -->
-    <div id="list_editor_reconocimientos_container"></div>
-
-    <button type="button" id="list_btn_agregar_reconocimiento" class="listo_btn_add_item">
-      <i class="fas fa-plus"></i> {lg['list.editor.agregarReconocimiento'] || '+ Agregar Reconocimiento'}
     </button>
   </fieldset>
 
